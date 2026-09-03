@@ -1,0 +1,134 @@
+1. Component-based
+
+Mỗi UI feature phải được xây dựng bằng component.
+Component chỉ nên phụ trách một nhóm chức năng/UI rõ ràng.
+Các UI được sử dụng từ 2 nơi trở lên phải được tách thành component dùng chung.
+Không tạo component quá lớn; nếu component trở nên khó đọc hoặc có nhiều trách nhiệm, phải tách nhỏ.
+
+2. DRY (Don't Repeat Yourself)
+
+Không duplicate UI, business logic hoặc utility logic.
+Nếu cùng một logic xuất hiện từ 2 lần trở lên, cân nhắc đưa thành function, hook hoặc component dùng chung.
+Không copy-paste cùng một đoạn code chỉ để xử lý các trường hợp tương tự.
+
+3. Single Responsibility
+
+Mỗi component/function/hook chỉ nên có một trách nhiệm chính.
+Không để component vừa render UI, gọi nhiều API, xử lý business logic phức tạp và quản lý nhiều state không liên quan.
+Business logic phức tạp phải được tách khỏi UI.
+
+4. Responsive
+
+Mọi UI phải hoạt động tốt trên mobile, tablet và desktop.
+Không hard-code kích thước cố định nếu có thể sử dụng responsive layout.
+Ưu tiên CSS responsive như Flexbox, Grid, responsive units và breakpoints.
+Không thiết kế desktop trước rồi để mobile bị vỡ layout.
+Kiểm tra các trạng thái: màn hình nhỏ, nội dung dài, danh sách nhiều item.
+
+5. Consistent UI
+
+Sử dụng thống nhất design system của project: màu sắc, typography, spacing, border-radius, shadow, button, input...
+Không tự tạo style mới nếu đã có component/design token tương ứng.
+Các component cùng loại phải có hành vi và giao diện nhất quán.
+Không sử dụng nhiều giá trị màu, spacing hoặc font-size tùy ý khi đã có design token.
+
+7. State Management
+
+Chỉ tạo state khi thực sự cần thiết.
+Ưu tiên local state nếu state chỉ được sử dụng trong một component.
+State dùng chung mới đưa lên parent/global state.
+Không lưu những dữ liệu có thể tính toán lại từ state khác.
+Không sử dụng global state cho dữ liệu chỉ thuộc về một component.
+Server state và UI state phải được phân biệt rõ ràng.
+
+8. API Separation
+
+Không gọi API trực tiếp trong nhiều component khác nhau.
+API request phải được gom vào service/API layer hoặc abstraction phù hợp.
+Component chỉ nên quan tâm đến việc sử dụng dữ liệu, không chứa implementation chi tiết của API.
+API types/request/response phải được định nghĩa rõ ràng.
+Không hard-code API URL trong component.
+
+9. Loading / Error / Empty State
+
+Mọi API-driven UI phải xử lý tối thiểu:
+Loading
+Success
+Error
+Empty
+Không để màn hình trắng khi API đang loading hoặc xảy ra lỗi.
+Error message phải dễ hiểu với người dùng.
+Empty state phải giải thích trạng thái và cung cấp action nếu phù hợp.
+Không hiển thị loading vô hạn khi request đã kết thúc.
+
+10. Form Validation
+
+Form phải validate input trước khi submit.
+Validation phải kiểm tra required fields, format, length và business rules nếu cần.
+Error phải hiển thị gần field tương ứng.
+Không chỉ disable submit mà không giải thích cho user lý do.
+Luôn xử lý cả validation error từ backend.
+Không tin tưởng hoàn toàn validation phía frontend; backend vẫn là nguồn kiểm tra cuối cùng.
+
+11. Type Safety
+
+Với TypeScript, hạn chế tối đa việc sử dụng any.
+Props, API response, request payload và state quan trọng phải có type rõ ràng.
+Không sử dụng type assertion chỉ để bypass TypeScript error.
+Khi API thay đổi contract, phải cập nhật type tương ứng.
+Ưu tiên type/interface rõ nghĩa thay vì object structure không được định nghĩa.
+
+13. Security
+
+Không hard-code API key, secret, password hoặc sensitive credentials vào source code.
+Không lưu sensitive data vào nơi không phù hợp.
+Không render HTML/user input trực tiếp nếu chưa được sanitize.
+Không dùng dangerouslySetInnerHTML trừ khi thực sự cần và dữ liệu đã được kiểm soát/sanitize.
+Không expose secret chỉ vì biến được sử dụng ở frontend.
+Không tin tưởng dữ liệu từ client; authorization phải được backend kiểm soát.
+
+14. Naming Convention
+
+Tên component, function, variable phải mô tả rõ mục đích.
+Tránh tên chung chung như data, temp, value, handleStuff nếu có tên cụ thể hơn.
+Component dùng PascalCase.
+Function/variable dùng camelCase.
+Constant dùng convention nhất quán với project.
+Boolean nên có prefix rõ nghĩa như is, has, can, should.
+Không đặt tên viết tắt khó hiểu.
+
+15. Clean Code
+
+Code phải dễ đọc trước khi tối ưu.
+Không để dead code, unused import, unused variable hoặc console log không cần thiết.
+Không tạo abstraction chỉ để làm code "có vẻ clean".
+Tránh nested condition quá sâu; ưu tiên early return khi phù hợp.
+Không comment những thứ code đã thể hiện rõ.
+Comment chỉ dùng để giải thích why, không giải thích những thứ hiển nhiên what.
+Không sửa lỗi bằng workaround tạm thời nếu có giải pháp đúng về architecture.
+
+17. URL / State Synchronization
+
+Những state quan trọng đối với navigation hoặc khả năng share/reload phải đồng bộ với URL khi phù hợp.
+Search, filter, sort, pagination và tab quan trọng nên được cân nhắc lưu trong query params.
+Reload trang không nên làm mất các trạng thái có ý nghĩa đối với URL.
+URL phải có thể bookmark/share nếu feature yêu cầu.
+Không đưa mọi state của application vào URL; chỉ đưa những state thực sự cần.
+
+19. Reuse Before Create
+
+Trước khi tạo component/function/hook mới, phải kiểm tra component/util hiện có.
+Nếu đã có component tương tự, ưu tiên reuse hoặc mở rộng component hiện tại.
+Không tạo Button, Modal, Input, Card... mới nếu project đã có implementation tương ứng.
+Shared components phải nằm ở vị trí phù hợp để các feature khác có thể sử dụng.
+Chỉ tạo component mới khi behavior hoặc responsibility thực sự khác biệt.
+
+20. Avoid Over-engineering
+
+Ưu tiên giải pháp đơn giản nhất đáp ứng đúng requirement.
+Không thêm library, design pattern, abstraction hoặc state management chỉ vì "có thể cần sau này".
+Không tạo generic component quá phức tạp cho một use case đơn giản.
+Không tối ưu performance khi chưa có vấn đề thực tế.
+Không refactor những phần không liên quan đến task.
+Mọi abstraction mới phải mang lại lợi ích rõ ràng về reuse, maintainability hoặc readability.
+Working simple code > complex architecture without need.
