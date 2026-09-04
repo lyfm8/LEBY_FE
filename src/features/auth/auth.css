@@ -1,0 +1,295 @@
+/* ═══════════════════════════════════════════════════════════
+   LEBY Auth Pages – Login & Register
+   ═══════════════════════════════════════════════════════════ */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+/* ── Shared page wrapper ───────────────────────────────────── */
+.auth-page {
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100vh;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+}
+
+/* ── Card ──────────────────────────────────────────────────── */
+.auth-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 40px 40px 36px;
+    width: 100%;
+    max-width: 460px;
+    box-shadow:
+        0 4px 6px rgba(0, 0, 0, 0.04),
+        0 20px 48px rgba(0, 0, 0, 0.08);
+}
+
+/* ── Logo & header ─────────────────────────────────────────── */
+.auth-card__logo {
+    width: 48px;
+    height: 48px;
+    background: #0f172a;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Inter', sans-serif;
+    font-size: 20px;
+    font-weight: 900;
+    color: #ffffff;
+    margin: 0 auto 20px;
+}
+
+.auth-card__title {
+    font-size: 22px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    text-align: center;
+    margin: 0 0 6px !important;
+    letter-spacing: -0.02em;
+    line-height: 1.2 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+.auth-card__subtitle {
+    font-size: 14px;
+    color: #64748b;
+    text-align: center;
+    margin: 0 0 28px;
+    line-height: 1.5;
+}
+
+/* ── Form ──────────────────────────────────────────────────── */
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.auth-form__group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.auth-form__label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.auth-form__label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.auth-form__forgot {
+    font-size: 13px;
+    font-weight: 500;
+    color: #f97316;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.auth-form__forgot:hover {
+    color: #ea6a0a;
+    text-decoration: underline;
+}
+
+/* Input */
+.auth-form__input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'Inter', sans-serif;
+    color: #0f172a;
+    background: #ffffff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    box-sizing: border-box;
+}
+
+.auth-form__input::placeholder {
+    color: #94a3b8;
+}
+
+.auth-form__input:focus {
+    border-color: #f97316;
+    box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+}
+
+.auth-form__input.is-error {
+    border-color: #ef4444;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+/* OTP row: input + send button side by side */
+.auth-form__otp-row {
+    display: flex;
+    gap: 10px;
+}
+
+.auth-form__otp-row .auth-form__input {
+    flex: 1;
+}
+
+.auth-form__otp-btn {
+    height: 44px;
+    padding: 0 16px;
+    background: #0f172a;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s, opacity 0.2s;
+    flex-shrink: 0;
+}
+
+.auth-form__otp-btn:hover:not(:disabled) {
+    background: #1e293b;
+}
+
+.auth-form__otp-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.auth-form__otp-btn--sent {
+    background: #14b8a6;
+}
+
+.auth-form__otp-btn--sent:hover:not(:disabled) {
+    background: #0d9488;
+}
+
+/* Error text */
+.auth-form__error {
+    font-size: 12px;
+    color: #ef4444;
+    margin-top: 2px;
+}
+
+/* Error banner */
+.auth-form__banner {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 13px;
+    color: #dc2626;
+    text-align: center;
+}
+
+/* Terms checkbox */
+.auth-form__terms {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+}
+
+.auth-form__terms-checkbox {
+    width: 17px;
+    height: 17px;
+    min-width: 17px;
+    margin-top: 1px;
+    accent-color: #f97316;
+    cursor: pointer;
+}
+
+.auth-form__terms-text {
+    font-size: 13px;
+    color: #475569;
+    line-height: 1.5;
+}
+
+.auth-form__terms-text a {
+    color: #f97316;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-form__terms-text a:hover {
+    text-decoration: underline;
+}
+
+/* Submit button */
+.auth-form__submit {
+    width: 100%;
+    height: 46px;
+    background: #f97316;
+    color: #ffffff;
+    border: none;
+    border-radius: 11px;
+    font-size: 15px;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.18s, box-shadow 0.2s;
+    box-shadow: 0 4px 16px rgba(249, 115, 22, 0.35);
+    margin-top: 4px;
+}
+
+.auth-form__submit:hover:not(:disabled) {
+    background: #ea6a0a;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.45);
+}
+
+.auth-form__submit:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Divider */
+.auth-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 4px 0;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e2e8f0;
+}
+
+.auth-divider__text {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Footer link */
+.auth-card__footer {
+    text-align: center;
+    font-size: 14px;
+    color: #64748b;
+    margin-top: 20px;
+}
+
+.auth-card__footer a {
+    color: #f97316;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.15s;
+}
+
+.auth-card__footer a:hover {
+    color: #ea6a0a;
+    text-decoration: underline;
+}
