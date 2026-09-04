@@ -2,6 +2,8 @@
 
 export interface SendOtpRequest {
     email: string;
+    /** "REGISTER" | "FORGOT_PASSWORD" */
+    purpose: string;
 }
 
 export interface RegisterRequest {

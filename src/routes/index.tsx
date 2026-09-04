@@ -1,5 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthGuard from '@/core/auth/auth.guard';
+import LandingPage from '@/features/landing/LandingPage';
+import LoginPage from '@/features/auth/LoginPage';
+import RegisterPage from '@/features/auth/RegisterPage';
+import OtpVerifyPage from '@/features/auth/OtpVerifyPage';
 
 /**
  * Cấu trúc routes của ứng dụng.
@@ -11,13 +15,18 @@ function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* ── PUBLIC: Auth ─────────────────────────────────────── */}
-                <Route path="/login" element={<div id="login-page">Login Page (TODO)</div>} />
-                <Route path="/register" element={<div id="register-page">Register Page (TODO)</div>} />
+                {/* ── PUBLIC: Landing (trang chủ mặc định cho khách) ─────── */}
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/landing" element={<LandingPage />} />
 
-                {/* ── PROTECTED: User ──────────────────────────────────── */}
+                {/* ── PUBLIC: Auth ─────────────────────────────────────── */}
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/verify-otp" element={<OtpVerifyPage />} />
+
+                {/* ── PROTECTED: User (sau khi đăng nhập) ─────────────── */}
                 <Route
-                    path="/"
+                    path="/home"
                     element={
                         <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
                             <div id="home-page">Home Page (TODO)</div>

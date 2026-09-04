@@ -5,7 +5,7 @@ import type {
     RegisterRequest,
     LoginRequest,
     AuthUser,
-} from './types';
+} from './authTypes';
 
 /**
  * Auth API service.
