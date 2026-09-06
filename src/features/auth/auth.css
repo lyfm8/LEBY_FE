@@ -179,7 +179,7 @@
     margin-top: 2px;
 }
 
-/* Error banner */
+/* Banner (Error / Success) */
 .auth-form__banner {
     background: #fef2f2;
     border: 1px solid #fecaca;
@@ -188,6 +188,12 @@
     font-size: 13px;
     color: #dc2626;
     text-align: center;
+}
+
+.auth-form__banner--success {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #16a34a;
 }
 
 /* Terms checkbox */

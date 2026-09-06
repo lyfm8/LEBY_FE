@@ -39,6 +39,7 @@ function OtpVerifyPage() {
     const [otp, setOtp] = useState('');
     const [otpError, setOtpError] = useState('');
     const [globalError, setGlobalError] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // OTP cooldown
@@ -65,10 +66,12 @@ function OtpVerifyPage() {
     async function handleSendOtp() {
         if (!pending) return;
         setGlobalError('');
+        setSuccessMessage('');
         try {
             const res = await authService.sendOtp({ email: pending.email, purpose: 'REGISTER' });
             if (res.success) {
                 setOtpSent(true);
+                setSuccessMessage('Mã OTP đã được gửi thành công đến email của bạn.');
                 startCooldown();
             } else {
                 setGlobalError(res.message ?? 'Gửi OTP thất bại. Vui lòng thử lại.');
@@ -100,6 +103,7 @@ function OtpVerifyPage() {
 
         setIsSubmitting(true);
         setGlobalError('');
+        setSuccessMessage('');
         try {
             const payload: RegisterRequest = { ...pending, otp };
             const res = await authService.register(payload);
@@ -132,6 +136,9 @@ function OtpVerifyPage() {
                 </p>
 
                 <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                    {/* Success banner */}
+                    {successMessage && <div className="auth-form__banner auth-form__banner--success" role="status">{successMessage}</div>}
+
                     {/* Global error */}
                     {globalError && <div className="auth-form__banner" role="alert">{globalError}</div>}
 
@@ -186,7 +193,7 @@ function OtpVerifyPage() {
                 {/* Back link */}
                 <p className="auth-card__footer">
                     Nhập sai thông tin?{' '}
-                    <Link to="/register">Quay lại đăng ký</Link>
+                    <Link to="/register" state={{ savedForm: pending }}>Quay lại đăng ký</Link>
                 </p>
             </div>
         </div>

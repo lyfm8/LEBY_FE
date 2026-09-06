@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import './auth.css';
 
 interface RegisterForm {
@@ -15,14 +15,16 @@ type FormErrors = Partial<Record<keyof RegisterForm, string>>;
 
 function RegisterPage() {
     const navigate = useNavigate();
+    const location = useLocation();
+    const saved = (location.state as { savedForm?: Partial<RegisterForm> })?.savedForm;
 
     const [form, setForm] = useState<RegisterForm>({
-        fullName: '',
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
-        terms: false,
+        fullName: saved?.fullName ?? '',
+        username: saved?.username ?? '',
+        email: saved?.email ?? '',
+        password: saved?.password ?? '',
+        confirmPassword: saved?.confirmPassword ?? '',
+        terms: saved ? true : false,
     });
 
     const [errors, setErrors] = useState<FormErrors>({});

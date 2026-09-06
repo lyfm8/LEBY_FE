@@ -12,7 +12,7 @@ function LoginPage() {
     // Redirect về trang user muốn vào trước khi bị đẩy ra login
     const from = (location.state as { from?: Location })?.from?.pathname ?? '/home';
 
-    const [form, setForm] = useState({ email: '', password: '' });
+    const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +23,7 @@ function LoginPage() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!form.email || !form.password) {
+        if (!form.username || !form.password) {
             setError('Vui lòng nhập đầy đủ thông tin.');
             return;
         }
@@ -37,7 +37,7 @@ function LoginPage() {
                 setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch {
-            setError('Email hoặc mật khẩu không đúng.');
+            setError('Tên đăng nhập hoặc mật khẩu không đúng.');
         } finally {
             setIsLoading(false);
         }
@@ -58,19 +58,19 @@ function LoginPage() {
                     {/* Error banner */}
                     {error && <div className="auth-form__banner" role="alert">{error}</div>}
 
-                    {/* Email */}
+                    {/* Username */}
                     <div className="auth-form__group">
-                        <label className="auth-form__label" htmlFor="login-email">
-                            Địa chỉ Email
+                        <label className="auth-form__label" htmlFor="login-username">
+                            Tên đăng nhập
                         </label>
                         <input
-                            id="login-email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            placeholder="username@email.com"
+                            id="login-username"
+                            name="username"
+                            type="text"
+                            autoComplete="username"
+                            placeholder="Nhập tên đăng nhập"
                             className="auth-form__input"
-                            value={form.email}
+                            value={form.username}
                             onChange={handleChange}
                             required
                         />
