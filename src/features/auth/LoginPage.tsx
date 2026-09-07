@@ -108,12 +108,54 @@ function LoginPage() {
                     </button>
                 </form>
 
+                {/* Demo Quick Login Button */}
+                <div style={{ marginTop: 16 }}>
+                    <button
+                        type="button"
+                        id="quick-demo-login-btn"
+                        onClick={async () => {
+                            setIsLoading(true);
+                            try {
+                                const res = await authService.login({ username: 'student_nam', password: '123' });
+                                if (res.success && res.data) {
+                                    setUser(res.data);
+                                    navigate(from, { replace: true });
+                                }
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            background: '#fff7ed',
+                            color: '#ea580c',
+                            border: '1px dashed #ea580c',
+                            borderRadius: '8px',
+                            fontWeight: 600,
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                        }}
+                    >
+                        ⚡ Đăng nhập nhanh tài khoản mẫu (Nguyễn Nam)
+                    </button>
+                </div>
+
                 {/* Divider */}
                 <div className="auth-divider">
                     <span className="auth-divider__text">Hoặc</span>
                 </div>
 
                 {/* Footer */}
+                <p style={{ textAlign: 'center', margin: '14px 0 0 0', fontSize: '0.875rem' }}>
+                    <Link to="/target-selection" style={{ color: '#ea580c', fontWeight: 600, textDecoration: 'none' }}>
+                        🎯 Học viên mới? Bắt đầu chọn mục tiêu & thi chẩn đoán →
+                    </Link>
+                </p>
                 <p className="auth-card__footer">
                     Chưa có tài khoản?{' '}
                     <Link to="/register">Đăng ký tài khoản mới</Link>
