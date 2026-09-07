@@ -1,0 +1,655 @@
+/* ═══════════════════════════════════════════════════════════
+   LEBY - Student Dashboard Styles
+   ═══════════════════════════════════════════════════════════ */
+
+.db-page {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: #0f172a;
+    background-color: #f8fafc;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ── Top Header ────────────────────────────────────────────── */
+.db-header {
+    background: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    width: 100%;
+}
+
+.db-header__container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.db-header__left {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
+
+.db-header__logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.db-header__logo-badge {
+    width: 32px;
+    height: 32px;
+    background: #0b1120;
+    color: #ffffff;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 900;
+    font-size: 16px;
+}
+
+.db-header__logo-text {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.05em;
+    color: #0b1120;
+}
+
+.db-header__nav {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+}
+
+.db-header__nav-item {
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    transition: color 0.15s;
+    padding: 6px 0;
+}
+
+.db-header__nav-item:hover {
+    color: #0f172a;
+}
+
+.db-header__nav-item.is-active {
+    color: #0f172a;
+    font-weight: 700;
+}
+
+.db-header__right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.db-header__target-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 13px;
+    font-weight: 700;
+    color: #ea580c;
+    border: 1.5px solid #fed7aa;
+    background: #fffaf5;
+    padding: 5px 14px;
+    border-radius: 9999px;
+    text-decoration: none;
+    transition: all 0.15s;
+}
+
+.db-header__target-badge:hover {
+    border-color: #ea580c;
+}
+
+.db-header__user-pill {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #0f172a;
+}
+
+.db-header__avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.db-header__avatar-fallback {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #0f172a;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.db-header__user-name {
+    font-size: 14px;
+    font-weight: 700;
+}
+
+/* ── Container ─────────────────────────────────────────────── */
+.db-container {
+    max-width: 1440px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 36px 32px 64px;
+    box-sizing: border-box;
+}
+
+/* ── Greeting ──────────────────────────────────────────────── */
+.db-greeting {
+    margin-bottom: 28px;
+}
+
+.db-greeting__title {
+    font-size: 28px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 0 6px !important;
+    letter-spacing: -0.02em;
+}
+
+.db-greeting__subtitle {
+    font-size: 15px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── 4 Stat Cards ──────────────────────────────────────────── */
+.db-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+    margin-bottom: 32px;
+}
+
+@media (max-width: 1080px) {
+    .db-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .db-stats-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.stat-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 18px;
+    padding: 22px 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.stat-card__title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.stat-card__icon.is-score { color: #f59e0b; }
+.stat-card__icon.is-streak { color: #ea580c; }
+.stat-card__icon.is-time { color: #0284c7; }
+
+.stat-card__value {
+    font-size: 32px;
+    font-weight: 900;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.stat-card__subtext {
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+/* Ring Progress SVG */
+.stat-card__ring-wrapper {
+    position: relative;
+    width: 44px;
+    height: 44px;
+}
+
+.stat-card__ring-svg {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
+}
+
+.stat-card__ring-bg {
+    fill: none;
+    stroke: #e2e8f0;
+    stroke-width: 3.8;
+}
+
+.stat-card__ring-fill {
+    fill: none;
+    stroke: #0284c7;
+    stroke-width: 3.8;
+    stroke-linecap: round;
+    transition: stroke-dasharray 0.5s ease;
+}
+
+.stat-card__ring-text {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    font-weight: 800;
+    color: #0284c7;
+}
+
+/* ── Content Grid ──────────────────────────────────────────── */
+.db-content-grid {
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    gap: 28px;
+}
+
+@media (max-width: 1080px) {
+    .db-content-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.db-content-left {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+/* ── Card base ─────────────────────────────────────────────── */
+.db-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 28px 30px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.db-card__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.db-card__title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+}
+
+.db-card__legend {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.db-card__legend-item.is-pass { color: #059669; }
+.db-card__legend-item.is-confirm { color: #d97706; }
+.db-card__legend-item.is-weak { color: #dc2626; }
+
+/* ── Part Evaluation Rows ──────────────────────────────────── */
+.db-part-eval-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.db-part-eval-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 44px 76px;
+    align-items: center;
+    gap: 16px;
+}
+
+@media (max-width: 640px) {
+    .db-part-eval-row {
+        grid-template-columns: 1fr;
+        gap: 8px;
+    }
+}
+
+.db-part-eval-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #334155;
+    white-space: nowrap;
+}
+
+.db-part-eval-track {
+    width: 100%;
+    height: 7px;
+    background-color: #f1f5f9;
+    border-radius: 9999px;
+    overflow: hidden;
+}
+
+.db-part-eval-fill {
+    height: 100%;
+    border-radius: 9999px;
+    transition: width 0.6s ease;
+}
+
+.db-part-eval-fill.is-pass { background-color: #10b981; }
+.db-part-eval-fill.is-confirm { background-color: #f59e0b; }
+.db-part-eval-fill.is-weak { background-color: #ef4444; }
+
+.db-part-eval-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f172a;
+    text-align: right;
+}
+
+.db-part-eval-badge {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 9999px;
+    text-align: center;
+    letter-spacing: 0.04em;
+}
+
+.db-part-eval-badge.is-pass { background: #ecfdf5; color: #059669; }
+.db-part-eval-badge.is-confirm { background: #fef3c7; color: #d97706; }
+.db-part-eval-badge.is-weak { background: #fee2e2; color: #dc2626; }
+
+/* ── Recent Activity ───────────────────────────────────────── */
+.act-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.act-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #f1f5f9;
+}
+
+.act-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.act-item__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.act-item__icon.is-practice { color: #10b981; }
+.act-item__icon.is-video { color: #0284c7; }
+.act-item__icon.is-test { color: #f59e0b; }
+
+.act-item__content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.act-item__title {
+    font-size: 14px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+}
+
+.act-item__subtitle {
+    font-size: 12.5px;
+    color: #64748b;
+    margin: 0;
+}
+
+/* ── Next Roadmap Card (Right Sidebar) ─────────────────────── */
+.db-roadmap-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 28px 24px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+.db-roadmap-card__title {
+    font-size: 17px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 0 6px !important;
+}
+
+.db-roadmap-card__desc {
+    font-size: 12.5px;
+    color: #64748b;
+    margin: 0 0 20px;
+}
+
+.db-roadmap-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.db-roadmap-item {
+    border: 1.5px solid #f1f5f9;
+    border-radius: 14px;
+    padding: 18px 20px;
+    background: #ffffff;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: all 0.15s;
+}
+
+.db-roadmap-item.is-next {
+    border-color: #fed7aa;
+    background: #fffaf5;
+}
+
+.db-roadmap-item.is-locked {
+    opacity: 0.7;
+    background: #f8fafc;
+}
+
+.db-roadmap-item__meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.db-roadmap-item__status-tag {
+    font-size: 10px;
+    font-weight: 800;
+    padding: 3px 8px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+}
+
+.db-roadmap-item__status-tag.is-in_progress {
+    background: #ea580c;
+    color: #ffffff;
+}
+
+.db-roadmap-item__status-tag.is-unlocked {
+    background: #e0f2fe;
+    color: #0284c7;
+}
+
+.db-roadmap-item__status-tag.is-locked {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.db-roadmap-item__section {
+    font-size: 11px;
+    color: #94a3b8;
+    font-weight: 600;
+}
+
+.db-roadmap-item__title {
+    font-size: 14.5px !important;
+    font-weight: 700 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+}
+
+.db-roadmap-item__desc {
+    font-size: 12.5px;
+    color: #64748b;
+    line-height: 1.45;
+    margin: 0;
+}
+
+.db-roadmap-item__btn {
+    margin-top: 6px;
+    display: block;
+    width: 100%;
+    text-align: center;
+    background: #ea580c;
+    color: #ffffff;
+    font-size: 13.5px;
+    font-weight: 700;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
+    transition: background-color 0.15s;
+    box-sizing: border-box;
+}
+
+.db-roadmap-item__btn:hover {
+    background: #c2410c;
+}
+
+.db-roadmap-item__btn.is-unlocked {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    box-shadow: none;
+}
+
+.db-roadmap-item__btn.is-unlocked:hover {
+    background: #f1f5f9;
+}
+
+/* ── Fallbacks ─────────────────────────────────────────────── */
+.db-loading {
+    min-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    color: #64748b;
+    font-size: 15px;
+}
+
+.db-spinner {
+    width: 38px;
+    height: 38px;
+    border: 3px solid #e2e8f0;
+    border-top-color: #ea580c;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+
+/* ── Top Bar inside Dashboard (Khi dùng chung SidebarNav) ── */
+.db-sub-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 36px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.db-sub-header__welcome {
+    font-size: 0.85rem;
+    color: #64748b;
+    font-weight: 500;
+    display: block;
+}
+
+.db-sub-header__name {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 2px 0 0 0;
+}
+
+.db-sub-header__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.db-sub-target-btn {
+    padding: 8px 16px;
+    background-color: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.db-sub-target-btn:hover {
+    background-color: #ffedd5;
+}
+
+.db-sub-roadmap-btn {
+    padding: 8px 18px;
+    background-color: #0f172a;
+    color: #ffffff;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.db-sub-roadmap-btn:hover {
+    background-color: #1e293b;
+}
