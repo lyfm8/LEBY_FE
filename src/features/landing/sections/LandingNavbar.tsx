@@ -23,7 +23,7 @@ function LandingNavbar() {
                 <Link to="/login" className="lby-btn-ghost" id="nav-login-btn">
                     Đăng nhập
                 </Link>
-                <Link to="/register" className="lby-btn-primary" id="nav-register-btn">
+                <Link to="/target-selection" className="lby-btn-primary" id="nav-register-btn">
                     Bắt đầu miễn phí
                 </Link>
             </div>

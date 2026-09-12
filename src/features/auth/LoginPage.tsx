@@ -12,7 +12,7 @@ function LoginPage() {
     // Redirect về trang user muốn vào trước khi bị đẩy ra login
     const from = (location.state as { from?: Location })?.from?.pathname ?? '/home';
 
-    const [form, setForm] = useState({ email: '', password: '' });
+    const [form, setForm] = useState({ username: '', password: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +23,7 @@ function LoginPage() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!form.email || !form.password) {
+        if (!form.username || !form.password) {
             setError('Vui lòng nhập đầy đủ thông tin.');
             return;
         }
@@ -37,7 +37,7 @@ function LoginPage() {
                 setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch {
-            setError('Email hoặc mật khẩu không đúng.');
+            setError('Tên đăng nhập hoặc mật khẩu không đúng.');
         } finally {
             setIsLoading(false);
         }
@@ -58,19 +58,19 @@ function LoginPage() {
                     {/* Error banner */}
                     {error && <div className="auth-form__banner" role="alert">{error}</div>}
 
-                    {/* Email */}
+                    {/* Username */}
                     <div className="auth-form__group">
-                        <label className="auth-form__label" htmlFor="login-email">
-                            Địa chỉ Email
+                        <label className="auth-form__label" htmlFor="login-username">
+                            Tên đăng nhập
                         </label>
                         <input
-                            id="login-email"
-                            name="email"
-                            type="email"
-                            autoComplete="email"
-                            placeholder="username@email.com"
+                            id="login-username"
+                            name="username"
+                            type="text"
+                            autoComplete="username"
+                            placeholder="Nhập tên đăng nhập"
                             className="auth-form__input"
-                            value={form.email}
+                            value={form.username}
                             onChange={handleChange}
                             required
                         />
@@ -108,12 +108,54 @@ function LoginPage() {
                     </button>
                 </form>
 
+                {/* Demo Quick Login Button */}
+                <div style={{ marginTop: 16 }}>
+                    <button
+                        type="button"
+                        id="quick-demo-login-btn"
+                        onClick={async () => {
+                            setIsLoading(true);
+                            try {
+                                const res = await authService.login({ username: 'student_nam', password: '123' });
+                                if (res.success && res.data) {
+                                    setUser(res.data);
+                                    navigate(from, { replace: true });
+                                }
+                            } finally {
+                                setIsLoading(false);
+                            }
+                        }}
+                        style={{
+                            width: '100%',
+                            padding: '10px 14px',
+                            background: '#fff7ed',
+                            color: '#ea580c',
+                            border: '1px dashed #ea580c',
+                            borderRadius: '8px',
+                            fontWeight: 600,
+                            fontSize: '0.9rem',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            gap: '8px',
+                        }}
+                    >
+                        ⚡ Đăng nhập nhanh tài khoản mẫu (Nguyễn Nam)
+                    </button>
+                </div>
+
                 {/* Divider */}
                 <div className="auth-divider">
                     <span className="auth-divider__text">Hoặc</span>
                 </div>
 
                 {/* Footer */}
+                <p style={{ textAlign: 'center', margin: '14px 0 0 0', fontSize: '0.875rem' }}>
+                    <Link to="/target-selection" style={{ color: '#ea580c', fontWeight: 600, textDecoration: 'none' }}>
+                        🎯 Học viên mới? Bắt đầu chọn mục tiêu & thi chẩn đoán →
+                    </Link>
+                </p>
                 <p className="auth-card__footer">
                     Chưa có tài khoản?{' '}
                     <Link to="/register">Đăng ký tài khoản mới</Link>

@@ -45,7 +45,7 @@ function HeroSection() {
 
                 {/* CTA buttons */}
                 <div className="lby-hero__cta">
-                    <Link to="/register" className="lby-hero__btn-primary" id="hero-cta-primary">
+                    <Link to="/target-selection" className="lby-hero__btn-primary" id="hero-cta-primary">
                         Bắt đầu miễn phí
                         <ArrowRight size={18} aria-hidden="true" />
                     </Link>
