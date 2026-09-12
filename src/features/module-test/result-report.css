@@ -1,0 +1,489 @@
+/* ── Layout chính cho trang Báo cáo kết quả kiểm tra học tập ── */
+.report-page-layout {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8fafc;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #0f172a;
+}
+
+/* ── Sidebar ─────────────────────────────────────────────────── */
+.report-sidebar {
+    width: 260px;
+    background-color: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    display: flex;
+    flex-direction: column;
+    padding: 24px 16px;
+    flex-shrink: 0;
+}
+
+.report-sidebar-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    margin-bottom: 32px;
+    padding-left: 8px;
+}
+
+.report-logo-icon {
+    width: 38px;
+    height: 38px;
+    background-color: #0f172a;
+    color: #ffffff;
+    font-weight: 800;
+    font-size: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+}
+
+.report-logo-text {
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+}
+
+.report-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+}
+
+.report-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 8px;
+    color: #64748b;
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.report-nav-item:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.report-nav-item--active {
+    background-color: #f1f5f9;
+    color: #0f172a;
+    font-weight: 600;
+}
+
+.report-sidebar-footer {
+    padding-top: 16px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.report-user-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    padding: 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+.report-user-card:hover {
+    background-color: #f8fafc;
+}
+
+.report-user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.report-user-name {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.report-user-role {
+    font-size: 0.8rem;
+    color: #94a3b8;
+}
+
+/* ── Content Area ────────────────────────────────────────────── */
+.report-content-container {
+    flex: 1;
+    padding: 36px 48px;
+    max-width: 1080px;
+}
+
+/* Header */
+.report-meta-badge {
+    color: #ea580c;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.report-main-title {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: #0f172a;
+    margin: 0 0 8px 0;
+}
+
+.report-subtitle {
+    font-size: 0.95rem;
+    color: #64748b;
+    margin: 0 0 28px 0;
+}
+
+/* Card 1: Score Card */
+.report-score-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.score-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+}
+
+.score-card-label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 4px;
+}
+
+.score-card-main-score {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+}
+
+.score-number {
+    font-size: 3.25rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1;
+}
+
+.score-max {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.score-status-badge {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.score-status-badge--pass {
+    background-color: #ecfdf5;
+    color: #10b981;
+    border: 1px solid #a7f3d0;
+}
+
+.score-status-badge--fail {
+    background-color: #fef2f2;
+    color: #ef4444;
+    border: 1px solid #fecaca;
+}
+
+.score-target-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+}
+
+.target-req-text {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.target-actual-text--green {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.target-actual-text--red {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.score-progress-bar-container {
+    height: 8px;
+    background-color: #f1f5f9;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+.score-progress-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+}
+
+.score-progress-bar-fill--pass {
+    background-color: #10b981;
+}
+
+.score-progress-bar-fill--fail {
+    background-color: #ef4444;
+}
+
+/* AI Recommendation Callout */
+.ai-feedback-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    background-color: #f0fdfa;
+    border: 1px solid #ccfbf1;
+    border-radius: 12px;
+    padding: 16px 20px;
+}
+
+.ai-feedback-icon-wrapper {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background-color: #e6fffa;
+    color: #0d9488;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.ai-feedback-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.ai-feedback-content {
+    font-size: 0.875rem;
+    color: #475569;
+    line-height: 1.5;
+}
+
+/* Section Common Titles */
+.report-section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 16px 0;
+}
+
+/* Metrics Section */
+.report-metrics-section {
+    margin-bottom: 32px;
+}
+
+.report-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.metric-card {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 24px 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.metric-card-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #94a3b8;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.metric-card-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.1;
+    margin-bottom: 8px;
+}
+
+.metric-card-value--green {
+    color: #10b981;
+}
+
+.metric-card-sub {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+/* History Section */
+.report-history-section {
+    margin-bottom: 36px;
+}
+
+.history-table-container {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.history-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.history-table th {
+    background-color: #f8fafc;
+    color: #64748b;
+    font-weight: 600;
+    padding: 14px 20px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.history-table td {
+    padding: 16px 20px;
+    border-bottom: 1px solid #f1f5f9;
+    color: #334155;
+}
+
+.history-table tr:last-child td {
+    border-bottom: none;
+}
+
+.history-attempt-cell {
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.latest-tag {
+    color: #0284c7;
+    font-weight: 600;
+    font-size: 0.8rem;
+    margin-left: 4px;
+}
+
+.score-cell--pass {
+    color: #10b981;
+    font-weight: 700;
+}
+
+.score-cell--fail {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.table-badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.table-badge--pass {
+    background-color: #ecfdf5;
+    color: #10b981;
+}
+
+.table-badge--fail {
+    background-color: #fef2f2;
+    color: #ef4444;
+}
+
+/* Bottom Action Buttons */
+.report-actions-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.report-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    background-color: #ea580c;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 700;
+    border-radius: 10px;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
+    transition: all 0.2s ease;
+}
+
+.report-btn-primary:hover {
+    background-color: #c2410c;
+    transform: translateY(-1px);
+}
+
+.report-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 24px;
+    background-color: #ffffff;
+    color: #334155;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.report-btn-secondary:hover {
+    background-color: #f8fafc;
+    border-color: #94a3b8;
+}
+
+.report-review-link {
+    display: block;
+    text-align: center;
+    margin-top: 16px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #64748b;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.report-review-link:hover {
+    color: #ea580c;
+}
