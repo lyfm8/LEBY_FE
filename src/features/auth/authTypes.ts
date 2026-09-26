@@ -8,7 +8,6 @@ export interface SendOtpRequest {
 
 export interface RegisterRequest {
     email: string;
-    username: string;
     fullName: string;
     password: string;
     confirmPassword: string;
@@ -16,7 +15,7 @@ export interface RegisterRequest {
 }
 
 export interface LoginRequest {
-    username: string;
+    email: string;
     password: string;
 }
 
@@ -27,7 +26,6 @@ export type UserRole = 'USER' | 'ADMIN' | 'STAFF';
 export interface AuthUser {
     id: number;
     email: string;
-    username: string;
     fullName: string;
     dob: string | null;
     avatar: string | null;

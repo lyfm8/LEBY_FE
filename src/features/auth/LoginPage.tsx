@@ -12,7 +12,7 @@ function LoginPage() {
     // Redirect về trang user muốn vào trước khi bị đẩy ra login
     const from = (location.state as { from?: Location })?.from?.pathname ?? '/home';
 
-    const [form, setForm] = useState({ username: '', password: '' });
+    const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -23,7 +23,7 @@ function LoginPage() {
 
     async function handleSubmit(e: React.FormEvent) {
         e.preventDefault();
-        if (!form.username || !form.password) {
+        if (!form.email || !form.password) {
             setError('Vui lòng nhập đầy đủ thông tin.');
             return;
         }
@@ -37,7 +37,7 @@ function LoginPage() {
                 setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch {
-            setError('Tên đăng nhập hoặc mật khẩu không đúng.');
+            setError('Email hoặc mật khẩu không đúng.');
         } finally {
             setIsLoading(false);
         }
@@ -58,19 +58,19 @@ function LoginPage() {
                     {/* Error banner */}
                     {error && <div className="auth-form__banner" role="alert">{error}</div>}
 
-                    {/* Username */}
+                    {/* Email */}
                     <div className="auth-form__group">
-                        <label className="auth-form__label" htmlFor="login-username">
-                            Tên đăng nhập
+                        <label className="auth-form__label" htmlFor="login-email">
+                            Địa chỉ Email
                         </label>
                         <input
-                            id="login-username"
-                            name="username"
-                            type="text"
-                            autoComplete="username"
-                            placeholder="Nhập tên đăng nhập"
+                            id="login-email"
+                            name="email"
+                            type="email"
+                            autoComplete="email"
+                            placeholder="email@example.com"
                             className="auth-form__input"
-                            value={form.username}
+                            value={form.email}
                             onChange={handleChange}
                             required
                         />
@@ -116,7 +116,7 @@ function LoginPage() {
                         onClick={async () => {
                             setIsLoading(true);
                             try {
-                                const res = await authService.login({ username: 'student_nam', password: '123' });
+                                const res = await authService.login({ email: 'demo@leby.edu.vn', password: 'Demo@1234' });
                                 if (res.success && res.data) {
                                     setUser(res.data);
                                     navigate(from, { replace: true });
@@ -153,7 +153,7 @@ function LoginPage() {
                 {/* Footer */}
                 <p style={{ textAlign: 'center', margin: '14px 0 0 0', fontSize: '0.875rem' }}>
                     <Link to="/target-selection" style={{ color: '#ea580c', fontWeight: 600, textDecoration: 'none' }}>
-                        🎯 Học viên mới? Bắt đầu chọn mục tiêu & thi chẩn đoán →
+                        🎯 Học viên mới? Bắt đầu chọn mục tiêu &amp; thi chẩn đoán →
                     </Link>
                 </p>
                 <p className="auth-card__footer">

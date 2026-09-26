@@ -8,7 +8,6 @@ import './auth.css';
 /** Dữ liệu được truyền sang từ RegisterPage qua router state */
 interface PendingRegister {
     fullName: string;
-    username: string;
     email: string;
     password: string;
     confirmPassword: string;

@@ -30,7 +30,7 @@ export function ProfileHero({ user }: ProfileHeroProps) {
                     </div>
 
                     <p className="pf-hero-meta">
-                        @{user.username} • {user.email}
+                        {user.email}
                     </p>
                     <span className="pf-hero-joined">
                         Tham gia từ: {new Date(user.createdAt).toLocaleDateString('vi-VN')}

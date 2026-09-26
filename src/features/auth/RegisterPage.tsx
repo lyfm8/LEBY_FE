@@ -4,7 +4,6 @@ import './auth.css';
 
 interface RegisterForm {
     fullName: string;
-    username: string;
     email: string;
     password: string;
     confirmPassword: string;
@@ -20,7 +19,6 @@ function RegisterPage() {
 
     const [form, setForm] = useState<RegisterForm>({
         fullName: saved?.fullName ?? '',
-        username: saved?.username ?? '',
         email: saved?.email ?? '',
         password: saved?.password ?? '',
         confirmPassword: saved?.confirmPassword ?? '',
@@ -39,10 +37,6 @@ function RegisterPage() {
         const errs: FormErrors = {};
         if (!form.fullName.trim())
             errs.fullName = 'Vui lòng nhập họ và tên.';
-        if (!form.username.trim())
-            errs.username = 'Vui lòng nhập tên đăng nhập.';
-        else if (form.username.length < 3)
-            errs.username = 'Tên đăng nhập tối thiểu 3 ký tự.';
         if (!form.email)
             errs.email = 'Vui lòng nhập email.';
         else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
@@ -68,7 +62,6 @@ function RegisterPage() {
             state: {
                 pendingRegister: {
                     fullName: form.fullName,
-                    username: form.username,
                     email: form.email,
                     password: form.password,
                     confirmPassword: form.confirmPassword,
@@ -102,22 +95,6 @@ function RegisterPage() {
                             onChange={handleChange}
                         />
                         {errors.fullName && <span className="auth-form__error">{errors.fullName}</span>}
-                    </div>
-
-                    {/* Tên đăng nhập */}
-                    <div className="auth-form__group">
-                        <label className="auth-form__label" htmlFor="reg-username">Tên đăng nhập</label>
-                        <input
-                            id="reg-username"
-                            name="username"
-                            type="text"
-                            autoComplete="username"
-                            placeholder="nguyenvana123"
-                            className={`auth-form__input${errors.username ? ' is-error' : ''}`}
-                            value={form.username}
-                            onChange={handleChange}
-                        />
-                        {errors.username && <span className="auth-form__error">{errors.username}</span>}
                     </div>
 
                     {/* Email */}

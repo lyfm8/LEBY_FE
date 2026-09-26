@@ -22,7 +22,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'USER',
                 dob: '2001-08-15',
@@ -38,7 +37,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'USER',
                 dob: '2001-08-15',
@@ -48,14 +46,13 @@ export const handlers = [
     }),
 
     http.post('*/api/auth/login', async ({ request }) => {
-        const body = (await request.json().catch(() => ({}))) as { username?: string };
+        const body = (await request.json().catch(() => ({}))) as { email?: string };
         return HttpResponse.json({
             success: true,
             message: 'Đăng nhập thành công',
             data: {
                 id: 1,
-                email: 'nam.nguyen@leby.edu.vn',
-                username: body?.username || 'student_nam',
+                email: body?.email || 'nam.nguyen@leby.edu.vn',
                 fullName: 'Nguyễn Nam',
                 role: 'USER',
                 dob: '2001-08-15',
@@ -65,14 +62,13 @@ export const handlers = [
     }),
 
     http.post('*/api/v1/auth/login', async ({ request }) => {
-        const body = (await request.json().catch(() => ({}))) as { username?: string };
+        const body = (await request.json().catch(() => ({}))) as { email?: string };
         return HttpResponse.json({
             success: true,
             message: 'Đăng nhập thành công',
             data: {
                 id: 1,
-                email: 'nam.nguyen@leby.edu.vn',
-                username: body?.username || 'student_nam',
+                email: body?.email || 'nam.nguyen@leby.edu.vn',
                 fullName: 'Nguyễn Nam',
                 role: 'USER',
                 dob: '2001-08-15',
@@ -104,7 +100,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'USER',
                 dob: '2001-08-15',
