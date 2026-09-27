@@ -1,9 +1,18 @@
-import { Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Compass, Award, Settings } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { LayoutDashboard, Compass, Award, Settings, LogOut } from 'lucide-react';
+import { useAuth } from '@/hooks/useAuth';
 import '../roadmap.css';
 
 export function SidebarNav() {
     const location = useLocation();
+    const navigate = useNavigate();
+    const { user, logout } = useAuth();
+
+    const handleLogout = async (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent navigating to /profile
+        await logout();
+        navigate('/login');
+    };
 
     return (
         <aside className="app-sidebar" aria-label="Điều hướng chính">
@@ -70,14 +79,21 @@ export function SidebarNav() {
                 <Link to="/profile" className="app-sidebar__user-card" title="Xem thông tin cá nhân">
                     <img
                         src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80"
-                        alt="Nguyễn Nam"
+                        alt={user?.fullName || "Nguyễn Nam"}
                         className="app-sidebar__avatar"
                     />
                     <div className="app-sidebar__user-info">
-                        <span className="app-sidebar__user-name">Nguyễn Nam</span>
+                        <span className="app-sidebar__user-name">{user?.fullName || "Nguyễn Nam"}</span>
                         <span className="app-sidebar__user-badge">Học viên Premium</span>
                     </div>
                 </Link>
+                <button 
+                    className="app-sidebar__logout-btn" 
+                    onClick={handleLogout}
+                    title="Đăng xuất"
+                >
+                    <LogOut size={18} />
+                </button>
             </div>
         </aside>
     );
