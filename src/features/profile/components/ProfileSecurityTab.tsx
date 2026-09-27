@@ -104,23 +104,6 @@ export function ProfileSecurityTab() {
                     </div>
                 </form>
             </div>
-
-            {/* Vùng nguy hiểm / Đăng xuất */}
-            <div className="pf-card pf-card--danger">
-                <div className="pf-card__header-simple">
-                    <LogOut size={20} className="pf-icon-red" />
-                    <h3 className="pf-card__title">Phiên đăng nhập & Bảo mật</h3>
-                </div>
-
-                <p className="pf-danger-desc">
-                    Đăng xuất sẽ kết thúc phiên làm việc hiện tại và hủy toàn bộ token truy cập trên thiết bị này.
-                </p>
-
-                <button type="button" className="pf-btn-logout" onClick={handleLogout}>
-                    <LogOut size={16} />
-                    <span>Đăng xuất khỏi hệ thống</span>
-                </button>
-            </div>
         </div>
     );
 }

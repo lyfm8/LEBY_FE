@@ -14,7 +14,7 @@ import {
 } from './mockData';
 
 export const handlers = [
-        // ── Auth Handlers ──
+    // ── Auth Handlers ──
     http.get('*/api/auth/me', () => {
         return HttpResponse.json({
             success: true,
@@ -116,7 +116,7 @@ export const handlers = [
         });
     }),
 
-// ── Target ──
+    // ── Target ──
     http.get('*/api/v1/targets', () => {
         return HttpResponse.json({
             success: true,
@@ -230,11 +230,11 @@ export const handlers = [
             success: true,
             message: 'Chấm bài module test thành công',
             data: mockModuleTestResult,
-    mockModulePerformanceReport,
+            mockModulePerformanceReport,
         });
     }),
 
-        http.get('*/api/v1/modules/:moduleId/test/results/:attemptId', () => {
+    http.get('*/api/v1/modules/:moduleId/test/results/:attemptId', () => {
         return HttpResponse.json({
             success: true,
             message: 'OK',
@@ -255,7 +255,7 @@ export const handlers = [
             success: true,
             message: 'OK',
             data: mockModuleTestResult,
-    mockModulePerformanceReport,
+            mockModulePerformanceReport,
         });
     }),
 
