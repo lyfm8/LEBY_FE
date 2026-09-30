@@ -7,9 +7,19 @@ import { ModuleFormModal } from '../components/ModuleFormModal';
 import { LessonFormModal } from '../components/LessonFormModal';
 import { ModuleTestModal } from '../components/ModuleTestModal';
 
+/**
+ * Container Component xử lý Quản lý Module học tập và Bài học (UC-05).
+ * 
+ * LƯU Ý KIẾN TRÚC:
+ * - Sử dụng kiến trúc Accordion list để hiển thị cây phân cấp (Module -> Lessons).
+ * - Component này đóng vai trò Root state, quản lý state đóng/mở của các Accordion
+ *   và điều phối các Modal Create/Edit cho cả Module, Lesson và cấu hình Test.
+ */
 export const AdminModulePage: React.FC = () => {
   const [modules, setModules] = useState<ModuleResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  
+  // Tối ưu UI: Lưu danh sách các Module đang mở bằng Set để handle mở nhiều Module cùng lúc
   const [openModuleIds, setOpenModuleIds] = useState<Set<number>>(new Set());
 
   // Modal State
@@ -24,9 +34,11 @@ export const AdminModulePage: React.FC = () => {
   const [testModuleId, setTestModuleId] = useState<number | null>(null);
   const [testModuleName, setTestModuleName] = useState<string>('');
 
-  
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Bước 1: Hàm gọi API load danh sách Modules.
+   */
   const fetchModules = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -45,6 +57,9 @@ export const AdminModulePage: React.FC = () => {
     fetchModules();
   }, [fetchModules]);
 
+  /**
+   * Xử lý toggle đóng/mở Accordion của một Module cụ thể.
+   */
   const toggleAccordion = (id: number) => {
     setOpenModuleIds(prev => {
       const newSet = new Set(prev);
@@ -54,7 +69,10 @@ export const AdminModulePage: React.FC = () => {
     });
   };
 
-  // ----- MODULE CRUD -----
+  // =====================================
+  // MODULE CRUD
+  // =====================================
+
   const handleAddModule = () => {
     setSelectedModule(null);
     setIsModuleModalOpen(true);
@@ -94,7 +112,10 @@ export const AdminModulePage: React.FC = () => {
     }
   };
 
-  // ----- LESSON CRUD -----
+  // =====================================
+  // LESSON CRUD
+  // =====================================
+
   const handleAddLesson = (moduleId: number) => {
     setTargetModuleId(moduleId);
     setSelectedLesson(null);
@@ -111,12 +132,16 @@ export const AdminModulePage: React.FC = () => {
     if (!window.confirm('Xóa bài học này?')) return;
     try {
       await adminModuleService.deleteLesson(id);
+      // NOTE: Cần trigger reload lại component con (Accordion) hoặc fetch lại module nếu BE trả về count
     } catch (error) {
       console.error(error);
       alert('Lỗi xóa bài học');
     }
   };
 
+  /**
+   * Xử lý Submit lưu Bài học Video.
+   */
   const handleLessonVideoSubmit = async (data: VideoLessonFormValues) => {
     if (!targetModuleId) return;
     try {
@@ -127,15 +152,14 @@ export const AdminModulePage: React.FC = () => {
         await adminModuleService.createVideoLesson(targetModuleId, data);
       }
       setIsLessonModalOpen(false);
-      // Buộc refresh lại accordion bằng cách toggle đóng mở hoặc để component con tự xử lý 
-      // Ở đây component con sẽ tự gọi api load lại nếu ta refresh nó, tạm đóng mở lại id
+      // Tối ưu: Đóng mở nhanh Accordion để force reload danh sách bài học bên trong
       setOpenModuleIds(prev => {
         const newSet = new Set(prev);
         newSet.delete(targetModuleId);
         setTimeout(() => setOpenModuleIds(new Set(newSet).add(targetModuleId)), 100);
         return newSet;
       });
-      fetchModules(); // Để update lại tổng số bài học hiển thị ở header
+      fetchModules(); 
     } catch (error) {
       console.error(error);
       alert('Lưu Video lesson thất bại');
@@ -144,6 +168,9 @@ export const AdminModulePage: React.FC = () => {
     }
   };
 
+  /**
+   * Xử lý Submit lưu Bài tập Practice.
+   */
   const handleLessonPracticeSubmit = async (data: PracticeLessonFormValues) => {
     if (!targetModuleId) return;
     try {
@@ -168,6 +195,10 @@ export const AdminModulePage: React.FC = () => {
       setIsSubmitting(false);
     }
   };
+
+  // =====================================
+  // CẤU HÌNH BÀI KIỂM TRA (MODULE TEST - UC06)
+  // =====================================
 
   const handleConfigTest = (moduleId: number) => {
     const mod = modules.find(m => m.id === moduleId);
@@ -245,3 +276,4 @@ export const AdminModulePage: React.FC = () => {
     </div>
   );
 };
+
