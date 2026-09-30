@@ -130,11 +130,11 @@ export const AdminTargetPage: React.FC = () => {
   };
 
   return (
-    <div className="target-container">
-      <div className="target-header">
+    <div className="admin-page-container">
+      <div className="admin-page-header">
         <div>
-          <h1>Mục Tiêu & Lộ Trình (Target Profiles)</h1>
-          <p>Quản lý các mốc AIM (450, 550, 650...) và thiết lập ngưỡng Pass Module tương ứng.</p>
+          <h1 className="admin-page-title">Mục Tiêu & Lộ Trình (Target Profiles)</h1>
+          <p className="admin-page-subtitle">Quản lý các mốc AIM (450, 550, 650...) và thiết lập ngưỡng Pass Module tương ứng.</p>
         </div>
       </div>
 
