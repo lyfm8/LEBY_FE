@@ -6,6 +6,7 @@ import { ModuleAccordion } from '../components/ModuleAccordion';
 import { ModuleFormModal } from '../components/ModuleFormModal';
 import { LessonFormModal } from '../components/LessonFormModal';
 import { ModuleTestModal } from '../components/ModuleTestModal';
+import '../admin-module.css';
 
 /**
  * Container Component xử lý Quản lý Module học tập và Bài học (UC-05).
