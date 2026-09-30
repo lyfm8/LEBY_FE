@@ -5,6 +5,7 @@ import type { AbilityFormValues } from '../utils/schema';
 import { PartList } from '../components/PartList';
 import { AbilityList } from '../components/AbilityList';
 import { AbilityFormModal } from '../components/AbilityFormModal';
+import '../admin-part.css'; // NOTE: Import pure CSS
 
 export const AdminPartPage: React.FC = () => {
   const [parts, setParts] = useState<PartResponse[]>([]);
