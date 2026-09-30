@@ -16,7 +16,7 @@ export interface UserListItemResponse {
   fullName: string;
   email: string;
   role: string;
-  isActive: boolean;
+  status: 'ACTIVE' | 'INACTIVE';
   learnerType: string;
   aimTarget: string | null;
   createdAt: string;

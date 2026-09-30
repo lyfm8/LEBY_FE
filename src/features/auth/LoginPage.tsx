@@ -40,8 +40,12 @@ function LoginPage() {
             } else {
                 setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
-        } catch {
-            setError('Email hoặc mật khẩu không đúng.');
+        } catch (error: any) {
+            if (error.response && error.response.data && error.response.data.message) {
+                setError(error.response.data.message);
+            } else {
+                setError('Email hoặc mật khẩu không đúng.');
+            }
         } finally {
             setIsLoading(false);
         }

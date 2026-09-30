@@ -14,7 +14,7 @@ axiosInstance.interceptors.response.use(
                 window.location.href = '/login?reason=expired';
             }
 
-            if (status === 403) {
+            if (status === 403 && !requestUrl.includes('/auth/login')) {
                 window.location.href = '/unauthorized';
             }
         }

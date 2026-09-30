@@ -47,7 +47,7 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onToggleActive, isL
                   {user.aimTarget || '—'}
                 </td>
                 <td style={{ textAlign: 'center' }}>
-                  {user.isActive ? (
+                  {user.status === 'ACTIVE' ? (
                     <span className="badge badge-active">
                       Hoạt động
                     </span>
@@ -64,10 +64,14 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onToggleActive, isL
                   <div className="action-buttons">
                     <button
                       onClick={() => onToggleActive(user.id)}
-                      className={`btn-icon ${user.isActive ? 'danger' : 'success'}`}
-                      title={user.isActive ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
+                      className={`btn-action ${user.status === 'ACTIVE' ? 'btn-lock' : 'btn-unlock'}`}
+                      title={user.status === 'ACTIVE' ? 'Khóa tài khoản' : 'Mở khóa tài khoản'}
                     >
-                      {user.isActive ? <Ban size={18} /> : <CheckCircle size={18} />}
+                      {user.status === 'ACTIVE' ? (
+                        <><Ban size={16} /> Khóa</>
+                      ) : (
+                        <><CheckCircle size={16} /> Mở khóa</>
+                      )}
                     </button>
                   </div>
                 </td>
