@@ -17,6 +17,20 @@ interface PartThresholdFormModalProps {
   isLoading: boolean;
 }
 
+/**
+ * Component Modal Form dùng để thêm mới hoặc sửa Ngưỡng điểm của Part.
+ * 
+ * NOTE: Sử dụng React Hook Form kết hợp Zod Resolver để validate dữ liệu ngay tại Client-side.
+ * Form bắt buộc logic: weakThreshold < confirmThreshold < passThreshold.
+ * 
+ * @param isOpen Trạng thái hiển thị modal
+ * @param onClose Hàm đóng modal
+ * @param onSubmit Callback khi form validate thành công và ấn submit
+ * @param data Dữ liệu bản ghi hiện tại (nếu là chế độ Edit)
+ * @param parts Danh sách toàn bộ Part (dropdown)
+ * @param profiles Danh sách toàn bộ AIM Profile (dropdown)
+ * @param isLoading Trạng thái đang call api lưu
+ */
 export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
   isOpen, onClose, onSubmit, data, parts, profiles, isLoading
 }) => {
@@ -31,6 +45,7 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
     }
   });
 
+  // Lắng nghe sự thay đổi của props 'isOpen' hoặc 'data' để cập nhật dữ liệu form tương ứng
   React.useEffect(() => {
     if (isOpen) {
       if (data) {
@@ -42,6 +57,7 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
           weakThreshold: data.weakThreshold
         });
       } else {
+        // Form mặc định khi thêm mới
         reset({
           partId: 0,
           targetProfileId: 0,

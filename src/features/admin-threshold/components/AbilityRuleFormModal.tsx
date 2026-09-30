@@ -15,6 +15,20 @@ interface AbilityRuleFormModalProps {
   isLoading: boolean;
 }
 
+/**
+ * Component Modal Form dùng để thêm mới hoặc sửa Quy tắc đánh giá Năng lực (Ability).
+ * 
+ * NOTE: Giao diện yêu cầu nhập các ngưỡng % để xếp loại học viên (Stable/Developing/Weak).
+ * Zod schema đảm bảo validation: developingThreshold < stableThreshold.
+ * Trạng thái DRAFT (Nháp) hay PUBLISHED (Hoạt động) quyết định rule này có được hệ thống áp dụng tính toán hay không.
+ * 
+ * @param isOpen Trạng thái hiển thị modal
+ * @param onClose Hàm đóng modal
+ * @param onSubmit Callback khi form validate thành công và click lưu
+ * @param data Dữ liệu bản ghi hiện tại (nếu ở mode Edit)
+ * @param abilities Danh sách Năng lực (master data) để bind vào dropdown
+ * @param isLoading Trạng thái đang call API
+ */
 export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
   isOpen, onClose, onSubmit, data, abilities, isLoading
 }) => {
@@ -28,6 +42,7 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
     }
   });
 
+  // Tự động load data vào form khi Mở Modal ở chế độ chỉnh sửa, hoặc reset trắng ở chế độ thêm mới.
   React.useEffect(() => {
     if (isOpen) {
       if (data) {
@@ -38,6 +53,7 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
           status: data.status
         });
       } else {
+        // Mặc định an toàn cho form khi tạo mới
         reset({
           abilityId: 0,
           stableThreshold: 80,

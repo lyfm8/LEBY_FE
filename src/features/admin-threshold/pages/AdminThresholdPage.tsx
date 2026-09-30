@@ -10,18 +10,30 @@ import { PartThresholdFormModal } from '../components/PartThresholdFormModal';
 import { AbilityRuleFormModal } from '../components/AbilityRuleFormModal';
 import { Edit2, Trash2, Plus } from 'lucide-react';
 
+/**
+ * Trang quản lý cấu hình Ngưỡng (Threshold) & Quy tắc Đánh giá (Evaluation Rule).
+ * Bao gồm 2 bảng song song:
+ * 1. Target Part Threshold: Ngưỡng điểm số để phân loại (Pass/Confirm/Weak) theo Part và AIM.
+ * 2. Ability Evaluation Rule: Quy tắc phân loại năng lực (Stable/Developing/Weak) dựa theo tỷ lệ % hoàn thành.
+ */
 export const AdminThresholdPage: React.FC = () => {
-  // Master Data (cho Dropdowns)
+  // =====================================
+  // STATE QUẢN LÝ MASTER DATA (Cho Dropdown)
+  // =====================================
   const [parts, setParts] = useState<PartResponse[]>([]);
   const [abilities, setAbilities] = useState<AbilityResponse[]>([]);
   const [profiles, setProfiles] = useState<TargetProfileResponse[]>([]);
 
-  // Tables Data
+  // =====================================
+  // STATE QUẢN LÝ DỮ LIỆU BẢNG (Tables)
+  // =====================================
   const [partThresholds, setPartThresholds] = useState<TargetPartThresholdResponse[]>([]);
   const [abilityRules, setAbilityRules] = useState<AbilityEvaluationRuleResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Modal States
+  // =====================================
+  // STATE QUẢN LÝ MODALS
+  // =====================================
   const [isPartModalOpen, setIsPartModalOpen] = useState(false);
   const [selectedPartRule, setSelectedPartRule] = useState<TargetPartThresholdResponse | null>(null);
 
@@ -30,6 +42,10 @@ export const AdminThresholdPage: React.FC = () => {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Bước 1: Fetch song song toàn bộ dữ liệu cần thiết từ Backend.
+   * Sử dụng Promise.all để tối ưu hiệu năng gọi API, tránh gọi tuần tự (waterfall).
+   */
   const fetchData = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -44,7 +60,8 @@ export const AdminThresholdPage: React.FC = () => {
       if (arRes.success && arRes.data) setAbilityRules(arRes.data);
       if (partsRes.success && partsRes.data) {
         setParts(partsRes.data);
-        // Extract tất cả abilities từ các part (nếu backend chưa có api getAllAbilities riêng)
+        // LƯU Ý: Tạm thời extract abilities từ mảng parts vì API hiện tại gộp chung.
+        // Backend có trả về field `abilities` bên trong mỗi Part object (UC03).
         const allAbilities = partsRes.data.flatMap(p => p.abilities);
         setAbilities(allAbilities);
       }
@@ -61,7 +78,13 @@ export const AdminThresholdPage: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  // --- Handlers: Target Part Threshold ---
+  // =====================================
+  // HANDLERS: TARGET PART THRESHOLD (Bảng 1)
+  // =====================================
+  
+  /**
+   * Xử lý Lưu form Target Part Threshold (Tạo mới hoặc Cập nhật)
+   */
   const handlePartSubmit = async (data: PartThresholdFormValues) => {
     setIsSubmitting(true);
     try {
@@ -71,15 +94,19 @@ export const AdminThresholdPage: React.FC = () => {
         await adminThresholdService.createPartThreshold(data);
       }
       setIsPartModalOpen(false);
-      fetchData(); // reload
+      fetchData(); // Reload lại cả trang sau khi lưu thành công
     } catch (error: any) {
       console.error(error);
-      alert(error?.response?.data?.message || 'Lỗi khi lưu Part Threshold (Có thể bị trùng)');
+      // Bắt lỗi Unique Constraint từ Backend ném ra
+      alert(error?.response?.data?.message || 'Lỗi khi lưu Part Threshold (Có thể bị trùng bộ Part x AIM)');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  /**
+   * Xử lý Xóa Target Part Threshold
+   */
   const handleDeletePartRule = async (id: number) => {
     if (!window.confirm('Xóa quy tắc này?')) return;
     try {
@@ -91,7 +118,13 @@ export const AdminThresholdPage: React.FC = () => {
     }
   };
 
-  // --- Handlers: Ability Evaluation Rule ---
+  // =====================================
+  // HANDLERS: ABILITY EVALUATION RULE (Bảng 2)
+  // =====================================
+
+  /**
+   * Xử lý Lưu form Ability Evaluation Rule
+   */
   const handleAbilitySubmit = async (data: AbilityRuleFormValues) => {
     setIsSubmitting(true);
     try {
@@ -101,15 +134,19 @@ export const AdminThresholdPage: React.FC = () => {
         await adminThresholdService.createAbilityRule(data);
       }
       setIsAbilityModalOpen(false);
-      fetchData(); // reload
+      fetchData();
     } catch (error: any) {
       console.error(error);
+      // Bắt lỗi Unique Constraint (Mỗi năng lực chỉ 1 rule)
       alert(error?.response?.data?.message || 'Lỗi khi lưu Ability Rule (Mỗi năng lực chỉ được có 1 rule)');
     } finally {
       setIsSubmitting(false);
     }
   };
 
+  /**
+   * Xử lý Xóa Ability Evaluation Rule
+   */
   const handleDeleteAbilityRule = async (id: number) => {
     if (!window.confirm('Xóa quy tắc đánh giá này?')) return;
     try {
@@ -120,6 +157,7 @@ export const AdminThresholdPage: React.FC = () => {
       alert('Xóa thất bại');
     }
   };
+
 
   return (
     <div className="p-6 bg-slate-50 min-h-screen">

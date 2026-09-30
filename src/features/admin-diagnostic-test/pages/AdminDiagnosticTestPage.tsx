@@ -5,15 +5,24 @@ import type { DiagnosticTestFormValues } from '../utils/schema';
 import { DiagnosticTestFormModal } from '../components/DiagnosticTestFormModal';
 import { Edit2, Trash2, Plus, FileText, CheckCircle, XCircle } from 'lucide-react';
 
+/**
+ * Trang chính quản lý Đề thi chẩn đoán đầu vào (Diagnostic Test).
+ * Chức năng: Liệt kê danh sách các đề thi, thêm mới, sửa, xóa đề thi.
+ */
 export const AdminDiagnosticTestPage: React.FC = () => {
   const [tests, setTests] = useState<DiagnosticTestListItemResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Modal State
+  // =====================================
+  // MODAL STATE
+  // =====================================
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedTest, setSelectedTest] = useState<DiagnosticTestDetailResponse | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  /**
+   * Gọi API lấy danh sách toàn bộ đề thi chẩn đoán (thông tin tóm tắt).
+   */
   const fetchTests = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -32,14 +41,21 @@ export const AdminDiagnosticTestPage: React.FC = () => {
     fetchTests();
   }, [fetchTests]);
 
+  // =====================================
+  // HANDLERS
+  // =====================================
+
   const handleAdd = () => {
     setSelectedTest(null);
     setIsModalOpen(true);
   };
 
+  /**
+   * Khi nhấn sửa, gọi API lấy chi tiết đề thi (bao gồm mảng `questionIds`) để load lên Form Modal.
+   */
   const handleEdit = async (id: number) => {
     try {
-      // Load chi tiết có questionIds
+      // NOTE: Bắt buộc gọi getById vì list API không trả về mảng câu hỏi
       const res = await adminDiagnosticTestService.getById(id);
       if (res.success && res.data) {
         setSelectedTest(res.data);
@@ -51,6 +67,11 @@ export const AdminDiagnosticTestPage: React.FC = () => {
     }
   };
 
+  /**
+   * Xử lý Xóa đề thi chẩn đoán.
+   * LƯU Ý NGHIỆP VỤ: Backend sẽ block xóa nếu đề đã có người làm (DiagnosticAttempt). 
+   * Frontend cần hiển thị lỗi rõ ràng từ response của Backend.
+   */
   const handleDelete = async (id: number) => {
     if (!window.confirm('Xóa Đề thi chẩn đoán này? (Sẽ không thể xóa nếu đã có học viên làm bài)')) return;
     try {
@@ -62,6 +83,9 @@ export const AdminDiagnosticTestPage: React.FC = () => {
     }
   };
 
+  /**
+   * Submit lưu dữ liệu vào Backend (Create hoặc Update).
+   */
   const handleSubmit = async (data: DiagnosticTestFormValues) => {
     setIsSubmitting(true);
     try {
@@ -71,7 +95,7 @@ export const AdminDiagnosticTestPage: React.FC = () => {
         await adminDiagnosticTestService.create(data);
       }
       setIsModalOpen(false);
-      fetchTests();
+      fetchTests(); // Tải lại danh sách sau khi lưu
     } catch (error) {
       console.error(error);
       alert('Lưu đề thi thất bại.');
