@@ -19,12 +19,12 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onEdit, onToggleAct
       <table className="admin-table">
         <thead>
           <tr>
-            <th>Họ Tên & Email</th>
-            <th>Role</th>
-            <th>Loại TK</th>
-            <th>Mục tiêu (AIM)</th>
+            <th>Họ Tên</th>
+            <th>Email</th>
+            <th>AIM Target</th>
             <th style={{ textAlign: 'center' }}>Trạng thái</th>
-            <th style={{ textAlign: 'right' }}>Thao tác</th>
+            <th>Ngày Đăng Ký</th>
+            <th style={{ textAlign: 'right' }}>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -38,32 +38,28 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onEdit, onToggleAct
             users.map((user) => (
               <tr key={user.id}>
                 <td>
-                  <div className="user-info">
-                    <span className="user-name">{user.fullName}</span>
-                    <span className="user-email">{user.email}</span>
-                  </div>
+                  <div className="user-name">{user.fullName}</div>
+                  {user.role === 'ADMIN' && (
+                    <span className="badge badge-admin" style={{ marginTop: '0.25rem' }}>{user.role}</span>
+                  )}
                 </td>
-                <td>
-                  <span className={`badge ${user.role === 'ADMIN' ? 'badge-admin' : 'badge-user'}`}>
-                    {user.role}
-                  </span>
-                </td>
-                <td style={{ color: '#4b5563' }}>
-                  {user.learnerType}
-                </td>
+                <td className="user-email">{user.email}</td>
                 <td style={{ color: '#4b5563', fontWeight: 500 }}>
                   {user.aimTarget || '—'}
                 </td>
                 <td style={{ textAlign: 'center' }}>
                   {user.isActive ? (
                     <span className="badge badge-active">
-                      <CheckCircle size={14} /> Hoạt động
+                      Hoạt động
                     </span>
                   ) : (
                     <span className="badge badge-inactive">
-                      <Ban size={14} /> Đã khóa
+                      Đã khóa
                     </span>
                   )}
+                </td>
+                <td style={{ color: '#6b7280', fontSize: '0.875rem' }}>
+                  {new Date(user.createdAt).toLocaleDateString('vi-VN')}
                 </td>
                 <td>
                   <div className="action-buttons">
