@@ -117,8 +117,10 @@ export const AdminQuestionPage: React.FC = () => {
   return (
     <div className="admin-page-container">
       <div className="admin-page-header">
-        <h1 className="admin-page-title">Quản lý Ngân hàng câu hỏi</h1>
-        <p className="admin-page-subtitle">Danh sách câu hỏi dùng chung cho toàn bộ hệ thống</p>
+        <div>
+          <h1 className="admin-page-title">Quản lý Ngân hàng câu hỏi</h1>
+          <p className="admin-page-subtitle">Danh sách câu hỏi dùng chung cho toàn bộ hệ thống</p>
+        </div>
       </div>
 
       <QuestionFilterBar 
