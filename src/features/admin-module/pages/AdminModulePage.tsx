@@ -210,25 +210,26 @@ export const AdminModulePage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6 flex justify-between items-center">
+  return (
+    <div className="admin-page-container">
+      <div className="admin-page-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Quản lý Cấu trúc Bài học (Modules)</h1>
-          <p className="text-gray-500 mt-1">Sắp xếp và quản lý các Module và Video/Bài tập bên trong</p>
+          <h1 className="admin-page-title">Quản lý Cấu trúc Bài học (Modules)</h1>
+          <p className="admin-page-subtitle">Sắp xếp và quản lý các Module và Video/Bài tập bên trong</p>
         </div>
         <button
           onClick={handleAddModule}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium"
+          className="btn-primary"
         >
           + Tạo Module mới
         </button>
       </div>
 
-      <div className="max-w-5xl mx-auto">
+      <div className="accordion-container">
         {isLoading ? (
-          <div className="text-center py-10 text-gray-500">Đang tải danh sách Modules...</div>
+          <div style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>Đang tải danh sách Modules...</div>
         ) : modules.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border border-dashed border-gray-300 text-gray-500">
+          <div style={{ textAlign: 'center', padding: '3rem', backgroundColor: 'white', borderRadius: '0.5rem', border: '1px dashed #d1d5db', color: '#6b7280' }}>
             Chưa có Module nào trong hệ thống.
           </div>
         ) : (

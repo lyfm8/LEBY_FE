@@ -48,24 +48,24 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
   };
 
   return (
-    <div className="border border-gray-200 rounded-lg mb-4 bg-white overflow-hidden shadow-sm">
+  return (
+    <div className="accordion-item">
       {/* Header Module */}
       <div 
-        className={`px-4 py-3 flex items-center justify-between cursor-pointer transition-colors ${isOpen ? 'bg-blue-50 border-b border-blue-100' : 'hover:bg-gray-50'}`}
+        className="accordion-header"
+        onClick={onToggle}
       >
-        <div className="flex items-center gap-3 flex-1" onClick={onToggle}>
-          <div className="text-gray-400">
+        <div className="accordion-title-wrapper">
+          <div style={{ color: '#9ca3af' }}>
             {isOpen ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg">
-              <span className="text-blue-600 mr-2">#{moduleData.sequence}</span>
+            <h3 className="module-title">
+              <span style={{ color: '#2563eb', marginRight: '0.5rem' }}>#{moduleData.sequence}</span>
               {moduleData.title}
             </h3>
-            <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-              <span className={`px-2 py-0.5 rounded text-xs ${
-                moduleData.status === 'PUBLISHED' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-              }`}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', fontSize: '0.875rem', color: '#6b7280', marginTop: '0.25rem' }}>
+              <span className={`badge ${moduleData.status === 'PUBLISHED' ? 'badge-green' : 'badge-yellow'}`} style={{ marginTop: 0 }}>
                 {moduleData.status}
               </span>
               <span>{moduleData.type}</span>
@@ -76,28 +76,30 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
         </div>
         
         {/* Actions cho Module */}
-        <div className="flex items-center gap-2">
+        <div className="accordion-actions">
           <button 
             onClick={(e) => { e.stopPropagation(); onConfigTest(moduleData.id); }}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-md transition-colors font-medium"
+            className="btn-secondary"
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem', color: '#7e22ce', borderColor: '#d8b4fe', backgroundColor: '#f3e8ff' }}
           >
             Cấu hình Test
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onAddLesson(moduleData.id); }}
-            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors font-medium"
+            className="btn-primary"
+            style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
           >
-            <Plus size={16} /> Thêm bài học
+            <Plus size={14} /> Thêm bài học
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditModule(moduleData); }}
-            className="p-1.5 text-gray-500 hover:text-blue-600 transition-colors"
+            className="btn-icon primary"
           >
             <Edit2 size={18} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteModule(moduleData.id); }}
-            className="p-1.5 text-gray-500 hover:text-red-600 transition-colors"
+            className="btn-icon danger"
           >
             <Trash2 size={18} />
           </button>
@@ -106,32 +108,32 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
 
       {/* Body Accordion (Lessons) */}
       {isOpen && (
-        <div className="p-4 bg-slate-50">
+        <div className="accordion-content">
           {isLoading ? (
-            <div className="text-center py-4 text-gray-500 text-sm">Đang tải danh sách bài học...</div>
+            <div style={{ textAlign: 'center', padding: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>Đang tải danh sách bài học...</div>
           ) : lessons.length === 0 ? (
-            <div className="text-center py-6 border-2 border-dashed border-gray-300 rounded-lg text-gray-500">
+            <div style={{ textAlign: 'center', padding: '1.5rem', border: '2px dashed #d1d5db', borderRadius: '0.5rem', color: '#6b7280' }}>
               Chưa có bài học nào. Hãy thêm bài học mới!
             </div>
           ) : (
-            <div className="space-y-2">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {lessons.map((lesson) => (
-                <div key={lesson.id} className="flex items-center justify-between bg-white p-3 rounded border border-gray-200 hover:shadow-sm transition-shadow">
-                  <div className="flex items-center gap-3">
-                    <GripVertical size={16} className="text-gray-300 cursor-grab" />
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gray-100 text-gray-600 font-medium text-sm">
+                <div key={lesson.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', backgroundColor: 'white', padding: '0.75rem', borderRadius: '0.25rem', border: '1px solid #e5e7eb' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <GripVertical size={16} color="#d1d5db" style={{ cursor: 'grab' }} />
+                    <div className="module-order">
                       {lesson.orderNo}
                     </div>
                     <div>
-                      <div className="flex items-center gap-2">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500, color: '#1f2937' }}>
                         {lesson.lessonType === 'VIDEO' ? (
-                          <Video size={16} className="text-blue-500" />
+                          <Video size={16} color="#3b82f6" />
                         ) : (
-                          <PenTool size={16} className="text-green-500" />
+                          <PenTool size={16} color="#10b981" />
                         )}
-                        <span className="font-medium text-gray-800">{lesson.title}</span>
+                        <span>{lesson.title}</span>
                       </div>
-                      <div className="text-xs text-gray-500 mt-1 flex items-center gap-2">
+                      <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                         {lesson.lessonType === 'VIDEO' && lesson.durationDisplay && (
                           <span>Thời lượng: {lesson.durationDisplay}</span>
                         )}
@@ -142,17 +144,17 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <button 
                       onClick={() => onEditLesson(lesson, moduleData.id)}
-                      className="p-1.5 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                      className="btn-icon primary"
                       title="Sửa bài học"
                     >
                       <Edit2 size={16} />
                     </button>
                     <button 
                       onClick={() => handleDeleteLessonLocal(lesson.id)}
-                      className="p-1.5 text-red-500 hover:bg-red-50 rounded transition-colors"
+                      className="btn-icon danger"
                       title="Xóa bài học"
                     >
                       <Trash2 size={16} />
