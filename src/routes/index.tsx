@@ -26,6 +26,17 @@ import ModuleTestResultPage from '@/features/module-test/pages/ModuleTestResultP
 // 5. User Profile
 import ProfilePage from '@/features/profile/pages/ProfilePage';
 
+// 6. Admin
+import { AdminDashboardPage } from '@/features/admin-dashboard/pages/AdminDashboardPage';
+import { AdminUserPage } from '@/features/admin-user/pages/AdminUserPage';
+import { AdminPartPage } from '@/features/admin-part/pages/AdminPartPage';
+import { AdminQuestionPage } from '@/features/admin-question/pages/AdminQuestionPage';
+import { AdminModulePage } from '@/features/admin-module/pages/AdminModulePage';
+import { AdminTargetPage } from '@/features/admin-target/pages/AdminTargetPage';
+import { AdminThresholdPage } from '@/features/admin-threshold/pages/AdminThresholdPage';
+import { AdminDiagnosticTestPage } from '@/features/admin-diagnostic-test/pages/AdminDiagnosticTestPage';
+import { AdminLayout } from '@/features/admin-layout/AdminLayout';
+
 /**
  * Cấu trúc routes của ứng dụng LEBY TOEIC Adaptive Learning.
  */
@@ -150,6 +161,25 @@ function AppRoutes() {
                         </AuthGuard>
                     }
                 />
+
+                {/* ── PROTECTED: Hệ thống Quản trị (Admin) ──────────────────────── */}
+                <Route 
+                    path="/admin" 
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                            <AdminLayout />
+                        </AuthGuard>
+                    }
+                >
+                    <Route index element={<AdminDashboardPage />} />
+                    <Route path="users" element={<AdminUserPage />} />
+                    <Route path="parts" element={<AdminPartPage />} />
+                    <Route path="questions" element={<AdminQuestionPage />} />
+                    <Route path="modules" element={<AdminModulePage />} />
+                    <Route path="targets" element={<AdminTargetPage />} />
+                    <Route path="thresholds" element={<AdminThresholdPage />} />
+                    <Route path="diagnostic-tests" element={<AdminDiagnosticTestPage />} />
+                </Route>
 
                 {/* ── FALLBACK ────────────────────────────────────────────────── */}
                 <Route path="/unauthorized" element={<div id="unauthorized-page">403 Unauthorized</div>} />

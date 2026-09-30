@@ -1,0 +1,103 @@
+
+
+.dashboard-error-message {
+  padding: 1rem;
+  background-color: #fef2f2;
+  color: #dc2626;
+  border-radius: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.dashboard-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 16rem;
+  color: #6b7280;
+  gap: 1rem;
+}
+
+.spin-icon {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1rem;
+}
+@media (min-width: 768px) { .stat-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1024px) { .stat-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.stat-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+.stat-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.stat-card-title {
+  color: #6b7280;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+.stat-icon { color: #ea580c; }
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-top: 0.5rem;
+}
+.stat-growth {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+.text-green-600 { color: #16a34a; }
+.text-red-600 { color: #dc2626; }
+.text-gray-500 { color: #6b7280; }
+
+.chart-section {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  gap: 1.5rem;
+}
+@media (min-width: 1024px) { .chart-section { grid-template-columns: repeat(2, 1fr); } }
+
+.chart-card {
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+}
+.chart-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 1rem;
+}
+.chart-content {
+  height: 16rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  background-color: #f9fafb;
+  border-radius: 0.375rem;
+}
+
+
