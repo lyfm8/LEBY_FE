@@ -5,6 +5,7 @@ import { StatCardGrid } from '../components/StatCardGrid';
 import { ChartSection } from '../components/ChartSection';
 import { RecentActivityTable } from '../components/RecentActivityTable';
 import { Loader2, AlertCircle } from 'lucide-react';
+import '../admin-dashboard.css'; // NOTE: Import CSS thuần
 
 /**
  * Container Component (Smart) xử lý logic hiển thị Trang tổng quan (Dashboard) cho Admin.
@@ -62,26 +63,29 @@ export const AdminDashboardPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex h-full min-h-[400px] items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+      <div className="dashboard-loading">
+        <Loader2 size={40} className="spin-icon" />
+        <p>Đang tải dữ liệu tổng quan...</p>
       </div>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="flex h-full min-h-[400px] flex-col items-center justify-center text-red-500">
-        <AlertCircle className="w-12 h-12 mb-4" />
-        <p className="text-lg font-medium">{error || 'Không có dữ liệu'}</p>
+      <div className="dashboard-error-message">
+        <AlertCircle size={24} />
+        <span>{error || 'Không có dữ liệu'}</span>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Tổng quan hệ thống</h1>
-        <p className="text-gray-500 mt-1">Theo dõi hoạt động và chỉ số quan trọng của học viên</p>
+    <div className="admin-dashboard-container">
+      <div className="dashboard-header">
+        <div>
+          <h1 className="dashboard-title">Tổng quan hệ thống</h1>
+          <p className="dashboard-subtitle">Theo dõi hoạt động và chỉ số quan trọng của học viên</p>
+        </div>
       </div>
 
       {/* Truyền dữ liệu từ Container xuống các Presentational Components */}
