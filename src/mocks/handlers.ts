@@ -301,14 +301,7 @@ export const handlers = [
         });
     }),
     
-    // ── Admin: Users ──
-    http.get('*/api/v1/admin/users', () => {
-        return HttpResponse.json({ success: true, message: 'OK', data: [
-            { id: 1, username: 'admin_leby', email: 'admin@leby.edu.vn', fullName: 'Admin LEBY', role: 'ADMIN', status: 'ACTIVE', createdAt: '2026-01-01T00:00:00Z' },
-            { id: 2, username: 'student_nam', email: 'nam.nguyen@leby.edu.vn', fullName: 'Nguyễn Nam', role: 'USER', status: 'ACTIVE', createdAt: '2026-08-15T00:00:00Z' }
-        ], pagination: { totalItems: 2, totalPages: 1, pageSize: 10, page: 0 }
-        });
-    }),
+
 
     // ── Admin: Parts ──
     http.get('*/api/v1/admin/parts', () => {

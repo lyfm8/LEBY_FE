@@ -27,15 +27,15 @@ import ModuleTestResultPage from '@/features/module-test/pages/ModuleTestResultP
 import ProfilePage from '@/features/profile/pages/ProfilePage';
 
 // 6. Admin
-import { AdminDashboardPage } from '@/features/admin-dashboard/pages/AdminDashboardPage';
-import { AdminUserPage } from '@/features/admin-user/pages/AdminUserPage';
-import { AdminPartPage } from '@/features/admin-part/pages/AdminPartPage';
-import { AdminQuestionPage } from '@/features/admin-question/pages/AdminQuestionPage';
-import { AdminModulePage } from '@/features/admin-module/pages/AdminModulePage';
-import { AdminTargetPage } from '@/features/admin-target/pages/AdminTargetPage';
-import { AdminThresholdPage } from '@/features/admin-threshold/pages/AdminThresholdPage';
-import { AdminDiagnosticTestPage } from '@/features/admin-diagnostic-test/pages/AdminDiagnosticTestPage';
-import { AdminLayout } from '@/features/admin-layout/AdminLayout';
+import { AdminDashboardPage } from '@/features/admin/dashboard/pages/AdminDashboardPage';
+import { AdminUserPage } from '@/features/admin/user/pages/AdminUserPage';
+import { AdminPartPage } from '@/features/admin/part/pages/AdminPartPage';
+import { AdminQuestionPage } from '@/features/admin/question/pages/AdminQuestionPage';
+import { AdminModulePage } from '@/features/admin/module/pages/AdminModulePage';
+import { AdminTargetPage } from '@/features/admin/target/pages/AdminTargetPage';
+import { AdminThresholdPage } from '@/features/admin/threshold/pages/AdminThresholdPage';
+import { AdminDiagnosticTestPage } from '@/features/admin/diagnostic-test/pages/AdminDiagnosticTestPage';
+import { AdminLayout } from '@/features/admin/layout/AdminLayout';
 
 /**
  * Cấu trúc routes của ứng dụng LEBY TOEIC Adaptive Learning.

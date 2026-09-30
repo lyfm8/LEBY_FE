@@ -32,7 +32,11 @@ function LoginPage() {
             const res = await authService.login(form);
             if (res.success && res.data) {
                 setUser(res.data);
-                navigate(from, { replace: true });
+                let target = from;
+                if (res.data.role === 'ADMIN' && target === '/home') {
+                    target = '/admin';
+                }
+                navigate(target, { replace: true });
             } else {
                 setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
@@ -119,7 +123,11 @@ function LoginPage() {
                                 const res = await authService.login({ email: 'demo@leby.edu.vn', password: 'Demo@1234' });
                                 if (res.success && res.data) {
                                     setUser(res.data);
-                                    navigate(from, { replace: true });
+                                    let target = from;
+                                    if (res.data.role === 'ADMIN' && target === '/home') {
+                                        target = '/admin';
+                                    }
+                                    navigate(target, { replace: true });
                                 }
                             } finally {
                                 setIsLoading(false);
