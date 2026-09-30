@@ -343,11 +343,27 @@ export const handlers = [
     }),
 
     // ── Admin: Target Profiles ──
-    http.get('*/api/v1/admin/targets', () => {
+    http.get('*/api/v1/admin/target-profiles', () => {
         return HttpResponse.json({ success: true, message: 'OK', data: [
-            { id: 1, name: 'Mục tiêu 450+', aimScore: 450, description: 'Dành cho người mới bắt đầu', createdAt: '2026-01-01T00:00:00Z' },
-            { id: 2, name: 'Mục tiêu 600+', aimScore: 600, description: 'Dành cho sinh viên ra trường', createdAt: '2026-01-01T00:00:00Z' }
+            { id: 1, name: 'AIM 450+', targetTotalScore: 450, description: 'Dành cho người mới bắt đầu', createdAt: '2026-01-01T00:00:00Z' },
+            { id: 2, name: 'AIM 600+', targetTotalScore: 600, description: 'Dành cho sinh viên ra trường', createdAt: '2026-01-01T00:00:00Z' }
         ], pagination: { totalItems: 2, totalPages: 1, pageSize: 10, page: 0 }
+        });
+    }),
+
+    // ── Admin: Module Target Thresholds Matrix ──
+    http.get('*/api/v1/admin/module-target-thresholds', () => {
+        return HttpResponse.json({
+            success: true,
+            message: 'OK',
+            data: {
+                profileIds: [1, 2],
+                profileNames: ['AIM 450+', 'AIM 600+'],
+                rows: [
+                    { moduleId: 1, moduleTitle: 'Module 1: Basic Grammar', thresholds: { 1: 50, 2: 70 } },
+                    { moduleId: 2, moduleTitle: 'Module 2: Advanced Vocabulary', thresholds: { 1: 40, 2: 60 } }
+                ]
+            }
         });
     }),
 
