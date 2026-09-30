@@ -100,43 +100,4 @@
   border-radius: 0.375rem;
 }
 
-.activity-section {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-}
-.activity-header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-.activity-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-.activity-table-wrapper {
-  overflow-x: auto;
-}
-.activity-table {
-  width: 100%;
-  text-align: left;
-  border-collapse: collapse;
-}
-.activity-th {
-  padding: 0.75rem 1.5rem;
-  background-color: #f9fafb;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-.activity-tr {
-  border-top: 1px solid #e5e7eb;
-}
-.activity-td {
-  padding: 1rem 1.5rem;
-  font-size: 0.875rem;
-  color: #374151;
-}
+
