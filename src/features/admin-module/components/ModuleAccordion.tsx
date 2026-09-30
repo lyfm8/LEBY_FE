@@ -12,10 +12,11 @@ interface ModuleAccordionProps {
   onAddLesson: (moduleId: number) => void;
   onEditLesson: (lesson: LessonResponse, moduleId: number) => void;
   onDeleteLesson: (id: number, moduleId: number) => void;
+  onConfigTest: (moduleId: number) => void;
 }
 
 export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
-  moduleData, isOpen, onToggle, onEditModule, onDeleteModule, onAddLesson, onEditLesson, onDeleteLesson
+  moduleData, isOpen, onToggle, onEditModule, onDeleteModule, onAddLesson, onEditLesson, onDeleteLesson, onConfigTest
 }) => {
   const [lessons, setLessons] = useState<LessonResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -76,6 +77,12 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
         
         {/* Actions cho Module */}
         <div className="flex items-center gap-2">
+          <button 
+            onClick={(e) => { e.stopPropagation(); onConfigTest(moduleData.id); }}
+            className="flex items-center gap-1 px-3 py-1.5 text-sm bg-purple-100 text-purple-700 hover:bg-purple-200 rounded-md transition-colors font-medium"
+          >
+            Cấu hình Test
+          </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onAddLesson(moduleData.id); }}
             className="flex items-center gap-1 px-3 py-1.5 text-sm bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-md transition-colors font-medium"

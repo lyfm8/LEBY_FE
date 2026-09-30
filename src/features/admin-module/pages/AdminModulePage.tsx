@@ -5,6 +5,7 @@ import type { ModuleFormValues, VideoLessonFormValues, PracticeLessonFormValues 
 import { ModuleAccordion } from '../components/ModuleAccordion';
 import { ModuleFormModal } from '../components/ModuleFormModal';
 import { LessonFormModal } from '../components/LessonFormModal';
+import { ModuleTestModal } from '../components/ModuleTestModal';
 
 export const AdminModulePage: React.FC = () => {
   const [modules, setModules] = useState<ModuleResponse[]>([]);
@@ -18,6 +19,11 @@ export const AdminModulePage: React.FC = () => {
   const [isLessonModalOpen, setIsLessonModalOpen] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState<LessonResponse | null>(null);
   const [targetModuleId, setTargetModuleId] = useState<number | null>(null);
+
+  const [isTestModalOpen, setIsTestModalOpen] = useState(false);
+  const [testModuleId, setTestModuleId] = useState<number | null>(null);
+  const [testModuleName, setTestModuleName] = useState<string>('');
+
   
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -163,6 +169,15 @@ export const AdminModulePage: React.FC = () => {
     }
   };
 
+  const handleConfigTest = (moduleId: number) => {
+    const mod = modules.find(m => m.id === moduleId);
+    if (mod) {
+      setTestModuleId(moduleId);
+      setTestModuleName(mod.title);
+      setIsTestModalOpen(true);
+    }
+  };
+
   return (
     <div className="p-6 bg-slate-50 min-h-screen">
       <div className="mb-6 flex justify-between items-center">
@@ -197,6 +212,7 @@ export const AdminModulePage: React.FC = () => {
               onAddLesson={handleAddLesson}
               onEditLesson={handleEditLesson}
               onDeleteLesson={handleDeleteLesson}
+              onConfigTest={handleConfigTest}
             />
           ))
         )}
@@ -218,6 +234,13 @@ export const AdminModulePage: React.FC = () => {
         lesson={selectedLesson}
         partId={targetModuleId ? modules.find(m => m.id === targetModuleId)?.partId || null : null}
         isLoading={isSubmitting}
+      />
+
+      <ModuleTestModal
+        isOpen={isTestModalOpen}
+        onClose={() => setIsTestModalOpen(false)}
+        moduleId={testModuleId}
+        moduleName={testModuleName}
       />
     </div>
   );
