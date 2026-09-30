@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { UserFilterParams } from '../types';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Search } from 'lucide-react';
 
 interface UserFilterBarProps {
@@ -8,6 +9,16 @@ interface UserFilterBarProps {
 }
 
 export const UserFilterBar: React.FC<UserFilterBarProps> = ({ filters, onFilterChange }) => {
+  const [localKeyword, setLocalKeyword] = useState(filters.keyword || '');
+  const debouncedKeyword = useDebounce(localKeyword, 500);
+
+  // Chỉ gọi API khi debouncedKeyword thay đổi (người dùng ngừng gõ sau 500ms)
+  useEffect(() => {
+    if (debouncedKeyword !== filters.keyword) {
+      onFilterChange({ keyword: debouncedKeyword, page: 0 });
+    }
+  }, [debouncedKeyword]);
+
   return (
     <div className="user-filter-bar">
       <div className="filter-group">
@@ -16,8 +27,8 @@ export const UserFilterBar: React.FC<UserFilterBarProps> = ({ filters, onFilterC
             type="text"
             placeholder="Tìm theo tên, email..."
             className="filter-search-input"
-            value={filters.keyword || ''}
-            onChange={(e) => onFilterChange({ keyword: e.target.value, page: 0 })}
+            value={localKeyword}
+            onChange={(e) => setLocalKeyword(e.target.value)}
           />
           <Search className="filter-search-icon" size={18} />
         </div>
