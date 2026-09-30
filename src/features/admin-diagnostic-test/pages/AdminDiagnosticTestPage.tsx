@@ -4,6 +4,7 @@ import type { DiagnosticTestListItemResponse, DiagnosticTestDetailResponse } fro
 import type { DiagnosticTestFormValues } from '../utils/schema';
 import { DiagnosticTestFormModal } from '../components/DiagnosticTestFormModal';
 import { Edit2, Trash2, Plus, FileText, CheckCircle, XCircle } from 'lucide-react';
+import '../admin-diagnostic-test.css';
 
 /**
  * Trang chính quản lý Đề thi chẩn đoán đầu vào (Diagnostic Test).
@@ -105,72 +106,73 @@ export const AdminDiagnosticTestPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6 flex justify-between items-end">
+    <div className="diagnostic-container">
+      <div className="diagnostic-header">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Đề Thi Chẩn Đoán (Diagnostic Test)</h1>
-          <p className="text-gray-500 mt-1">Quản lý các đề thi đầu vào giúp đánh giá và phân loại học viên.</p>
+          <h1>Đề Thi Chẩn Đoán (Diagnostic Test)</h1>
+          <p>Quản lý các đề thi đầu vào giúp đánh giá và phân loại học viên.</p>
         </div>
         <button
           onClick={handleAdd}
-          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium flex items-center gap-2"
+          className="btn-primary"
+          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           <Plus size={18} /> Tạo Đề Thi Mới
         </button>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+      <div className="diagnostic-table-card">
         {isLoading ? (
-          <div className="text-center py-10 text-gray-500">Đang tải danh sách...</div>
+          <div style={{ textAlign: 'center', padding: '2.5rem 0', color: '#6b7280' }}>Đang tải danh sách...</div>
         ) : tests.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="text-gray-400 mb-3 flex justify-center"><FileText size={48} /></div>
-            <h3 className="text-lg font-medium text-gray-800">Chưa có đề thi nào</h3>
-            <p className="text-gray-500 mt-1">Hãy tạo đề thi chẩn đoán đầu tiên cho học viên.</p>
+          <div className="diagnostic-empty">
+            <div className="diagnostic-empty-icon"><FileText size={48} /></div>
+            <h3>Chưa có đề thi nào</h3>
+            <p>Hãy tạo đề thi chẩn đoán đầu tiên cho học viên.</p>
           </div>
         ) : (
-          <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-gray-50 border-b border-gray-200">
+          <table className="diagnostic-table">
+            <thead>
               <tr>
-                <th className="px-6 py-4 font-semibold text-gray-700 w-16">ID</th>
-                <th className="px-6 py-4 font-semibold text-gray-700">Tên Đề Thi</th>
-                <th className="px-6 py-4 font-semibold text-gray-700 text-center">Số lượng Câu hỏi</th>
-                <th className="px-6 py-4 font-semibold text-gray-700 text-center">Trạng thái</th>
-                <th className="px-6 py-4 font-semibold text-gray-700 text-center w-28">Thao tác</th>
+                <th style={{ width: '4rem' }}>ID</th>
+                <th>Tên Đề Thi</th>
+                <th style={{ textAlign: 'center' }}>Số lượng Câu hỏi</th>
+                <th style={{ textAlign: 'center' }}>Trạng thái</th>
+                <th style={{ textAlign: 'center', width: '7rem' }}>Thao tác</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100">
+            <tbody>
               {tests.map(test => (
-                <tr key={test.id} className="hover:bg-blue-50/50 transition-colors">
-                  <td className="px-6 py-4 text-gray-500">#{test.id}</td>
-                  <td className="px-6 py-4">
-                    <div className="font-semibold text-gray-900">{test.title}</div>
-                    <div className="text-gray-500 text-xs mt-1 truncate max-w-md" title={test.description}>
+                <tr key={test.id}>
+                  <td className="diagnostic-id">#{test.id}</td>
+                  <td>
+                    <div className="diagnostic-title">{test.title}</div>
+                    <div className="diagnostic-desc" title={test.description}>
                       {test.description || 'Không có mô tả'}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-center">
-                    <span className="inline-flex items-center justify-center bg-gray-100 text-gray-700 px-3 py-1 rounded-full font-medium">
+                  <td style={{ textAlign: 'center' }}>
+                    <span className="diagnostic-count">
                       {test.totalQuestions} câu
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-center">
+                  <td style={{ textAlign: 'center' }}>
                     {test.status ? (
-                      <span className="inline-flex items-center gap-1 text-green-700 bg-green-100 px-2.5 py-1 rounded-md text-xs font-semibold">
+                      <span className="diagnostic-status active">
                         <CheckCircle size={14} /> Hoạt động
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 text-gray-600 bg-gray-100 px-2.5 py-1 rounded-md text-xs font-semibold">
+                      <span className="diagnostic-status inactive">
                         <XCircle size={14} /> Đã tắt
                       </span>
                     )}
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-center gap-3">
-                      <button onClick={() => handleEdit(test.id)} className="text-gray-400 hover:text-blue-600 transition-colors p-1" title="Sửa">
+                  <td>
+                    <div className="diagnostic-actions">
+                      <button onClick={() => handleEdit(test.id)} title="Sửa">
                         <Edit2 size={18} />
                       </button>
-                      <button onClick={() => handleDelete(test.id)} className="text-gray-400 hover:text-red-600 transition-colors p-1" title="Xóa">
+                      <button onClick={() => handleDelete(test.id)} title="Xóa">
                         <Trash2 size={18} />
                       </button>
                     </div>

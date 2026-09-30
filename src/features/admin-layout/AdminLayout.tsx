@@ -1,10 +1,10 @@
 import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, Users, BookOpen, HelpCircle, 
+import {
+  LayoutDashboard, Users, BookOpen, HelpCircle,
   FileText, Target, Settings, LogOut, Menu
 } from 'lucide-react';
-import './admin-layout.css'; // NOTE: Sử dụng CSS thuần theo yêu cầu của user
+import './admin-layout.css';
 
 const navItems = [
   { path: '/admin', label: 'Tổng quan', icon: <LayoutDashboard size={20} />, exact: true },
@@ -27,7 +27,7 @@ export const AdminLayout: React.FC = () => {
         <div className="admin-sidebar-header">
           <h1 className="admin-sidebar-title">LEBY Admin</h1>
         </div>
-        
+
         <nav className="admin-sidebar-nav">
           <ul className="admin-nav-list">
             {navItems.map((item) => (
@@ -35,7 +35,7 @@ export const AdminLayout: React.FC = () => {
                 <NavLink
                   to={item.path}
                   end={item.exact}
-                  className={({ isActive }) => 
+                  className={({ isActive }) =>
                     `admin-nav-item ${isActive ? 'active' : ''}`
                   }
                 >

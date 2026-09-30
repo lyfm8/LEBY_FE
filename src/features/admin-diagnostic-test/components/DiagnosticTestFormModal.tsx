@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { diagnosticTestSchema, DiagnosticTestFormValues } from '../utils/schema';
+import { diagnosticTestSchema, type DiagnosticTestFormValues } from '../utils/schema';
 import { adminQuestionService } from '@/features/admin-question/services/adminQuestionService';
 import type { QuestionListItemResponse, QuestionFilterParams } from '@/features/admin-question/types';
 import type { DiagnosticTestDetailResponse } from '../types';
@@ -134,73 +134,73 @@ export const DiagnosticTestFormModal: React.FC<DiagnosticTestFormModalProps> = (
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-6xl h-[90vh] flex flex-col">
+    <div className="modal-overlay">
+      <div className="diagnostic-modal-content">
         {/* Header Modal */}
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">
+        <div className="modal-header">
+          <h2 className="modal-title">
             {data ? 'Sửa Đề Thi Chẩn Đoán' : 'Tạo Đề Thi Chẩn Đoán Mới'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="modal-close">
             <X size={24} />
           </button>
         </div>
 
-        <div className="flex-1 overflow-hidden flex flex-col md:flex-row">
+        <div className="diagnostic-modal-body">
           
           {/* CỘT TRÁI: Form Input & Danh sách "Câu hỏi đã chọn" */}
-          <div className="w-full md:w-5/12 border-r border-gray-200 bg-white flex flex-col overflow-hidden">
+          <div className="diagnostic-col-left">
             
             {/* Form Input (Top section) */}
-            <form id="diagnostic-form" onSubmit={handleSubmit(onSubmit)} className="p-4 border-b border-gray-100 space-y-4 overflow-y-auto shrink-0 max-h-[40%]">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Tiêu đề đề thi <span className="text-red-500">*</span></label>
+            <form id="diagnostic-form" onSubmit={handleSubmit(onSubmit)} className="diagnostic-form-top">
+              <div className="form-group">
+                <label className="form-label">Tiêu đề đề thi <span style={{ color: '#ef4444' }}>*</span></label>
                 <input
                   {...register('title')}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                  className="form-input"
                   placeholder="VD: Đề thi đầu vào tháng 9"
                 />
-                {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+                {errors.title && <p className="form-error">{errors.title.message}</p>}
               </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Mô tả</label>
+              <div className="form-group">
+                <label className="form-label">Mô tả</label>
                 <textarea
                   {...register('description')}
                   rows={2}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                  className="form-textarea"
                 />
               </div>
 
-              <div className="flex items-center gap-2">
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <input
                   type="checkbox"
                   id="status"
                   {...register('status')}
-                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  style={{ width: '1rem', height: '1rem', cursor: 'pointer' }}
                 />
-                <label htmlFor="status" className="text-sm font-medium text-gray-700 cursor-pointer">
+                <label htmlFor="status" style={{ fontSize: '0.875rem', fontWeight: 500, color: '#374151', cursor: 'pointer' }}>
                   Kích hoạt (Cho phép làm bài)
                 </label>
               </div>
             </form>
 
             {/* Danh sách "Đã Chọn" (Bottom section) */}
-            <div className="flex-1 flex flex-col overflow-hidden bg-blue-50/20">
-              <div className="p-3 border-b border-gray-100 bg-blue-50 flex justify-between items-center">
-                <h3 className="font-semibold text-gray-700">Câu hỏi đã chọn</h3>
+            <div className="diagnostic-selected-area">
+              <div className="diagnostic-selected-header">
+                <h3>Câu hỏi đã chọn</h3>
                 
                 {/* HIỂN THỊ RÕ RÀNG TỔNG SỐ LƯỢNG - Đảm bảo Admin kiểm soát tốt đề thi dài (ví dụ 100 câu) */}
-                <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-bold">
+                <span className="diagnostic-selected-count">
                   {questionIds.length} câu
                 </span>
               </div>
               
-              <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                {errors.questionIds && <p className="text-red-500 text-xs mb-2">{errors.questionIds.message}</p>}
+              <div className="diagnostic-selected-list">
+                {errors.questionIds && <p className="form-error">{errors.questionIds.message}</p>}
                 
                 {questionIds.length === 0 ? (
-                  <div className="text-center text-gray-400 py-6 text-sm border-2 border-dashed border-gray-200 rounded-lg">
+                  <div className="diagnostic-selected-empty">
                     Chưa chọn câu hỏi nào.
                   </div>
                 ) : (
@@ -208,17 +208,17 @@ export const DiagnosticTestFormModal: React.FC<DiagnosticTestFormModalProps> = (
                     // Truy xuất thông tin từ Cache
                     const qData = selectedQuestionsCache[id];
                     return (
-                      <div key={id} className="p-2 border border-gray-200 rounded-md bg-white hover:border-blue-300 group flex items-start gap-2">
-                        <div className="text-xs font-bold text-gray-400 mt-0.5 w-6 text-right shrink-0">{index + 1}.</div>
-                        <div className="flex-1 min-w-0">
+                      <div key={id} className="diagnostic-selected-item">
+                        <div className="index">{index + 1}.</div>
+                        <div className="content">
                           {/* Nếu không có trong cache, chỉ hiển thị số ID để tránh lỗi vỡ UI */}
-                          <div className="font-medium text-sm text-gray-800">{qData ? qData.name : `Câu hỏi ID: ${id}`}</div>
-                          {qData && <div className="text-xs text-gray-500 truncate">{qData.questionSummary}</div>}
+                          <div className="title">{qData ? qData.name : `Câu hỏi ID: ${id}`}</div>
+                          {qData && <div className="desc">{qData.questionSummary}</div>}
                         </div>
                         <button 
                           type="button"
                           onClick={() => removeQuestionId(id)}
-                          className="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                          className="remove-btn"
                           title="Xóa khỏi đề thi"
                         >
                           <Trash2 size={16} />
@@ -232,59 +232,56 @@ export const DiagnosticTestFormModal: React.FC<DiagnosticTestFormModalProps> = (
           </div>
 
           {/* CỘT PHẢI: Ngân hàng câu hỏi (Picker) */}
-          <div className="w-full md:w-7/12 flex flex-col bg-slate-50">
+          <div className="diagnostic-col-right">
             
             {/* Thanh tìm kiếm ngân hàng */}
-            <div className="p-4 border-b border-gray-200 bg-white flex items-center gap-3 shrink-0">
-              <h3 className="font-semibold text-gray-700 whitespace-nowrap">Ngân hàng</h3>
-              <div className="relative flex-1">
+            <div className="diagnostic-bank-header">
+              <h3>Ngân hàng</h3>
+              <div className="diagnostic-search-box">
                 <input
                   type="text"
                   placeholder="Tìm câu hỏi..."
                   value={keyword}
                   onChange={e => setKeyword(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSearchBank(keyword)}
-                  className="w-full pl-9 pr-3 py-1.5 border border-gray-300 rounded-md text-sm focus:ring-blue-500"
+                  className="diagnostic-search-input"
                 />
-                <Search size={16} className="absolute left-3 top-2 text-gray-400" />
+                <Search size={16} className="diagnostic-search-icon" />
               </div>
               <button 
                 type="button"
                 onClick={() => handleSearchBank(keyword)}
-                className="px-3 py-1.5 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium transition-colors"
+                className="btn-search"
               >
                 Tìm
               </button>
             </div>
             
             {/* Danh sách ngân hàng để Pick */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <div className="diagnostic-bank-list">
               {isSearching ? (
-                <div className="text-center text-gray-500 py-4 text-sm">Đang tìm kiếm...</div>
+                <div style={{ textAlign: 'center', color: '#6b7280', padding: '1rem 0', fontSize: '0.875rem' }}>Đang tìm kiếm...</div>
               ) : bankQuestions.length === 0 ? (
-                <div className="text-center text-gray-400 py-10 text-sm">Không tìm thấy câu hỏi.</div>
+                <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2.5rem 0', fontSize: '0.875rem' }}>Không tìm thấy câu hỏi.</div>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div className="diagnostic-bank-grid">
                   {bankQuestions.map(q => {
                     const isSelected = questionIds.includes(q.id);
                     return (
                       <div 
                         key={q.id}
                         onClick={() => toggleQuestion(q)}
-                        className={`p-3 border rounded-md cursor-pointer transition-colors flex items-start gap-3 ${
-                          isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'
-                        }`}
+                        className={`diagnostic-bank-item ${isSelected ? 'selected' : ''}`}
                       >
                         <input 
                           type="checkbox" 
                           checked={isSelected} 
                           onChange={() => {}} 
-                          className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300 pointer-events-none"
                         />
-                        <div className="min-w-0">
-                          <div className="font-medium text-sm text-gray-900 truncate" title={q.name}>{q.name}</div>
-                          <div className="text-xs text-gray-500 truncate my-1" title={q.questionSummary}>{q.questionSummary}</div>
-                          <div className="text-xs text-blue-600 bg-blue-100 inline-block px-1.5 py-0.5 rounded truncate max-w-full">
+                        <div className="content">
+                          <div className="title" title={q.name}>{q.name}</div>
+                          <div className="desc" title={q.questionSummary}>{q.questionSummary}</div>
+                          <div className="ability-tag">
                             {q.abilityName}
                           </div>
                         </div>
@@ -298,11 +295,11 @@ export const DiagnosticTestFormModal: React.FC<DiagnosticTestFormModalProps> = (
         </div>
 
         {/* Footer: Action Buttons */}
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-white shrink-0">
+        <div className="modal-footer">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50"
+            className="btn-secondary"
           >
             Hủy
           </button>
@@ -312,7 +309,7 @@ export const DiagnosticTestFormModal: React.FC<DiagnosticTestFormModalProps> = (
             form="diagnostic-form"
             type="submit"
             disabled={isLoading}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+            className="btn-primary"
           >
             {isLoading ? 'Đang lưu...' : 'Lưu Đề Thi'}
           </button>
