@@ -71,13 +71,13 @@
   align-items: center;
   justify-content: center;
 }
-.aim-card-actions button:hover:first-child { color: #2563eb; }
+.aim-card-actions button:hover:first-child { color: #ea580c; }
 .aim-card-actions button:hover:last-child { color: #dc2626; }
 
 .aim-score {
   font-size: 1.5rem;
   font-weight: 900;
-  color: #1d4ed8;
+  color: #ea580c;
   margin-bottom: 0.25rem;
 }
 
@@ -103,8 +103,8 @@
   align-items: center;
   gap: 0.375rem;
   font-size: 0.875rem;
-  color: #4f46e5;
-  background-color: #eef2ff;
+  color: #ea580c;
+  background-color: #ffedd5;
   padding: 0.25rem 0.5rem;
   border-radius: 0.375rem;
   width: 100%;
@@ -187,7 +187,7 @@
 }
 .matrix-table th.col-profile {
   text-align: center;
-  color: #1e40af;
+  color: #ea580c;
   min-width: 100px;
 }
 
@@ -225,7 +225,7 @@
   box-sizing: border-box;
 }
 .threshold-val:not(.disabled):hover {
-  background-color: #dbeafe;
+  background-color: #ffedd5;
 }
 .threshold-val.disabled {
   opacity: 0.5;
@@ -254,13 +254,13 @@
   width: 4rem;
   padding: 0.25rem 0.5rem;
   text-align: center;
-  border: 1px solid #3b82f6;
+  border: 1px solid #ea580c;
   border-radius: 0.25rem;
   font-size: 0.875rem;
   outline: none;
 }
 .threshold-edit input:focus {
-  box-shadow: 0 0 0 1px #3b82f6;
+  box-shadow: 0 0 0 1px #ea580c;
 }
 .threshold-edit button {
   background: none;

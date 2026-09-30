@@ -14,9 +14,6 @@
 
 
 
-.btn-icon.primary:hover { color: #2563eb; }
-.btn-icon.danger:hover { color: #dc2626; }
-
 /* Accordion */
 .accordion-container {
   display: flex;
@@ -57,8 +54,8 @@
   justify-content: center;
   width: 2rem;
   height: 2rem;
-  background-color: #eff6ff;
-  color: #2563eb;
+  background-color: #ffedd5;
+  color: #ea580c;
   border-radius: 9999px;
   font-weight: 700;
   font-size: 0.875rem;
@@ -144,23 +141,6 @@
   color: #6b7280;
   margin: 0;
 }
-
-
-
-
-
-
-
-
-/* Modals */
-
-
-.modal-content.large {
-  max-width: 800px;
-}
-
-
-
 
 
 

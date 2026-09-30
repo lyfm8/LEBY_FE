@@ -70,29 +70,6 @@
 
 
 
-/* Table */
-
-
-
-
-.admin-table th {
-  padding: 0.75rem 1.5rem;
-  background-color: #f9fafb;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.admin-table td {
-  padding: 1rem 1.5rem;
-  border-top: 1px solid #f3f4f6;
-  font-size: 0.875rem;
-}
-
-.admin-table tr:hover td {
-  background-color: #f9fafb;
-}
 
 .user-info {
   display: flex;
@@ -108,35 +85,4 @@
 .badge-inactive { background-color: #f3f4f6; color: #4b5563; } /* Updated to gray like UI */
 
 .badge-aim { background-color: #ffedd5; color: #ea580c; } /* For AIM targets if needed */
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-
-.btn-icon.danger:hover { color: #dc2626; }
-.btn-icon.success:hover { color: #16a34a; }
-
-/* Modal */
-
-
-
-
-
-
-
-
-
-
-
-/* Pagination */
-
-
-.page-btn.active {
-  background-color: #ea580c; /* Orange */
-  color: white;
-  border-color: #ea580c;
-}
 

@@ -106,22 +106,21 @@ export const AdminDiagnosticTestPage: React.FC = () => {
   };
 
   return (
-    <div className="diagnostic-container">
-      <div className="diagnostic-header">
+    <div className="admin-page-container">
+      <div className="admin-page-header">
         <div>
-          <h1>Đề Thi Chẩn Đoán (Diagnostic Test)</h1>
-          <p>Quản lý các đề thi đầu vào giúp đánh giá và phân loại học viên.</p>
+          <h1 className="admin-page-title">Đề Thi Chẩn Đoán (Diagnostic Test)</h1>
+          <p className="admin-page-subtitle">Quản lý các đề thi đầu vào giúp đánh giá và phân loại học viên.</p>
         </div>
         <button
           onClick={handleAdd}
           className="btn-primary"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
         >
           <Plus size={18} /> Tạo Đề Thi Mới
         </button>
       </div>
 
-      <div className="diagnostic-table-card">
+      <div className="table-container">
         {isLoading ? (
           <div style={{ textAlign: 'center', padding: '2.5rem 0', color: '#6b7280' }}>Đang tải danh sách...</div>
         ) : tests.length === 0 ? (
@@ -131,7 +130,7 @@ export const AdminDiagnosticTestPage: React.FC = () => {
             <p>Hãy tạo đề thi chẩn đoán đầu tiên cho học viên.</p>
           </div>
         ) : (
-          <table className="diagnostic-table">
+          <table className="admin-table">
             <thead>
               <tr>
                 <th style={{ width: '4rem' }}>ID</th>
@@ -152,27 +151,27 @@ export const AdminDiagnosticTestPage: React.FC = () => {
                     </div>
                   </td>
                   <td style={{ textAlign: 'center' }}>
-                    <span className="diagnostic-count">
+                    <span className="badge badge-gray">
                       {test.totalQuestions} câu
                     </span>
                   </td>
                   <td style={{ textAlign: 'center' }}>
                     {test.status ? (
-                      <span className="diagnostic-status active">
+                      <span className="badge badge-green">
                         <CheckCircle size={14} /> Hoạt động
                       </span>
                     ) : (
-                      <span className="diagnostic-status inactive">
+                      <span className="badge badge-gray">
                         <XCircle size={14} /> Đã tắt
                       </span>
                     )}
                   </td>
                   <td>
-                    <div className="diagnostic-actions">
-                      <button onClick={() => handleEdit(test.id)} title="Sửa">
+                    <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                      <button className="btn-icon primary" onClick={() => handleEdit(test.id)} title="Sửa">
                         <Edit2 size={18} />
                       </button>
-                      <button onClick={() => handleDelete(test.id)} title="Xóa">
+                      <button className="btn-icon danger" onClick={() => handleDelete(test.id)} title="Xóa">
                         <Trash2 size={18} />
                       </button>
                     </div>

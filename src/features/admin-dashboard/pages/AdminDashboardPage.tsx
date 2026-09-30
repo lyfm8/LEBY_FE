@@ -80,11 +80,11 @@ export const AdminDashboardPage: React.FC = () => {
   }
 
   return (
-    <div className="admin-dashboard-container">
-      <div className="dashboard-header">
+    <div className="admin-page-container">
+      <div className="admin-page-header">
         <div>
-          <h1 className="dashboard-title">Tổng quan hệ thống</h1>
-          <p className="dashboard-subtitle">Theo dõi hoạt động và chỉ số quan trọng của học viên</p>
+          <h1 className="admin-page-title">Tổng quan hệ thống</h1>
+          <p className="admin-page-subtitle">Theo dõi hoạt động và chỉ số quan trọng của học viên</p>
         </div>
       </div>
 
