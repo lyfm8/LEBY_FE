@@ -97,45 +97,46 @@ export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-5xl h-[85vh] flex flex-col">
+  return (
+    <div className="modal-overlay">
+      <div className="modal-content large" style={{ display: 'flex', flexDirection: 'column', height: '85vh', padding: 0 }}>
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 shrink-0">
+        <div className="modal-header" style={{ padding: '1.5rem', marginBottom: 0 }}>
           <div>
-            <h2 className="text-xl font-bold text-gray-800">Cấu hình Bài Kiểm Tra</h2>
-            <p className="text-sm text-gray-500 mt-1">{moduleName}</p>
+            <h2 className="modal-title">Cấu hình Bài Kiểm Tra</h2>
+            <p style={{ fontSize: '0.875rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>{moduleName}</p>
           </div>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
+          <button onClick={onClose} className="modal-close">
             <X size={24} />
           </button>
         </div>
 
         {/* Body 2 cột */}
-        <div className="flex-1 flex overflow-hidden">
+        <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
           
           {/* Cột trái: Đã chọn */}
-          <div className="w-1/3 border-r border-gray-200 bg-white flex flex-col">
-            <div className="p-4 border-b border-gray-100 bg-blue-50/30">
-              <h3 className="font-semibold text-gray-700">Câu hỏi trong Bài Test ({selectedQuestions.length})</h3>
+          <div style={{ width: '33.333%', borderRight: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column' }}>
+            <div style={{ padding: '1rem', borderBottom: '1px solid #f3f4f6', backgroundColor: '#eff6ff' }}>
+              <h3 style={{ fontWeight: 600, color: '#374151', margin: 0 }}>Câu hỏi trong Bài Test ({selectedQuestions.length})</h3>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {isLoadingSelected ? (
-                <div className="text-center text-gray-500 py-4 text-sm">Đang tải...</div>
+                <div style={{ textAlign: 'center', color: '#6b7280', padding: '1rem 0', fontSize: '0.875rem' }}>Đang tải...</div>
               ) : selectedQuestions.length === 0 ? (
-                <div className="text-center text-gray-400 py-10 text-sm border-2 border-dashed border-gray-200 rounded-lg">
+                <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2.5rem 0', fontSize: '0.875rem', border: '2px dashed #e5e7eb', borderRadius: '0.5rem' }}>
                   Chưa có câu hỏi nào. Hãy chọn từ ngân hàng bên phải.
                 </div>
               ) : (
                 selectedQuestions.map((q, index) => (
-                  <div key={q.id} className="p-3 border border-gray-200 rounded-md bg-white hover:border-blue-300 group flex items-start gap-2">
-                    <div className="text-xs font-bold text-gray-400 mt-0.5 w-5">{index + 1}.</div>
-                    <div className="flex-1">
-                      <div className="font-medium text-sm text-gray-800">{q.name}</div>
-                      <div className="text-xs text-gray-500 line-clamp-1">{q.questionSummary}</div>
+                  <div key={q.id} style={{ padding: '0.75rem', border: '1px solid #e5e7eb', borderRadius: '0.375rem', display: 'flex', alignItems: 'flex-start', gap: '0.5rem' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 'bold', color: '#9ca3af', width: '1.25rem' }}>{index + 1}.</div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 500, fontSize: '0.875rem', color: '#1f2937' }}>{q.name}</div>
+                      <div style={{ fontSize: '0.75rem', color: '#6b7280', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.questionSummary}</div>
                     </div>
                     <button 
                       onClick={() => removeSelected(q.id)}
-                      className="text-gray-400 hover:text-red-500 p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="btn-icon danger"
                     >
                       <Trash2 size={16} />
                     </button>
@@ -146,55 +147,54 @@ export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
           </div>
 
           {/* Cột phải: Ngân hàng */}
-          <div className="w-2/3 flex flex-col bg-slate-50">
-            <div className="p-4 border-b border-gray-200 bg-white flex items-center gap-4">
-              <h3 className="font-semibold text-gray-700 whitespace-nowrap">Ngân hàng câu hỏi</h3>
-              <div className="relative flex-1">
+          <div style={{ width: '66.666%', display: 'flex', flexDirection: 'column', backgroundColor: '#f9fafb' }}>
+            <div style={{ padding: '1rem', borderBottom: '1px solid #e5e7eb', backgroundColor: 'white', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <h3 style={{ fontWeight: 600, color: '#374151', margin: 0, whiteSpace: 'nowrap' }}>Ngân hàng câu hỏi</h3>
+              <div style={{ position: 'relative', flex: 1 }}>
                 <input
                   type="text"
                   placeholder="Tìm kiếm câu hỏi..."
                   value={keyword}
                   onChange={e => setKeyword(e.target.value)}
                   onKeyDown={e => e.key === 'Enter' && handleSearchBank(keyword)}
-                  className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md text-sm focus:ring-blue-500"
+                  className="form-input"
+                  style={{ paddingLeft: '2.5rem' }}
                 />
-                <Search size={16} className="absolute left-3 top-2.5 text-gray-400" />
+                <Search size={16} style={{ position: 'absolute', left: '0.75rem', top: '0.6rem', color: '#9ca3af' }} />
               </div>
               <button 
                 onClick={() => handleSearchBank(keyword)}
-                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-md text-sm font-medium transition-colors"
+                className="btn-secondary"
               >
                 Tìm
               </button>
             </div>
             
-            <div className="flex-1 overflow-y-auto p-4">
+            <div style={{ flex: 1, overflowY: 'auto', padding: '1rem' }}>
               {isSearching ? (
-                <div className="text-center text-gray-500 py-4 text-sm">Đang tìm kiếm...</div>
+                <div style={{ textAlign: 'center', color: '#6b7280', padding: '1rem 0', fontSize: '0.875rem' }}>Đang tìm kiếm...</div>
               ) : bankQuestions.length === 0 ? (
-                <div className="text-center text-gray-400 py-10 text-sm">Không tìm thấy câu hỏi nào.</div>
+                <div style={{ textAlign: 'center', color: '#9ca3af', padding: '2.5rem 0', fontSize: '0.875rem' }}>Không tìm thấy câu hỏi nào.</div>
               ) : (
-                <div className="grid grid-cols-2 gap-3">
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.75rem' }}>
                   {bankQuestions.map(q => {
                     const isSelected = selectedQuestions.some(sq => sq.id === q.id);
                     return (
                       <div 
                         key={q.id}
                         onClick={() => toggleQuestion(q)}
-                        className={`p-3 border rounded-md cursor-pointer transition-colors flex items-start gap-3 ${
-                          isSelected ? 'border-blue-500 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'
-                        }`}
+                        style={{ padding: '0.75rem', border: '1px solid', borderColor: isSelected ? '#3b82f6' : '#e5e7eb', backgroundColor: isSelected ? '#eff6ff' : 'white', borderRadius: '0.375rem', cursor: 'pointer', display: 'flex', alignItems: 'flex-start', gap: '0.75rem' }}
                       >
                         <input 
                           type="checkbox" 
                           checked={isSelected} 
-                          onChange={() => {}} // dummy để ngăn warning, onClick ở cha đã xử lý
-                          className="mt-1 w-4 h-4 text-blue-600 rounded border-gray-300"
+                          onChange={() => {}} 
+                          style={{ marginTop: '0.25rem' }}
                         />
                         <div>
-                          <div className="font-medium text-sm text-gray-900">{q.name}</div>
-                          <div className="text-xs text-gray-500 line-clamp-1 my-1">{q.questionSummary}</div>
-                          <div className="text-xs text-blue-600 bg-blue-100 inline-block px-1.5 py-0.5 rounded">
+                          <div style={{ fontWeight: 500, fontSize: '0.875rem', color: '#111827' }}>{q.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.25rem 0', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.questionSummary}</div>
+                          <div className="badge badge-blue">
                             {q.abilityName}
                           </div>
                         </div>
@@ -209,17 +209,17 @@ export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3 bg-white shrink-0">
+        <div className="modal-footer" style={{ padding: '1rem 1.5rem', backgroundColor: 'white' }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 font-medium hover:bg-gray-50"
+            className="btn-secondary"
           >
             Hủy
           </button>
           <button
             onClick={handleSave}
             disabled={isSaving}
-            className="px-6 py-2 bg-blue-600 text-white rounded-md font-medium hover:bg-blue-700 disabled:opacity-50"
+            className="btn-primary"
           >
             {isSaving ? 'Đang lưu...' : 'Lưu Bài Test'}
           </button>

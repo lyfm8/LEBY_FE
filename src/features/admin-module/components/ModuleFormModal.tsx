@@ -60,69 +60,60 @@ export const ModuleFormModal: React.FC<ModuleFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50 rounded-t-lg">
-          <h2 className="text-lg font-bold text-gray-800">
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2 className="modal-title">
             {moduleData ? 'Cập nhật Module' : 'Thêm Module mới'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="modal-close">
             <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tên Module *</label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label className="form-label">Tên Module *</label>
             <input
               {...register('title')}
-              className={`w-full p-2 border rounded-md focus:ring-blue-500 ${errors.title ? 'border-red-500' : 'border-gray-300'}`}
+              className="form-input"
               placeholder="VD: TOEIC Part 1 Overview"
             />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+            {errors.title && <p className="form-error">{errors.title.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Loại Module</label>
-              <select
-                {...register('type')}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500"
-              >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Loại Module</label>
+              <select {...register('type')} className="form-input">
                 <option value="THEORY">Lý thuyết (Theory)</option>
                 <option value="PRACTICE">Luyện tập (Practice)</option>
                 <option value="EXAM">Đề thi (Exam)</option>
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Thứ tự hiển thị *</label>
+            <div className="form-group">
+              <label className="form-label">Thứ tự hiển thị *</label>
               <input
                 type="number"
                 {...register('sequence')}
-                className={`w-full p-2 border rounded-md focus:ring-blue-500 ${errors.sequence ? 'border-red-500' : 'border-gray-300'}`}
+                className="form-input"
               />
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Part liên kết</label>
-              <select
-                {...register('partId')}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500"
-              >
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Part liên kết</label>
+              <select {...register('partId')} className="form-input">
                 <option value="">-- Không chọn --</option>
                 {parts.map(p => (
                   <option key={p.id} value={p.id}>{p.name}</option>
                 ))}
               </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
-              <select
-                {...register('status')}
-                className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500"
-              >
+            <div className="form-group">
+              <label className="form-label">Trạng thái</label>
+              <select {...register('status')} className="form-input">
                 <option value="DRAFT">Bản nháp (DRAFT)</option>
                 <option value="PUBLISHED">Xuất bản (PUBLISHED)</option>
                 <option value="ARCHIVED">Lưu trữ (ARCHIVED)</option>
@@ -130,18 +121,18 @@ export const ModuleFormModal: React.FC<ModuleFormModalProps> = ({
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end gap-3 border-t border-gray-100 mt-6">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 font-medium"
+              className="btn-secondary"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 font-medium disabled:opacity-50"
+              className="btn-primary"
             >
               {isLoading ? 'Đang lưu...' : 'Lưu lại'}
             </button>
