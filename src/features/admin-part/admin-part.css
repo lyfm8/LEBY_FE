@@ -1,25 +1,10 @@
-.admin-page-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
 
-.admin-page-header {
-  margin-bottom: 1.5rem;
-}
 
-.admin-page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #111827;
-  margin: 0 0 0.25rem 0;
-}
 
-.admin-page-subtitle {
-  color: #6b7280;
-  margin: 0;
-  font-size: 0.875rem;
-}
+
+
+
+
 
 /* Layout for Part Page */
 .part-layout-grid {
@@ -146,43 +131,13 @@
   overflow-y: auto;
 }
 
-.btn-primary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 0.2s;
-}
-.btn-primary:hover { background-color: #1d4ed8; }
 
-.btn-secondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: white;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-weight: 500;
-  cursor: pointer;
-  font-size: 0.875rem;
-  transition: background-color 0.2s;
-}
-.btn-secondary:hover { background-color: #f9fafb; }
 
-.admin-table {
-  width: 100%;
-  text-align: left;
-  border-collapse: collapse;
-}
+
+
+
+
+
 .admin-table th {
   padding: 0.75rem 1.25rem;
   background-color: #f9fafb;
@@ -206,103 +161,29 @@
 .ability-name { font-weight: 500; color: #111827; }
 .ability-desc { color: #6b7280; font-size: 0.8125rem; }
 
-.badge {
-  padding: 0.25rem 0.5rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-}
-.badge-blue { background-color: #dbeafe; color: #1e40af; }
-.badge-gray { background-color: #f3f4f6; color: #374151; }
+
+
+
 
 .action-buttons {
   display: flex;
   gap: 0.5rem;
   justify-content: flex-end;
 }
-.btn-icon {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.25rem;
-  color: #6b7280;
-  transition: color 0.2s;
-}
-.btn-icon:hover { color: #111827; }
+
+
 .btn-icon.danger:hover { color: #dc2626; }
 .btn-icon.primary:hover { color: #2563eb; }
 
 /* Modal */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 50;
-}
-.modal-content {
-  background-color: white;
-  border-radius: 0.5rem;
-  width: 100%;
-  max-width: 500px;
-  padding: 1.5rem;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-}
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-.modal-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  margin: 0;
-}
-.modal-close {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #6b7280;
-}
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-.form-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #374151;
-}
-.form-input {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  outline: none;
-  width: 100%;
-}
-.form-textarea {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  outline: none;
-  width: 100%;
-  resize: vertical;
-}
-.form-error {
-  color: #dc2626;
-  font-size: 0.75rem;
-}
-.modal-footer {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  margin-top: 1.5rem;
-}
+
+
+
+
+
+
+
+
+
+
+
