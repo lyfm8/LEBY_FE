@@ -66,13 +66,6 @@ export const AdminLayout: React.FC = () => {
 
       {/* Main Content */}
       <div className="admin-main-wrapper">
-        <header className="admin-header">
-          <div className="admin-user-info">
-            <div className="admin-avatar">A</div>
-            <span className="admin-username">Admin</span>
-          </div>
-        </header>
-
         <main className="admin-main-content">
           <Outlet />
         </main>

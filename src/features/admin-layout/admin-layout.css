@@ -181,7 +181,7 @@
   overflow-x: hidden;
   overflow-y: auto;
   background-color: #f9fafb;
-  padding: 2rem; /* Thêm padding cho giống design */
+  padding: 2rem 2.5rem;
 }
 
 /* =========================================
@@ -381,13 +381,10 @@
 .badge-red { background-color: #fee2e2; color: #991b1b; }
 .badge-orange { background-color: #ffedd5; color: #c2410c; }
 
-/* --- Page Structure --- */
 .admin-page-container {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-  max-width: 1200px;
-  margin: 0 auto;
   width: 100%;
 }
 .admin-page-header {
