@@ -161,37 +161,39 @@ export const AdminThresholdPage: React.FC = () => {
 
 
   return (
-    <div className="threshold-container">
-      <div className="threshold-header">
-        <h1>Cấu hình Ngưỡng & Quy tắc Đánh giá</h1>
-        <p>Quản lý logic phân loại Diagnostic Test và trạng thái Năng lực học viên.</p>
+    <div className="admin-page-container">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Cấu hình Ngưỡng & Quy tắc Đánh giá</h1>
+          <p className="admin-page-subtitle">Quản lý logic phân loại Diagnostic Test và trạng thái Năng lực học viên.</p>
+        </div>
       </div>
 
       <div className="threshold-grid">
         
         {/* Bảng 1: Target Part Threshold */}
-        <div className="threshold-table-card">
+        <div className="table-container" style={{ display: 'flex', flexDirection: 'column', height: '75vh' }}>
           <div className="threshold-table-header">
             <div>
-              <h2>Ngưỡng Diagnostic Test (Part x AIM)</h2>
-              <p>Phân luồng học viện theo điểm bài Test</p>
+              <h2 style={{ fontSize: '1.125rem', fontWeight: 700, margin: 0, color: '#1f2937' }}>Ngưỡng Diagnostic Test (Part x AIM)</h2>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>Phân luồng học viện theo điểm bài Test</p>
             </div>
             <button 
               onClick={() => { setSelectedPartRule(null); setIsPartModalOpen(true); }}
-              className="btn-add-rule blue"
+              className="btn-primary"
             >
               <Plus size={16} /> Thêm Rule
             </button>
           </div>
-          <div className="threshold-table-wrapper">
-            {isLoading ? <div style={{ textAlign: 'center', color: '#6b7280' }}>Đang tải...</div> : (
-              <table className="threshold-table">
-                <thead>
+          <div className="threshold-table-wrapper" style={{ overflow: 'auto', flex: 1 }}>
+            {isLoading ? <div style={{ textAlign: 'center', color: '#6b7280', padding: '1rem' }}>Đang tải...</div> : (
+              <table className="admin-table">
+                <thead style={{ position: 'sticky', top: 0, zIndex: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <tr>
                     <th>Part</th>
                     <th>AIM</th>
                     <th style={{ textAlign: 'center', color: '#16a34a' }}>Pass</th>
-                    <th style={{ textAlign: 'center', color: '#f97316' }}>Confirm</th>
+                    <th style={{ textAlign: 'center', color: '#ea580c' }}>Confirm</th>
                     <th style={{ textAlign: 'center', color: '#ef4444' }}>Weak</th>
                     <th style={{ textAlign: 'center', width: '80px' }}>Hành động</th>
                   </tr>
@@ -200,14 +202,14 @@ export const AdminThresholdPage: React.FC = () => {
                   {partThresholds.map(rule => (
                     <tr key={rule.id}>
                       <td style={{ fontWeight: 500 }}>{rule.partName}</td>
-                      <td style={{ fontWeight: 500, color: '#1d4ed8' }}>{rule.aimName}</td>
+                      <td style={{ fontWeight: 500, color: '#ea580c' }}>{rule.aimName}</td>
                       <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rule.passThreshold}%</td>
                       <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rule.confirmThreshold}%</td>
                       <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rule.weakThreshold}%</td>
                       <td>
-                        <div className="threshold-actions">
-                          <button onClick={() => { setSelectedPartRule(rule); setIsPartModalOpen(true); }}><Edit2 size={16}/></button>
-                          <button onClick={() => handleDeletePartRule(rule.id)}><Trash2 size={16}/></button>
+                        <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                          <button className="btn-icon primary" onClick={() => { setSelectedPartRule(rule); setIsPartModalOpen(true); }}><Edit2 size={16}/></button>
+                          <button className="btn-icon danger" onClick={() => handleDeletePartRule(rule.id)}><Trash2 size={16}/></button>
                         </div>
                       </td>
                     </tr>
@@ -222,27 +224,27 @@ export const AdminThresholdPage: React.FC = () => {
         </div>
 
         {/* Bảng 2: Ability Evaluation Rule */}
-        <div className="threshold-table-card">
+        <div className="table-container" style={{ display: 'flex', flexDirection: 'column', height: '75vh' }}>
           <div className="threshold-table-header">
             <div>
-              <h2>Quy tắc Đánh giá Năng lực (Ability)</h2>
-              <p>Ngưỡng xét trạng thái Stable / Developing / Weak</p>
+              <h2 style={{ fontSize: '1.125rem', fontWeight: 700, margin: 0, color: '#1f2937' }}>Quy tắc Đánh giá Năng lực (Ability)</h2>
+              <p style={{ fontSize: '0.75rem', color: '#6b7280', margin: '0.25rem 0 0 0' }}>Ngưỡng xét trạng thái Stable / Developing / Weak</p>
             </div>
             <button 
               onClick={() => { setSelectedAbilityRule(null); setIsAbilityModalOpen(true); }}
-              className="btn-add-rule green"
+              className="btn-primary"
             >
               <Plus size={16} /> Thêm Rule
             </button>
           </div>
-          <div className="threshold-table-wrapper">
-            {isLoading ? <div style={{ textAlign: 'center', color: '#6b7280' }}>Đang tải...</div> : (
-              <table className="threshold-table">
-                <thead>
+          <div className="threshold-table-wrapper" style={{ overflow: 'auto', flex: 1 }}>
+            {isLoading ? <div style={{ textAlign: 'center', color: '#6b7280', padding: '1rem' }}>Đang tải...</div> : (
+              <table className="admin-table">
+                <thead style={{ position: 'sticky', top: 0, zIndex: 10, boxShadow: '0 1px 2px rgba(0,0,0,0.05)' }}>
                   <tr>
                     <th>Năng lực</th>
                     <th style={{ textAlign: 'center', color: '#16a34a' }}>Stable</th>
-                    <th style={{ textAlign: 'center', color: '#f97316' }}>Developing</th>
+                    <th style={{ textAlign: 'center', color: '#ea580c' }}>Developing</th>
                     <th style={{ textAlign: 'center' }}>Trạng thái</th>
                     <th style={{ textAlign: 'center', width: '80px' }}>Hành động</th>
                   </tr>
@@ -254,14 +256,14 @@ export const AdminThresholdPage: React.FC = () => {
                       <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rule.stableThreshold}%</td>
                       <td style={{ textAlign: 'center', fontWeight: 'bold' }}>{rule.developingThreshold}%</td>
                       <td style={{ textAlign: 'center' }}>
-                        <span className={`status-badge ${rule.status === 'PUBLISHED' ? 'published' : 'draft'}`}>
+                        <span className={`badge ${rule.status === 'PUBLISHED' ? 'badge-green' : 'badge-gray'}`}>
                           {rule.status}
                         </span>
                       </td>
                       <td>
-                        <div className="threshold-actions">
-                          <button onClick={() => { setSelectedAbilityRule(rule); setIsAbilityModalOpen(true); }}><Edit2 size={16}/></button>
-                          <button onClick={() => handleDeleteAbilityRule(rule.id)}><Trash2 size={16}/></button>
+                        <div className="action-buttons" style={{ justifyContent: 'center' }}>
+                          <button className="btn-icon primary" onClick={() => { setSelectedAbilityRule(rule); setIsAbilityModalOpen(true); }}><Edit2 size={16}/></button>
+                          <button className="btn-icon danger" onClick={() => handleDeleteAbilityRule(rule.id)}><Trash2 size={16}/></button>
                         </div>
                       </td>
                     </tr>
