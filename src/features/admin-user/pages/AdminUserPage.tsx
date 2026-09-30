@@ -7,6 +7,14 @@ import { UserFilterBar } from '../components/UserFilterBar';
 import { UserFormModal } from '../components/UserFormModal';
 import { Pagination } from '../components/Pagination';
 
+/**
+ * Container Component xử lý Quản lý người dùng.
+ * 
+ * LƯU Ý KIẾN TRÚC:
+ * - Chứa toàn bộ logic gọi API (Danh sách, Chi tiết, Tạo, Sửa, Xóa/Khóa).
+ * - Quản lý State phân trang (Pagination) và Bộ lọc (Filters).
+ * - Các component con (Table, FilterBar, Modal) nhận data qua props và trigger action qua callback.
+ */
 export const AdminUserPage: React.FC = () => {
   const [users, setUsers] = useState<UserListItemResponse[]>([]);
   const [filters, setFilters] = useState<UserFilterParams>({ page: 0, pageSize: 10 });
@@ -18,7 +26,10 @@ export const AdminUserPage: React.FC = () => {
   const [selectedUser, setSelectedUser] = useState<UserDetailResponse | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
-  // Load danh sách người dùng
+  /**
+   * Bước 1: Hàm tải danh sách User từ API dựa trên state `filters`.
+   * Tối ưu: Dùng useCallback để tránh tạo lại hàm mỗi lần render, giúp useEffect không bị trigger thừa.
+   */
   const fetchUsers = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -30,6 +41,7 @@ export const AdminUserPage: React.FC = () => {
         }
       }
     } catch (error) {
+      // NOTE: Log lỗi nội bộ, còn UI chỉ báo chung chung để tránh lộ thông tin
       console.error('Failed to fetch users:', error);
       alert('Có lỗi xảy ra khi tải danh sách người dùng');
     } finally {
@@ -37,22 +49,30 @@ export const AdminUserPage: React.FC = () => {
     }
   }, [filters]);
 
+  // Gọi fetchUsers mỗi khi bộ lọc (filters) thay đổi
   useEffect(() => {
     fetchUsers();
   }, [fetchUsers]);
 
-  // Xử lý thay đổi filter
+  /**
+   * Xử lý merge filter mới vào filter hiện tại để trigger useEffect load lại data.
+   */
   const handleFilterChange = (newFilters: Partial<UserFilterParams>) => {
     setFilters(prev => ({ ...prev, ...newFilters }));
   };
 
-  // Mở modal thêm mới
+  /**
+   * Reset thông tin để mở Modal ở chế độ Tạo mới.
+   */
   const handleAddNew = () => {
     setSelectedUser(null);
     setIsModalOpen(true);
   };
 
-  // Mở modal sửa (cần fetch chi tiết)
+  /**
+   * Bước 2: Gọi API lấy dữ liệu chi tiết (đầy đủ các trường) trước khi mở Modal sửa.
+   * Tối ưu: Không dùng data từ danh sách vì danh sách thường không chứa đủ thông tin chi tiết.
+   */
   const handleEdit = async (id: number) => {
     try {
       const res = await adminUserService.getById(id);
@@ -66,14 +86,16 @@ export const AdminUserPage: React.FC = () => {
     }
   };
 
-  // Xử lý khóa / mở khóa tài khoản (toggle active)
+  /**
+   * Bước 3: Đổi trạng thái khóa/mở tài khoản nhanh (Soft Deactivate).
+   */
   const handleToggleActive = async (id: number) => {
     if (!window.confirm('Bạn có chắc chắn muốn thay đổi trạng thái tài khoản này?')) return;
     
     try {
       const res = await adminUserService.toggleActive(id);
       if (res.success) {
-        // Refetch danh sách thay vì reload trang
+        // Tối ưu: Load lại danh sách sau khi toggle thành công để UI tự động cập nhật
         fetchUsers();
       }
     } catch (error) {
@@ -82,12 +104,14 @@ export const AdminUserPage: React.FC = () => {
     }
   };
 
-  // Submit form (Tạo mới hoặc Cập nhật)
+  /**
+   * Bước 4: Xử lý Submit Form (Dùng chung cho cả Create và Update).
+   */
   const handleFormSubmit = async (data: UserFormValues) => {
     try {
       setIsSubmitting(true);
       if (selectedUser) {
-        // Cập nhật
+        // Cập nhật người dùng hiện tại
         await adminUserService.update(selectedUser.id, {
           username: data.username,
           email: data.email,
@@ -96,14 +120,15 @@ export const AdminUserPage: React.FC = () => {
           isActive: data.isActive
         });
       } else {
-        // Tạo mới
+        // Tạo mới người dùng
         await adminUserService.create({
           ...data,
-          password: data.password || '123456' // Fallback an toàn nếu thiếu
+          // SECURITY: Nếu Backend yêu cầu mật khẩu, gửi mật khẩu default.
+          password: data.password || '123456' 
         });
       }
       setIsModalOpen(false);
-      fetchUsers(); // Tải lại danh sách
+      fetchUsers(); 
     } catch (error) {
       console.error('Failed to save user:', error);
       alert('Lưu thông tin thất bại, vui lòng kiểm tra lại');
@@ -132,6 +157,7 @@ export const AdminUserPage: React.FC = () => {
         onToggleActive={handleToggleActive} 
       />
 
+      {/* Tối ưu: Phân trang bắt buộc từ Backend */}
       <Pagination 
         currentPage={filters.page} 
         totalPages={totalPages} 
@@ -148,3 +174,4 @@ export const AdminUserPage: React.FC = () => {
     </div>
   );
 };
+
