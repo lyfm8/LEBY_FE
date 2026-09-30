@@ -6,6 +6,7 @@ import { UserTable } from '../components/UserTable';
 import { UserFilterBar } from '../components/UserFilterBar';
 import { UserFormModal } from '../components/UserFormModal';
 import { Pagination } from '../components/Pagination';
+import '../admin-user.css'; // NOTE: Import pure CSS
 
 /**
  * Container Component xử lý Quản lý người dùng.
@@ -138,10 +139,10 @@ export const AdminUserPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý Học viên & Tài khoản</h1>
-        <p className="text-gray-500 mt-1">Quản lý thông tin, phân quyền và trạng thái hoạt động của người dùng hệ thống</p>
+    <div className="admin-page-container">
+      <div className="admin-page-header">
+        <h1 className="admin-page-title">Quản lý Học viên & Tài khoản</h1>
+        <p className="admin-page-subtitle">Quản lý thông tin, phân quyền và trạng thái hoạt động của người dùng hệ thống</p>
       </div>
 
       <UserFilterBar 
