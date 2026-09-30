@@ -63,7 +63,7 @@ export const AdminThresholdPage: React.FC = () => {
         setParts(partsRes.data);
         // LƯU Ý: Tạm thời extract abilities từ mảng parts vì API hiện tại gộp chung.
         // Backend có trả về field `abilities` bên trong mỗi Part object (UC03).
-        const allAbilities = partsRes.data.flatMap(p => p.abilities);
+        const allAbilities = partsRes.data.flatMap(p => p.abilities || []);
         setAbilities(allAbilities);
       }
       if (profRes.success && profRes.data) setProfiles(profRes.data);

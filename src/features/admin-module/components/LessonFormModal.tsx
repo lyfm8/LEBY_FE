@@ -96,7 +96,6 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
   const isEdit = !!lesson;
 
   return (
-  return (
     <div className="modal-overlay">
       <div className="modal-content large">
         <div className="modal-header">

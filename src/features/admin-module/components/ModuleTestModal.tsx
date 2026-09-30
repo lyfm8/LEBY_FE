@@ -97,7 +97,6 @@ export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
   if (!isOpen) return null;
 
   return (
-  return (
     <div className="modal-overlay">
       <div className="modal-content large" style={{ display: 'flex', flexDirection: 'column', height: '85vh', padding: 0 }}>
         {/* Header */}

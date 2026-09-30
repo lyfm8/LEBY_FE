@@ -48,7 +48,6 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
   };
 
   return (
-  return (
     <div className="accordion-item">
       {/* Header Module */}
       <div 

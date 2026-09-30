@@ -210,7 +210,6 @@ export const AdminModulePage: React.FC = () => {
   };
 
   return (
-  return (
     <div className="admin-page-container">
       <div className="admin-page-header">
         <div>
