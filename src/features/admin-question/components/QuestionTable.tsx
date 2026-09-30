@@ -11,69 +11,72 @@ interface QuestionTableProps {
 
 export const QuestionTable: React.FC<QuestionTableProps> = ({ questions, onEdit, onDelete, isLoading }) => {
   if (isLoading) {
-    return <div className="text-center py-10 text-gray-500">Đang tải danh sách câu hỏi...</div>;
+    return <div style={{ textAlign: 'center', padding: '2.5rem', color: '#6b7280' }}>Đang tải dữ liệu...</div>;
   }
 
   return (
-    <div className="bg-white rounded-lg shadow border border-gray-100 overflow-x-auto">
-      <table className="w-full text-sm text-left">
-        <thead className="text-xs text-gray-500 uppercase bg-gray-50">
+    <div className="table-container">
+      <table className="admin-table">
+        <thead>
           <tr>
-            <th className="px-6 py-3 font-medium">Mã CH</th>
-            <th className="px-6 py-3 font-medium">Nội dung tóm tắt</th>
-            <th className="px-6 py-3 font-medium">Part / Kỹ năng</th>
-            <th className="px-6 py-3 font-medium">Năng lực (Ability)</th>
-            <th className="px-6 py-3 font-medium text-center">Độ khó</th>
-            <th className="px-6 py-3 font-medium text-right">Thao tác</th>
+            <th>Tên / Nội dung câu hỏi</th>
+            <th>Section & Part</th>
+            <th>Loại</th>
+            <th>Độ khó</th>
+            <th style={{ textAlign: 'right' }}>Thao tác</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-100">
+        <tbody>
           {questions.length === 0 ? (
             <tr>
-              <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                Không có câu hỏi nào khớp với bộ lọc
+              <td colSpan={5} style={{ textAlign: 'center', padding: '2rem', color: '#6b7280' }}>
+                Không tìm thấy câu hỏi nào
               </td>
             </tr>
           ) : (
             questions.map((q) => (
-              <tr key={q.id} className="hover:bg-gray-50 transition-colors">
-                <td className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                  {q.name}
+              <tr key={q.id}>
+                <td>
+                  <div className="question-text" title={q.name}>{q.name}</div>
+                  <div className="question-detail-text">Thuộc: {q.abilities?.map(a => a.name).join(', ') || 'Chưa phân loại'}</div>
                 </td>
-                <td className="px-6 py-4 text-gray-600 max-w-xs truncate" title={q.questionSummary}>
-                  {q.questionSummary}
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-gray-900">{q.partName}</div>
-                  <div className="text-xs text-gray-500 mt-0.5">{q.section}</div>
-                </td>
-                <td className="px-6 py-4 text-gray-600">
-                  <span className="inline-block px-2 py-1 bg-blue-50 text-blue-700 rounded text-xs">
-                    {q.abilityName}
+                <td>
+                  <span className={`badge ${q.section === 'LISTENING' ? 'badge-blue' : 'badge-orange'}`}>
+                    {q.section}
                   </span>
-                </td>
-                <td className="px-6 py-4 text-center">
-                  <div className="flex justify-center gap-0.5 text-yellow-400">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <span key={i} className={i < q.difficulty ? 'opacity-100' : 'opacity-20'}>★</span>
-                    ))}
+                  <div style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#6b7280' }}>
+                    Part {q.part?.name || '?'}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right whitespace-nowrap">
-                  <button
-                    onClick={() => onEdit(q.id)}
-                    className="text-blue-600 hover:text-blue-800 p-1 mr-2 transition-colors"
-                    title="Chỉnh sửa"
-                  >
-                    <Edit2 size={18} />
-                  </button>
-                  <button
-                    onClick={() => onDelete(q.id)}
-                    className="text-red-500 hover:text-red-700 p-1 transition-colors"
-                    title="Xóa câu hỏi"
-                  >
-                    <Trash2 size={18} />
-                  </button>
+                <td>
+                  <span className="badge badge-gray">{q.type}</span>
+                </td>
+                <td>
+                  <span className={`badge ${
+                    q.difficulty === 'EASY' ? 'badge-green' :
+                    q.difficulty === 'MEDIUM' ? 'badge-blue' :
+                    q.difficulty === 'HARD' ? 'badge-orange' : 'badge-red'
+                  }`}>
+                    {q.difficulty}
+                  </span>
+                </td>
+                <td>
+                  <div className="action-buttons">
+                    <button
+                      onClick={() => onEdit(q.id)}
+                      className="btn-icon primary"
+                      title="Chỉnh sửa"
+                    >
+                      <Edit2 size={18} />
+                    </button>
+                    <button
+                      onClick={() => onDelete(q.id)}
+                      className="btn-icon danger"
+                      title="Xóa"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))

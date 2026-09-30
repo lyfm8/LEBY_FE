@@ -9,7 +9,8 @@ import type { QuestionFormValues } from '../utils/schema';
 import { QuestionFilterBar } from '../components/QuestionFilterBar';
 import { QuestionTable } from '../components/QuestionTable';
 import { QuestionFormModal } from '../components/QuestionFormModal';
-import { Pagination } from '@/features/admin-user/components/Pagination'; // Dùng chung component phân trang với admin-user
+import { Pagination } from '@/features/admin-user/components/Pagination';
+import '../admin-question.css';
 
 export const AdminQuestionPage: React.FC = () => {
   const [questions, setQuestions] = useState<QuestionListItemResponse[]>([]);
@@ -86,7 +87,6 @@ export const AdminQuestionPage: React.FC = () => {
     try {
       setIsSubmitting(true);
       
-      // Chuyển string JSON từ form thành Object trước khi gửi lên API
       const payload = {
         name: data.name,
         type: data.type,
@@ -105,7 +105,7 @@ export const AdminQuestionPage: React.FC = () => {
         await adminQuestionService.create(payload);
       }
       setIsModalOpen(false);
-      fetchQuestions(); // Tải lại trang sau khi cập nhật thành công
+      fetchQuestions();
     } catch (error) {
       console.error('Save failed:', error);
       alert('Lưu dữ liệu thất bại!');
@@ -115,10 +115,10 @@ export const AdminQuestionPage: React.FC = () => {
   };
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý Ngân hàng câu hỏi</h1>
-        <p className="text-gray-500 mt-1">Danh sách câu hỏi dùng chung cho toàn bộ hệ thống</p>
+    <div className="admin-page-container">
+      <div className="admin-page-header">
+        <h1 className="admin-page-title">Quản lý Ngân hàng câu hỏi</h1>
+        <p className="admin-page-subtitle">Danh sách câu hỏi dùng chung cho toàn bộ hệ thống</p>
       </div>
 
       <QuestionFilterBar 
@@ -127,7 +127,7 @@ export const AdminQuestionPage: React.FC = () => {
         onAddNew={handleAddNew}
       />
 
-      <div className="mb-4 text-sm text-gray-600">
+      <div style={{ fontSize: '0.875rem', color: '#4b5563', marginBottom: '1rem' }}>
         Hiển thị <strong>{questions.length}</strong> / <strong>{totalItems}</strong> câu hỏi
       </div>
 
@@ -146,7 +146,6 @@ export const AdminQuestionPage: React.FC = () => {
         />
       )}
 
-      {/* Render component modal bên ngoài để tránh re-render khi form gõ */}
       <QuestionFormModal 
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
