@@ -4,15 +4,13 @@
 
 
 
-
-
 /* Layout for Part Page */
 .part-layout-grid {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-  height: calc(100vh - 180px);
-  min-height: 600px;
+  flex: 1;
+  min-height: 0;
 }
 @media (min-width: 1024px) {
   .part-layout-grid {
@@ -22,9 +20,15 @@
 
 .part-list-col {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 .ability-list-col {
   height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Part List Components */
@@ -36,13 +40,12 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .part-list-header {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid #e5e7eb;
   background-color: #f9fafb;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
 }
 .part-list-title {
   font-size: 1.125rem;
@@ -100,6 +103,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 .ability-list-header {
   padding: 1rem 1.25rem;
@@ -108,8 +112,6 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
 }
 .ability-list-title-wrapper {
   display: flex;
@@ -131,59 +133,6 @@
   overflow-y: auto;
 }
 
-
-
-
-
-
-
-
-.admin-table th {
-  padding: 0.75rem 1.25rem;
-  background-color: #f9fafb;
-  color: #6b7280;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  position: sticky;
-  top: 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-.admin-table td {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 0.875rem;
-}
-.admin-table tr:hover td {
-  background-color: #f9fafb;
-}
-
-.ability-name { font-weight: 500; color: #111827; }
+/* Custom Table Overrides */
+.ability-name { font-weight: 500; color: #111827; margin-bottom: 0.25rem; }
 .ability-desc { color: #6b7280; font-size: 0.8125rem; }
-
-
-
-
-
-.action-buttons {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-}
-
-
-.btn-icon.danger:hover { color: #dc2626; }
-.btn-icon.primary:hover { color: #2563eb; }
-
-/* Modal */
-
-
-
-
-
-
-
-
-
-
-

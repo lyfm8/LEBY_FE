@@ -123,15 +123,17 @@ export const AdminPartPage: React.FC = () => {
   const selectedPartName = parts.find(p => p.id === selectedPartId)?.name;
 
   return (
-    <div className="p-6 bg-slate-50 min-h-screen">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Quản lý Part & Năng lực</h1>
-        <p className="text-gray-500 mt-1">Quản lý các loại năng lực cần đánh giá theo từng phần thi (Part) của TOEIC</p>
+    <div className="admin-page-container">
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Quản lý Part & Năng lực</h1>
+          <p className="admin-page-subtitle">Quản lý các loại năng lực cần đánh giá theo từng phần thi (Part) của TOEIC</p>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-180px)] min-h-[600px]">
+      <div className="part-layout-grid">
         {/* Cột trái: Danh sách Part */}
-        <div className="lg:col-span-1 h-full">
+        <div className="part-list-col">
           <PartList 
             parts={parts} 
             selectedPartId={selectedPartId} 
@@ -141,7 +143,7 @@ export const AdminPartPage: React.FC = () => {
         </div>
 
         {/* Cột phải: Danh sách Ability của Part được chọn */}
-        <div className="lg:col-span-2 h-full">
+        <div className="ability-list-col">
           <AbilityList 
             abilities={abilities}
             isLoading={isAbilitiesLoading}
