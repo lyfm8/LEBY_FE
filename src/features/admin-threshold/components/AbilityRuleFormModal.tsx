@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { abilityRuleSchema, AbilityRuleFormValues } from '../utils/schema';
+import { abilityRuleSchema, type AbilityRuleFormValues } from '../utils/schema';
 import type { AbilityEvaluationRuleResponse } from '../types';
 import type { AbilityResponse } from '@/features/admin-part/types';
 import { X } from 'lucide-react';
@@ -67,36 +67,36 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2 className="modal-title">
             {data ? 'Sửa Quy Tắc Đánh Giá Năng Lực' : 'Thêm Quy Tắc Đánh Giá'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="modal-close">
             <X size={24} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Năng lực (Ability) <span className="text-red-500">*</span></label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label className="form-label">Năng lực (Ability) <span style={{ color: '#ef4444' }}>*</span></label>
             <select
               {...register('abilityId', { valueAsNumber: true })}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+              className="form-input"
             >
               <option value={0} disabled>Chọn Năng lực</option>
               {abilities.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
             </select>
-            {errors.abilityId && <p className="text-red-500 text-xs mt-1">{errors.abilityId.message}</p>}
+            {errors.abilityId && <p className="form-error">{errors.abilityId.message}</p>}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái (Status)</label>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Trạng thái (Status)</label>
               <select
                 {...register('status')}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               >
                 <option value="DRAFT">Nháp (DRAFT)</option>
                 <option value="PUBLISHED">Hoạt động (PUBLISHED)</option>
@@ -104,43 +104,45 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
             </div>
           </div>
 
-          <div className="bg-green-50 p-4 rounded-md border border-green-100 mt-2">
-            <h4 className="font-semibold text-green-800 mb-3 text-sm">Thiết lập Ngưỡng (%)</h4>
-            <div className="space-y-4">
+          <div className="settings-box green">
+            <h4>Thiết lập Ngưỡng (%)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Stable (Ổn định)</label>
+                <label className="form-label">Stable (Ổn định)</label>
                 <input
                   type="number"
                   {...register('stableThreshold', { valueAsNumber: true })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500"
+                  className="form-input"
+                  style={{ borderColor: '#dcfce7' }}
                 />
-                {errors.stableThreshold && <p className="text-red-500 text-xs mt-1">{errors.stableThreshold.message}</p>}
+                {errors.stableThreshold && <p className="form-error">{errors.stableThreshold.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Developing (Đang phát triển)</label>
+                <label className="form-label">Developing (Đang phát triển)</label>
                 <input
                   type="number"
                   {...register('developingThreshold', { valueAsNumber: true })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-green-500"
+                  className="form-input"
+                  style={{ borderColor: '#dcfce7' }}
                 />
-                {errors.developingThreshold && <p className="text-red-500 text-xs mt-1">{errors.developingThreshold.message}</p>}
+                {errors.developingThreshold && <p className="form-error">{errors.developingThreshold.message}</p>}
               </div>
             </div>
-            <p className="text-xs text-green-700 mt-3">Lưu ý: Dưới mức Developing sẽ được đánh giá là WEAK (Yếu).</p>
+            <p style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.75rem' }}>Lưu ý: Dưới mức Developing sẽ được đánh giá là WEAK (Yếu).</p>
           </div>
 
-          <div className="pt-2 flex justify-end gap-3">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="btn-secondary"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="btn-primary"
             >
               {isLoading ? 'Đang lưu...' : 'Lưu lại'}
             </button>

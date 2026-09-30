@@ -1,7 +1,7 @@
 import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { partThresholdSchema, PartThresholdFormValues } from '../utils/schema';
+import { partThresholdSchema, type PartThresholdFormValues } from '../utils/schema';
 import type { TargetPartThresholdResponse } from '../types';
 import type { PartResponse } from '@/features/admin-part/types';
 import type { TargetProfileResponse } from '@/features/admin-target/types';
@@ -72,89 +72,92 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl w-full max-w-lg flex flex-col">
-        <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-gray-800">
+    <div className="modal-overlay">
+      <div className="modal-content">
+        <div className="modal-header">
+          <h2 className="modal-title">
             {data ? 'Sửa Ngưỡng Điểm Part' : 'Thêm Ngưỡng Điểm Part'}
           </h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600">
+          <button onClick={onClose} className="modal-close">
             <X size={24} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Part <span className="text-red-500">*</span></label>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Part <span style={{ color: '#ef4444' }}>*</span></label>
               <select
                 {...register('partId', { valueAsNumber: true })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               >
                 <option value={0} disabled>Chọn Part</option>
                 {parts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-              {errors.partId && <p className="text-red-500 text-xs mt-1">{errors.partId.message}</p>}
+              {errors.partId && <p className="form-error">{errors.partId.message}</p>}
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Mục tiêu (AIM) <span className="text-red-500">*</span></label>
+            <div className="form-group">
+              <label className="form-label">Mục tiêu (AIM) <span style={{ color: '#ef4444' }}>*</span></label>
               <select
                 {...register('targetProfileId', { valueAsNumber: true })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                className="form-input"
               >
                 <option value={0} disabled>Chọn Mục tiêu</option>
                 {profiles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
-              {errors.targetProfileId && <p className="text-red-500 text-xs mt-1">{errors.targetProfileId.message}</p>}
+              {errors.targetProfileId && <p className="form-error">{errors.targetProfileId.message}</p>}
             </div>
           </div>
 
-          <div className="bg-blue-50 p-4 rounded-md border border-blue-100">
-            <h4 className="font-semibold text-blue-800 mb-3 text-sm">Thiết lập Ngưỡng (%)</h4>
-            <div className="space-y-4">
+          <div className="settings-box">
+            <h4>Thiết lập Ngưỡng (%)</h4>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Pass (Qua bài)</label>
+                <label className="form-label">Pass (Qua bài)</label>
                 <input
                   type="number"
                   {...register('passThreshold', { valueAsNumber: true })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                  className="form-input"
+                  style={{ borderColor: '#bfdbfe' }}
                 />
-                {errors.passThreshold && <p className="text-red-500 text-xs mt-1">{errors.passThreshold.message}</p>}
+                {errors.passThreshold && <p className="form-error">{errors.passThreshold.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Confirm (Cần xác nhận lại)</label>
+                <label className="form-label">Confirm (Cần xác nhận lại)</label>
                 <input
                   type="number"
                   {...register('confirmThreshold', { valueAsNumber: true })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                  className="form-input"
+                  style={{ borderColor: '#bfdbfe' }}
                 />
-                {errors.confirmThreshold && <p className="text-red-500 text-xs mt-1">{errors.confirmThreshold.message}</p>}
+                {errors.confirmThreshold && <p className="form-error">{errors.confirmThreshold.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Weak (Yếu)</label>
+                <label className="form-label">Weak (Yếu)</label>
                 <input
                   type="number"
                   {...register('weakThreshold', { valueAsNumber: true })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-blue-500"
+                  className="form-input"
+                  style={{ borderColor: '#bfdbfe' }}
                 />
-                {errors.weakThreshold && <p className="text-red-500 text-xs mt-1">{errors.weakThreshold.message}</p>}
+                {errors.weakThreshold && <p className="form-error">{errors.weakThreshold.message}</p>}
               </div>
             </div>
           </div>
 
-          <div className="pt-2 flex justify-end gap-3">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
+              className="btn-secondary"
             >
               Hủy
             </button>
             <button
               type="submit"
               disabled={isLoading}
-              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+              className="btn-primary"
             >
               {isLoading ? 'Đang lưu...' : 'Lưu lại'}
             </button>
