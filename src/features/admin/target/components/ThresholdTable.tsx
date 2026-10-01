@@ -52,9 +52,9 @@ export const ThresholdTable: React.FC<ThresholdTableProps> = ({ matrix, onUpdate
           <thead>
             <tr>
               <th className="col-module">Module</th>
-              {matrix.profileNames.map((name, index) => (
+              {matrix.profileScores.map((score, index) => (
                 <th key={matrix.profileIds[index]} className="col-profile">
-                  {name}
+                  AIM {score}
                 </th>
               ))}
             </tr>

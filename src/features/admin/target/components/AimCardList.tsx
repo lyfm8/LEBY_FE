@@ -38,7 +38,6 @@ export const AimCardList: React.FC<AimCardListProps> = ({ profiles, onAdd, onEdi
             </div>
             
             <div className="aim-score">{profile.aimScore}</div>
-            <div className="aim-name">{profile.name}</div>
             <div className="aim-desc" title={profile.description}>
               {profile.description || 'Chưa có mô tả'}
             </div>

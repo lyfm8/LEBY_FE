@@ -19,18 +19,18 @@ export const adminTargetService = {
    * Lấy danh sách toàn bộ các Mục tiêu học tập (AIM).
    */
   getAllProfiles(): Promise<ApiResponse<TargetProfileResponse[]>> {
-    return apiClient.get('/api/v1/admin/target-profiles');
+    return apiClient.get('/api/admin/target-profiles');
   },
 
   /**
    * Tạo mới một AIM (Ví dụ: TOEIC 450+).
    */
   createProfile(data: CreateTargetProfileRequest): Promise<ApiResponse<TargetProfileResponse>> {
-    return apiClient.post('/api/v1/admin/target-profiles', data);
+    return apiClient.post('/api/admin/target-profiles', data);
   },
 
   updateProfile(id: number, data: CreateTargetProfileRequest): Promise<ApiResponse<TargetProfileResponse>> {
-    return apiClient.put(`/api/v1/admin/target-profiles/${id}`, data);
+    return apiClient.put(`/api/admin/target-profiles/${id}`, data);
   },
 
   /**
@@ -38,7 +38,7 @@ export const adminTargetService = {
    * LƯU Ý: Backend sẽ chặn xóa nếu đang có user tham chiếu (mã lỗi 400).
    */
   deleteProfile(id: number): Promise<ApiResponse<null>> {
-    return apiClient.delete(`/api/v1/admin/target-profiles/${id}`);
+    return apiClient.delete(`/api/admin/target-profiles/${id}`);
   },
 
   // =====================================

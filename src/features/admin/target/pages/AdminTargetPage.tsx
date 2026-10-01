@@ -13,7 +13,7 @@ export const AdminTargetPage: React.FC = () => {
   const [isLoadingProfiles, setIsLoadingProfiles] = useState(false);
 
   // State Threshold Matrix
-  const [matrix, setMatrix] = useState<ThresholdMatrixResponse>({ profileIds: [], profileNames: [], rows: [] });
+  const [matrix, setMatrix] = useState<ThresholdMatrixResponse>({ profileIds: [], profileScores: [], rows: [] });
   const [isLoadingMatrix, setIsLoadingMatrix] = useState(false);
   const [isUpdatingThreshold, setIsUpdatingThreshold] = useState(false);
 

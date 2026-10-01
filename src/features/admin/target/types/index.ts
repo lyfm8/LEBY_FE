@@ -1,13 +1,11 @@
 export interface TargetProfileResponse {
   id: number;
-  name: string;
   aimScore: number;
   description: string;
   totalUsers: number;
 }
 
 export interface CreateTargetProfileRequest {
-  name: string;
   aimScore: number;
   description?: string;
 }
@@ -20,7 +18,7 @@ export interface ThresholdMatrixRow {
 
 export interface ThresholdMatrixResponse {
   profileIds: number[];
-  profileNames: string[];
+  profileScores: number[];
   rows: ThresholdMatrixRow[];
 }
 

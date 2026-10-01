@@ -19,7 +19,6 @@ export const TargetProfileFormModal: React.FC<TargetProfileFormModalProps> = ({
   const { register, handleSubmit, reset, formState: { errors } } = useForm<TargetProfileFormValues>({
     resolver: zodResolver(targetProfileSchema),
     defaultValues: {
-      name: '',
       aimScore: 0,
       description: ''
     }
@@ -29,13 +28,11 @@ export const TargetProfileFormModal: React.FC<TargetProfileFormModalProps> = ({
     if (isOpen) {
       if (profile) {
         reset({
-          name: profile.name,
           aimScore: profile.aimScore,
           description: profile.description || ''
         });
       } else {
         reset({
-          name: '',
           aimScore: 0,
           description: ''
         });
@@ -58,16 +55,6 @@ export const TargetProfileFormModal: React.FC<TargetProfileFormModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="form-group">
-            <label className="form-label">Tên mục tiêu <span style={{ color: '#ef4444' }}>*</span></label>
-            <input
-              {...register('name')}
-              className="form-input"
-              placeholder="VD: Đột phá 650"
-            />
-            {errors.name && <p className="form-error">{errors.name.message}</p>}
-          </div>
-
           <div className="form-group">
             <label className="form-label">Điểm Aim <span style={{ color: '#ef4444' }}>*</span></label>
             <input
