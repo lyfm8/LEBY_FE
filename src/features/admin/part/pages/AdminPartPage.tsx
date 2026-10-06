@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { adminPartService } from '../services/adminPartService';
 import type { PartResponse, AbilityResponse } from '../types';
-import type { AbilityFormValues } from '../utils/schema';
+import type { PartFormValues, AbilityFormValues } from '../utils/schema';
 import { PartList } from '../components/PartList';
 import { AbilityList } from '../components/AbilityList';
+import { PartFormModal } from '../components/PartFormModal';
 import { AbilityFormModal } from '../components/AbilityFormModal';
-import '../admin-part.css'; // NOTE: Import pure CSS
+import '../admin-part.css';
 
 export const AdminPartPage: React.FC = () => {
   const [parts, setParts] = useState<PartResponse[]>([]);
@@ -16,32 +17,41 @@ export const AdminPartPage: React.FC = () => {
   const [isAbilitiesLoading, setIsAbilitiesLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   
-  const [selectedAbility, setSelectedAbility] = useState<AbilityResponse | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  // Modals
+  const [selectedPart, setSelectedPart] = useState<PartResponse | null>(null);
+  const [isPartModalOpen, setIsPartModalOpen] = useState<boolean>(false);
 
-  // Fetch danh sách Parts khi mount
-  useEffect(() => {
-    let isMounted = true;
-    const fetchParts = async () => {
-      try {
-        setIsPartsLoading(true);
-        const res = await adminPartService.getParts();
-        if (isMounted && res.success && res.data) {
-          setParts(res.data);
-          // Tự động chọn part đầu tiên nếu có
-          if (res.data.length > 0) {
-            setSelectedPartId(res.data[0].id);
+  const [selectedAbility, setSelectedAbility] = useState<AbilityResponse | null>(null);
+  const [isAbilityModalOpen, setIsAbilityModalOpen] = useState<boolean>(false);
+
+  // Fetch danh sách Parts
+  const fetchParts = useCallback(async () => {
+    try {
+      setIsPartsLoading(true);
+      const res = await adminPartService.getParts();
+      if (res.success && res.data) {
+        setParts(res.data);
+        // Tự động chọn part đầu tiên nếu chưa chọn hoặc part đang chọn không còn tồn tại
+        setSelectedPartId(prevId => {
+          const exists = res.data.some(p => p.id === prevId);
+          if (!exists && res.data.length > 0) {
+            return res.data[0].id;
           }
-        }
-      } catch (error) {
-        console.error('Failed to fetch parts:', error);
-      } finally {
-        if (isMounted) setIsPartsLoading(false);
+          return exists ? prevId : null;
+        });
       }
-    };
-    fetchParts();
-    return () => { isMounted = false; };
+    } catch (error: any) {
+      console.error('Failed to fetch parts:', error);
+      const msg = error?.response?.data?.message || 'Không thể tải danh sách phần thi.';
+      alert(msg);
+    } finally {
+      setIsPartsLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchParts();
+  }, [fetchParts]);
 
   // Fetch Abilities khi selectedPartId thay đổi
   const fetchAbilities = useCallback(async (partId: number) => {
@@ -53,7 +63,7 @@ export const AdminPartPage: React.FC = () => {
       } else {
         setAbilities([]);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to fetch abilities:', error);
       setAbilities([]);
     } finally {
@@ -64,70 +74,129 @@ export const AdminPartPage: React.FC = () => {
   useEffect(() => {
     if (selectedPartId !== null) {
       fetchAbilities(selectedPartId);
+    } else {
+      setAbilities([]);
     }
   }, [selectedPartId, fetchAbilities]);
 
+  // ===============================
+  // PART ACTIONS
+  // ===============================
   const handleSelectPart = (id: number) => {
     setSelectedPartId(id);
   };
 
+  const handleAddPart = () => {
+    setSelectedPart(null);
+    setIsPartModalOpen(true);
+  };
+
+  const handleEditPart = (part: PartResponse) => {
+    setSelectedPart(part);
+    setIsPartModalOpen(true);
+  };
+
+  const handleDeletePart = async (id: number) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa phần thi này không?')) return;
+
+    try {
+      const res = await adminPartService.deletePart(id);
+      if (res.success) {
+        alert('Xóa phần thi thành công.');
+        fetchParts();
+      }
+    } catch (error: any) {
+      console.error('Delete part failed:', error);
+      const msg = error?.response?.data?.message || 'Xóa phần thi thất bại.';
+      alert(msg);
+    }
+  };
+
+  const handlePartFormSubmit = async (data: PartFormValues) => {
+    try {
+      setIsSubmitting(true);
+      if (selectedPart) {
+        await adminPartService.updatePart(selectedPart.id, data);
+        alert('Cập nhật phần thi thành công.');
+      } else {
+        const res = await adminPartService.createPart(data);
+        alert('Tạo phần thi mới thành công.');
+        if (res.data?.id) {
+          setSelectedPartId(res.data.id);
+        }
+      }
+      setIsPartModalOpen(false);
+      fetchParts();
+    } catch (error: any) {
+      console.error('Save part failed:', error);
+      const msg = error?.response?.data?.message || 'Lưu dữ liệu phần thi thất bại.';
+      alert(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // ===============================
+  // ABILITY ACTIONS
+  // ===============================
   const handleAddAbility = () => {
     setSelectedAbility(null);
-    setIsModalOpen(true);
+    setIsAbilityModalOpen(true);
   };
 
   const handleEditAbility = (ability: AbilityResponse) => {
     setSelectedAbility(ability);
-    setIsModalOpen(true);
+    setIsAbilityModalOpen(true);
   };
 
-  const handleDeleteAbility = async (id: number, totalQuestions: number) => {
-    if (totalQuestions > 0) {
-      alert('Không thể xóa năng lực này vì đang có câu hỏi liên kết!');
-      return;
-    }
-    
+  const handleDeleteAbility = async (id: number) => {
     if (!window.confirm('Bạn có chắc chắn muốn xóa năng lực này không?')) return;
 
     try {
       const res = await adminPartService.deleteAbility(id);
       if (res.success) {
+        alert('Xóa năng lực thành công.');
         if (selectedPartId) fetchAbilities(selectedPartId);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Delete ability failed:', error);
-      alert('Xóa năng lực thất bại.');
+      const msg = error?.response?.data?.message || 'Xóa năng lực thất bại.';
+      alert(msg);
     }
   };
 
-  const handleFormSubmit = async (data: AbilityFormValues) => {
+  const handleAbilityFormSubmit = async (data: AbilityFormValues) => {
     if (!selectedPartId) return;
 
     try {
       setIsSubmitting(true);
       if (selectedAbility) {
         await adminPartService.updateAbility(selectedAbility.id, data);
+        alert('Cập nhật năng lực thành công.');
       } else {
         await adminPartService.createAbility(selectedPartId, data);
+        alert('Tạo năng lực mới thành công.');
       }
-      setIsModalOpen(false);
+      setIsAbilityModalOpen(false);
       fetchAbilities(selectedPartId);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Save ability failed:', error);
-      alert('Lưu dữ liệu thất bại, vui lòng thử lại.');
+      const msg = error?.response?.data?.message || 'Lưu dữ liệu năng lực thất bại.';
+      alert(msg);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  const selectedPartName = parts.find(p => p.id === selectedPartId)?.name;
+  const selectedPartObj = parts.find(p => p.id === selectedPartId);
+  const selectedPartName = selectedPartObj?.name;
 
   return (
     <div className="admin-page-container">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Quản lý Part & Năng lực</h1>
-          <p className="admin-page-subtitle">Quản lý các loại năng lực cần đánh giá theo từng phần thi (Part) của TOEIC</p>
+          <h1 className="admin-page-title">Quản lý Phần thi & Năng lực (Part & Ability)</h1>
+          <p className="admin-page-subtitle">Quản lý cấu trúc các phần thi TOEIC và danh mục năng lực đánh giá tương ứng</p>
         </div>
       </div>
 
@@ -138,6 +207,9 @@ export const AdminPartPage: React.FC = () => {
             parts={parts} 
             selectedPartId={selectedPartId} 
             onSelectPart={handleSelectPart} 
+            onAddPart={handleAddPart}
+            onEditPart={handleEditPart}
+            onDeletePart={handleDeletePart}
             isLoading={isPartsLoading} 
           />
         </div>
@@ -155,11 +227,21 @@ export const AdminPartPage: React.FC = () => {
         </div>
       </div>
 
+      {/* Modal Thêm / Sửa Part */}
+      <PartFormModal
+        isOpen={isPartModalOpen}
+        onClose={() => setIsPartModalOpen(false)}
+        onSubmit={handlePartFormSubmit}
+        part={selectedPart}
+        isLoading={isSubmitting}
+      />
+
+      {/* Modal Thêm / Sửa Ability */}
       {selectedPartId && selectedPartName && (
         <AbilityFormModal 
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          onSubmit={handleFormSubmit}
+          isOpen={isAbilityModalOpen}
+          onClose={() => setIsAbilityModalOpen(false)}
+          onSubmit={handleAbilityFormSubmit}
           ability={selectedAbility}
           isLoading={isSubmitting}
           partName={selectedPartName}

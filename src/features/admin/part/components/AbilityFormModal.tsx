@@ -52,17 +52,22 @@ export const AbilityFormModal: React.FC<AbilityFormModalProps> = ({
           <h2 className="modal-title">
             {ability ? 'Cập nhật Năng lực' : 'Thêm Năng lực mới'}
           </h2>
-          <button onClick={onClose} className="modal-close"><X size={24} /></button>
+          <button onClick={onClose} className="modal-close" type="button"><X size={24} /></button>
         </div>
         
         <p style={{ fontSize: '0.875rem', color: '#6b7280', marginBottom: '1.5rem' }}>
-          Áp dụng cho: <strong style={{ color: '#111827' }}>{partName}</strong>
+          Áp dụng cho phần thi: <strong style={{ color: '#111827' }}>{partName}</strong>
         </p>
         
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="form-group">
             <label className="form-label">Tên năng lực <span style={{ color: '#dc2626' }}>*</span></label>
-            <input type="text" className="form-input" placeholder="Ví dụ: Hiểu ý chính (Main Idea)" {...register('name')} />
+            <input 
+              type="text" 
+              className="form-input" 
+              placeholder="Ví dụ: Identifying Actions" 
+              {...register('name')} 
+            />
             {errors.name && <p className="form-error">{errors.name.message}</p>}
           </div>
 

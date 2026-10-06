@@ -3,25 +3,32 @@
  */
 
 export type PartSectionType = 'LISTENING' | 'READING';
-export type AbilityStatusType = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
 
 export interface PartResponse {
   id: number;
   name: string;
-  section: PartSectionType;
-  totalQuestions: number;
+  description?: string;
+  sections: PartSectionType;
+}
+
+export interface PartRequest {
+  name: string;
+  description?: string;
+  sections: PartSectionType;
 }
 
 export interface AbilityResponse {
   id: number;
   name: string;
   description: string;
-  status: AbilityStatusType;
-  totalQuestions: number;
+  sections: PartSectionType;
+  partId: number;
 }
 
-export interface AbilityFormData {
+export interface AbilityRequest {
   name: string;
-  description: string;
-  status: AbilityStatusType;
+  description?: string;
 }
+
+export type AbilityFormData = AbilityRequest;
+export type PartFormData = PartRequest;
