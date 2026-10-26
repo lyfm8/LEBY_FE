@@ -91,16 +91,6 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
                         </div>
 
                         <div className="pf-form__group">
-                            <label className="pf-form__label">Tên đăng nhập (Username)</label>
-                            <input
-                                type="text"
-                                className="pf-form__input is-disabled"
-                                value={user.username}
-                                disabled
-                            />
-                        </div>
-
-                        <div className="pf-form__group">
                             <label className="pf-form__label">Địa chỉ Email</label>
                             <input
                                 type="email"
@@ -109,6 +99,7 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
                                 disabled
                             />
                         </div>
+
 
                         <div className="pf-form__group">
                             <label className="pf-form__label">Ngày sinh</label>

@@ -628,7 +628,6 @@ export const mockModulePerformanceReport: ModuleTestPerformanceReport = {
 export const mockProfileData: ProfileData = {
     user: {
         id: 1,
-        username: 'student_nam',
         email: 'nam.nguyen@leby.edu.vn',
         fullName: 'Nguyễn Nam',
         dob: '2001-08-15',

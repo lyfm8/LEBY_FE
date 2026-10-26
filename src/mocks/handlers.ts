@@ -22,7 +22,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'ADMIN',
                 dob: '2001-08-15',
@@ -38,7 +37,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'ADMIN',
                 dob: '2001-08-15',
@@ -48,14 +46,13 @@ export const handlers = [
     }),
 
     http.post('*/api/auth/login', async ({ request }) => {
-        const body = (await request.json().catch(() => ({}))) as { username?: string };
+        const body = (await request.json().catch(() => ({}))) as { email?: string };
         return HttpResponse.json({
             success: true,
             message: 'Đăng nhập thành công',
             data: {
                 id: 1,
-                email: 'nam.nguyen@leby.edu.vn',
-                username: body?.username || 'student_nam',
+                email: body?.email || 'nam.nguyen@leby.edu.vn',
                 fullName: 'Nguyễn Nam',
                 role: 'ADMIN',
                 dob: '2001-08-15',
@@ -65,14 +62,13 @@ export const handlers = [
     }),
 
     http.post('*/api/v1/auth/login', async ({ request }) => {
-        const body = (await request.json().catch(() => ({}))) as { username?: string };
+        const body = (await request.json().catch(() => ({}))) as { email?: string };
         return HttpResponse.json({
             success: true,
             message: 'Đăng nhập thành công',
             data: {
                 id: 1,
-                email: 'nam.nguyen@leby.edu.vn',
-                username: body?.username || 'student_nam',
+                email: body?.email || 'nam.nguyen@leby.edu.vn',
                 fullName: 'Nguyễn Nam',
                 role: 'ADMIN',
                 dob: '2001-08-15',
@@ -104,7 +100,6 @@ export const handlers = [
             data: {
                 id: 1,
                 email: 'nam.nguyen@leby.edu.vn',
-                username: 'student_nam',
                 fullName: 'Nguyễn Nam',
                 role: 'ADMIN',
                 dob: '2001-08-15',
@@ -306,14 +301,7 @@ export const handlers = [
         });
     }),
     
-    // ── Admin: Users ──
-    http.get('*/api/v1/admin/users', () => {
-        return HttpResponse.json({ success: true, message: 'OK', data: [
-            { id: 1, username: 'admin_leby', email: 'admin@leby.edu.vn', fullName: 'Admin LEBY', role: 'ADMIN', status: 'ACTIVE', createdAt: '2026-01-01T00:00:00Z' },
-            { id: 2, username: 'student_nam', email: 'nam.nguyen@leby.edu.vn', fullName: 'Nguyễn Nam', role: 'USER', status: 'ACTIVE', createdAt: '2026-08-15T00:00:00Z' }
-        ], pagination: { totalItems: 2, totalPages: 1, pageSize: 10, page: 0 }
-        });
-    }),
+
 
     // ── Admin: Parts ──
     http.get('*/api/v1/admin/parts', () => {
