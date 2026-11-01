@@ -27,12 +27,12 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
   const [questionIdsStr, setQuestionIdsStr] = useState(''); 
 
   const formVideo = useForm<VideoLessonFormValues>({
-    resolver: zodResolver(videoLessonFormSchema),
+    resolver: zodResolver(videoLessonFormSchema) as any,
     defaultValues: { title: '', orderNo: 1, status: 'DRAFT', uri: '', durationSeconds: 0 }
   });
 
   const formPractice = useForm<PracticeLessonFormValues>({
-    resolver: zodResolver(practiceLessonFormSchema),
+    resolver: zodResolver(practiceLessonFormSchema) as any,
     defaultValues: { title: '', orderNo: 1, status: 'DRAFT', questionIds: [] }
   });
 

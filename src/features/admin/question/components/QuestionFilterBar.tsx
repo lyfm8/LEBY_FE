@@ -26,7 +26,7 @@ export const QuestionFilterBar: React.FC<QuestionFilterBarProps> = ({ filters, o
         <select
           className="filter-select"
           value={filters.section || ''}
-          onChange={(e) => onFilterChange({ section: e.target.value || undefined, page: 0 })}
+          onChange={(e) => onFilterChange({ section: (e.target.value as any) || undefined, page: 0 })}
         >
           <option value="">Tất cả Section</option>
           <option value="LISTENING">Listening</option>
@@ -35,14 +35,15 @@ export const QuestionFilterBar: React.FC<QuestionFilterBarProps> = ({ filters, o
 
         <select
           className="filter-select"
-          value={filters.difficulty || ''}
-          onChange={(e) => onFilterChange({ difficulty: e.target.value || undefined, page: 0 })}
+          value={filters.difficulty ?? ''}
+          onChange={(e) => onFilterChange({ difficulty: e.target.value ? Number(e.target.value) : undefined, page: 0 })}
         >
           <option value="">Tất cả Độ khó</option>
-          <option value="EASY">Dễ (Easy)</option>
-          <option value="MEDIUM">Trung bình (Medium)</option>
-          <option value="HARD">Khó (Hard)</option>
-          <option value="VERY_HARD">Rất khó (Very Hard)</option>
+          <option value="1">Level 1 (Rất dễ)</option>
+          <option value="2">Level 2 (Dễ)</option>
+          <option value="3">Level 3 (Trung bình)</option>
+          <option value="4">Level 4 (Khó)</option>
+          <option value="5">Level 5 (Rất khó)</option>
         </select>
       </div>
 

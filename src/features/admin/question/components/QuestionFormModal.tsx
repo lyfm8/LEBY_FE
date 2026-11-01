@@ -22,7 +22,7 @@ export const QuestionFormModal: React.FC<QuestionFormModalProps> = ({
   const [abilities, setAbilities] = useState<AbilityResponse[]>([]);
 
   const { register, handleSubmit, reset, watch, formState: { errors } } = useForm<QuestionFormValues>({
-    resolver: zodResolver(questionFormSchema),
+    resolver: zodResolver(questionFormSchema) as any,
     defaultValues: {
       name: '',
       type: 'SINGLE_CHOICE',
@@ -185,7 +185,7 @@ export const QuestionFormModal: React.FC<QuestionFormModalProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 600, color: '#374151', paddingBottom: '0.5rem', borderBottom: '1px solid #e5e7eb' }}>
                 Dữ liệu cấu trúc (JSON) 
-                <HelpCircle size={16} color="#9ca3af" title="Chỉnh sửa dữ liệu JSON nguyên thủy" />
+                <span title="Chỉnh sửa dữ liệu JSON nguyên thủy"><HelpCircle size={16} color="#9ca3af" /></span>
               </div>
 
               <div className="form-group">

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 export const partThresholdSchema = z.object({
-  partId: z.number({ required_error: 'Vui lòng chọn Part' }).min(1, 'Vui lòng chọn Part'),
-  targetProfileId: z.number({ required_error: 'Vui lòng chọn Mục tiêu AIM' }).min(1, 'Vui lòng chọn Mục tiêu AIM'),
+  partId: z.number({ message: 'Vui lòng chọn Part' }).min(1, 'Vui lòng chọn Part'),
+  targetProfileId: z.number({ message: 'Vui lòng chọn Mục tiêu AIM' }).min(1, 'Vui lòng chọn Mục tiêu AIM'),
   passThreshold: z.number().min(0).max(100),
   confirmThreshold: z.number().min(0).max(100),
   weakThreshold: z.number().min(0).max(100),
@@ -17,7 +17,7 @@ export const partThresholdSchema = z.object({
 export type PartThresholdFormValues = z.infer<typeof partThresholdSchema>;
 
 export const abilityRuleSchema = z.object({
-  abilityId: z.number({ required_error: 'Vui lòng chọn Năng lực' }).min(1, 'Vui lòng chọn Năng lực'),
+  abilityId: z.number({ message: 'Vui lòng chọn Năng lực' }).min(1, 'Vui lòng chọn Năng lực'),
   stableThreshold: z.number().min(0).max(100),
   developingThreshold: z.number().min(0).max(100),
   status: z.enum(['DRAFT', 'PUBLISHED']),

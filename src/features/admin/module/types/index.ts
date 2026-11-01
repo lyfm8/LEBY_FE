@@ -46,7 +46,7 @@ export interface CreateModuleRequest {
   type: ModuleType;
   sequence: number;
   status: StatusType;
-  partId: number | null;
+  partId?: number | null;
 }
 
 export interface CreateVideoLessonRequest {
@@ -55,7 +55,7 @@ export interface CreateVideoLessonRequest {
   descriptions?: string;
   uri: string;
   durationSeconds: number;
-  abilityId: number | null;
+  abilityId?: number | null;
   status: StatusType;
 }
 
@@ -64,7 +64,7 @@ export interface CreatePracticeLessonRequest {
   orderNo: number;
   descriptions?: string;
   instructions?: string;
-  abilityId: number | null;
+  abilityId?: number | null;
   questionIds: number[];
   status: StatusType;
 }

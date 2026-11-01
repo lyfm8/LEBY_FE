@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, BookOpen, HelpCircle,
-  FileText, Target, Settings, LogOut, Menu
+  FileText, Target, Settings
 } from 'lucide-react';
 import './admin-layout.css';
 
