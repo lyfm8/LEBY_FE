@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { ModuleResponse, LessonResponse } from '../types';
 import { adminModuleService } from '../services/adminModuleService';
-import { ChevronDown, ChevronRight, Video, PenTool, Edit2, Trash2, Plus, GripVertical } from 'lucide-react';
+import { ChevronDown, ChevronRight, BookOpen, Video, Volume2, Image, Edit2, Trash2, Plus, GripVertical } from 'lucide-react';
 
 interface ModuleAccordionProps {
   moduleData: ModuleResponse;
@@ -88,30 +88,32 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
             className="btn-primary"
             style={{ padding: '0.25rem 0.75rem', fontSize: '0.75rem' }}
           >
-            <Plus size={14} /> Thêm bài học
+            <Plus size={14} style={{ display: 'inline', marginRight: '0.25rem' }} /> Thêm bài học
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onEditModule(moduleData); }}
             className="btn-icon primary"
+            title="Sửa module"
           >
-            <Edit2 size={18} />
+            <Edit2 size={16} />
           </button>
           <button 
             onClick={(e) => { e.stopPropagation(); onDeleteModule(moduleData.id); }}
             className="btn-icon danger"
+            title="Xóa module"
           >
-            <Trash2 size={18} />
+            <Trash2 size={16} />
           </button>
         </div>
       </div>
 
-      {/* Body Accordion (Lessons) */}
+      {/* Body: Danh sách bài học */}
       {isOpen && (
-        <div className="accordion-content">
+        <div className="accordion-body">
           {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '1rem', color: '#6b7280', fontSize: '0.875rem' }}>Đang tải danh sách bài học...</div>
+            <div style={{ textAlign: 'center', padding: '1rem', color: '#6b7280' }}>Đang tải danh sách bài học...</div>
           ) : lessons.length === 0 ? (
-            <div style={{ textAlign: 'center', padding: '1.5rem', border: '2px dashed #d1d5db', borderRadius: '0.5rem', color: '#6b7280' }}>
+            <div style={{ textAlign: 'center', padding: '1.5rem', backgroundColor: '#f9fafb', borderRadius: '0.375rem', border: '1px dashed #d1d5db', color: '#6b7280' }}>
               Chưa có bài học nào. Hãy thêm bài học mới!
             </div>
           ) : (
@@ -125,19 +127,24 @@ export const ModuleAccordion: React.FC<ModuleAccordionProps> = ({
                     </div>
                     <div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontWeight: 500, color: '#1f2937' }}>
-                        {lesson.lessonType === 'VIDEO' ? (
-                          <Video size={16} color="#3b82f6" />
-                        ) : (
-                          <PenTool size={16} color="#10b981" />
-                        )}
+                        <BookOpen size={16} color="#3b82f6" />
                         <span>{lesson.title}</span>
                       </div>
                       <div style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        {lesson.lessonType === 'VIDEO' && lesson.durationDisplay && (
-                          <span>Thời lượng: {lesson.durationDisplay}</span>
+                        {lesson.videoUrl && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#2563eb' }}>
+                            <Video size={12} /> Video
+                          </span>
                         )}
-                        {lesson.lessonType === 'PRACTICE' && lesson.totalQuestions && (
-                          <span>Số câu hỏi: {lesson.totalQuestions}</span>
+                        {lesson.audioUrl && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#d97706' }}>
+                            <Volume2 size={12} /> Audio
+                          </span>
+                        )}
+                        {lesson.imageUrl && (
+                          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem', color: '#059669' }}>
+                            <Image size={12} /> Image
+                          </span>
                         )}
                         {lesson.abilityName && <span>• Năng lực: {lesson.abilityName}</span>}
                       </div>

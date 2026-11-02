@@ -3,7 +3,6 @@
  */
 
 export type ModuleType = 'THEORY' | 'PRACTICE' | 'EXAM';
-export type LessonType = 'VIDEO' | 'PRACTICE';
 export type StatusType = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
 
 export interface ModuleFilterParams {
@@ -23,22 +22,19 @@ export interface ModuleResponse {
   partId: number | null;
   partName: string | null;
   totalLessons: number;
-  totalVideoLessons: number;
-  totalPracticeLessons: number;
 }
 
 export interface LessonResponse {
   id: number;
-  lessonType: LessonType;
   title: string;
   orderNo: number;
   status: StatusType;
+  descriptions?: string | null;
   abilityId: number | null;
   abilityName: string | null;
-  uri: string | null;
-  durationSeconds: number | null;
-  durationDisplay: string | null;
-  totalQuestions: number | null;
+  audioUrl?: string | null;
+  videoUrl?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface CreateModuleRequest {
@@ -49,22 +45,13 @@ export interface CreateModuleRequest {
   partId: number | null;
 }
 
-export interface CreateVideoLessonRequest {
+export interface CreateLessonRequest {
   title: string;
   orderNo: number;
   descriptions?: string;
-  uri: string;
-  durationSeconds: number;
+  audioUrl?: string;
+  videoUrl?: string;
+  imageUrl?: string;
   abilityId: number | null;
-  status: StatusType;
-}
-
-export interface CreatePracticeLessonRequest {
-  title: string;
-  orderNo: number;
-  descriptions?: string;
-  instructions?: string;
-  abilityId: number | null;
-  questionIds: number[];
   status: StatusType;
 }

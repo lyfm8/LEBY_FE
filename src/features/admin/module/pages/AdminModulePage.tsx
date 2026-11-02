@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { adminModuleService } from '../services/adminModuleService';
 import type { ModuleResponse, LessonResponse } from '../types';
-import type { ModuleFormValues, VideoLessonFormValues, PracticeLessonFormValues } from '../utils/schema';
+import type { ModuleFormValues, LessonFormValues } from '../utils/schema';
 import { ModuleAccordion } from '../components/ModuleAccordion';
 import { ModuleFormModal } from '../components/ModuleFormModal';
 import { LessonFormModal } from '../components/LessonFormModal';
@@ -98,10 +98,17 @@ export const AdminModulePage: React.FC = () => {
   const handleModuleSubmit = async (data: ModuleFormValues) => {
     try {
       setIsSubmitting(true);
+      const payload = {
+        title: data.title,
+        type: data.type,
+        sequence: data.sequence,
+        status: data.status,
+        partId: data.partId ?? null,
+      };
       if (selectedModule) {
-        await adminModuleService.updateModule(selectedModule.id, data);
+        await adminModuleService.updateModule(selectedModule.id, payload);
       } else {
-        await adminModuleService.createModule(data);
+        await adminModuleService.createModule(payload);
       }
       setIsModuleModalOpen(false);
       fetchModules();
@@ -133,7 +140,8 @@ export const AdminModulePage: React.FC = () => {
     if (!window.confirm('Xóa bài học này?')) return;
     try {
       await adminModuleService.deleteLesson(id);
-      // NOTE: Cần trigger reload lại component con (Accordion) hoặc fetch lại module nếu BE trả về count
+      // Trigger reload lại Module
+      fetchModules();
     } catch (error) {
       console.error(error);
       alert('Lỗi xóa bài học');
@@ -141,16 +149,27 @@ export const AdminModulePage: React.FC = () => {
   };
 
   /**
-   * Xử lý Submit lưu Bài học Video.
+   * Xử lý Submit lưu Bài học.
    */
-  const handleLessonVideoSubmit = async (data: VideoLessonFormValues) => {
+  const handleLessonSubmit = async (data: LessonFormValues) => {
     if (!targetModuleId) return;
     try {
       setIsSubmitting(true);
+      const payload = {
+        title: data.title,
+        orderNo: data.orderNo,
+        status: data.status,
+        abilityId: data.abilityId ?? null,
+        descriptions: data.descriptions,
+        audioUrl: data.audioUrl,
+        videoUrl: data.videoUrl,
+        imageUrl: data.imageUrl,
+      };
+
       if (selectedLesson) {
-        await adminModuleService.updateLesson(selectedLesson.id, { ...data, lessonType: 'VIDEO' });
+        await adminModuleService.updateLesson(selectedLesson.id, payload);
       } else {
-        await adminModuleService.createVideoLesson(targetModuleId, data);
+        await adminModuleService.createLesson(targetModuleId, payload);
       }
       setIsLessonModalOpen(false);
       // Tối ưu: Đóng mở nhanh Accordion để force reload danh sách bài học bên trong
@@ -163,35 +182,7 @@ export const AdminModulePage: React.FC = () => {
       fetchModules(); 
     } catch (error) {
       console.error(error);
-      alert('Lưu Video lesson thất bại');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  /**
-   * Xử lý Submit lưu Bài tập Practice.
-   */
-  const handleLessonPracticeSubmit = async (data: PracticeLessonFormValues) => {
-    if (!targetModuleId) return;
-    try {
-      setIsSubmitting(true);
-      if (selectedLesson) {
-        await adminModuleService.updateLesson(selectedLesson.id, { ...data, lessonType: 'PRACTICE' });
-      } else {
-        await adminModuleService.createPracticeLesson(targetModuleId, data);
-      }
-      setIsLessonModalOpen(false);
-      setOpenModuleIds(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(targetModuleId);
-        setTimeout(() => setOpenModuleIds(new Set(newSet).add(targetModuleId)), 100);
-        return newSet;
-      });
-      fetchModules();
-    } catch (error) {
-      console.error(error);
-      alert('Lưu Practice lesson thất bại');
+      alert('Lưu bài học thất bại');
     } finally {
       setIsSubmitting(false);
     }
@@ -215,7 +206,7 @@ export const AdminModulePage: React.FC = () => {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Quản lý Cấu trúc Bài học (Modules)</h1>
-          <p className="admin-page-subtitle">Sắp xếp và quản lý các Module và Video/Bài tập bên trong</p>
+          <p className="admin-page-subtitle">Sắp xếp và quản lý các Module và Bài học bên trong</p>
         </div>
         <button
           onClick={handleAddModule}
@@ -261,8 +252,7 @@ export const AdminModulePage: React.FC = () => {
       <LessonFormModal 
         isOpen={isLessonModalOpen}
         onClose={() => setIsLessonModalOpen(false)}
-        onSubmitVideo={handleLessonVideoSubmit}
-        onSubmitPractice={handleLessonPracticeSubmit}
+        onSubmit={handleLessonSubmit}
         lesson={selectedLesson}
         partId={targetModuleId ? modules.find(m => m.id === targetModuleId)?.partId || null : null}
         isLoading={isSubmitting}
@@ -277,4 +267,3 @@ export const AdminModulePage: React.FC = () => {
     </div>
   );
 };
-

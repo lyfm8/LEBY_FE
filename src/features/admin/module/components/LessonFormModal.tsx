@@ -1,39 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { videoLessonFormSchema, practiceLessonFormSchema, type VideoLessonFormValues, type PracticeLessonFormValues } from '../utils/schema';
-import type { LessonResponse, LessonType } from '../types';
-import { X, Video, PenTool } from 'lucide-react';
+import { lessonFormSchema, type LessonFormValues } from '../utils/schema';
+import type { LessonResponse } from '../types';
+import { X, BookOpen } from 'lucide-react';
 import { adminPartService } from '@/features/admin/part/services/adminPartService';
 import type { AbilityResponse } from '@/features/admin/part/types';
 
 interface LessonFormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmitVideo: (data: VideoLessonFormValues) => void;
-  onSubmitPractice: (data: PracticeLessonFormValues) => void;
+  onSubmit: (data: LessonFormValues) => void;
   lesson: LessonResponse | null;
-  partId: number | null; // Để filter ability phù hợp
+  partId: number | null;
   isLoading: boolean;
 }
 
 export const LessonFormModal: React.FC<LessonFormModalProps> = ({
-  isOpen, onClose, onSubmitVideo, onSubmitPractice, lesson, partId, isLoading
+  isOpen, onClose, onSubmit, lesson, partId, isLoading
 }) => {
-  const [tab, setTab] = useState<LessonType>('VIDEO');
   const [abilities, setAbilities] = useState<AbilityResponse[]>([]);
-  
-  // Tạm thời cho Question ID input dạng chuỗi phẩy (comma-separated), vì question picker phức tạp sẽ làm sau
-  const [questionIdsStr, setQuestionIdsStr] = useState(''); 
 
-  const formVideo = useForm<VideoLessonFormValues>({
-    resolver: zodResolver(videoLessonFormSchema),
-    defaultValues: { title: '', orderNo: 1, status: 'DRAFT', uri: '', durationSeconds: 0 }
-  });
-
-  const formPractice = useForm<PracticeLessonFormValues>({
-    resolver: zodResolver(practiceLessonFormSchema),
-    defaultValues: { title: '', orderNo: 1, status: 'DRAFT', questionIds: [] }
+  const form = useForm<LessonFormValues>({
+    resolver: zodResolver(lessonFormSchema),
+    defaultValues: {
+      title: '',
+      orderNo: 1,
+      status: 'DRAFT',
+      abilityId: null,
+      descriptions: '',
+      audioUrl: '',
+      videoUrl: '',
+      imageUrl: '',
+    }
   });
 
   useEffect(() => {
@@ -47,51 +46,32 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
       }
 
       if (lesson) {
-        setTab(lesson.lessonType);
-        if (lesson.lessonType === 'VIDEO') {
-          formVideo.reset({
-            title: lesson.title,
-            orderNo: lesson.orderNo,
-            status: lesson.status,
-            abilityId: lesson.abilityId,
-            uri: lesson.uri || '',
-            durationSeconds: lesson.durationSeconds || 0,
-            descriptions: '',
-          });
-        } else {
-          // Practice
-          formPractice.reset({
-            title: lesson.title,
-            orderNo: lesson.orderNo,
-            status: lesson.status,
-            abilityId: lesson.abilityId,
-            descriptions: '',
-            instructions: '',
-            questionIds: [], // Không có sẵn trong list response, giả định update thì cần fetch chi tiết, nhưng bài toán này lược bớt
-          });
-          setQuestionIdsStr('');
-        }
+        form.reset({
+          title: lesson.title,
+          orderNo: lesson.orderNo,
+          status: lesson.status,
+          abilityId: lesson.abilityId,
+          descriptions: lesson.descriptions || '',
+          audioUrl: lesson.audioUrl || '',
+          videoUrl: lesson.videoUrl || '',
+          imageUrl: lesson.imageUrl || '',
+        });
       } else {
-        // Reset all cho mới
-        formVideo.reset({ title: '', orderNo: 1, status: 'DRAFT', uri: '', durationSeconds: 0, abilityId: null });
-        formPractice.reset({ title: '', orderNo: 1, status: 'DRAFT', questionIds: [], abilityId: null });
-        setQuestionIdsStr('');
+        form.reset({
+          title: '',
+          orderNo: 1,
+          status: 'DRAFT',
+          abilityId: null,
+          descriptions: '',
+          audioUrl: '',
+          videoUrl: '',
+          imageUrl: '',
+        });
       }
     }
-  }, [isOpen, lesson, partId, formVideo, formPractice]);
+  }, [isOpen, lesson, partId, form]);
 
   if (!isOpen) return null;
-
-  const handlePracticeSubmit = (data: PracticeLessonFormValues) => {
-    // parse string to array of numbers
-    const ids = questionIdsStr.split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-    if (ids.length === 0) {
-      formPractice.setError('questionIds', { message: 'Vui lòng nhập ít nhất 1 ID câu hỏi hợp lệ' });
-      return;
-    }
-    data.questionIds = ids;
-    onSubmitPractice(data);
-  };
 
   const isEdit = !!lesson;
 
@@ -99,136 +79,83 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
     <div className="modal-overlay">
       <div className="modal-content large">
         <div className="modal-header">
-          <h2 className="modal-title">
-            {isEdit ? 'Cập nhật Bài học' : 'Thêm Bài học mới'}
-          </h2>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+            <BookOpen size={20} className="text-primary-600" />
+            <h2 className="modal-title">
+              {isEdit ? 'Cập nhật Bài học' : 'Thêm Bài học mới'}
+            </h2>
+          </div>
           <button onClick={onClose} className="modal-close">
             <X size={20} />
           </button>
         </div>
 
-        {/* Tab Selection (Chỉ hiện khi Add New) */}
-        {!isEdit && (
-          <div style={{ display: 'flex', borderBottom: '1px solid #e5e7eb', marginBottom: '1.5rem' }}>
-            <button
-              style={{
-                flex: 1, padding: '0.75rem', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', border: 'none', background: 'none',
-                ...(tab === 'VIDEO' ? { borderBottom: '2px solid #2563eb', color: '#2563eb', backgroundColor: '#eff6ff' } : { color: '#6b7280' })
-              }}
-              onClick={() => setTab('VIDEO')}
+        <form onSubmit={form.handleSubmit(onSubmit)}>
+          <div className="form-group">
+            <label className="form-label">Tên bài học *</label>
+            <input {...form.register('title')} className="form-input" placeholder="VD: Chiến lược bắt keyword Part 3" />
+            {form.formState.errors.title && <p className="form-error">{form.formState.errors.title.message}</p>}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+            <div className="form-group">
+              <label className="form-label">Thứ tự *</label>
+              <input type="number" {...form.register('orderNo', { valueAsNumber: true })} className="form-input" />
+              {form.formState.errors.orderNo && <p className="form-error">{form.formState.errors.orderNo.message}</p>}
+            </div>
+            <div className="form-group">
+              <label className="form-label">Trạng thái</label>
+              <select {...form.register('status')} className="form-input">
+                <option value="DRAFT">Bản nháp</option>
+                <option value="PUBLISHED">Xuất bản</option>
+                <option value="ARCHIVED">Lưu trữ</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Năng lực đo lường (Ability)</label>
+            <select 
+              {...form.register('abilityId', { 
+                setValueAs: v => (v === '' || v === null ? null : Number(v)) 
+              })} 
+              className="form-input"
             >
-              <Video size={18} /> Video Lesson
-            </button>
-            <button
-              style={{
-                flex: 1, padding: '0.75rem', fontWeight: 500, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', cursor: 'pointer', border: 'none', background: 'none',
-                ...(tab === 'PRACTICE' ? { borderBottom: '2px solid #16a34a', color: '#16a34a', backgroundColor: '#f0fdf4' } : { color: '#6b7280' })
-              }}
-              onClick={() => setTab('PRACTICE')}
-            >
-              <PenTool size={18} /> Practice Lesson
+              <option value="">-- Không chọn --</option>
+              {abilities.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+            </select>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Audio URL (Âm thanh bài giảng / luyện nghe)</label>
+            <input {...form.register('audioUrl')} placeholder="https://..." className="form-input" />
+            {form.formState.errors.audioUrl && <p className="form-error">{form.formState.errors.audioUrl.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Video URL (Video bài giảng)</label>
+            <input {...form.register('videoUrl')} placeholder="https://..." className="form-input" />
+            {form.formState.errors.videoUrl && <p className="form-error">{form.formState.errors.videoUrl.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Image URL (Hình ảnh minh họa / sơ đồ)</label>
+            <input {...form.register('imageUrl')} placeholder="https://..." className="form-input" />
+            {form.formState.errors.imageUrl && <p className="form-error">{form.formState.errors.imageUrl.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Mô tả / Hướng dẫn bài học</label>
+            <textarea {...form.register('descriptions')} rows={3} className="form-input" placeholder="Tóm tắt nội dung bài học..." />
+          </div>
+
+          <div className="modal-footer">
+            <button type="button" onClick={onClose} className="btn-secondary">Hủy</button>
+            <button type="submit" disabled={isLoading} className="btn-primary">
+              {isEdit ? 'Cập nhật' : 'Lưu bài học'}
             </button>
           </div>
-        )}
-
-        <div>
-          {tab === 'VIDEO' ? (
-            <form onSubmit={formVideo.handleSubmit(onSubmitVideo)}>
-              <div className="form-group">
-                <label className="form-label">Tên bài học (Video) *</label>
-                <input {...formVideo.register('title')} className="form-input" />
-                {formVideo.formState.errors.title && <p className="form-error">{formVideo.formState.errors.title.message}</p>}
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Thứ tự *</label>
-                  <input type="number" {...formVideo.register('orderNo')} className="form-input" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Trạng thái</label>
-                  <select {...formVideo.register('status')} className="form-input">
-                    <option value="DRAFT">Bản nháp</option>
-                    <option value="PUBLISHED">Xuất bản</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Năng lực (Ability)</label>
-                <select {...formVideo.register('abilityId')} className="form-input">
-                  <option value="">-- Không chọn --</option>
-                  {abilities.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label className="form-label">URL Video *</label>
-                  <input {...formVideo.register('uri')} placeholder="https://youtube.com/..." className="form-input" />
-                  {formVideo.formState.errors.uri && <p className="form-error">{formVideo.formState.errors.uri.message}</p>}
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Thời lượng (giây) *</label>
-                  <input type="number" {...formVideo.register('durationSeconds')} className="form-input" />
-                </div>
-              </div>
-
-              <div className="modal-footer">
-                <button type="button" onClick={onClose} className="btn-secondary">Hủy</button>
-                <button type="submit" disabled={isLoading} className="btn-primary">Lưu Video</button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={formPractice.handleSubmit(handlePracticeSubmit)}>
-              <div className="form-group">
-                <label className="form-label">Tên bài học (Practice) *</label>
-                <input {...formPractice.register('title')} className="form-input" />
-                {formPractice.formState.errors.title && <p className="form-error">{formPractice.formState.errors.title.message}</p>}
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                <div className="form-group">
-                  <label className="form-label">Thứ tự *</label>
-                  <input type="number" {...formPractice.register('orderNo')} className="form-input" />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Trạng thái</label>
-                  <select {...formPractice.register('status')} className="form-input">
-                    <option value="DRAFT">Bản nháp</option>
-                    <option value="PUBLISHED">Xuất bản</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Năng lực (Ability)</label>
-                <select {...formPractice.register('abilityId')} className="form-input">
-                  <option value="">-- Không chọn --</option>
-                  {abilities.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
-                </select>
-              </div>
-
-              <div className="form-group">
-                <label className="form-label">Danh sách ID Câu hỏi * (Cách nhau bằng dấu phẩy)</label>
-                <input 
-                  type="text" 
-                  value={questionIdsStr} 
-                  onChange={e => setQuestionIdsStr(e.target.value)} 
-                  placeholder="VD: 1042, 1043, 1045" 
-                  className="form-input" 
-                />
-                <p style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>Lưu ý: Tạm nhập tay ID câu hỏi, FE sẽ nâng cấp Question Picker sau.</p>
-                {formPractice.formState.errors.questionIds && <p className="form-error">{formPractice.formState.errors.questionIds.message}</p>}
-              </div>
-
-              <div className="modal-footer">
-                <button type="button" onClick={onClose} className="btn-secondary">Hủy</button>
-                <button type="submit" disabled={isLoading} className="btn-primary" style={{ backgroundColor: '#16a34a' }}>Lưu Practice</button>
-              </div>
-            </form>
-          )}
-        </div>
+        </form>
       </div>
     </div>
   );
