@@ -10,26 +10,15 @@ export const moduleFormSchema = z.object({
 
 export type ModuleFormValues = z.infer<typeof moduleFormSchema>;
 
-export const videoLessonFormSchema = z.object({
+export const lessonFormSchema = z.object({
   title: z.string().min(2, 'Tên bài học quá ngắn'),
-  orderNo: z.coerce.number().min(1),
+  orderNo: z.number().min(1, 'Thứ tự phải lớn hơn 0'),
   status: z.enum(['PUBLISHED', 'DRAFT', 'ARCHIVED']),
-  abilityId: z.coerce.number().optional().nullable(),
+  abilityId: z.number().nullable().optional(),
   descriptions: z.string().optional(),
-  uri: z.string().url('URL không hợp lệ'),
-  durationSeconds: z.coerce.number().min(1, 'Thời lượng phải lớn hơn 0'),
+  audioUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
+  videoUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
+  imageUrl: z.string().url('URL không hợp lệ').optional().or(z.literal('')),
 });
 
-export type VideoLessonFormValues = z.infer<typeof videoLessonFormSchema>;
-
-export const practiceLessonFormSchema = z.object({
-  title: z.string().min(2, 'Tên bài học quá ngắn'),
-  orderNo: z.coerce.number().min(1),
-  status: z.enum(['PUBLISHED', 'DRAFT', 'ARCHIVED']),
-  abilityId: z.coerce.number().optional().nullable(),
-  descriptions: z.string().optional(),
-  instructions: z.string().optional(),
-  questionIds: z.array(z.number()).min(1, 'Vui lòng chọn ít nhất 1 câu hỏi'),
-});
-
-export type PracticeLessonFormValues = z.infer<typeof practiceLessonFormSchema>;
+export type LessonFormValues = z.infer<typeof lessonFormSchema>;

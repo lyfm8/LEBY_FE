@@ -5,8 +5,7 @@ import type {
   ModuleResponse, 
   LessonResponse,
   CreateModuleRequest,
-  CreateVideoLessonRequest,
-  CreatePracticeLessonRequest
+  CreateLessonRequest
 } from '../types';
 
 /**
@@ -41,8 +40,7 @@ export const adminModuleService = {
   },
 
   /**
-   * Xóa Module. 
-   * LƯU Ý NGHIỆP VỤ: Xóa module có thể cascade xóa các bài học bên trong tùy thuộc vào cấu hình DB.
+   * Xóa Module.
    */
   deleteModule(id: number): Promise<ApiResponse<null>> {
     return apiClient.delete<ApiResponse<null>>(`/api/v1/admin/modules/${id}`);
@@ -53,23 +51,16 @@ export const adminModuleService = {
   // =====================================
 
   /**
-   * Tạo bài học dạng Video (Lý thuyết).
+   * Tạo bài học trong Module.
    */
-  createVideoLesson(moduleId: number, data: CreateVideoLessonRequest): Promise<ApiResponse<LessonResponse>> {
-    return apiClient.post<ApiResponse<LessonResponse>>(`/api/v1/admin/modules/${moduleId}/lessons/video`, data);
+  createLesson(moduleId: number, data: CreateLessonRequest): Promise<ApiResponse<LessonResponse>> {
+    return apiClient.post<ApiResponse<LessonResponse>>(`/api/v1/admin/modules/${moduleId}/lessons`, data);
   },
 
   /**
-   * Tạo bài học dạng Bài tập (Practice).
+   * Cập nhật thông tin bài học.
    */
-  createPracticeLesson(moduleId: number, data: CreatePracticeLessonRequest): Promise<ApiResponse<LessonResponse>> {
-    return apiClient.post<ApiResponse<LessonResponse>>(`/api/v1/admin/modules/${moduleId}/lessons/practice`, data);
-  },
-
-  /**
-   * Cập nhật thông tin bài học (Dùng chung cho cả Video và Practice).
-   */
-  updateLesson(id: number, data: any): Promise<ApiResponse<LessonResponse>> {
+  updateLesson(id: number, data: CreateLessonRequest): Promise<ApiResponse<LessonResponse>> {
     return apiClient.put<ApiResponse<LessonResponse>>(`/api/v1/admin/lessons/${id}`, data);
   },
 
@@ -78,11 +69,9 @@ export const adminModuleService = {
   },
 
   /**
-   * Cập nhật lại thứ tự các bài học trong một Module sau khi user kéo thả.
-   * @param orderedLessonIds Mảng ID bài học đã được sắp xếp theo đúng thứ tự mới.
+   * Cập nhật lại thứ tự các bài học trong một Module sau khi kéo thả.
    */
   reorderLessons(moduleId: number, orderedLessonIds: number[]): Promise<ApiResponse<null>> {
     return apiClient.patch<ApiResponse<null>>(`/api/v1/admin/modules/${moduleId}/reorder-lessons`, { orderedLessonIds });
   }
 };
-
