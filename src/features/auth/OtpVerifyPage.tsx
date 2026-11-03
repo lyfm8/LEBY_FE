@@ -1,7 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { authService } from './authService';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { otpSchema, type OtpFormValues } from './authSchema';
 import type { RegisterRequest } from './authTypes';
 import './auth.css';
 
@@ -35,8 +38,6 @@ function OtpVerifyPage() {
         }
     }, [pending, navigate]);
 
-    const [otp, setOtp] = useState('');
-    const [otpError, setOtpError] = useState('');
     const [globalError, setGlobalError] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -45,6 +46,17 @@ function OtpVerifyPage() {
     const [otpSent, setOtpSent] = useState(false);
     const [cooldown, setCooldown] = useState(0);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<OtpFormValues>({
+        resolver: zodResolver(otpSchema) as any,
+        defaultValues: {
+            otp: '',
+        },
+    });
 
     // Cleanup timer on unmount
     useEffect(() => () => { if (timerRef.current) clearInterval(timerRef.current); }, []);
@@ -80,23 +92,11 @@ function OtpVerifyPage() {
         }
     }
 
-    function handleOtpChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const val = e.target.value.replace(/\D/g, '').slice(0, 6);
-        setOtp(val);
-        setOtpError('');
-        setGlobalError('');
-    }
-
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
+    const onSubmit = async (data: OtpFormValues) => {
         if (!pending) return;
 
         if (!otpSent) {
-            setOtpError('Vui lòng gửi OTP trước.');
-            return;
-        }
-        if (otp.length !== 6) {
-            setOtpError('Mã OTP gồm 6 chữ số.');
+            setGlobalError('Vui lòng bấm gửi mã OTP trước khi xác nhận.');
             return;
         }
 
@@ -104,7 +104,7 @@ function OtpVerifyPage() {
         setGlobalError('');
         setSuccessMessage('');
         try {
-            const payload: RegisterRequest = { ...pending, otp };
+            const payload: RegisterRequest = { ...pending, otp: data.otp };
             const res = await authService.register(payload);
             if (res.success && res.data) {
                 setUser(res.data);
@@ -117,7 +117,7 @@ function OtpVerifyPage() {
         } finally {
             setIsSubmitting(false);
         }
-    }
+    };
 
     if (!pending) return null;
 
@@ -134,7 +134,7 @@ function OtpVerifyPage() {
                     <strong style={{ color: '#0f172a' }}>{maskEmail(pending.email)}</strong>
                 </p>
 
-                <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Success banner */}
                     {successMessage && <div className="auth-form__banner auth-form__banner--success" role="status">{successMessage}</div>}
 
@@ -165,17 +165,15 @@ function OtpVerifyPage() {
 
                         <input
                             id="otp-input"
-                            name="otp"
                             type="text"
                             inputMode="numeric"
                             maxLength={6}
                             placeholder="Nhập mã 6 chữ số"
-                            className={`auth-form__input${otpError ? ' is-error' : ''}`}
-                            value={otp}
-                            onChange={handleOtpChange}
+                            className={`auth-form__input${errors.otp ? ' is-error' : ''}`}
+                            {...register('otp')}
                             autoFocus
                         />
-                        {otpError && <span className="auth-form__error">{otpError}</span>}
+                        {errors.otp && <span className="auth-form__error">{errors.otp.message}</span>}
                     </div>
 
                     {/* Submit */}

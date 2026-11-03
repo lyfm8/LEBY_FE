@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { userService } from './user.service';
 import type { User } from './user.type';
-import { useDebounce } from '../../hooks/useDebounce';
+import { useDebounce } from '@/hooks/useDebounce';
 
 export const UserManagement: React.FC = () => {
   const [users, setUsers] = useState<User[]>([]);

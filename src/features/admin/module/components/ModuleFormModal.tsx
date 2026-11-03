@@ -21,7 +21,7 @@ export const ModuleFormModal: React.FC<ModuleFormModalProps> = ({
   const [parts, setParts] = useState<PartResponse[]>([]);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<ModuleFormValues>({
-    resolver: zodResolver(moduleFormSchema),
+    resolver: zodResolver(moduleFormSchema) as any,
     defaultValues: {
       title: '',
       type: 'THEORY',

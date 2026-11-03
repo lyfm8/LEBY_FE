@@ -42,7 +42,7 @@ export interface CreateModuleRequest {
   type: ModuleType;
   sequence: number;
   status: StatusType;
-  partId: number | null;
+  partId?: number | null;
 }
 
 export interface CreateLessonRequest {

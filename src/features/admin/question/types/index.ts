@@ -10,6 +10,7 @@ export interface QuestionFilterParams {
   type?: string;
   difficulty?: number;
   keyword?: string;
+  section?: SectionType;
 }
 
 export type QuestionType = 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILL_IN_BLANK';

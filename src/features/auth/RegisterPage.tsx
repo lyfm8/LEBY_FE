@@ -1,74 +1,42 @@
-import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { registerSchema, type RegisterFormValues } from './authSchema';
 import './auth.css';
-
-interface RegisterForm {
-    fullName: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-    terms: boolean;
-}
-
-type FormErrors = Partial<Record<keyof RegisterForm, string>>;
 
 function RegisterPage() {
     const navigate = useNavigate();
     const location = useLocation();
-    const saved = (location.state as { savedForm?: Partial<RegisterForm> })?.savedForm;
+    const saved = (location.state as { savedForm?: Partial<RegisterFormValues> })?.savedForm;
 
-    const [form, setForm] = useState<RegisterForm>({
-        fullName: saved?.fullName ?? '',
-        email: saved?.email ?? '',
-        password: saved?.password ?? '',
-        confirmPassword: saved?.confirmPassword ?? '',
-        terms: saved ? true : false,
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<RegisterFormValues>({
+        resolver: zodResolver(registerSchema) as any,
+        defaultValues: {
+            fullName: saved?.fullName ?? '',
+            email: saved?.email ?? '',
+            password: saved?.password ?? '',
+            confirmPassword: saved?.confirmPassword ?? '',
+            terms: saved ? true : false,
+        },
     });
 
-    const [errors, setErrors] = useState<FormErrors>({});
-
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        const { name, value, type, checked } = e.target;
-        setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
-        setErrors((prev) => ({ ...prev, [name]: '' }));
-    }
-
-    function validate(): boolean {
-        const errs: FormErrors = {};
-        if (!form.fullName.trim())
-            errs.fullName = 'Vui lòng nhập họ và tên.';
-        if (!form.email)
-            errs.email = 'Vui lòng nhập email.';
-        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-            errs.email = 'Email không hợp lệ.';
-        if (!form.password)
-            errs.password = 'Vui lòng nhập mật khẩu.';
-        else if (form.password.length < 8)
-            errs.password = 'Mật khẩu tối thiểu 8 ký tự.';
-        if (form.password !== form.confirmPassword)
-            errs.confirmPassword = 'Mật khẩu xác nhận không khớp.';
-        if (!form.terms)
-            errs.terms = 'Bạn cần đồng ý với điều khoản dịch vụ.';
-        setErrors(errs);
-        return Object.keys(errs).length === 0;
-    }
-
-    function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!validate()) return;
-
+    const onSubmit = (data: RegisterFormValues) => {
         // Chuyển sang trang xác thực OTP, kèm toàn bộ form data
         navigate('/verify-otp', {
             state: {
                 pendingRegister: {
-                    fullName: form.fullName,
-                    email: form.email,
-                    password: form.password,
-                    confirmPassword: form.confirmPassword,
+                    fullName: data.fullName,
+                    email: data.email,
+                    password: data.password,
+                    confirmPassword: data.confirmPassword,
                 },
             },
         });
-    }
+    };
 
     return (
         <div className="auth-page" id="register-page">
@@ -80,21 +48,19 @@ function RegisterPage() {
                 <h1 className="auth-card__title">Tạo tài khoản LEBY</h1>
                 <p className="auth-card__subtitle">Trải nghiệm học tập tối ưu hóa ngay hôm nay</p>
 
-                <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Họ và tên */}
                     <div className="auth-form__group">
                         <label className="auth-form__label" htmlFor="reg-fullName">Họ và tên</label>
                         <input
                             id="reg-fullName"
-                            name="fullName"
                             type="text"
                             autoComplete="name"
                             placeholder="Nguyễn Văn A"
                             className={`auth-form__input${errors.fullName ? ' is-error' : ''}`}
-                            value={form.fullName}
-                            onChange={handleChange}
+                            {...register('fullName')}
                         />
-                        {errors.fullName && <span className="auth-form__error">{errors.fullName}</span>}
+                        {errors.fullName && <span className="auth-form__error">{errors.fullName.message}</span>}
                     </div>
 
                     {/* Email */}
@@ -102,15 +68,13 @@ function RegisterPage() {
                         <label className="auth-form__label" htmlFor="reg-email">Địa chỉ Email</label>
                         <input
                             id="reg-email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="email@example.com"
                             className={`auth-form__input${errors.email ? ' is-error' : ''}`}
-                            value={form.email}
-                            onChange={handleChange}
+                            {...register('email')}
                         />
-                        {errors.email && <span className="auth-form__error">{errors.email}</span>}
+                        {errors.email && <span className="auth-form__error">{errors.email.message}</span>}
                     </div>
 
                     {/* Mật khẩu */}
@@ -118,15 +82,13 @@ function RegisterPage() {
                         <label className="auth-form__label" htmlFor="reg-password">Mật khẩu</label>
                         <input
                             id="reg-password"
-                            name="password"
                             type="password"
                             autoComplete="new-password"
                             placeholder="Nhập mật khẩu (ít nhất 8 ký tự)"
                             className={`auth-form__input${errors.password ? ' is-error' : ''}`}
-                            value={form.password}
-                            onChange={handleChange}
+                            {...register('password')}
                         />
-                        {errors.password && <span className="auth-form__error">{errors.password}</span>}
+                        {errors.password && <span className="auth-form__error">{errors.password.message}</span>}
                     </div>
 
                     {/* Xác nhận mật khẩu */}
@@ -134,15 +96,13 @@ function RegisterPage() {
                         <label className="auth-form__label" htmlFor="reg-confirmPassword">Xác nhận mật khẩu</label>
                         <input
                             id="reg-confirmPassword"
-                            name="confirmPassword"
                             type="password"
                             autoComplete="new-password"
                             placeholder="Nhập lại mật khẩu"
                             className={`auth-form__input${errors.confirmPassword ? ' is-error' : ''}`}
-                            value={form.confirmPassword}
-                            onChange={handleChange}
+                            {...register('confirmPassword')}
                         />
-                        {errors.confirmPassword && <span className="auth-form__error">{errors.confirmPassword}</span>}
+                        {errors.confirmPassword && <span className="auth-form__error">{errors.confirmPassword.message}</span>}
                     </div>
 
                     {/* Điều khoản */}
@@ -150,11 +110,9 @@ function RegisterPage() {
                         <label className="auth-form__terms">
                             <input
                                 type="checkbox"
-                                name="terms"
                                 id="reg-terms"
                                 className="auth-form__terms-checkbox"
-                                checked={form.terms}
-                                onChange={handleChange}
+                                {...register('terms')}
                             />
                             <span className="auth-form__terms-text">
                                 Tôi đồng ý với các{' '}
@@ -164,7 +122,7 @@ function RegisterPage() {
                                 {' '}của LEBY
                             </span>
                         </label>
-                        {errors.terms && <span className="auth-form__error">{errors.terms}</span>}
+                        {errors.terms && <span className="auth-form__error">{errors.terms.message}</span>}
                     </div>
 
                     {/* Submit */}

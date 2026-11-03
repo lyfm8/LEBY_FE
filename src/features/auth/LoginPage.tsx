@@ -1,7 +1,10 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { authService } from './authService';
 import { useAuth } from '@/features/auth/hooks/useAuth';
+import { loginSchema, type LoginFormValues } from './authSchema';
 import './auth.css';
 
 function LoginPage() {
@@ -12,24 +15,26 @@ function LoginPage() {
     // Redirect về trang user muốn vào trước khi bị đẩy ra login
     const from = (location.state as { from?: Location })?.from?.pathname ?? '/home';
 
-    const [form, setForm] = useState({ email: '', password: '' });
-    const [error, setError] = useState('');
+    const [serverError, setServerError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-        setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-        setError('');
-    }
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema) as any,
+        defaultValues: {
+            email: '',
+            password: '',
+        },
+    });
 
-    async function handleSubmit(e: React.FormEvent) {
-        e.preventDefault();
-        if (!form.email || !form.password) {
-            setError('Vui lòng nhập đầy đủ thông tin.');
-            return;
-        }
+    const onSubmit = async (data: LoginFormValues) => {
         setIsLoading(true);
+        setServerError('');
         try {
-            const res = await authService.login(form);
+            const res = await authService.login(data);
             if (res.success && res.data) {
                 setUser(res.data);
                 let target = from;
@@ -38,18 +43,18 @@ function LoginPage() {
                 }
                 navigate(target, { replace: true });
             } else {
-                setError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
+                setServerError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');
             }
         } catch (error: any) {
-            if (error.response && error.response.data && error.response.data.message) {
-                setError(error.response.data.message);
+            if (error?.response?.data?.message) {
+                setServerError(error.response.data.message);
             } else {
-                setError('Email hoặc mật khẩu không đúng.');
+                setServerError('Email hoặc mật khẩu không đúng.');
             }
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     return (
         <div className="auth-page" id="login-page">
@@ -62,9 +67,9 @@ function LoginPage() {
                 <p className="auth-card__subtitle">Rèn luyện TOEIC nghiêm túc và bài bản</p>
 
                 {/* Form */}
-                <form className="auth-form" onSubmit={handleSubmit} noValidate>
+                <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
                     {/* Error banner */}
-                    {error && <div className="auth-form__banner" role="alert">{error}</div>}
+                    {serverError && <div className="auth-form__banner" role="alert">{serverError}</div>}
 
                     {/* Email */}
                     <div className="auth-form__group">
@@ -73,15 +78,13 @@ function LoginPage() {
                         </label>
                         <input
                             id="login-email"
-                            name="email"
                             type="email"
                             autoComplete="email"
                             placeholder="email@example.com"
-                            className="auth-form__input"
-                            value={form.email}
-                            onChange={handleChange}
-                            required
+                            className={`auth-form__input${errors.email ? ' is-error' : ''}`}
+                            {...register('email')}
                         />
+                        {errors.email && <span className="auth-form__error">{errors.email.message}</span>}
                     </div>
 
                     {/* Password */}
@@ -94,15 +97,13 @@ function LoginPage() {
                         </div>
                         <input
                             id="login-password"
-                            name="password"
                             type="password"
                             autoComplete="current-password"
                             placeholder="••••••••••••"
-                            className="auth-form__input"
-                            value={form.password}
-                            onChange={handleChange}
-                            required
+                            className={`auth-form__input${errors.password ? ' is-error' : ''}`}
+                            {...register('password')}
                         />
+                        {errors.password && <span className="auth-form__error">{errors.password.message}</span>}
                     </div>
 
                     {/* Submit */}
@@ -115,47 +116,6 @@ function LoginPage() {
                         {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                     </button>
                 </form>
-
-                {/* Demo Quick Login Button */}
-                <div style={{ marginTop: 16 }}>
-                    <button
-                        type="button"
-                        id="quick-demo-login-btn"
-                        onClick={async () => {
-                            setIsLoading(true);
-                            try {
-                                const res = await authService.login({ email: 'demo@leby.edu.vn', password: 'Demo@1234' });
-                                if (res.success && res.data) {
-                                    setUser(res.data);
-                                    let target = from;
-                                    if (res.data.role === 'ADMIN' && target === '/home') {
-                                        target = '/admin';
-                                    }
-                                    navigate(target, { replace: true });
-                                }
-                            } finally {
-                                setIsLoading(false);
-                            }
-                        }}
-                        style={{
-                            width: '100%',
-                            padding: '10px 14px',
-                            background: '#fff7ed',
-                            color: '#ea580c',
-                            border: '1px dashed #ea580c',
-                            borderRadius: '8px',
-                            fontWeight: 600,
-                            fontSize: '0.9rem',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                        }}
-                    >
-                        ⚡ Đăng nhập nhanh tài khoản mẫu (Nguyễn Nam)
-                    </button>
-                </div>
 
                 {/* Divider */}
                 <div className="auth-divider">
