@@ -2,7 +2,7 @@ import React from 'react';
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import {
   LayoutDashboard, Users, BookOpen, HelpCircle,
-  FileText, Target, Settings, LogOut, Menu
+  FileText, Target, Settings
 } from 'lucide-react';
 import './admin-layout.css';
 
@@ -58,18 +58,18 @@ export const AdminLayout: React.FC = () => {
             <div className="admin-avatar" style={{ width: '32px', height: '32px' }}>A</div>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               <span className="admin-username" style={{ color: 'white' }}>Quản trị viên</span>
-              <span className="admin-user-email">admin@leby.edu.vn</span>
+              <span className="admin-user-role" style={{ color: '#9ca3af' }}>admin@leby.edu.vn</span>
             </div>
           </button>
         </div>
       </aside>
 
-      {/* Main Content */}
-      <div className="admin-main-wrapper">
-        <main className="admin-main-content">
+      {/* Main Content Area */}
+      <main className="admin-main-content">
+        <div className="admin-content-wrapper">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 };
