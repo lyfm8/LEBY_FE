@@ -32,7 +32,7 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
       audioUrl: '',
       videoUrl: '',
       imageUrl: '',
-    }
+    },
   });
 
   useEffect(() => {

@@ -38,14 +38,14 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ questions, onEdit,
               <tr key={q.id}>
                 <td>
                   <div className="question-text" title={q.name}>{q.name}</div>
-                  <div className="question-detail-text">Thuộc: {q.abilities?.map(a => a.name).join(', ') || 'Chưa phân loại'}</div>
+                  <div className="question-detail-text">Thuộc: {q.abilityName || 'Chưa phân loại'}</div>
                 </td>
                 <td>
                   <span className={`badge ${q.section === 'LISTENING' ? 'badge-blue' : 'badge-orange'}`}>
                     {q.section}
                   </span>
                   <div style={{ marginTop: '0.25rem', fontSize: '0.75rem', color: '#6b7280' }}>
-                    Part {q.part?.name || '?'}
+                    {q.partName || '?'}
                   </div>
                 </td>
                 <td>
@@ -53,11 +53,11 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({ questions, onEdit,
                 </td>
                 <td>
                   <span className={`badge ${
-                    q.difficulty === 'EASY' ? 'badge-green' :
-                    q.difficulty === 'MEDIUM' ? 'badge-blue' :
-                    q.difficulty === 'HARD' ? 'badge-orange' : 'badge-red'
+                    q.difficulty <= 2 ? 'badge-green' :
+                    q.difficulty === 3 ? 'badge-blue' :
+                    q.difficulty === 4 ? 'badge-orange' : 'badge-red'
                   }`}>
-                    {q.difficulty}
+                    Level {q.difficulty}
                   </span>
                 </td>
                 <td>

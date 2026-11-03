@@ -9,6 +9,7 @@ export interface PartResponse {
   name: string;
   description?: string;
   sections: PartSectionType;
+  abilities?: AbilityResponse[];
 }
 
 export interface PartRequest {

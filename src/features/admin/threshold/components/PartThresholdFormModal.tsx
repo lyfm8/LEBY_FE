@@ -104,7 +104,7 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
                 className="form-input"
               >
                 <option value={0} disabled>Chọn Mục tiêu</option>
-                {profiles.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {profiles.map(p => <option key={p.id} value={p.id}>Mục tiêu {p.aimScore}</option>)}
               </select>
               {errors.targetProfileId && <p className="form-error">{errors.targetProfileId.message}</p>}
             </div>
