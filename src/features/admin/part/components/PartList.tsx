@@ -1,6 +1,7 @@
 import React from 'react';
 import type { PartResponse } from '../types';
 import { Plus, Edit2, Trash2 } from 'lucide-react';
+import { SectionBadge } from './SectionBadge';
 
 interface PartListProps {
   parts: PartResponse[];
@@ -42,7 +43,6 @@ export const PartList: React.FC<PartListProps> = ({
         ) : (
           parts.map(part => {
             const isSelected = selectedPartId === part.id;
-            const isListening = part.sections === 'LISTENING';
 
             return (
               <div
@@ -54,20 +54,9 @@ export const PartList: React.FC<PartListProps> = ({
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
                   <div>
                     <div className="part-item-name">{part.name}</div>
-                    <span 
-                      style={{
-                        display: 'inline-block',
-                        fontSize: '0.7rem',
-                        fontWeight: 600,
-                        padding: '0.15rem 0.4rem',
-                        borderRadius: '0.25rem',
-                        marginTop: '0.25rem',
-                        backgroundColor: isListening ? '#dbeafe' : '#fef3c7',
-                        color: isListening ? '#1e40af' : '#92400e'
-                      }}
-                    >
-                      {part.sections}
-                    </span>
+                    <div style={{ marginTop: '0.25rem' }}>
+                      <SectionBadge section={part.sections} />
+                    </div>
                   </div>
                   <div 
                     className="part-actions" 

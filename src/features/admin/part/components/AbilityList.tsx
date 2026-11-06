@@ -1,6 +1,7 @@
 import React from 'react';
 import type { AbilityResponse } from '../types';
 import { Edit2, Trash2, Plus } from 'lucide-react';
+import { SectionBadge } from './SectionBadge';
 
 interface AbilityListProps {
   abilities: AbilityResponse[];
@@ -66,18 +67,7 @@ export const AbilityList: React.FC<AbilityListProps> = ({
                       {ability.description && <div className="ability-desc">{ability.description}</div>}
                     </td>
                     <td style={{ textAlign: 'center' }}>
-                      <span 
-                        style={{
-                          fontSize: '0.75rem',
-                          fontWeight: 600,
-                          padding: '0.2rem 0.5rem',
-                          borderRadius: '0.25rem',
-                          backgroundColor: ability.sections === 'LISTENING' ? '#dbeafe' : '#fef3c7',
-                          color: ability.sections === 'LISTENING' ? '#1e40af' : '#92400e'
-                        }}
-                      >
-                        {ability.sections}
-                      </span>
+                      <SectionBadge section={ability.sections} />
                     </td>
                     <td>
                       <div className="action-buttons" style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.25rem' }}>
