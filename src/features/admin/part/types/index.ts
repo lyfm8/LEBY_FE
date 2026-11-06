@@ -30,6 +30,3 @@ export interface AbilityRequest {
   name: string;
   description?: string;
 }
-
-export type AbilityFormData = AbilityRequest;
-export type PartFormData = PartRequest;

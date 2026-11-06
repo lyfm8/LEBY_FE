@@ -6,12 +6,33 @@ import { PartList } from '../components/PartList';
 import { AbilityList } from '../components/AbilityList';
 import { PartFormModal } from '../components/PartFormModal';
 import { AbilityFormModal } from '../components/AbilityFormModal';
+import { PartAbilityTreeView } from '../components/PartAbilityTreeView';
+import { useToast, useConfirm } from '@/core/ui';
+import { LayoutGrid, GitBranchPlus } from 'lucide-react';
 import '../admin-part.css';
+
+type ViewMode = 'table' | 'tree';
+
+/**
+ * Trích xuất message lỗi an toàn từ error kiểu unknown (không dùng any).
+ * Ưu tiên lấy response.data.message từ AxiosError, fallback về message mặc định.
+ */
+function getErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof Error && 'response' in error) {
+    const axiosErr = error as { response?: { data?: { message?: string } } };
+    return axiosErr.response?.data?.message || fallback;
+  }
+  return fallback;
+}
 
 export const AdminPartPage: React.FC = () => {
   const [parts, setParts] = useState<PartResponse[]>([]);
   const [abilities, setAbilities] = useState<AbilityResponse[]>([]);
   const [selectedPartId, setSelectedPartId] = useState<number | null>(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('table');
+  
+  // Lưu abilities theo partId cho TreeView (tránh gọi lại API khi đã load)
+  const [abilitiesMap, setAbilitiesMap] = useState<Record<number, AbilityResponse[]>>({});
   
   const [isPartsLoading, setIsPartsLoading] = useState<boolean>(true);
   const [isAbilitiesLoading, setIsAbilitiesLoading] = useState<boolean>(false);
@@ -23,6 +44,10 @@ export const AdminPartPage: React.FC = () => {
 
   const [selectedAbility, setSelectedAbility] = useState<AbilityResponse | null>(null);
   const [isAbilityModalOpen, setIsAbilityModalOpen] = useState<boolean>(false);
+
+  // Toast thông báo & Confirm dialog thay thế alert/window.confirm
+  const toast = useToast();
+  const confirm = useConfirm();
 
   // Fetch danh sách Parts
   const fetchParts = useCallback(async () => {
@@ -40,14 +65,13 @@ export const AdminPartPage: React.FC = () => {
           return exists ? prevId : null;
         });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch parts:', error);
-      const msg = error?.response?.data?.message || 'Không thể tải danh sách phần thi.';
-      alert(msg);
+      toast.error(getErrorMessage(error, 'Không thể tải danh sách phần thi.'));
     } finally {
       setIsPartsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchParts();
@@ -60,10 +84,12 @@ export const AdminPartPage: React.FC = () => {
       const res = await adminPartService.getAbilities(partId);
       if (res.success && res.data) {
         setAbilities(res.data);
+        // Đồng bộ vào abilitiesMap cho TreeView
+        setAbilitiesMap(prev => ({ ...prev, [partId]: res.data }));
       } else {
         setAbilities([]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to fetch abilities:', error);
       setAbilities([]);
     } finally {
@@ -97,18 +123,18 @@ export const AdminPartPage: React.FC = () => {
   };
 
   const handleDeletePart = async (id: number) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa phần thi này không?')) return;
+    const ok = await confirm('Bạn có chắc chắn muốn xóa phần thi này không?');
+    if (!ok) return;
 
     try {
       const res = await adminPartService.deletePart(id);
       if (res.success) {
-        alert('Xóa phần thi thành công.');
+        toast.success('Xóa phần thi thành công.');
         fetchParts();
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Delete part failed:', error);
-      const msg = error?.response?.data?.message || 'Xóa phần thi thất bại.';
-      alert(msg);
+      toast.error(getErrorMessage(error, 'Xóa phần thi thất bại.'));
     }
   };
 
@@ -117,20 +143,19 @@ export const AdminPartPage: React.FC = () => {
       setIsSubmitting(true);
       if (selectedPart) {
         await adminPartService.updatePart(selectedPart.id, data);
-        alert('Cập nhật phần thi thành công.');
+        toast.success('Cập nhật phần thi thành công.');
       } else {
         const res = await adminPartService.createPart(data);
-        alert('Tạo phần thi mới thành công.');
+        toast.success('Tạo phần thi mới thành công.');
         if (res.data?.id) {
           setSelectedPartId(res.data.id);
         }
       }
       setIsPartModalOpen(false);
       fetchParts();
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Save part failed:', error);
-      const msg = error?.response?.data?.message || 'Lưu dữ liệu phần thi thất bại.';
-      alert(msg);
+      toast.error(getErrorMessage(error, 'Lưu dữ liệu phần thi thất bại.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -150,18 +175,18 @@ export const AdminPartPage: React.FC = () => {
   };
 
   const handleDeleteAbility = async (id: number) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa năng lực này không?')) return;
+    const ok = await confirm('Bạn có chắc chắn muốn xóa năng lực này không?');
+    if (!ok) return;
 
     try {
       const res = await adminPartService.deleteAbility(id);
       if (res.success) {
-        alert('Xóa năng lực thành công.');
+        toast.success('Xóa năng lực thành công.');
         if (selectedPartId) fetchAbilities(selectedPartId);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Delete ability failed:', error);
-      const msg = error?.response?.data?.message || 'Xóa năng lực thất bại.';
-      alert(msg);
+      toast.error(getErrorMessage(error, 'Xóa năng lực thất bại.'));
     }
   };
 
@@ -172,17 +197,16 @@ export const AdminPartPage: React.FC = () => {
       setIsSubmitting(true);
       if (selectedAbility) {
         await adminPartService.updateAbility(selectedAbility.id, data);
-        alert('Cập nhật năng lực thành công.');
+        toast.success('Cập nhật năng lực thành công.');
       } else {
         await adminPartService.createAbility(selectedPartId, data);
-        alert('Tạo năng lực mới thành công.');
+        toast.success('Tạo năng lực mới thành công.');
       }
       setIsAbilityModalOpen(false);
       fetchAbilities(selectedPartId);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Save ability failed:', error);
-      const msg = error?.response?.data?.message || 'Lưu dữ liệu năng lực thất bại.';
-      alert(msg);
+      toast.error(getErrorMessage(error, 'Lưu dữ liệu năng lực thất bại.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -198,34 +222,61 @@ export const AdminPartPage: React.FC = () => {
           <h1 className="admin-page-title">Quản lý Phần thi & Năng lực (Part & Ability)</h1>
           <p className="admin-page-subtitle">Quản lý cấu trúc các phần thi TOEIC và danh mục năng lực đánh giá tương ứng</p>
         </div>
-      </div>
-
-      <div className="part-layout-grid">
-        {/* Cột trái: Danh sách Part */}
-        <div className="part-list-col">
-          <PartList 
-            parts={parts} 
-            selectedPartId={selectedPartId} 
-            onSelectPart={handleSelectPart} 
-            onAddPart={handleAddPart}
-            onEditPart={handleEditPart}
-            onDeletePart={handleDeletePart}
-            isLoading={isPartsLoading} 
-          />
-        </div>
-
-        {/* Cột phải: Danh sách Ability của Part được chọn */}
-        <div className="ability-list-col">
-          <AbilityList 
-            abilities={abilities}
-            isLoading={isAbilitiesLoading}
-            selectedPartName={selectedPartName}
-            onAdd={handleAddAbility}
-            onEdit={handleEditAbility}
-            onDelete={handleDeleteAbility}
-          />
+        {/* Nút chuyển đổi chế độ xem: Bảng quản trị / Cây phân cấp */}
+        <div className="view-toggle-group">
+          <button
+            type="button"
+            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => setViewMode('table')}
+          >
+            <LayoutGrid size={16} /> Quản trị
+          </button>
+          <button
+            type="button"
+            className={`view-toggle-btn ${viewMode === 'tree' ? 'active' : ''}`}
+            onClick={() => setViewMode('tree')}
+          >
+            <GitBranchPlus size={16} /> Cây phân cấp
+          </button>
         </div>
       </div>
+
+      {viewMode === 'table' ? (
+        /* Chế độ 1: Bảng quản trị (CRUD) — layout 2 cột */
+        <div className="part-layout-grid">
+          <div className="part-list-col">
+            <PartList 
+              parts={parts} 
+              selectedPartId={selectedPartId} 
+              onSelectPart={handleSelectPart} 
+              onAddPart={handleAddPart}
+              onEditPart={handleEditPart}
+              onDeletePart={handleDeletePart}
+              isLoading={isPartsLoading} 
+            />
+          </div>
+          <div className="ability-list-col">
+            <AbilityList 
+              abilities={abilities}
+              isLoading={isAbilitiesLoading}
+              selectedPartName={selectedPartName}
+              onAdd={handleAddAbility}
+              onEdit={handleEditAbility}
+              onDelete={handleDeleteAbility}
+            />
+          </div>
+        </div>
+      ) : (
+        /* Chế độ 2: Cây trực quan Part → Ability */
+        <div className="ability-list-container">
+          <PartAbilityTreeView
+            parts={parts}
+            abilitiesMap={abilitiesMap}
+            onLoadAbilities={fetchAbilities}
+            isLoading={isPartsLoading}
+          />
+        </div>
+      )}
 
       {/* Modal Thêm / Sửa Part */}
       <PartFormModal
