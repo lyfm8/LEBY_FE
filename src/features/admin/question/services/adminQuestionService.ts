@@ -1,56 +1,69 @@
 import { apiClient } from '@/core/api/apiClient';
 import type { ApiResponse } from '@/core/api/apiResponse';
-import type { 
-  QuestionFilterParams, 
-  QuestionListItemResponse, 
-  QuestionDetailResponse 
+import type {
+    CreateQuestionGroupPayload,
+    CreateStandaloneQuestionPayload,
+    QuestionDetail,
+    QuestionFilterParams,
+    QuestionListItem,
+    UpdateQuestionGroupPayload,
+    UpdateStandaloneQuestionPayload,
 } from '../types';
 
+const BASE_URL = '/api/admin/questions';
+
 /**
- * Service quản lý gọi API liên quan đến Ngân hàng câu hỏi (UC-04).
+ * Service kết nối toàn bộ API Quản lý Ngân hàng câu hỏi (UC A04).
+ * Tuân thủ quy chuẩn không dùng /v1 và bọc kết quả qua ApiResponse<T>.
  */
 export const adminQuestionService = {
-  /**
-   * Lấy danh sách câu hỏi có phân trang và bộ lọc (theo Part, Ability, Type, Difficulty).
-   * 
-   * @param params Bộ lọc truy vấn.
-   * @returns {Promise<ApiResponse<QuestionListItemResponse[]>>}
-   */
-  getQuestions(params: QuestionFilterParams): Promise<ApiResponse<QuestionListItemResponse[]>> {
-    return apiClient.get<ApiResponse<QuestionListItemResponse[]>>('/api/v1/admin/questions', { params });
-  },
+    /**
+     * Lấy danh sách câu hỏi gốc với bộ lọc đa tiêu chí và phân trang.
+     */
+    getQuestions(params: QuestionFilterParams = {}): Promise<ApiResponse<QuestionListItem[]>> {
+        return apiClient.get<ApiResponse<QuestionListItem[]>>(BASE_URL, { params });
+    },
 
-  /**
-   * Lấy chi tiết toàn bộ dữ liệu của một câu hỏi (bao gồm cả schema JSON).
-   * 
-   * @param id ID câu hỏi.
-   */
-  getById(id: number): Promise<ApiResponse<QuestionDetailResponse>> {
-    return apiClient.get<ApiResponse<QuestionDetailResponse>>(`/api/v1/admin/questions/${id}`);
-  },
+    /**
+     * Lấy chi tiết câu hỏi (đơn hoặc chùm kèm danh sách câu con).
+     */
+    getById(id: number): Promise<ApiResponse<QuestionDetail>> {
+        return apiClient.get<ApiResponse<QuestionDetail>>(`${BASE_URL}/${id}`);
+    },
 
-  /**
-   * Tạo câu hỏi mới trong Ngân hàng câu hỏi.
-   * 
-   * @param data Payload tạo mới (Lưu ý: questionData và correctAnswer phải là Object thuần, không phải string JSON khi gửi đi).
-   */
-  create(data: Omit<QuestionDetailResponse, 'id'>): Promise<ApiResponse<QuestionDetailResponse>> {
-    return apiClient.post<ApiResponse<QuestionDetailResponse>>('/api/v1/admin/questions', data);
-  },
+    /**
+     * Tạo mới câu hỏi đơn lập (Part 1, 2, 5).
+     */
+    createStandalone(payload: CreateStandaloneQuestionPayload): Promise<ApiResponse<QuestionDetail>> {
+        return apiClient.post<ApiResponse<QuestionDetail>>(`${BASE_URL}/standalone`, payload);
+    },
 
-  /**
-   * Cập nhật thông tin câu hỏi.
-   */
-  update(id: number, data: Omit<QuestionDetailResponse, 'id'>): Promise<ApiResponse<QuestionDetailResponse>> {
-    return apiClient.put<ApiResponse<QuestionDetailResponse>>(`/api/v1/admin/questions/${id}`, data);
-  },
+    /**
+     * Cập nhật câu hỏi đơn lập.
+     */
+    updateStandalone(id: number, payload: UpdateStandaloneQuestionPayload): Promise<ApiResponse<QuestionDetail>> {
+        return apiClient.put<ApiResponse<QuestionDetail>>(`${BASE_URL}/standalone/${id}`, payload);
+    },
 
-  /**
-   * Xóa câu hỏi khỏi hệ thống.
-   * LƯU Ý NGHIỆP VỤ: Sẽ bị chặn (HTTP 400) nếu câu hỏi này đã được sử dụng trong bất kỳ Bài kiểm tra (Module Test / Diagnostic Test) nào.
-   */
-  delete(id: number): Promise<ApiResponse<null>> {
-    return apiClient.delete<ApiResponse<null>>(`/api/v1/admin/questions/${id}`);
-  }
+    /**
+     * Tạo mới chùm câu hỏi chung ngữ cảnh (Part 3, 4, 6, 7).
+     */
+    createGroup(payload: CreateQuestionGroupPayload): Promise<ApiResponse<QuestionDetail>> {
+        return apiClient.post<ApiResponse<QuestionDetail>>(`${BASE_URL}/groups`, payload);
+    },
+
+    /**
+     * Cập nhật chùm câu hỏi và toàn bộ các câu con.
+     */
+    updateGroup(id: number, payload: UpdateQuestionGroupPayload): Promise<ApiResponse<QuestionDetail>> {
+        return apiClient.put<ApiResponse<QuestionDetail>>(`${BASE_URL}/groups/${id}`, payload);
+    },
+
+    /**
+     * Xóa câu hỏi (câu đơn hoặc chùm câu hỏi).
+     * Bị chặn (HTTP 409) nếu câu hỏi đang nằm trong đề thi.
+     */
+    delete(id: number): Promise<ApiResponse<void>> {
+        return apiClient.delete<ApiResponse<void>>(`${BASE_URL}/${id}`);
+    },
 };
-
