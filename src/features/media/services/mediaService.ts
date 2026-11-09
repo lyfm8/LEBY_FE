@@ -59,6 +59,8 @@ export class MediaService {
                         format: ext,
                         resource_type: isVideo ? 'video' : 'image',
                         bytes: file.size,
+                        original_filename: file.name,
+                        duration: isVideo ? 78 : undefined,
                         tags: ['tmp'],
                     });
                 }, 800);
@@ -129,7 +131,7 @@ export class MediaService {
             const cloudinaryResults = await Promise.all(uploadPromises);
 
             // Bước 4: Chuyển đổi và lưu metadata về Backend
-            const saveRequests: SaveMediaRequest[] = cloudinaryResults.map((result) => ({
+            const saveRequests: SaveMediaRequest[] = cloudinaryResults.map((result, idx) => ({
                 public_id: result.public_id,
                 secure_url: result.secure_url,
                 resource_type: result.resource_type,
@@ -137,6 +139,8 @@ export class MediaService {
                 bytes: result.bytes,
                 width: result.width,
                 height: result.height,
+                original_filename: result.original_filename || files[idx]?.name,
+                duration: result.duration,
             }));
 
             return await this.saveMedias(saveRequests);

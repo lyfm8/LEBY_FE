@@ -20,6 +20,8 @@ export interface SaveMediaRequest {
     bytes: number;
     width?: number;
     height?: number;
+    original_filename?: string;
+    duration?: number;
 }
 
 /**
@@ -34,6 +36,8 @@ export interface SavedMedia {
     bytes: number;
     width?: number;
     height?: number;
+    originalFilename?: string;
+    duration?: number;
     status: 'PENDING' | 'ACTIVE';
 }
 
@@ -48,5 +52,7 @@ export interface CloudinaryUploadResult {
     bytes: number;
     width?: number;
     height?: number;
+    original_filename?: string;
+    duration?: number;
     tags?: string[];
 }

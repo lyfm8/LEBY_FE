@@ -1,160 +1,223 @@
-import React, { useEffect, useState, useCallback } from 'react';
-import { adminQuestionService } from '../services/adminQuestionService';
-import type { 
-  QuestionFilterParams, 
-  QuestionListItemResponse, 
-  QuestionDetailResponse 
-} from '../types';
-import type { QuestionFormValues } from '../utils/schema';
+import React, { useCallback, useEffect, useState } from 'react';
+import { AlertCircle, ChevronLeft, ChevronRight, Layers, Plus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { usePartAbilityOptions } from '../hooks/usePartAbilityOptions';
 import { QuestionFilterBar } from '../components/QuestionFilterBar';
 import { QuestionTable } from '../components/QuestionTable';
-import { QuestionFormModal } from '../components/QuestionFormModal';
-import { Pagination } from '@/features/admin/user/components/Pagination';
+import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { adminQuestionService } from '../services/adminQuestionService';
+import type { QuestionFilterParams, QuestionListItem } from '../types';
 import '../admin-question.css';
 
 export const AdminQuestionPage: React.FC = () => {
-  const [questions, setQuestions] = useState<QuestionListItemResponse[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [filters, setFilters] = useState<QuestionFilterParams>({
-    page: 0,
-    pageSize: 10,
-  });
-  const [totalPages, setTotalPages] = useState<number>(0);
-  const [totalItems, setTotalItems] = useState<number>(0);
+    const navigate = useNavigate();
 
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [selectedQuestion, setSelectedQuestion] = useState<QuestionDetailResponse | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+    const [filters, setFilters] = useState<QuestionFilterParams>({
+        page: 0,
+        size: 10,
+        structureType: 'ALL',
+    });
 
-  const fetchQuestions = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      const res = await adminQuestionService.getQuestions(filters);
-      if (res.success && res.data) {
-        setQuestions(res.data);
-        if (res.pagination) {
-          setTotalPages(res.pagination.totalPages);
-          setTotalItems(res.pagination.totalItems);
+    const [questions, setQuestions] = useState<QuestionListItem[]>([]);
+    const [totalPages, setTotalPages] = useState<number>(1);
+    const [totalItems, setTotalItems] = useState<number>(0);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+    // Dialog xác nhận xóa
+    const [deleteTarget, setDeleteTarget] = useState<{ id: number; name: string; isGroup: boolean } | null>(null);
+    const [isDeleting, setIsDeleting] = useState<boolean>(false);
+
+    // Dữ liệu Part & Ability
+    const { parts, abilities } = usePartAbilityOptions(filters.partId);
+
+    const fetchQuestions = useCallback(async () => {
+        setIsLoading(true);
+        setErrorMessage(null);
+        try {
+            const res = await adminQuestionService.getQuestions(filters);
+            if (res.success && res.data) {
+                setQuestions(res.data);
+                if (res.pagination) {
+                    setTotalPages(res.pagination.totalPages || 1);
+                    setTotalItems(res.pagination.totalItems || 0);
+                }
+            }
+        } catch (err: any) {
+            setErrorMessage(err.message || 'Lỗi khi tải danh sách câu hỏi');
+        } finally {
+            setIsLoading(false);
         }
-      }
-    } catch (error) {
-      console.error('Lỗi khi fetch danh sách câu hỏi:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [filters]);
+    }, [filters]);
 
-  useEffect(() => {
-    fetchQuestions();
-  }, [fetchQuestions]);
-
-  const handleFilterChange = (newFilters: Partial<QuestionFilterParams>) => {
-    setFilters(prev => ({ ...prev, ...newFilters }));
-  };
-
-  const handleAddNew = () => {
-    setSelectedQuestion(null);
-    setIsModalOpen(true);
-  };
-
-  const handleEdit = async (id: number) => {
-    try {
-      const res = await adminQuestionService.getById(id);
-      if (res.success && res.data) {
-        setSelectedQuestion(res.data);
-        setIsModalOpen(true);
-      }
-    } catch (error) {
-      console.error('Không tải được chi tiết câu hỏi:', error);
-      alert('Đã xảy ra lỗi khi tải dữ liệu câu hỏi!');
-    }
-  };
-
-  const handleDelete = async (id: number) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa câu hỏi này?')) return;
-    try {
-      const res = await adminQuestionService.delete(id);
-      if (res.success) {
+    useEffect(() => {
         fetchQuestions();
-      }
-    } catch (error) {
-      console.error('Lỗi khi xóa câu hỏi:', error);
-      alert('Không thể xóa câu hỏi này. (Có thể câu hỏi đang được sử dụng ở bài Test)');
-    }
-  };
+    }, [fetchQuestions]);
 
-  const handleFormSubmit = async (data: QuestionFormValues) => {
-    try {
-      setIsSubmitting(true);
-      
-      const payload = {
-        name: data.name,
-        type: data.type,
-        difficulty: data.difficulty,
-        section: data.section,
-        partId: data.partId,
-        abilityIds: data.abilityIds,
-        descriptions: data.descriptions,
-        questionData: JSON.parse(data.questionData),
-        correctAnswer: JSON.parse(data.correctAnswer)
-      };
+    const handleFilterChange = (newFilters: Partial<QuestionFilterParams>) => {
+        setFilters((prev) => ({ ...prev, ...newFilters }));
+    };
 
-      if (selectedQuestion) {
-        await adminQuestionService.update(selectedQuestion.id, payload);
-      } else {
-        await adminQuestionService.create(payload);
-      }
-      setIsModalOpen(false);
-      fetchQuestions();
-    } catch (error) {
-      console.error('Save failed:', error);
-      alert('Lưu dữ liệu thất bại!');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    const handleResetFilters = () => {
+        setFilters({
+            page: 0,
+            size: 10,
+            structureType: 'ALL',
+            keyword: '',
+            section: undefined,
+            partId: undefined,
+            abilityId: undefined,
+            difficulty: undefined,
+        });
+    };
 
-  return (
-    <div className="admin-page-container">
-      <div className="admin-page-header">
-        <div>
-          <h1 className="admin-page-title">Quản lý Ngân hàng câu hỏi</h1>
-          <p className="admin-page-subtitle">Danh sách câu hỏi dùng chung cho toàn bộ hệ thống</p>
+    const handleDeleteConfirm = async () => {
+        if (!deleteTarget) return;
+        setIsDeleting(true);
+        setErrorMessage(null);
+        try {
+            await adminQuestionService.delete(deleteTarget.id);
+            setDeleteTarget(null);
+            fetchQuestions();
+        } catch (err: any) {
+            setErrorMessage(
+                err.response?.data?.message ||
+                err.message ||
+                'Không thể xóa câu hỏi này'
+            );
+            setDeleteTarget(null);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
+
+    return (
+        <div className="admin-question-page">
+            {/* Header trang */}
+            <div className="admin-question-header">
+                <div>
+                    <h1 className="admin-question-title">Ngân hàng câu hỏi</h1>
+                    <p className="admin-question-subtitle">
+                        Quản lý, biên soạn và tổ chức toàn bộ kho câu hỏi TOEIC tại một nơi.
+                    </p>
+                </div>
+
+                <div className="admin-question-header-actions">
+                    <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => navigate('/admin/question-groups/new')}
+                    >
+                        <Layers size={16} />
+                        <span>Tạo chùm câu hỏi</span>
+                    </button>
+                    <button
+                        type="button"
+                        className="btn-primary"
+                        onClick={() => navigate('/admin/questions/new')}
+                    >
+                        <Plus size={16} />
+                        <span>Tạo câu hỏi đơn</span>
+                    </button>
+                </div>
+            </div>
+
+            {/* Thông báo lỗi nếu có */}
+            {errorMessage && (
+                <div className="admin-alert-banner error">
+                    <div className="admin-alert-content">
+                        <AlertCircle size={18} />
+                        <span>{errorMessage}</span>
+                    </div>
+                    <button
+                        type="button"
+                        onClick={() => setErrorMessage(null)}
+                        className="admin-alert-close"
+                        title="Đóng thông báo"
+                    >
+                        ✕
+                    </button>
+                </div>
+            )}
+
+            {/* Thanh lọc câu hỏi */}
+            <QuestionFilterBar
+                filters={filters}
+                onFilterChange={handleFilterChange}
+                onReset={handleResetFilters}
+                parts={parts}
+                abilities={abilities}
+            />
+
+            {/* Bảng danh sách câu hỏi */}
+            <QuestionTable
+                questions={questions}
+                isLoading={isLoading}
+                onDelete={(id, name, isGroup) => setDeleteTarget({ id, name, isGroup })}
+                onResetFilters={handleResetFilters}
+            />
+
+            {/* Phân trang */}
+            {totalItems > 0 && (
+                <div className="question-pagination-bar">
+                    <div className="pagination-counter">
+                        Hiển thị{' '}
+                        <strong>
+                            {questions.length > 0 ? (filters.page || 0) * (filters.size || 10) + 1 : 0}
+                        </strong>{' '}
+                        –{' '}
+                        <strong>
+                            {Math.min(((filters.page || 0) + 1) * (filters.size || 10), totalItems)}
+                        </strong>{' '}
+                        trong tổng số <strong>{totalItems}</strong> câu hỏi
+                    </div>
+
+                    <div className="pagination-btn-group">
+                        <button
+                            type="button"
+                            className="pagination-nav-btn"
+                            disabled={(filters.page || 0) <= 0}
+                            onClick={() => handleFilterChange({ page: (filters.page || 0) - 1 })}
+                            title="Trang trước"
+                        >
+                            <ChevronLeft size={16} />
+                        </button>
+                        <span style={{ padding: '0 0.5rem', fontSize: '0.8125rem', color: '#4b5563', fontWeight: 500 }}>
+                            Trang {(filters.page || 0) + 1} / {totalPages}
+                        </span>
+                        <button
+                            type="button"
+                            className="pagination-nav-btn"
+                            disabled={(filters.page || 0) + 1 >= totalPages}
+                            onClick={() => handleFilterChange({ page: (filters.page || 0) + 1 })}
+                            title="Trang sau"
+                        >
+                            <ChevronRight size={16} />
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* Dialog xác nhận xóa câu hỏi */}
+            <ConfirmDialog
+                isOpen={!!deleteTarget}
+                title={deleteTarget?.isGroup ? 'Xóa chùm câu hỏi?' : 'Xóa câu hỏi đơn?'}
+                message={
+                    deleteTarget?.isGroup
+                        ? `Chùm câu hỏi "${deleteTarget.name}" cùng tất cả các câu hỏi con sẽ bị xóa hoàn toàn khỏi ngân hàng.`
+                        : `Câu hỏi "${deleteTarget?.name}" sẽ bị xóa khỏi ngân hàng câu hỏi.`
+                }
+                warningNote={
+                    deleteTarget?.isGroup
+                        ? 'Các tệp Media chung đính kèm sẽ được tự động giải phóng.'
+                        : undefined
+                }
+                confirmText={deleteTarget?.isGroup ? 'Xóa chùm câu hỏi' : 'Xóa câu hỏi'}
+                isDestructive={true}
+                isLoading={isDeleting}
+                onConfirm={handleDeleteConfirm}
+                onCancel={() => setDeleteTarget(null)}
+            />
         </div>
-      </div>
-
-      <QuestionFilterBar 
-        filters={filters}
-        onFilterChange={handleFilterChange}
-        onAddNew={handleAddNew}
-      />
-
-      <div style={{ fontSize: '0.875rem', color: '#4b5563', marginBottom: '1rem' }}>
-        Hiển thị <strong>{questions.length}</strong> / <strong>{totalItems}</strong> câu hỏi
-      </div>
-
-      <QuestionTable 
-        questions={questions}
-        isLoading={isLoading}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
-
-      {totalPages > 1 && (
-        <Pagination 
-          currentPage={filters.page}
-          totalPages={totalPages}
-          onPageChange={(page) => handleFilterChange({ page })}
-        />
-      )}
-
-      <QuestionFormModal 
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSubmit={handleFormSubmit}
-        question={selectedQuestion}
-        isLoading={isSubmitting}
-      />
-    </div>
-  );
+    );
 };

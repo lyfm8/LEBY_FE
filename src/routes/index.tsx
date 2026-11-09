@@ -1,9 +1,9 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthGuard from '@/core/auth/auth.guard';
 import LandingPage from '@/features/landing/LandingPage';
-import LoginPage from '@/features/auth/LoginPage';
-import RegisterPage from '@/features/auth/RegisterPage';
-import OtpVerifyPage from '@/features/auth/OtpVerifyPage';
+import LoginPage from '@/features/auth/pages/LoginPage';
+import RegisterPage from '@/features/auth/pages/RegisterPage';
+import OtpVerifyPage from '@/features/auth/pages/OtpVerifyPage';
 
 // 1. Onboarding & Diagnostic
 import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
@@ -30,7 +30,11 @@ import ProfilePage from '@/features/profile/pages/ProfilePage';
 import { AdminDashboardPage } from '@/features/admin/dashboard/pages/AdminDashboardPage';
 import { AdminUserPage } from '@/features/admin/user/pages/AdminUserPage';
 import { AdminPartPage } from '@/features/admin/part/pages/AdminPartPage';
-import { AdminQuestionPage } from '@/features/admin/question/pages/AdminQuestionPage';
+import {
+    AdminQuestionPage,
+    QuestionStandaloneEditorPage,
+    QuestionGroupEditorPage,
+} from '@/features/admin/question';
 import { AdminModulePage } from '@/features/admin/module/pages/AdminModulePage';
 import { AdminTargetPage } from '@/features/admin/target/pages/AdminTargetPage';
 import { AdminThresholdPage } from '@/features/admin/threshold/pages/AdminThresholdPage';
@@ -62,7 +66,7 @@ function AppRoutes() {
                 <Route
                     path="/dashboard"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -70,7 +74,7 @@ function AppRoutes() {
                 <Route
                     path="/home"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -78,7 +82,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-path"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <LearningPathPage />
                         </AuthGuard>
                     }
@@ -86,7 +90,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleDetailPage />
                         </AuthGuard>
                     }
@@ -96,7 +100,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/lessons/:lessonId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <LessonRoomPage />
                         </AuthGuard>
                     }
@@ -106,7 +110,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestRoomPage />
                         </AuthGuard>
                     }
@@ -114,7 +118,7 @@ function AppRoutes() {
                                 <Route
                     path="/results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -122,7 +126,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -130,7 +134,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -138,7 +142,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -146,7 +150,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/review/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ModuleTestReviewPage />
                         </AuthGuard>
                     }
@@ -156,7 +160,7 @@ function AppRoutes() {
                 <Route
                     path="/profile"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
                             <ProfilePage />
                         </AuthGuard>
                     }
@@ -175,6 +179,10 @@ function AppRoutes() {
                     <Route path="users" element={<AdminUserPage />} />
                     <Route path="parts" element={<AdminPartPage />} />
                     <Route path="questions" element={<AdminQuestionPage />} />
+                    <Route path="questions/new" element={<QuestionStandaloneEditorPage />} />
+                    <Route path="questions/:id/edit" element={<QuestionStandaloneEditorPage />} />
+                    <Route path="question-groups/new" element={<QuestionGroupEditorPage />} />
+                    <Route path="question-groups/:id/edit" element={<QuestionGroupEditorPage />} />
                     <Route path="modules" element={<AdminModulePage />} />
                     <Route path="targets" element={<AdminTargetPage />} />
                     <Route path="thresholds" element={<AdminThresholdPage />} />
