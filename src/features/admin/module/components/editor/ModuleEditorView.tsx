@@ -403,23 +403,69 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                   </div>
                 </div>
 
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={passScoreValue || 65}
-                  onChange={(e) =>
-                    setValue('defaultPassScore', Number(e.target.value), {
-                      shouldDirty: true,
-                    })
-                  }
-                  className="threshold-slider"
-                />
+                {/* Thang trượt có gạch mức (graduation ticks) */}
+                <div className="slider-scale-wrapper">
+                  <input
+                    type="range"
+                    min="50"
+                    max="100"
+                    value={passScoreValue || 65}
+                    onChange={(e) =>
+                      setValue('defaultPassScore', Number(e.target.value), {
+                        shouldDirty: true,
+                      })
+                    }
+                    className="threshold-slider"
+                  />
 
-                <div className="slider-ticks">
-                  <span>50đ (Cơ bản)</span>
-                  <span>65đ (Chuẩn gợi ý)</span>
-                  <span>100đ (Tối đa)</span>
+                  {/* Vạch gạch mức trực quan trên thanh trượt */}
+                  <div className="slider-ticks-scale" aria-hidden="true">
+                    <span className="scale-notch" style={{ left: '0%' }} title="50đ" />
+                    <span className="scale-notch sub" style={{ left: '20%' }} title="60đ" />
+                    <span className="scale-notch milestone" style={{ left: '30%' }} title="Chuẩn gợi ý: 65đ" />
+                    <span className="scale-notch sub" style={{ left: '40%' }} title="70đ" />
+                    <span className="scale-notch sub" style={{ left: '60%' }} title="80đ" />
+                    <span className="scale-notch sub" style={{ left: '80%' }} title="90đ" />
+                    <span className="scale-notch" style={{ left: '100%' }} title="100đ" />
+                  </div>
+
+                  {/* Nhãn mốc điểm bấm vào để nhảy nhanh */}
+                  <div className="slider-ticks-labels">
+                    <button
+                      type="button"
+                      className={`tick-label-btn first-tick ${passScoreValue === 50 ? 'active' : ''}`}
+                      onClick={() => setValue('defaultPassScore', 50, { shouldDirty: true })}
+                      title="50 điểm (Cơ bản)"
+                    >
+                      50đ
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn milestone ${passScoreValue === 65 ? 'active' : ''}`}
+                      style={{ left: '30%' }}
+                      onClick={() => setValue('defaultPassScore', 65, { shouldDirty: true })}
+                      title="65 điểm (Chuẩn gợi ý TOEIC)"
+                    >
+                      65đ ★ Chuẩn
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn ${passScoreValue === 80 ? 'active' : ''}`}
+                      style={{ left: '60%' }}
+                      onClick={() => setValue('defaultPassScore', 80, { shouldDirty: true })}
+                      title="80 điểm (Nâng cao)"
+                    >
+                      80đ
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn last-tick ${passScoreValue === 100 ? 'active' : ''}`}
+                      onClick={() => setValue('defaultPassScore', 100, { shouldDirty: true })}
+                      title="100 điểm (Tối đa)"
+                    >
+                      100đ
+                    </button>
+                  </div>
                 </div>
 
                 <div className="threshold-note">
@@ -452,23 +498,68 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                   </div>
                 </div>
 
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={completionRateValue || 80}
-                  onChange={(e) =>
-                    setValue('requiredCompletionRate', Number(e.target.value), {
-                      shouldDirty: true,
-                    })
-                  }
-                  className="threshold-slider"
-                />
+                {/* Thang trượt có gạch mức (graduation ticks) */}
+                <div className="slider-scale-wrapper">
+                  <input
+                    type="range"
+                    min="50"
+                    max="100"
+                    value={completionRateValue || 80}
+                    onChange={(e) =>
+                      setValue('requiredCompletionRate', Number(e.target.value), {
+                        shouldDirty: true,
+                      })
+                    }
+                    className="threshold-slider"
+                  />
 
-                <div className="slider-ticks">
-                  <span>50%</span>
-                  <span>80% (Chuẩn gợi ý)</span>
-                  <span>100%</span>
+                  {/* Vạch gạch mức trực quan trên thanh trượt */}
+                  <div className="slider-ticks-scale" aria-hidden="true">
+                    <span className="scale-notch" style={{ left: '0%' }} title="50%" />
+                    <span className="scale-notch sub" style={{ left: '20%' }} title="60%" />
+                    <span className="scale-notch sub" style={{ left: '40%' }} title="70%" />
+                    <span className="scale-notch milestone" style={{ left: '60%' }} title="Chuẩn gợi ý: 80%" />
+                    <span className="scale-notch sub" style={{ left: '80%' }} title="90%" />
+                    <span className="scale-notch" style={{ left: '100%' }} title="100%" />
+                  </div>
+
+                  {/* Nhãn mốc tỷ lệ bấm vào để nhảy nhanh */}
+                  <div className="slider-ticks-labels">
+                    <button
+                      type="button"
+                      className={`tick-label-btn first-tick ${completionRateValue === 50 ? 'active' : ''}`}
+                      onClick={() => setValue('requiredCompletionRate', 50, { shouldDirty: true })}
+                      title="50% (Tối thiểu cơ bản)"
+                    >
+                      50%
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn ${completionRateValue === 70 ? 'active' : ''}`}
+                      style={{ left: '40%' }}
+                      onClick={() => setValue('requiredCompletionRate', 70, { shouldDirty: true })}
+                      title="70% (Trung bình)"
+                    >
+                      70%
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn milestone ${completionRateValue === 80 ? 'active' : ''}`}
+                      style={{ left: '60%' }}
+                      onClick={() => setValue('requiredCompletionRate', 80, { shouldDirty: true })}
+                      title="80% (Chuẩn sư phạm gợi ý)"
+                    >
+                      80% ★ Chuẩn
+                    </button>
+                    <button
+                      type="button"
+                      className={`tick-label-btn last-tick ${completionRateValue === 100 ? 'active' : ''}`}
+                      onClick={() => setValue('requiredCompletionRate', 100, { shouldDirty: true })}
+                      title="100% (Toàn bộ bài giảng)"
+                    >
+                      100%
+                    </button>
+                  </div>
                 </div>
 
                 <div className="threshold-note">

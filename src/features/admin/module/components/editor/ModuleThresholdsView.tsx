@@ -190,16 +190,30 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
           </div>
         </div>
 
+        {/* Datalist hỗ trợ native browser tick marks */}
+        <datalist id="threshold-score-ticks">
+          <option value="50" label="50đ" />
+          <option value="65" label="65đ" />
+          <option value="80" label="80đ" />
+          <option value="100" label="100đ" />
+        </datalist>
+        <datalist id="threshold-rate-ticks">
+          <option value="50" label="50%" />
+          <option value="70" label="70%" />
+          <option value="80" label="80%" />
+          <option value="100" label="100%" />
+        </datalist>
+
         {/* Matrix Table */}
         <div className="thresholds-table-wrapper">
           <table className="thresholds-table">
             <thead>
               <tr>
-                <th style={{ width: '55px' }}>Thứ tự</th>
+                <th style={{ width: '60px', textAlign: 'center' }}>Thứ tự</th>
                 <th>Tên Module & Part</th>
-                <th style={{ width: '175px' }}>Điểm đỗ bài thi</th>
-                <th style={{ width: '175px' }}>Tỷ lệ bài học</th>
-                <th style={{ width: '70px', textAlign: 'center' }}>Thao tác</th>
+                <th style={{ width: '200px' }}>Điểm đỗ bài thi</th>
+                <th style={{ width: '200px' }}>Tỷ lệ bài học</th>
+                <th style={{ width: '80px', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -208,7 +222,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                   key={item.id}
                   className={item.isDirty ? 'row-dirty' : ''}
                 >
-                  <td className="font-semibold text-muted">
+                  <td className="font-semibold text-muted" style={{ textAlign: 'center' }}>
                     #{item.sequence}
                   </td>
 
@@ -249,16 +263,27 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                         />
                         <span className="threshold-pill-unit">đ</span>
                       </div>
-                      <input
-                        type="range"
-                        min="50"
-                        max="100"
-                        value={item.defaultPassScore}
-                        onChange={(e) =>
-                          handleScoreChange(item.id, Number(e.target.value))
-                        }
-                        className="compact-slider"
-                      />
+                      <div className="compact-slider-container">
+                        <input
+                          type="range"
+                          min="50"
+                          max="100"
+                          list="threshold-score-ticks"
+                          value={item.defaultPassScore}
+                          onChange={(e) =>
+                            handleScoreChange(item.id, Number(e.target.value))
+                          }
+                          className="compact-slider"
+                          title={`Điểm đỗ: ${item.defaultPassScore}đ`}
+                        />
+                        {/* Vạch gạch mức trực quan trên thanh trượt */}
+                        <div className="slider-tick-notches" aria-hidden="true">
+                          <span className="tick-notch" style={{ left: '0%' }} title="50đ" />
+                          <span className="tick-notch milestone" style={{ left: '30%' }} title="Chuẩn gợi ý: 65đ" />
+                          <span className="tick-notch" style={{ left: '60%' }} title="80đ" />
+                          <span className="tick-notch" style={{ left: '100%' }} title="100đ" />
+                        </div>
+                      </div>
                     </div>
                   </td>
 
@@ -278,16 +303,27 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                         />
                         <span className="threshold-pill-unit">%</span>
                       </div>
-                      <input
-                        type="range"
-                        min="50"
-                        max="100"
-                        value={item.requiredCompletionRate}
-                        onChange={(e) =>
-                          handleRateChange(item.id, Number(e.target.value))
-                        }
-                        className="compact-slider"
-                      />
+                      <div className="compact-slider-container">
+                        <input
+                          type="range"
+                          min="50"
+                          max="100"
+                          list="threshold-rate-ticks"
+                          value={item.requiredCompletionRate}
+                          onChange={(e) =>
+                            handleRateChange(item.id, Number(e.target.value))
+                          }
+                          className="compact-slider"
+                          title={`Tỷ lệ hoàn thành: ${item.requiredCompletionRate}%`}
+                        />
+                        {/* Vạch gạch mức trực quan trên thanh trượt */}
+                        <div className="slider-tick-notches" aria-hidden="true">
+                          <span className="tick-notch" style={{ left: '0%' }} title="50%" />
+                          <span className="tick-notch" style={{ left: '40%' }} title="70%" />
+                          <span className="tick-notch milestone" style={{ left: '60%' }} title="Chuẩn gợi ý: 80%" />
+                          <span className="tick-notch" style={{ left: '100%' }} title="100%" />
+                        </div>
+                      </div>
                     </div>
                   </td>
 
