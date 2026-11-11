@@ -14,6 +14,11 @@ import {
   CheckCircle2,
   Trash2,
 } from 'lucide-react';
+import {
+  ThresholdDropdownInput,
+  SCORE_PRESETS,
+  RATE_PRESETS,
+} from './ThresholdDropdownInput';
 
 const DEFAULT_TOEIC_PARTS: PartResponse[] = [
   { id: 1, name: 'Part 1: Photographs', sections: 'LISTENING' },
@@ -387,36 +392,22 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                 <label className="form-label font-bold">
                   1. Điểm đỗ mặc định bài thi vượt ải
                 </label>
-                <div className="editor-combo-row">
-                  <div className="threshold-combo-cell large">
-                    <input
-                      type="number"
-                      min="50"
-                      max="100"
-                      {...register('defaultPassScore', { valueAsNumber: true })}
-                      className="threshold-combo-input"
-                    />
-                    <span className="threshold-combo-unit">/ 100 điểm</span>
-                  </div>
-                  <select
-                    className="form-input editor-preset-select"
-                    value=""
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        setValue('defaultPassScore', Number(e.target.value), { shouldDirty: true });
-                      }
-                    }}
-                  >
-                    <option value="" disabled>-- Chọn nhanh mốc điểm chuẩn --</option>
-                    <option value="50">50 điểm (Cơ bản)</option>
-                    <option value="60">60 điểm</option>
-                    <option value="65">65 điểm (Chuẩn gợi ý TOEIC)</option>
-                    <option value="70">70 điểm</option>
-                    <option value="75">75 điểm</option>
-                    <option value="80">80 điểm</option>
-                    <option value="90">90 điểm</option>
-                    <option value="100">100 điểm (Tối đa)</option>
-                  </select>
+                <div style={{ marginTop: '0.35rem' }}>
+                  <ThresholdDropdownInput
+                    value={watch('defaultPassScore') || 65}
+                    onChange={(val) =>
+                      setValue('defaultPassScore', val, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    unit="đ"
+                    presets={SCORE_PRESETS}
+                    min={50}
+                    max={100}
+                    size="large"
+                    title="Chọn nhanh mốc điểm chuẩn bài thi"
+                  />
                 </div>
                 {errors.defaultPassScore && (
                   <p className="form-error">{errors.defaultPassScore.message}</p>
@@ -428,36 +419,22 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                 <label className="form-label font-bold">
                   2. Tỷ lệ bài giảng hoàn thành tối thiểu
                 </label>
-                <div className="editor-combo-row">
-                  <div className="threshold-combo-cell large">
-                    <input
-                      type="number"
-                      min="50"
-                      max="100"
-                      {...register('requiredCompletionRate', { valueAsNumber: true })}
-                      className="threshold-combo-input"
-                    />
-                    <span className="threshold-combo-unit">%</span>
-                  </div>
-                  <select
-                    className="form-input editor-preset-select"
-                    value=""
-                    onChange={(e) => {
-                      if (e.target.value) {
-                        setValue('requiredCompletionRate', Number(e.target.value), { shouldDirty: true });
-                      }
-                    }}
-                  >
-                    <option value="" disabled>-- Chọn nhanh mốc tỷ lệ chuẩn --</option>
-                    <option value="50">50% (Cơ bản)</option>
-                    <option value="60">60%</option>
-                    <option value="70">70%</option>
-                    <option value="75">75%</option>
-                    <option value="80">80% (Chuẩn gợi ý)</option>
-                    <option value="85">85%</option>
-                    <option value="90">90%</option>
-                    <option value="100">100% (Tối đa)</option>
-                  </select>
+                <div style={{ marginTop: '0.35rem' }}>
+                  <ThresholdDropdownInput
+                    value={watch('requiredCompletionRate') || 80}
+                    onChange={(val) =>
+                      setValue('requiredCompletionRate', val, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    unit="%"
+                    presets={RATE_PRESETS}
+                    min={50}
+                    max={100}
+                    size="large"
+                    title="Chọn nhanh mốc tỷ lệ hoàn thành chuẩn"
+                  />
                 </div>
                 {errors.requiredCompletionRate && (
                   <p className="form-error">

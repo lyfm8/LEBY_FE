@@ -6,6 +6,11 @@ import {
   CheckCircle2,
   Search,
 } from 'lucide-react';
+import {
+  ThresholdDropdownInput,
+  SCORE_PRESETS,
+  RATE_PRESETS,
+} from './ThresholdDropdownInput';
 
 interface ModuleThresholdsViewProps {
   modules: ModuleResponse[];
@@ -221,72 +226,26 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
 
                   {/* Điểm đỗ */}
                   <td>
-                    <div className="threshold-combo-cell">
-                      <input
-                        type="number"
-                        min="50"
-                        max="100"
-                        value={item.defaultPassScore}
-                        onChange={(e) =>
-                          handleScoreChange(item.id, Number(e.target.value))
-                        }
-                        className="threshold-combo-input"
-                      />
-                      <span className="threshold-combo-unit">đ</span>
-                      <select
-                        className="threshold-combo-select"
-                        value=""
-                        onChange={(e) => {
-                          if (e.target.value) handleScoreChange(item.id, Number(e.target.value));
-                        }}
-                        title="Chọn nhanh mốc điểm chuẩn"
-                      >
-                        <option value="" disabled>Mốc chuẩn</option>
-                        <option value="50">50đ (Cơ bản)</option>
-                        <option value="60">60đ</option>
-                        <option value="65">65đ (Chuẩn gợi ý)</option>
-                        <option value="70">70đ</option>
-                        <option value="75">75đ</option>
-                        <option value="80">80đ</option>
-                        <option value="90">90đ</option>
-                        <option value="100">100đ (Tối đa)</option>
-                      </select>
-                    </div>
+                    <ThresholdDropdownInput
+                      value={item.defaultPassScore}
+                      onChange={(val) => handleScoreChange(item.id, val)}
+                      unit="đ"
+                      presets={SCORE_PRESETS}
+                      min={50}
+                      max={100}
+                    />
                   </td>
 
                   {/* Tỷ lệ hoàn thành */}
                   <td>
-                    <div className="threshold-combo-cell">
-                      <input
-                        type="number"
-                        min="50"
-                        max="100"
-                        value={item.requiredCompletionRate}
-                        onChange={(e) =>
-                          handleRateChange(item.id, Number(e.target.value))
-                        }
-                        className="threshold-combo-input"
-                      />
-                      <span className="threshold-combo-unit">%</span>
-                      <select
-                        className="threshold-combo-select"
-                        value=""
-                        onChange={(e) => {
-                          if (e.target.value) handleRateChange(item.id, Number(e.target.value));
-                        }}
-                        title="Chọn nhanh mốc tỷ lệ chuẩn"
-                      >
-                        <option value="" disabled>Mốc chuẩn</option>
-                        <option value="50">50% (Cơ bản)</option>
-                        <option value="60">60%</option>
-                        <option value="70">70%</option>
-                        <option value="75">75%</option>
-                        <option value="80">80% (Chuẩn gợi ý)</option>
-                        <option value="85">85%</option>
-                        <option value="90">90%</option>
-                        <option value="100">100% (Tối đa)</option>
-                      </select>
-                    </div>
+                    <ThresholdDropdownInput
+                      value={item.requiredCompletionRate}
+                      onChange={(val) => handleRateChange(item.id, val)}
+                      unit="%"
+                      presets={RATE_PRESETS}
+                      min={50}
+                      max={100}
+                    />
                   </td>
 
                   {/* Actions */}

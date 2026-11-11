@@ -1118,30 +1118,38 @@
   margin-bottom: 0.85rem;
 }
 
-.threshold-combo-cell {
+/* --------------------------------------------------------------------------
+   THRESHOLD DROPDOWN INPUT (Combo Box with 4-5 Standard Presets)
+   -------------------------------------------------------------------------- */
+.threshold-dropdown-input-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.threshold-input-box {
   display: inline-flex;
   align-items: center;
   background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  overflow: hidden;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   height: 32px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s;
 }
 
-.threshold-combo-cell:focus-within {
+.threshold-input-box:focus-within {
   border-color: #ea580c;
   box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
 }
 
-.threshold-combo-cell.large {
+.threshold-dropdown-input-wrapper.size-large .threshold-input-box {
   height: 38px;
-  min-width: 140px;
+  min-width: 106px;
+  border-radius: 7px;
 }
 
-.threshold-combo-input {
-  width: 32px;
+.threshold-raw-input {
+  width: 40px;
   border: none;
   background: transparent;
   font-size: 0.875rem;
@@ -1152,62 +1160,184 @@
   padding: 0 2px 0 6px;
 }
 
-.threshold-combo-cell.large .threshold-combo-input {
-  width: 48px;
+.threshold-dropdown-input-wrapper.size-large .threshold-raw-input {
+  width: 44px;
   font-size: 0.9375rem;
+  padding: 0 3px 0 8px;
 }
 
-.threshold-combo-unit {
+.threshold-unit-label {
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
-  padding-right: 6px;
+  padding-left: 2px;
+  padding-right: 5px;
   user-select: none;
   white-space: nowrap;
 }
 
-.threshold-combo-select {
-  border: none;
-  border-left: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-  font-size: 0.6875rem;
-  font-weight: 600;
-  color: #4b5563;
-  padding: 0 4px;
-  height: 100%;
-  outline: none;
-  cursor: pointer;
-  transition: all 0.15s;
+.threshold-dropdown-input-wrapper.size-large .threshold-unit-label {
+  font-size: 0.8125rem;
+  padding-right: 6px;
 }
 
-.threshold-combo-select:hover {
+.threshold-input-divider {
+  width: 1px;
+  height: 16px;
+  background-color: #e5e7eb;
+}
+
+.threshold-dropdown-input-wrapper.size-large .threshold-input-divider {
+  height: 20px;
+}
+
+.threshold-toggle-btn {
+  border: none;
+  background: transparent;
+  width: 22px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  cursor: pointer;
+  border-radius: 0 5px 5px 0;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.threshold-dropdown-input-wrapper.size-large .threshold-toggle-btn {
+  width: 24px;
+  border-radius: 0 6px 6px 0;
+}
+
+.threshold-toggle-btn:hover,
+.threshold-toggle-btn.active {
+  color: #ea580c;
   background-color: #fff7ed;
+}
+
+.threshold-chevron {
+  transition: transform 0.15s ease;
+}
+
+.threshold-chevron.rotate {
+  transform: rotate(180deg);
+}
+
+.threshold-preset-popover {
+  position: absolute;
+  right: 0;
+  min-width: 220px;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
+  z-index: 100;
+  padding: 5px;
+  animation: fadeIn 0.12s ease-out;
+}
+
+.threshold-preset-popover.drop-down {
+  top: calc(100% + 4px);
+}
+
+.threshold-preset-popover.drop-up {
+  bottom: calc(100% + 4px);
+}
+
+.threshold-popover-header {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #9ca3af;
+  letter-spacing: 0.05em;
+  padding: 4px 8px 3px;
+  border-bottom: 1px solid #f3f4f6;
+  margin-bottom: 3px;
+}
+
+.threshold-preset-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.threshold-preset-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s;
+}
+
+.threshold-preset-item:hover {
+  background-color: #f9fafb;
+}
+
+.threshold-preset-item.selected {
+  background-color: #fff7ed;
+}
+
+.preset-item-val {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.preset-num {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.threshold-preset-item.selected .preset-num {
   color: #ea580c;
 }
 
-.editor-combo-row {
+.preset-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+}
+
+.threshold-preset-item.selected .preset-unit {
+  color: #ea580c;
+}
+
+.preset-item-info {
   display: flex;
-  gap: 0.75rem;
   align-items: center;
-  margin-top: 0.35rem;
+  gap: 5px;
+  margin-left: 8px;
+  margin-right: auto;
 }
 
-.editor-preset-select {
-  flex: 1;
-  padding: 0.5rem 0.75rem;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  background-color: #ffffff;
-  color: #374151;
-  cursor: pointer;
-  outline: none;
+.preset-label {
+  font-size: 0.75rem;
+  color: #4b5563;
+  white-space: nowrap;
 }
 
-.editor-preset-select:focus {
-  border-color: #ea580c;
-  box-shadow: 0 0 0 1px #ea580c;
+.preset-badge-star {
+  font-size: 0.625rem;
+  font-weight: 700;
+  background-color: #fef3c7;
+  color: #b45309;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.preset-check-icon {
+  color: #ea580c;
+  margin-left: 6px;
+  flex-shrink: 0;
 }
 
 .threshold-note {
@@ -1952,6 +2082,8 @@
 }
 
 /* Hide browser default number stepper spinners */
+.threshold-raw-input::-webkit-outer-spin-button,
+.threshold-raw-input::-webkit-inner-spin-button,
 .threshold-combo-input::-webkit-outer-spin-button,
 .threshold-combo-input::-webkit-inner-spin-button,
 .threshold-number-input::-webkit-outer-spin-button,
@@ -1960,6 +2092,7 @@
   margin: 0;
 }
 
+.threshold-raw-input,
 .threshold-combo-input,
 .threshold-number-input {
   -moz-appearance: textfield;
