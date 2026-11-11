@@ -11,7 +11,6 @@ import {
   Sliders,
   Layers,
   BookOpen,
-  Info,
   CheckCircle2,
   Trash2,
 } from 'lucide-react';
@@ -468,13 +467,6 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                   </div>
                 </div>
 
-                <div className="threshold-note">
-                  <Info size={13} />
-                  <span>
-                    Điểm số tối thiểu học viên cần đạt ở bài thi cuối Module để được cấp
-                    chứng nhận hoàn thành và mở khóa nội dung tiếp theo.
-                  </span>
-                </div>
                 {errors.defaultPassScore && (
                   <p className="form-error">{errors.defaultPassScore.message}</p>
                 )}
@@ -562,13 +554,6 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                   </div>
                 </div>
 
-                <div className="threshold-note">
-                  <Info size={13} />
-                  <span>
-                    Học viên phải học và hoàn thành đủ tỷ lệ phần trăm số bài giảng lý
-                    thuyết trong Module này mới được phép bắt đầu bài thi vượt ải.
-                  </span>
-                </div>
                 {errors.requiredCompletionRate && (
                   <p className="form-error">
                     {errors.requiredCompletionRate.message}
