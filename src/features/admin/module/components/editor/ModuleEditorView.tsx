@@ -90,19 +90,21 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
   useEffect(() => {
     adminModuleService
       .getParts()
-      .then((res: any) => {
-        const list = Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-          ? res.data
-          : Array.isArray(res?.data?.data)
-          ? res.data.data
+      .then((res) => {
+        const raw = res as unknown;
+        const responseData = raw as { data?: PartResponse[] | { data?: PartResponse[] } };
+        const list: PartResponse[] = Array.isArray(raw)
+          ? (raw as PartResponse[])
+          : Array.isArray(responseData?.data)
+          ? responseData.data
+          : Array.isArray((responseData?.data as { data?: PartResponse[] })?.data)
+          ? (responseData.data as { data: PartResponse[] }).data
           : [];
         if (list.length > 0) {
           setParts(list);
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.warn('Không thể nạp Parts từ API, dùng fallback danh sách chuẩn:', err);
       });
   }, []);
@@ -112,15 +114,17 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
     if (selectedPartId) {
       adminModuleService
         .getAbilities(Number(selectedPartId))
-        .then((res: any) => {
-          const list = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-            ? res.data
+        .then((res) => {
+          const raw = res as unknown;
+          const responseData = raw as { data?: AbilityResponse[] };
+          const list: AbilityResponse[] = Array.isArray(raw)
+            ? (raw as AbilityResponse[])
+            : Array.isArray(responseData?.data)
+            ? responseData.data
             : [];
           setAbilities(list);
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.warn('Lỗi tải Năng lực theo Part:', err);
           setAbilities([]);
         });

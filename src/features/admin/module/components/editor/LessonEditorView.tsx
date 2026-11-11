@@ -15,6 +15,7 @@ import {
   RotateCcw,
   Trash2,
 } from 'lucide-react';
+import { useToast } from '@/core/ui';
 
 interface LessonEditorViewProps {
   lessonId?: number;
@@ -45,6 +46,7 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
   const isEdit = !!lessonId && !!existingLesson;
   const [activeTab, setActiveTab] = useState<TabType>('CONTENT');
   const [isSavingScripts, setIsSavingScripts] = useState<boolean>(false);
+  const toast = useToast();
 
   const form = useForm<LessonFormValues>({
     // NOTE: Type assertion bắt buộc do Zod v4 + @hookform/resolvers v5 có mismatch type giữa input/output schema
@@ -118,7 +120,7 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
 
   const handleSaveScriptsLocal = async (scripts: LessonScriptDto[]) => {
     if (!lessonId) {
-      alert('Vui lòng lưu bài học trước khi lưu kịch bản phụ đề.');
+      toast.error('Vui lòng lưu bài học trước khi lưu kịch bản phụ đề.');
       return;
     }
     setIsSavingScripts(true);
@@ -137,13 +139,13 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
       <div className="editor-pane-header">
         <div className="editor-header-left">
           <div className="editor-breadcrumb">
-            <span className="text-muted">{moduleTitle || 'Module'}</span>
+            <span className="text-muted module-crumb" title={moduleTitle}>{moduleTitle || 'Module'}</span>
             <span className="separator">/</span>
-            <span className="current-node">
+            <span className="current-node" title={isEdit ? existingLesson?.title : 'Tạo bài học mới'}>
               {isEdit ? existingLesson?.title : 'Tạo bài học mới'}
             </span>
           </div>
-          <h1 className="editor-main-title">
+          <h1 className="editor-main-title" title={isEdit ? existingLesson?.title : 'Soạn Thảo Bài Giảng Mới'}>
             {isEdit ? existingLesson?.title : 'Soạn Thảo Bài Giảng Mới'}
           </h1>
         </div>
@@ -156,14 +158,14 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
               className={`pill-btn ${currentStatus === 'DRAFT' ? 'active-draft' : ''}`}
               onClick={() => setValue('status', 'DRAFT', { shouldDirty: true })}
             >
-              Draft
+              Bản nháp
             </button>
             <button
               type="button"
               className={`pill-btn ${currentStatus === 'PUBLISHED' ? 'active-pub' : ''}`}
               onClick={() => setValue('status', 'PUBLISHED', { shouldDirty: true })}
             >
-              Published
+              Xuất bản
             </button>
           </div>
 
@@ -175,6 +177,7 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
               title="Xóa bài học"
             >
               <Trash2 size={15} />
+              <span>Xóa</span>
             </button>
           )}
 

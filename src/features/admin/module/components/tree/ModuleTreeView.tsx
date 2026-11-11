@@ -48,7 +48,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
 
   const isConfigActive = activeView.type === 'MODULE_CONFIGS';
 
-  // NOTE: Chỉ cho phép drag-drop khi không đang tìm kiếm (tránh reorder sai thứ tự)
+  // Chỉ cho phép drag-drop khi không đang tìm kiếm
   const isDragEnabled = !searchKeyword.trim();
 
   const handleModuleDragStart = useCallback((index: number) => {
@@ -68,7 +68,6 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
         return;
       }
 
-      // Tính toán thứ tự mới bằng cách di chuyển phần tử
       const reordered = [...modules];
       const [moved] = reordered.splice(fromIndex, 1);
       reordered.splice(targetIndex, 0, moved);
@@ -93,6 +92,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
           <div className="title-wrapper">
             <FolderTree size={18} className="text-orange" />
             <h2 className="tree-title">Cấu trúc Mô-đun</h2>
+            <span className="tree-total-badge">{modules.length}</span>
           </div>
           <div className="tree-header-actions">
             <button
@@ -124,7 +124,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
             className="btn-create-module"
             onClick={() => onSelectView({ type: 'MODULE_CREATE' })}
           >
-            <Plus size={16} />
+            <Plus size={15} />
             <span>Thêm Module</span>
           </button>
 
@@ -132,10 +132,10 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
             type="button"
             className={`btn-config-thresholds ${isConfigActive ? 'active' : ''}`}
             onClick={() => onSelectView({ type: 'MODULE_CONFIGS' })}
-            title="Xem & điều chỉnh điểm chuẩn và tỷ lệ hoàn thành các Module"
+            title="Xem & điều chỉnh điểm chuẩn và tỷ lệ hoàn thành"
           >
-            <Sliders size={15} />
-            <span>Cấu hình thông số</span>
+            <Sliders size={14} />
+            <span>Cấu hình chuẩn</span>
           </button>
         </div>
 
@@ -204,7 +204,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
 
       {/* 5. Footer tóm tắt */}
       <div className="module-tree-footer">
-        <span>Tổng cộng: {modules.length} Module</span>
+        <span>Hiển thị: {filteredModules.length} / {modules.length} Module</span>
       </div>
     </div>
   );

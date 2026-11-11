@@ -149,8 +149,8 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
             <Sliders size={15} />
             <span>Cấu hình Tham số Nghiệp vụ</span>
           </div>
-          <h1 className="editor-main-title">
-            Bảng Điều Chỉnh Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module
+          <h1 className="editor-main-title" title="Bảng Điều Chỉnh Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module">
+            Bảng Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module
           </h1>
           <p className="editor-subtitle">
             Tùy biến các tham số động cho từng Mô-đun học tập. Các giá trị này được
@@ -195,11 +195,11 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
           <table className="thresholds-table">
             <thead>
               <tr>
-                <th style={{ width: '80px' }}>Thứ tự</th>
+                <th style={{ width: '55px' }}>Thứ tự</th>
                 <th>Tên Module & Part</th>
-                <th style={{ width: '280px' }}>Điểm đỗ bài thi vượt ải</th>
-                <th style={{ width: '280px' }}>Tỷ lệ bài học tối thiểu</th>
-                <th style={{ width: '120px', textAlign: 'center' }}>Thao tác</th>
+                <th style={{ width: '175px' }}>Điểm đỗ bài thi</th>
+                <th style={{ width: '175px' }}>Tỷ lệ bài học</th>
+                <th style={{ width: '70px', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>

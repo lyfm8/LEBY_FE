@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { adminModuleTestService } from '../services/adminModuleTestService';
 import { adminQuestionService } from '@/features/admin/question/services/adminQuestionService';
 import type { QuestionListItemResponse, QuestionFilterParams } from '@/features/admin/question/types';
+import { useToast } from '@/core/ui';
 import { X, Search, Trash2 } from 'lucide-react';
 
 interface ModuleTestModalProps {
@@ -14,6 +15,7 @@ interface ModuleTestModalProps {
 export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
   isOpen, onClose, moduleId, moduleName
 }) => {
+  const toast = useToast();
   // State quản lý danh sách câu hỏi đang có của Module này
   const [selectedQuestions, setSelectedQuestions] = useState<QuestionListItemResponse[]>([]);
   const [isLoadingSelected, setIsLoadingSelected] = useState(false);
@@ -84,11 +86,11 @@ export const ModuleTestModal: React.FC<ModuleTestModalProps> = ({
     try {
       const questionIds = selectedQuestions.map(q => q.id);
       await adminModuleTestService.updateTestQuestions(moduleId, { questionIds });
-      alert('Đã cập nhật bài Test thành công!');
+      toast.success('Đã cập nhật bài Test thành công!');
       onClose();
     } catch (error) {
       console.error('Save test questions failed:', error);
-      alert('Cập nhật thất bại. (Lưu ý: Không thể sửa bài Test nếu học viên đã làm)');
+      toast.error('Cập nhật thất bại. (Lưu ý: Không thể sửa bài Test nếu học viên đã làm)');
     } finally {
       setIsSaving(false);
     }

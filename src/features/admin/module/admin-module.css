@@ -1,46 +1,72 @@
 /* ==========================================================================
    LEBY ADMIN - MODULE & LESSON STUDIO STYLESHEET (A05)
-   Design System: Clean Slate UI | LEBY Orange (#ea580c) | Dark Navy (#111827)
+   Design System: Clean Enterprise UI | LEBY Orange (#ea580c) | Dark Navy (#111827)
+   Adheres to LEBY Admin Design Standards (admin-layout.css compatible)
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   1. STUDIO SPLIT LAYOUT (25% Tree - 75% Editor)
+   1. STUDIO 2-COLUMN GRID LAYOUT
+   Fits cleanly inside .admin-page-container without creating nested scrollbars
    -------------------------------------------------------------------------- */
-.studio-split-layout {
-  display: flex;
-  height: calc(100vh - 64px);
-  width: 100%;
+.module-studio-grid {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 1.25rem;
+  height: calc(100vh - 170px);
+  min-height: 560px;
   position: relative;
-  background-color: #f9fafb;
   overflow: hidden;
 }
 
-.studio-left-pane {
-  width: 25%;
-  min-width: 290px;
-  max-width: 380px;
+@media (min-width: 1600px) {
+  .module-studio-grid {
+    grid-template-columns: 430px 1fr;
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 1200px) {
+  .module-studio-grid {
+    grid-template-columns: 350px 1fr;
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .module-studio-grid {
+    grid-template-columns: 1fr;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+}
+
+.studio-tree-col {
   height: 100%;
   background-color: #ffffff;
-  border-right: 1px solid #e5e7eb;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-  z-index: 10;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.studio-split-layout.sidebar-collapsed .studio-left-pane {
+.module-studio-grid.sidebar-collapsed .studio-tree-col {
   width: 0;
   min-width: 0;
-  border-right: none;
   opacity: 0;
   pointer-events: none;
+  border: none;
+  padding: 0;
+  margin: 0;
 }
 
 .studio-sidebar-expand-btn {
   position: absolute;
-  top: 14px;
-  left: 14px;
+  top: 10px;
+  left: 0;
   z-index: 30;
   background-color: #ffffff;
   border: 1px solid #fed7aa;
@@ -62,43 +88,68 @@
   color: #c2410c;
 }
 
-.studio-right-pane {
-  flex: 1;
+.studio-editor-col {
   height: 100%;
-  overflow-y: auto;
-  background-color: #f9fafb;
+  background-color: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
   display: flex;
   flex-direction: column;
 }
 
+/* Sleek custom scrollbars for Studio panes */
+.module-tree-body::-webkit-scrollbar,
+.editor-pane-body::-webkit-scrollbar,
+.thresholds-table-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.module-tree-body::-webkit-scrollbar-track,
+.editor-pane-body::-webkit-scrollbar-track,
+.thresholds-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.module-tree-body::-webkit-scrollbar-thumb,
+.editor-pane-body::-webkit-scrollbar-thumb,
+.thresholds-table-wrapper::-webkit-scrollbar-thumb {
+  background-color: #e5e7eb;
+  border-radius: 9999px;
+}
+
+.module-tree-body::-webkit-scrollbar-thumb:hover,
+.editor-pane-body::-webkit-scrollbar-thumb:hover,
+.thresholds-table-wrapper::-webkit-scrollbar-thumb:hover {
+  background-color: #cbd5e1;
+}
+
 /* --------------------------------------------------------------------------
-   2. TREE NAVIGATION (CỘT BÊN TRÁI 25%)
+   2. CỘT TRÁI: TREE NAVIGATION
    -------------------------------------------------------------------------- */
 .module-tree-container {
   display: flex;
   flex-direction: column;
   height: 100%;
+  overflow: hidden;
 }
 
 .module-tree-header {
-  padding: 1rem 1.25rem 0.75rem;
+  padding: 1rem 1.15rem 0.85rem;
   border-bottom: 1px solid #f3f4f6;
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
+  flex-shrink: 0;
 }
 
 .module-tree-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.tree-header-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
 }
 
 .title-wrapper {
@@ -108,10 +159,25 @@
 }
 
 .tree-title {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
+}
+
+.tree-total-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #ea580c;
+  background-color: #ffedd5;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+}
+
+.tree-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
 .tree-top-actions {
@@ -120,12 +186,84 @@
   gap: 0.5rem;
 }
 
+.btn-danger-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: #ffffff;
+  color: #ef4444;
+  border: 1px solid #fecaca;
+  padding: 0.5rem 0.85rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-danger-outline:hover {
+  background-color: #fef2f2;
+  border-color: #ef4444;
+  color: #dc2626;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: #ea580c;
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s;
+}
+
+.btn-primary:hover {
+  background-color: #c2410c;
+}
+
+.btn-primary:disabled {
+  background-color: #fdba74;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  background-color: #ffffff;
+  color: #374151;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-secondary:hover {
+  background-color: #f9fafb;
+  border-color: #9ca3af;
+}
+
+.btn-create-module:hover {
+  background-color: #c2410c;
+}
+
 .btn-create-module {
   background-color: #ea580c;
   color: #ffffff;
   border: none;
   border-radius: 6px;
-  padding: 0.45rem 0.65rem;
+  padding: 0.5rem 0.65rem;
   font-size: 0.8125rem;
   font-weight: 600;
   display: flex;
@@ -134,6 +272,7 @@
   gap: 0.35rem;
   cursor: pointer;
   transition: background-color 0.15s;
+  white-space: nowrap;
 }
 
 .btn-create-module:hover {
@@ -141,11 +280,11 @@
 }
 
 .btn-config-thresholds {
-  background-color: #f3f4f6;
+  background-color: #f9fafb;
   color: #4b5563;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  padding: 0.45rem 0.65rem;
+  padding: 0.5rem 0.65rem;
   font-size: 0.8125rem;
   font-weight: 600;
   display: flex;
@@ -154,6 +293,7 @@
   gap: 0.35rem;
   cursor: pointer;
   transition: all 0.15s;
+  white-space: nowrap;
 }
 
 .btn-config-thresholds:hover,
@@ -173,22 +313,24 @@
   position: absolute;
   left: 0.65rem;
   color: #9ca3af;
+  pointer-events: none;
 }
 
 .tree-search-input {
   width: 100%;
-  padding: 0.4rem 1.8rem 0.4rem 2rem;
+  padding: 0.45rem 1.8rem 0.45rem 2rem;
   font-size: 0.8125rem;
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: all 0.15s;
 }
 
 .tree-search-input:focus {
   border-color: #ea580c;
   background-color: #ffffff;
+  box-shadow: 0 0 0 1px #ea580c;
 }
 
 .clear-search-btn {
@@ -199,43 +341,58 @@
   color: #9ca3af;
   font-size: 0.75rem;
   cursor: pointer;
+  padding: 2px 4px;
+}
+
+.clear-search-btn:hover {
+  color: #374151;
 }
 
 .module-tree-body {
   flex: 1;
   overflow-y: auto;
-  padding: 0.5rem 0.75rem;
+  padding: 0.65rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.45rem;
 }
 
 .module-tree-footer {
-  padding: 0.6rem 1rem;
+  padding: 0.55rem 1rem;
   font-size: 0.75rem;
   color: #9ca3af;
   border-top: 1px solid #f3f4f6;
   background-color: #ffffff;
+  flex-shrink: 0;
 }
 
 /* --------------------------------------------------------------------------
-   3. TREE ITEMS (MODULE & LESSON NODES)
+   3. CÁC HÀNG CÂY (MODULE & LESSON TREE ITEMS)
    -------------------------------------------------------------------------- */
 .tree-module-item {
   border: 1px solid #e5e7eb;
   border-radius: 6px;
   background-color: #ffffff;
+  transition: all 0.15s;
   overflow: hidden;
-  transition: border-color 0.15s;
+}
+
+.tree-module-item:hover {
+  border-color: #d1d5db;
 }
 
 .tree-module-item.active-module {
   border-color: #ea580c;
+  background-color: #fffaf5;
   box-shadow: 0 0 0 1px #ea580c;
 }
 
+.tree-module-item.drag-over-indicator {
+  border-top: 2px solid #ea580c !important;
+}
+
 .tree-module-header {
-  padding: 0.55rem 0.75rem;
+  padding: 0.55rem 0.65rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -243,18 +400,60 @@
   background-color: #fbfcfd;
   user-select: none;
   transition: background-color 0.15s;
+  gap: 0.4rem;
 }
 
 .tree-module-header:hover {
   background-color: #f3f4f6;
 }
 
+.tree-module-item.active-module .tree-module-header {
+  background-color: #fff7ed;
+}
+
 .tree-module-header-left {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   overflow: hidden;
   flex: 1;
+  min-width: 0;
+}
+
+.drag-grip-handle {
+  color: #d1d5db;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 1px;
+  transition: color 0.15s;
+}
+
+.drag-grip-handle:hover {
+  color: #ea580c;
+}
+
+.drag-grip-handle:active {
+  cursor: grabbing;
+}
+
+.drag-grip-handle-sm {
+  color: #d1d5db;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding: 1px;
+  transition: color 0.15s;
+}
+
+.drag-grip-handle-sm:hover {
+  color: #ea580c;
+}
+
+.drag-grip-handle-sm:active {
+  cursor: grabbing;
 }
 
 .tree-toggle-btn {
@@ -265,6 +464,13 @@
   cursor: pointer;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  border-radius: 3px;
+}
+
+.tree-toggle-btn:hover {
+  background-color: #e5e7eb;
+  color: #111827;
 }
 
 .tree-sequence-badge {
@@ -275,6 +481,7 @@
   padding: 0.1rem 0.35rem;
   border-radius: 4px;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tree-module-title {
@@ -284,18 +491,31 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
 }
 
 .tree-module-header-right {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.module-count-pill {
+  font-size: 0.65625rem;
+  font-weight: 600;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.1rem 0.35rem;
+  border-radius: 9999px;
+  white-space: nowrap;
 }
 
 .tree-status-dot {
   width: 7px;
   height: 7px;
   border-radius: 50%;
+  flex-shrink: 0;
 }
 
 .dot-published {
@@ -304,6 +524,26 @@
 
 .dot-draft {
   background-color: #f59e0b;
+}
+
+.dot-archived {
+  background-color: #9ca3af;
+}
+
+/* Hover action buttons pattern */
+.tree-actions-hover {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.tree-module-header:hover .tree-actions-hover,
+.tree-leaf-item:hover .tree-actions-hover {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .tree-icon-btn {
@@ -315,22 +555,46 @@
   cursor: pointer;
   display: flex;
   align-items: center;
-  transition: color 0.15s;
+  transition: all 0.15s;
 }
 
 .tree-icon-btn:hover {
   color: #374151;
+  background-color: #e5e7eb;
 }
 
 .tree-icon-btn.delete-btn:hover {
   color: #ef4444;
+  background-color: #fee2e2;
 }
 
+.tree-icon-btn.move-btn {
+  padding: 2px;
+}
+
+.tree-icon-btn.move-btn:hover:not(:disabled) {
+  color: #ea580c;
+  background-color: #ffedd5;
+}
+
+.tree-icon-btn.move-btn:disabled {
+  opacity: 0.25;
+  cursor: default;
+}
+
+.move-btn-group {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   4. LESSON LEAF ITEMS
+   -------------------------------------------------------------------------- */
 .tree-module-children {
-  padding: 0.35rem 0.5rem 0.5rem 1.6rem;
+  padding: 0.35rem 0.45rem 0.45rem 0.85rem;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
   border-top: 1px solid #f3f4f6;
   background-color: #ffffff;
 }
@@ -339,12 +603,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.35rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.35rem 0.45rem;
+  border-radius: 5px;
   cursor: pointer;
   font-size: 0.78125rem;
   color: #4b5563;
-  transition: background-color 0.15s;
+  transition: all 0.15s;
+  gap: 0.35rem;
 }
 
 .tree-leaf-item:hover {
@@ -358,62 +623,116 @@
   font-weight: 600;
 }
 
+.tree-leaf-item.drag-over-lesson {
+  border-top: 2px solid #ea580c !important;
+}
+
 .tree-leaf-left {
   display: flex;
   align-items: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   overflow: hidden;
   flex: 1;
+  min-width: 0;
+}
+
+.leaf-icon {
+  flex-shrink: 0;
 }
 
 .leaf-order {
   color: #9ca3af;
   font-size: 0.75rem;
+  flex-shrink: 0;
+  font-family: monospace;
 }
 
 .leaf-title {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  flex: 1;
 }
 
-.leaf-badge {
+.tree-leaf-right {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.leaf-meta-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: opacity 0.15s;
+}
+
+.tree-leaf-item:hover .leaf-meta-tags {
+  display: none;
+}
+
+.tree-leaf-item .leaf-icon.text-blue {
+  color: #2563eb;
+}
+
+.tree-leaf-item .leaf-icon.text-orange {
+  color: #ea580c;
+}
+
+.lesson-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
   font-size: 0.625rem;
-  padding: 0.05rem 0.3rem;
+  font-weight: 700;
+  padding: 0.05rem 0.35rem;
   border-radius: 3px;
+  white-space: nowrap;
+}
+
+.lesson-type-badge.type-video {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.lesson-type-badge.type-practice {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+}
+
+.duration-tag {
+  font-size: 0.625rem;
   font-weight: 600;
-}
-
-.badge-published {
-  background-color: #d1fae5;
-  color: #065f46;
-}
-
-.badge-draft {
-  background-color: #fef3c7;
-  color: #92400e;
+  font-family: monospace;
+  color: #4b5563;
+  background-color: #f3f4f6;
+  padding: 0.05rem 0.35rem;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 .test-leaf {
   border-left: 2px solid #ea580c;
   margin-top: 0.15rem;
+  background-color: #fffaf5;
 }
 
 .pass-score-pill {
   font-size: 0.6875rem;
   color: #c2410c;
-  background-color: #fff7ed;
-  border: 1px solid #ffedd5;
+  background-color: #ffedd5;
+  border: 1px solid #fed7aa;
   padding: 0.05rem 0.35rem;
   border-radius: 4px;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .tree-add-lesson-btn {
   background: none;
   border: 1px dashed #d1d5db;
   color: #6b7280;
-  padding: 0.3rem 0.5rem;
+  padding: 0.35rem 0.5rem;
   font-size: 0.75rem;
   border-radius: 4px;
   display: flex;
@@ -435,7 +754,7 @@
   font-size: 0.75rem;
   color: #9ca3af;
   font-style: italic;
-  padding: 0.25rem 0;
+  padding: 0.25rem 0.2rem;
 }
 
 .tree-empty-state {
@@ -457,42 +776,47 @@
 }
 
 /* --------------------------------------------------------------------------
-   4. EDITOR PANE (CỘT BÊN PHẢI 75%)
+   5. CỘT PHẢI: EDITOR PANE
    -------------------------------------------------------------------------- */
 .editor-pane-container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 .editor-pane-header {
-  padding: 1.25rem 2rem;
+  padding: 1rem 1.5rem;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .editor-header-left {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.25rem;
+  min-width: 0;
+  flex: 1;
 }
 
 .badge-type-pill {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  font-size: 0.75rem;
-  font-weight: 600;
+  font-size: 0.6875rem;
+  font-weight: 700;
   color: #ea580c;
   background-color: #ffedd5;
-  padding: 0.2rem 0.5rem;
+  padding: 0.15rem 0.45rem;
   border-radius: 4px;
   width: fit-content;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .editor-breadcrumb {
@@ -500,37 +824,52 @@
   align-items: center;
   gap: 0.4rem;
   font-size: 0.8125rem;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+}
+
+.editor-breadcrumb .module-crumb {
+  color: #6b7280;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .editor-breadcrumb .separator {
   color: #d1d5db;
+  flex-shrink: 0;
 }
 
 .editor-breadcrumb .current-node {
   font-weight: 600;
   color: #111827;
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .editor-main-title {
-  font-size: 1.35rem;
+  font-size: 1.05rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
-}
-
-.editor-subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  line-height: 1.35;
 }
 
 .editor-header-right {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.5rem;
+  flex-shrink: 0;
 }
 
-/* Status toggle pill in lesson header */
 .status-toggle-pill {
   display: flex;
   background-color: #f3f4f6;
@@ -544,7 +883,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
-  padding: 0.25rem 0.65rem;
+  padding: 0.25rem 0.6rem;
   border-radius: 4px;
   cursor: pointer;
   transition: all 0.15s;
@@ -560,92 +899,27 @@
   color: #065f46;
 }
 
-/* Buttons */
-.btn-primary {
-  background-color: #ea580c;
-  color: #ffffff;
-  border: none;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: background-color 0.15s;
-}
-
-.btn-primary:hover {
-  background-color: #c2410c;
-}
-
-.btn-primary:disabled {
-  background-color: #fdba74;
-  cursor: not-allowed;
-}
-
-.btn-secondary {
-  background-color: #ffffff;
-  color: #374151;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 0.5rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-secondary:hover {
-  background-color: #f9fafb;
-  border-color: #9ca3af;
-}
-
-.btn-danger-outline {
-  background-color: #ffffff;
-  color: #ef4444;
-  border: 1px solid #fecaca;
-  border-radius: 6px;
-  padding: 0.5rem 0.85rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btn-danger-outline:hover {
-  background-color: #fef2f2;
-  border-color: #ef4444;
-}
-
-/* --------------------------------------------------------------------------
-   5. FORM CONTROLS & CARDS (IN EDITOR)
-   -------------------------------------------------------------------------- */
 .editor-pane-body {
-  padding: 1.5rem 2rem 3rem;
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem 1.5rem 2.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
+  background-color: #f9fafb;
 }
 
 .editor-form-grid {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .editor-card {
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
@@ -653,18 +927,21 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   border-bottom: 1px solid #f3f4f6;
-  padding-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
 }
 
 .card-section-title {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #111827;
   margin: 0;
 }
 
+/* --------------------------------------------------------------------------
+   6. FORM CONTROLS & INPUTS
+   -------------------------------------------------------------------------- */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -690,13 +967,14 @@
 
 .form-input {
   width: 100%;
-  padding: 0.55rem 0.75rem;
+  padding: 0.5rem 0.75rem;
   font-size: 0.875rem;
   background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   outline: none;
-  transition: border-color 0.15s;
+  transition: all 0.15s;
+  box-sizing: border-box;
 }
 
 .form-input:focus {
@@ -706,6 +984,7 @@
 
 .form-input.textarea {
   resize: vertical;
+  min-height: 80px;
 }
 
 .form-row-2 {
@@ -720,26 +999,40 @@
   gap: 1rem;
 }
 
+@media (max-width: 768px) {
+  .form-row-2, .form-row-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
 .radio-pill-group {
   display: flex;
-  gap: 0.75rem;
+  gap: 0.5rem;
+  flex-wrap: wrap;
 }
 
 .radio-pill {
   display: flex;
   align-items: center;
-  gap: 0.4rem;
-  padding: 0.45rem 0.85rem;
+  gap: 0.35rem;
+  padding: 0.4rem 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.8125rem;
   color: #4b5563;
   cursor: pointer;
   transition: all 0.15s;
+  background-color: #ffffff;
+  user-select: none;
 }
 
 .radio-pill input {
   display: none;
+}
+
+.radio-pill:hover {
+  border-color: #9ca3af;
+  background-color: #f9fafb;
 }
 
 .radio-pill.selected {
@@ -752,14 +1045,14 @@
 .abilities-chip-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.45rem;
 }
 
 .ability-chip {
   background-color: #f3f4f6;
   border: 1px solid #e5e7eb;
   color: #4b5563;
-  padding: 0.35rem 0.7rem;
+  padding: 0.3rem 0.65rem;
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 500;
@@ -782,17 +1075,17 @@
 }
 
 /* --------------------------------------------------------------------------
-   6. DYNAMIC THRESHOLD BOXES & SLIDERS
+   7. DYNAMIC THRESHOLD BOXES & SLIDERS
    -------------------------------------------------------------------------- */
 .thresholds-row {
-  margin-top: 0.5rem;
+  margin-top: 0.25rem;
 }
 
 .threshold-box {
   background-color: #fbfcfd;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1.25rem;
+  padding: 1.15rem;
 }
 
 .threshold-header {
@@ -810,10 +1103,10 @@
 
 .threshold-number-input {
   width: 60px;
-  padding: 0.3rem 0.4rem;
+  padding: 0.25rem 0.35rem;
   border: 1px solid #ea580c;
   border-radius: 6px;
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #ea580c;
   text-align: center;
@@ -838,7 +1131,7 @@
   justify-content: space-between;
   font-size: 0.6875rem;
   color: #9ca3af;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .threshold-note {
@@ -849,32 +1142,33 @@
   color: #6b7280;
   line-height: 1.4;
   background-color: #ffffff;
-  padding: 0.5rem 0.75rem;
+  padding: 0.45rem 0.65rem;
   border-radius: 6px;
   border: 1px solid #f3f4f6;
 }
 
 /* --------------------------------------------------------------------------
-   7. LESSON HORIZONTAL TABS & CONTENT
+   8. LESSON HORIZONTAL TABS & MEDIA
    -------------------------------------------------------------------------- */
 .lesson-editor-tabs-bar {
   display: flex;
   background-color: #ffffff;
   border-bottom: 1px solid #e5e7eb;
-  padding: 0 2rem;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
 }
 
 .tab-item-btn {
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  padding: 0.85rem 1.25rem;
-  font-size: 0.875rem;
+  padding: 0.75rem 1.15rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: #6b7280;
   display: flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.4rem;
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -908,38 +1202,43 @@
 .tab-content-wrapper {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1.25rem;
 }
 
 .tab-card {
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1.5rem;
+  padding: 1.25rem;
 }
 
 .tab-card-title {
-  font-size: 1rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 1rem;
+  margin: 0 0 0.85rem;
 }
 
-/* Media dropzones */
 .media-dropzones-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
+  gap: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .media-dropzones-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .media-dropzone-box {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1rem;
+  padding: 0.85rem;
   background-color: #fbfcfd;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .media-dropzone-box.has-media {
@@ -964,12 +1263,12 @@
 .dropzone-empty-area {
   border: 1px dashed #d1d5db;
   border-radius: 6px;
-  padding: 1.5rem 1rem;
+  padding: 1.25rem 0.75rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem;
+  gap: 0.3rem;
   cursor: pointer;
   background-color: #ffffff;
   transition: all 0.15s;
@@ -985,14 +1284,14 @@
 }
 
 .dropzone-text {
-  font-size: 0.78125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: #374151;
   margin: 0;
 }
 
 .dropzone-subtext {
-  font-size: 0.6875rem;
+  font-size: 0.65625rem;
   color: #9ca3af;
 }
 
@@ -1006,23 +1305,40 @@
 
 .preview-video-player {
   width: 100%;
-  max-height: 140px;
+  max-height: 130px;
   border-radius: 4px;
 }
 
 .preview-audio-player {
   width: 100%;
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
 }
 
 .preview-image {
   max-width: 100%;
-  max-height: 120px;
+  max-height: 110px;
   border-radius: 4px;
   object-fit: cover;
 }
 
-/* Rich Text Editor */
+.duration-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.duration-input-wrapper .duration-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.duration-input-wrapper .duration-input {
+  padding-left: 2rem;
+}
+
+/* Rich text editor */
 .rich-editor-toolbar {
   display: flex;
   align-items: center;
@@ -1032,14 +1348,14 @@
   border-bottom: none;
   border-top-left-radius: 6px;
   border-top-right-radius: 6px;
-  padding: 0.4rem 0.65rem;
+  padding: 0.35rem 0.5rem;
 }
 
 .toolbar-btn {
   background: none;
   border: none;
   color: #4b5563;
-  padding: 0.3rem 0.45rem;
+  padding: 0.25rem 0.4rem;
   border-radius: 4px;
   cursor: pointer;
   display: flex;
@@ -1062,20 +1378,127 @@
   resize: vertical;
   font-family: inherit;
   line-height: 1.6;
+  box-sizing: border-box;
 }
 
 .rich-textarea:focus {
   border-color: #ea580c;
 }
 
+/* Toggle Switch */
+.checkbox-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d1d5db;
+  transition: 0.2s;
+}
+
+.toggle-switch .slider.round {
+  border-radius: 20px;
+}
+
+.toggle-switch .slider::before {
+  content: '';
+  position: absolute;
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: #ea580c;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.card-header-with-hint {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 0.85rem;
+}
+
+.media-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.file-name {
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-preview-wrapper,
+.audio-preview-wrapper,
+.image-preview-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.form-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin: 0.15rem 0 0 0;
+}
+
+.btn-link {
+  background: none;
+  border: none;
+  color: #ea580c;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
 /* --------------------------------------------------------------------------
-   8. SCRIPT TAB & AUDIO SYNC
+   9. SCRIPTS TAB & THRESHOLDS VIEW
    -------------------------------------------------------------------------- */
 .script-media-player-card {
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  padding: 1rem 1.5rem;
+  padding: 1rem 1.25rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
@@ -1083,7 +1506,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.65rem;
 }
 
 .media-info {
@@ -1102,12 +1525,12 @@
 .player-controls-row {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .player-play-btn {
-  width: 36px;
-  height: 36px;
+  width: 34px;
+  height: 34px;
   background-color: #ea580c;
   color: #ffffff;
   border: none;
@@ -1143,15 +1566,15 @@
 .scripts-list {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  margin-top: 1rem;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
 }
 
 .script-row-card {
   display: flex;
   align-items: flex-start;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
+  gap: 0.65rem;
+  padding: 0.65rem 0.85rem;
   background-color: #fbfcfd;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
@@ -1168,7 +1591,7 @@
   font-size: 0.75rem;
   font-weight: 700;
   color: #9ca3af;
-  padding-top: 0.25rem;
+  padding-top: 0.2rem;
 }
 
 .script-timestamp-btn {
@@ -1176,7 +1599,7 @@
   color: #ea580c;
   border: 1px solid #fed7aa;
   border-radius: 4px;
-  padding: 0.25rem 0.5rem;
+  padding: 0.2rem 0.45rem;
   font-size: 0.75rem;
   font-weight: 600;
   font-family: monospace;
@@ -1198,7 +1621,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 0.25rem;
+  gap: 0.2rem;
 }
 
 .script-en-line {
@@ -1258,53 +1681,51 @@
   font-size: 0.875rem;
 }
 
-/* --------------------------------------------------------------------------
-   9. TAB 3: QUESTIONS PLACEHOLDER
-   -------------------------------------------------------------------------- */
+/* Questions placeholder */
 .questions-placeholder-card {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 4rem 2rem;
+  padding: 3.5rem 2rem;
 }
 
 .placeholder-icon-circle {
-  width: 72px;
-  height: 72px;
+  width: 64px;
+  height: 64px;
   background-color: #ffedd5;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
 }
 
 .placeholder-title {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #111827;
-  margin: 0 0 0.5rem;
+  margin: 0 0 0.4rem;
 }
 
 .placeholder-description {
   font-size: 0.875rem;
   color: #6b7280;
-  max-width: 480px;
-  margin: 0 0 1.5rem;
+  max-width: 460px;
+  margin: 0 0 1.25rem;
 }
 
 .placeholder-features-preview {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
+  gap: 0.5rem;
   text-align: left;
   background-color: #fbfcfd;
   border: 1px solid #f3f4f6;
   border-radius: 8px;
-  padding: 1rem 1.5rem;
-  margin-bottom: 1.5rem;
+  padding: 0.85rem 1.25rem;
+  margin-bottom: 1.25rem;
 }
 
 .feature-item {
@@ -1323,18 +1744,18 @@
   color: #6b7280;
   font-size: 0.75rem;
   font-weight: 600;
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.65rem;
   border-radius: 9999px;
 }
 
-/* --------------------------------------------------------------------------
-   10. THRESHOLDS MANAGEMENT VIEW TABLE
-   -------------------------------------------------------------------------- */
+/* Thresholds Management View Table */
 .thresholds-management-body {
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   flex-direction: column;
   gap: 1rem;
+  overflow-y: auto;
+  flex: 1;
 }
 
 .thresholds-filter-bar {
@@ -1346,7 +1767,7 @@
 
 .thresholds-filter-bar .search-box {
   position: relative;
-  width: 320px;
+  width: 300px;
   display: flex;
   align-items: center;
 }
@@ -1359,7 +1780,7 @@
 
 .thresholds-filter-bar .search-box input {
   width: 100%;
-  padding: 0.5rem 0.75rem 0.5rem 2.2rem;
+  padding: 0.45rem 0.75rem 0.45rem 2.2rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-size: 0.8125rem;
@@ -1373,7 +1794,7 @@
   font-size: 0.75rem;
   color: #6b7280;
   background-color: #f3f4f6;
-  padding: 0.4rem 0.75rem;
+  padding: 0.35rem 0.65rem;
   border-radius: 6px;
 }
 
@@ -1381,7 +1802,8 @@
   background-color: #ffffff;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: hidden;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
 }
 
@@ -1390,18 +1812,19 @@
   border-collapse: collapse;
   text-align: left;
   font-size: 0.8125rem;
+  table-layout: fixed;
 }
 
 .thresholds-table th {
   background-color: #f9fafb;
-  padding: 0.75rem 1rem;
+  padding: 0.65rem 0.85rem;
   color: #4b5563;
   font-weight: 600;
   border-bottom: 1px solid #e5e7eb;
 }
 
 .thresholds-table td {
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.85rem;
   border-bottom: 1px solid #f3f4f6;
   color: #1f2937;
   vertical-align: middle;
@@ -1438,21 +1861,31 @@
 .threshold-inline-control {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.threshold-inline-control .input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
 }
 
 .compact-number-input {
-  width: 50px;
-  padding: 0.25rem 0.35rem;
+  width: 44px;
+  padding: 0.2rem 0.25rem;
   border: 1px solid #d1d5db;
   border-radius: 4px;
-  font-size: 0.8125rem;
+  font-size: 0.78125rem;
   font-weight: 700;
   text-align: center;
 }
 
 .compact-slider {
   flex: 1;
+  min-width: 50px;
+  max-width: 100px;
   accent-color: #ea580c;
   cursor: pointer;
 }
@@ -1461,7 +1894,7 @@
   background: none;
   border: 1px solid #d1d5db;
   border-radius: 4px;
-  padding: 0.25rem 0.65rem;
+  padding: 0.25rem 0.55rem;
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
@@ -1477,12 +1910,10 @@
 
 .btn-row-save:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
+  cursor: default;
 }
 
-/* --------------------------------------------------------------------------
-   11. TEST VIEW STAT TILES
-   -------------------------------------------------------------------------- */
+/* Test view stat tiles */
 .test-stat-tiles-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -1493,10 +1924,10 @@
   background-color: #fbfcfd;
   border: 1px solid #e5e7eb;
   border-radius: 6px;
-  padding: 1.25rem;
+  padding: 1.15rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.3rem;
 }
 
 .tile-label {
@@ -1506,7 +1937,7 @@
 }
 
 .tile-value {
-  font-size: 1.5rem;
+  font-size: 1.4rem;
   font-weight: 800;
 }
 
@@ -1522,9 +1953,7 @@
   background-color: #fbfcfd;
 }
 
-/* --------------------------------------------------------------------------
-   12. UTILITY CLASSES & MODALS
-   -------------------------------------------------------------------------- */
+/* Utilities */
 .text-orange { color: #ea580c; }
 .text-blue { color: #2563eb; }
 .text-green { color: #10b981; }
@@ -1568,249 +1997,4 @@
   justify-content: flex-end;
   gap: 0.75rem;
   margin-top: 1rem;
-}
-
-
-/* --------------------------------------------------------------------------
-   13. DRAG-AND-DROP & REORDER INDICATORS
-   -------------------------------------------------------------------------- */
-.drag-grip-handle,
-.drag-grip-handle-sm {
-  color: #d1d5db;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  transition: color 0.15s;
-}
-
-.drag-grip-handle:hover,
-.drag-grip-handle-sm:hover {
-  color: #9ca3af;
-}
-
-.drag-grip-handle:active,
-.drag-grip-handle-sm:active {
-  cursor: grabbing;
-}
-
-/* Viền trên hiển thị vị trí thả khi kéo Module */
-.tree-module-item.drag-over-indicator {
-  border-top: 2px solid #ea580c;
-}
-
-/* Viền trên hiển thị vị trí thả khi kéo Lesson */
-.tree-leaf-item.drag-over-lesson {
-  border-top: 2px solid #ea580c;
-  margin-top: -1px;
-}
-
-/* --------------------------------------------------------------------------
-   14. LESSON TYPE BADGES & DURATION TAGS (TREE)
-   -------------------------------------------------------------------------- */
-.lesson-type-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.5625rem;
-  font-weight: 700;
-  padding: 0.05rem 0.3rem;
-  border-radius: 3px;
-  text-transform: uppercase;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-.lesson-type-badge.type-video {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-
-.lesson-type-badge.type-practice {
-  background-color: #f3e8ff;
-  color: #7e22ce;
-}
-
-.duration-tag {
-  font-size: 0.625rem;
-  font-weight: 600;
-  font-family: monospace;
-  color: #6b7280;
-  background-color: #f3f4f6;
-  padding: 0.05rem 0.3rem;
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
-.badge-archived {
-  background-color: #e5e7eb;
-  color: #6b7280;
-}
-
-.dot-archived {
-  background-color: #9ca3af;
-}
-
-/* --------------------------------------------------------------------------
-   15. MOVE UP/DOWN BUTTONS (TREE LEAF)
-   -------------------------------------------------------------------------- */
-.move-btn-group {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
-}
-
-.tree-icon-btn.move-btn {
-  padding: 1px;
-  color: #d1d5db;
-}
-
-.tree-icon-btn.move-btn:hover:not(:disabled) {
-  color: #ea580c;
-}
-
-.tree-icon-btn.move-btn:disabled {
-  opacity: 0.3;
-  cursor: default;
-}
-
-/* --------------------------------------------------------------------------
-   16. DURATION INPUT WITH ICON (LESSON EDITOR)
-   -------------------------------------------------------------------------- */
-.duration-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-.duration-input-wrapper .duration-icon {
-  position: absolute;
-  left: 0.65rem;
-  color: #9ca3af;
-  pointer-events: none;
-}
-
-.duration-input-wrapper .duration-input {
-  padding-left: 2rem;
-}
-
-/* Checkbox toggle switch */
-.checkbox-toggle-wrapper {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.toggle-switch {
-  position: relative;
-  display: inline-block;
-  width: 40px;
-  height: 22px;
-}
-
-.toggle-switch input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-}
-
-.toggle-switch .slider {
-  position: absolute;
-  cursor: pointer;
-  inset: 0;
-  background-color: #d1d5db;
-  transition: 0.2s;
-}
-
-.toggle-switch .slider.round {
-  border-radius: 22px;
-}
-
-.toggle-switch .slider::before {
-  content: '';
-  position: absolute;
-  height: 16px;
-  width: 16px;
-  left: 3px;
-  bottom: 3px;
-  background-color: #ffffff;
-  transition: 0.2s;
-  border-radius: 50%;
-}
-
-.toggle-switch input:checked + .slider {
-  background-color: #ea580c;
-}
-
-.toggle-switch input:checked + .slider::before {
-  transform: translateX(18px);
-}
-
-.toggle-label {
-  font-size: 0.8125rem;
-  color: #4b5563;
-}
-
-/* Card header with hint */
-.card-header-with-hint {
-  display: flex;
-  align-items: baseline;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-}
-
-.card-header-with-hint .text-xs {
-  font-size: 0.75rem;
-}
-
-/* Media file info */
-.media-file-info {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.file-name {
-  font-size: 0.75rem;
-  color: #4b5563;
-  margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.video-preview-wrapper,
-.audio-preview-wrapper,
-.image-preview-wrapper {
-  border-radius: 4px;
-  overflow: hidden;
-}
-
-/* Form error */
-.form-error {
-  font-size: 0.75rem;
-  color: #ef4444;
-  margin: 0;
-}
-
-/* Button link */
-.btn-link {
-  background: none;
-  border: none;
-  color: #ea580c;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-
-.btn-link:hover {
-  text-decoration: underline;
-}
-
-.tree-leaf-right {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  flex-shrink: 0;
 }

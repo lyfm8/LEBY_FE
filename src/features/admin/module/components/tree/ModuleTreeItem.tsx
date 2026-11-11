@@ -1,9 +1,8 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import type { ModuleResponse, LessonResponse, EditorActiveView } from '../../types';
 import {
   ChevronDown,
   ChevronRight,
-  BookOpen,
   FileCheck2,
   Plus,
   Trash2,
@@ -54,14 +53,24 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
   onModuleDrop,
   onModuleDragEnd,
 }) => {
-  const [isExpanded, setIsExpanded] = useState<boolean>(true);
+  const isModuleActive =
+    (activeView.type === 'MODULE_EDIT' ||
+      activeView.type === 'MODULE_TEST' ||
+      activeView.type === 'LESSON_EDIT' ||
+      activeView.type === 'LESSON_CREATE') &&
+    activeView.moduleId === moduleData.id;
+
+  const [isExpanded, setIsExpanded] = useState<boolean>(index === 0 || isModuleActive);
+
+  useEffect(() => {
+    if (isModuleActive) {
+      setIsExpanded(true);
+    }
+  }, [isModuleActive]);
 
   // Drag-and-drop state cho Lesson bên trong Module
   const [dragOverLessonIndex, setDragOverLessonIndex] = useState<number | null>(null);
   const draggedLessonIndexRef = useRef<number | null>(null);
-
-  const isModuleActive =
-    activeView.type === 'MODULE_EDIT' && activeView.moduleId === moduleData.id;
 
   const isTestActive =
     activeView.type === 'MODULE_TEST' && activeView.moduleId === moduleData.id;
@@ -69,7 +78,7 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
   const lessons = moduleData.lessons || [];
 
   /**
-   * Di chuyển Lesson lên/xuống bằng nút bấm (thay thế cho drag trên màn hình nhỏ).
+   * Di chuyển Lesson lên/xuống bằng nút bấm.
    */
   const moveLessonByIndex = useCallback(
     (fromIdx: number, direction: 'up' | 'down') => {
@@ -83,7 +92,6 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
   );
 
   const handleLessonDragStart = useCallback((lessonIdx: number, e: React.DragEvent) => {
-    // Đánh dấu đây là Lesson drag (để phân biệt với Module drag)
     e.dataTransfer.setData('text/plain', `lesson-${lessonIdx}`);
     e.stopPropagation();
     draggedLessonIndexRef.current = lessonIdx;
@@ -119,46 +127,47 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
     draggedLessonIndexRef.current = null;
   }, []);
 
-  // CSS class cho trạng thái status (bao gồm ARCHIVED)
-  const getStatusBadgeClass = (status: string) => {
-    if (status === 'PUBLISHED') return 'badge-published';
-    if (status === 'ARCHIVED') return 'badge-archived';
-    return 'badge-draft';
-  };
-
-  const getStatusLabel = (status: string) => {
-    if (status === 'PUBLISHED') return 'Pub';
-    if (status === 'ARCHIVED') return 'Arc';
-    return 'Draft';
-  };
-
   const getStatusDotClass = (status: string) => {
     if (status === 'PUBLISHED') return 'dot-published';
     if (status === 'ARCHIVED') return 'dot-archived';
     return 'dot-draft';
   };
 
+  const getStatusTitle = (status: string) => {
+    if (status === 'PUBLISHED') return 'Đã xuất bản';
+    if (status === 'ARCHIVED') return 'Tạm ẩn';
+    return 'Bản nháp';
+  };
+
   return (
     <div
       className={`tree-module-item ${isModuleActive ? 'active-module' : ''} ${isDragOver ? 'drag-over-indicator' : ''}`}
-      draggable={isDragEnabled}
-      onDragStart={() => onModuleDragStart(index)}
       onDragOver={(e) => onModuleDragOver(e, index)}
       onDrop={() => onModuleDrop(index)}
       onDragEnd={onModuleDragEnd}
     >
-      {/* Header của Module */}
+      {/* 1. Header của Module */}
       <div
         className="tree-module-header"
         onClick={() => onSelectView({ type: 'MODULE_EDIT', moduleId: moduleData.id })}
       >
         <div className="tree-module-header-left">
-          {/* Grip handle hiển thị khi kéo thả được */}
+          {/* Grip handle CHỈ kích hoạt drag khi kéo biểu tượng này */}
           {isDragEnabled && (
-            <span className="drag-grip-handle" title="Kéo thả để sắp xếp">
+            <span
+              className="drag-grip-handle"
+              title="Kéo biểu tượng này để sắp xếp thứ tự Module"
+              draggable
+              onDragStart={(e) => {
+                e.stopPropagation();
+                onModuleDragStart(index);
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
               <GripVertical size={14} />
             </span>
           )}
+
           <button
             type="button"
             className="tree-toggle-btn"
@@ -166,9 +175,9 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
               e.stopPropagation();
               setIsExpanded(!isExpanded);
             }}
-            title={isExpanded ? 'Thu gọn' : 'Mở rộng'}
+            title={isExpanded ? 'Thu gọn bài học' : 'Mở rộng bài học'}
           >
-            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            {isExpanded ? <ChevronDown size={15} /> : <ChevronRight size={15} />}
           </button>
 
           <span className="tree-sequence-badge">#{moduleData.sequence}</span>
@@ -178,28 +187,34 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
         </div>
 
         <div className="tree-module-header-right">
+          <span className="module-count-pill" title={`${lessons.length} bài học trong module`}>
+            {lessons.length} bài
+          </span>
+
           <span
             className={`tree-status-dot ${getStatusDotClass(moduleData.status)}`}
-            title={`Trạng thái: ${moduleData.status}`}
+            title={`Trạng thái: ${getStatusTitle(moduleData.status)}`}
           />
-          <button
-            type="button"
-            className="tree-icon-btn delete-btn"
-            title="Xóa Module"
-            onClick={(e) => {
-              e.stopPropagation();
-              onDeleteModule(moduleData.id);
-            }}
-          >
-            <Trash2 size={14} />
-          </button>
+
+          <div className="tree-actions-hover">
+            <button
+              type="button"
+              className="tree-icon-btn delete-btn"
+              title="Xóa Module"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDeleteModule(moduleData.id);
+              }}
+            >
+              <Trash2 size={13} />
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* Danh sách con khi Module được mở rộng */}
+      {/* 2. Danh sách con khi Module được mở rộng */}
       {isExpanded && (
         <div className="tree-module-children">
-          {/* 1. Danh sách Lessons */}
           {lessons.length > 0 ? (
             lessons.map((lesson: LessonResponse, lessonIdx: number) => {
               const isLessonActive =
@@ -211,8 +226,6 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
                 <div
                   key={lesson.id}
                   className={`tree-leaf-item ${isLessonActive ? 'active-leaf' : ''} ${dragOverLessonIndex === lessonIdx ? 'drag-over-lesson' : ''}`}
-                  draggable={isDragEnabled}
-                  onDragStart={(e) => handleLessonDragStart(lessonIdx, e)}
                   onDragOver={(e) => handleLessonDragOver(e, lessonIdx)}
                   onDrop={(e) => handleLessonDrop(e, lessonIdx)}
                   onDragEnd={handleLessonDragEnd}
@@ -225,84 +238,93 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
                   }
                 >
                   <div className="tree-leaf-left">
-                    {/* Grip handle cho Lesson */}
+                    {/* Grip handle cho Lesson: chỉ kéo khi cầm grip */}
                     {isDragEnabled && (
-                      <span className="drag-grip-handle-sm" title="Kéo thả bài học">
+                      <span
+                        className="drag-grip-handle-sm"
+                        title="Kéo để đổi thứ tự bài học"
+                        draggable
+                        onDragStart={(e) => handleLessonDragStart(lessonIdx, e)}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <GripVertical size={12} />
                       </span>
                     )}
-                    <BookOpen size={14} className="leaf-icon text-muted" />
-                    <span className="leaf-order">0{lesson.orderNo}.</span>
+
+                    {lesson.lessonType === 'VIDEO' ? (
+                      <span title="Bài giảng Video" className="flex items-center">
+                        <Video size={13} className="leaf-icon text-blue flex-shrink-0" />
+                      </span>
+                    ) : (
+                      <span title="Bài thực hành" className="flex items-center">
+                        <ClipboardList size={13} className="leaf-icon text-orange flex-shrink-0" />
+                      </span>
+                    )}
+
+                    <span className="leaf-order">{String(lesson.orderNo).padStart(2, '0')}.</span>
                     <span className="leaf-title" title={lesson.title}>
                       {lesson.title}
                     </span>
                   </div>
 
                   <div className="tree-leaf-right">
-                    {/* Badge loại bài học: VIDEO hoặc PRACTICE */}
-                    {lesson.lessonType && (
+                    {/* Thời lượng & trạng thái bài học */}
+                    <div className="leaf-meta-tags">
+                      {lesson.durationSeconds > 0 && (
+                        <span className="duration-tag" title={`Thời lượng: ${formatDuration(lesson.durationSeconds)}`}>
+                          {formatDuration(lesson.durationSeconds)}
+                        </span>
+                      )}
+
                       <span
-                        className={`lesson-type-badge ${lesson.lessonType === 'VIDEO' ? 'type-video' : 'type-practice'}`}
-                        title={lesson.lessonType === 'VIDEO' ? 'Bài giảng Video' : 'Bài thực hành'}
+                        className={`tree-status-dot ${getStatusDotClass(lesson.status)}`}
+                        title={`Trạng thái: ${getStatusTitle(lesson.status)}`}
+                      />
+                    </div>
+
+                    {/* Action buttons chỉ xuất hiện khi hover hàng bài học */}
+                    <div className="tree-actions-hover">
+                      {isDragEnabled && (
+                        <span className="move-btn-group">
+                          <button
+                            type="button"
+                            className="tree-icon-btn move-btn"
+                            title="Di chuyển lên"
+                            disabled={lessonIdx === 0}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveLessonByIndex(lessonIdx, 'up');
+                            }}
+                          >
+                            <ArrowUp size={12} />
+                          </button>
+                          <button
+                            type="button"
+                            className="tree-icon-btn move-btn"
+                            title="Di chuyển xuống"
+                            disabled={lessonIdx === lessons.length - 1}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              moveLessonByIndex(lessonIdx, 'down');
+                            }}
+                          >
+                            <ArrowDown size={12} />
+                          </button>
+                        </span>
+                      )}
+
+                      <button
+                        type="button"
+                        className="tree-icon-btn delete-btn"
+                        title="Xóa bài học"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeleteLesson(lesson.id, moduleData.id);
+                        }}
                       >
-                        {lesson.lessonType === 'VIDEO' ? <Video size={10} /> : <ClipboardList size={10} />}
-                        {lesson.lessonType}
-                      </span>
-                    )}
-
-                    {/* Thời lượng mm:ss */}
-                    {lesson.durationSeconds > 0 && (
-                      <span className="duration-tag" title={`Thời lượng: ${formatDuration(lesson.durationSeconds)}`}>
-                        {formatDuration(lesson.durationSeconds)}
-                      </span>
-                    )}
-
-                    {/* Trạng thái */}
-                    <span className={`leaf-badge ${getStatusBadgeClass(lesson.status)}`}>
-                      {getStatusLabel(lesson.status)}
-                    </span>
-
-                    {/* Nút di chuyển lên/xuống */}
-                    {isDragEnabled && (
-                      <span className="move-btn-group">
-                        <button
-                          type="button"
-                          className="tree-icon-btn move-btn"
-                          title="Di chuyển lên"
-                          disabled={lessonIdx === 0}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveLessonByIndex(lessonIdx, 'up');
-                          }}
-                        >
-                          <ArrowUp size={12} />
-                        </button>
-                        <button
-                          type="button"
-                          className="tree-icon-btn move-btn"
-                          title="Di chuyển xuống"
-                          disabled={lessonIdx === lessons.length - 1}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            moveLessonByIndex(lessonIdx, 'down');
-                          }}
-                        >
-                          <ArrowDown size={12} />
-                        </button>
-                      </span>
-                    )}
-
-                    <button
-                      type="button"
-                      className="tree-icon-btn delete-btn"
-                      title="Xóa bài học"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onDeleteLesson(lesson.id, moduleData.id);
-                      }}
-                    >
-                      <Trash2 size={12} />
-                    </button>
+                        <Trash2 size={12} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               );
@@ -311,7 +333,7 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
             <div className="tree-empty-hint">Chưa có bài học nào</div>
           )}
 
-          {/* 2. Bài thi vượt ải của Module (Module Test) */}
+          {/* Module Test row */}
           <div
             className={`tree-leaf-item test-leaf ${isTestActive ? 'active-leaf' : ''}`}
             onClick={() => onSelectView({ type: 'MODULE_TEST', moduleId: moduleData.id })}
@@ -325,14 +347,14 @@ export const ModuleTreeItem: React.FC<ModuleTreeItemProps> = ({
             </div>
           </div>
 
-          {/* 3. Nút Thêm bài học mới trong Module này */}
+          {/* Nút thêm bài học */}
           <button
             type="button"
             className="tree-add-lesson-btn"
             onClick={() => onSelectView({ type: 'LESSON_CREATE', moduleId: moduleData.id })}
           >
             <Plus size={13} />
-            <span>Thêm bài học</span>
+            <span>Thêm bài học mới</span>
           </button>
         </div>
       )}

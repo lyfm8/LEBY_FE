@@ -8,6 +8,7 @@ import type {
   LessonScriptDto,
 } from '../types';
 import { adminModuleService } from '../services/adminModuleService';
+import { useToast, useConfirm } from '@/core/ui';
 
 /**
  * Trích xuất message lỗi từ Axios error response (ApiResponse format).
@@ -26,6 +27,9 @@ const extractErrorMessage = (error: unknown, fallback: string): string => {
  * Đảm bảo cơ chế Unsaved Changes Guard khi chuyển đổi giữa các view.
  */
 export const useModuleLessonEditor = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
+
   const [modules, setModules] = useState<ModuleResponse[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -55,10 +59,11 @@ export const useModuleLessonEditor = () => {
       }
     } catch (error) {
       console.error('Lỗi tải danh sách Module:', error);
+      toast.error('Không thể tải danh sách Module từ máy chủ.');
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [toast]);
 
   useEffect(() => {
     fetchModules();
@@ -83,20 +88,23 @@ export const useModuleLessonEditor = () => {
   }, [activeView]);
 
   /**
-   * Điều hướng chuyển đổi view với Unsaved Changes Guard.
+   * Điều hướng chuyển đổi view với Unsaved Changes Guard sử dụng ConfirmDialog.
    */
   const navigateView = useCallback(
-    (targetView: EditorActiveView) => {
+    async (targetView: EditorActiveView) => {
       if (isFormDirty) {
-        const confirmLeave = window.confirm(
-          'Bạn có thay đổi chưa lưu trong biểu mẫu hiện tại. Bạn có chắc chắn muốn chuyển sang mục khác mà không lưu không?'
-        );
-        if (!confirmLeave) return;
+        const ok = await confirm({
+          title: 'Thay đổi chưa được lưu',
+          message: 'Bạn có thay đổi chưa lưu trong biểu mẫu hiện tại. Bạn có chắc chắn muốn chuyển sang mục khác mà không lưu không?',
+          confirmText: 'Rời trang',
+          cancelText: 'Ở lại',
+        });
+        if (!ok) return;
       }
       setIsFormDirty(false);
       setActiveView(targetView);
     },
-    [isFormDirty]
+    [isFormDirty, confirm]
   );
 
   // =====================================
@@ -113,14 +121,14 @@ export const useModuleLessonEditor = () => {
       if (isEdit && id) {
         const res = await adminModuleService.updateModule(id, data);
         if (res.success) {
-          alert('Cập nhật Module thành công!');
+          toast.success('Cập nhật Module thành công!');
           setIsFormDirty(false);
           await fetchModules();
         }
       } else {
         const res = await adminModuleService.createModule(data);
         if (res.success && res.data) {
-          alert('Tạo Module mới thành công!');
+          toast.success('Tạo Module mới thành công!');
           setIsFormDirty(false);
           await fetchModules();
           setActiveView({ type: 'MODULE_EDIT', moduleId: res.data.id });
@@ -128,29 +136,32 @@ export const useModuleLessonEditor = () => {
       }
     } catch (error: unknown) {
       console.error('Lỗi lưu Module:', error);
-      alert(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu Module!'));
+      toast.error(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu Module!'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteModule = async (id: number) => {
-    const confirm = window.confirm(
-      'Bạn có chắc chắn muốn xóa Module này? Nếu Module đang có học viên theo học trong lộ trình, hệ thống sẽ chặn xóa để bảo vệ dữ liệu!'
-    );
-    if (!confirm) return;
+    const ok = await confirm({
+      title: 'Xóa Mô-đun Học tập',
+      message: 'Bạn có chắc chắn muốn xóa Module này? Nếu Module đang có học viên theo học trong lộ trình, hệ thống sẽ chặn xóa để bảo vệ dữ liệu!',
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+    });
+    if (!ok) return;
 
     try {
       setIsLoading(true);
       const res = await adminModuleService.deleteModule(id);
       if (res.success) {
-        alert('Xóa Module thành công!');
+        toast.success('Xóa Module thành công!');
         await fetchModules();
         setActiveView({ type: 'MODULE_CONFIGS' });
       }
     } catch (error: unknown) {
       console.error('Lỗi xóa Module:', error);
-      alert(extractErrorMessage(error, 'Không thể xóa Module. Module có thể đang nằm trong lộ trình của học viên!'));
+      toast.error(extractErrorMessage(error, 'Không thể xóa Module. Module có thể đang nằm trong lộ trình của học viên!'));
     } finally {
       setIsLoading(false);
     }
@@ -170,7 +181,7 @@ export const useModuleLessonEditor = () => {
       if (isEdit && lessonId) {
         const res = await adminModuleService.updateLesson(lessonId, data);
         if (res.success) {
-          alert('Cập nhật bài học thành công!');
+          toast.success('Cập nhật bài học thành công!');
           setIsFormDirty(false);
           await fetchModules();
           if (res.data) setCurrentLessonDetail(res.data);
@@ -178,7 +189,7 @@ export const useModuleLessonEditor = () => {
       } else if (activeView.type === 'LESSON_CREATE') {
         const res = await adminModuleService.createLesson(activeView.moduleId, data);
         if (res.success && res.data) {
-          alert('Tạo bài học mới thành công!');
+          toast.success('Tạo bài học mới thành công!');
           setIsFormDirty(false);
           await fetchModules();
           setActiveView({
@@ -190,21 +201,26 @@ export const useModuleLessonEditor = () => {
       }
     } catch (error: unknown) {
       console.error('Lỗi lưu bài học:', error);
-      alert(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu bài học!'));
+      toast.error(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu bài học!'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   const handleDeleteLesson = async (lessonId: number, moduleId: number) => {
-    const confirm = window.confirm('Bạn có chắc chắn muốn xóa bài học này?');
-    if (!confirm) return;
+    const ok = await confirm({
+      title: 'Xóa Bài học',
+      message: 'Bạn có chắc chắn muốn xóa bài học này khỏi Module không?',
+      confirmText: 'Xóa bài học',
+      cancelText: 'Hủy bỏ',
+    });
+    if (!ok) return;
 
     try {
       setIsLoading(true);
       const res = await adminModuleService.deleteLesson(lessonId);
       if (res.success) {
-        alert('Đã xóa bài học thành công!');
+        toast.success('Đã xóa bài học thành công!');
         await fetchModules();
         if (
           activeView.type === 'LESSON_EDIT' &&
@@ -215,7 +231,7 @@ export const useModuleLessonEditor = () => {
       }
     } catch (error: unknown) {
       console.error('Lỗi xóa bài học:', error);
-      alert('Không thể xóa bài học!');
+      toast.error('Không thể xóa bài học!');
     } finally {
       setIsLoading(false);
     }
@@ -228,12 +244,12 @@ export const useModuleLessonEditor = () => {
     try {
       const res = await adminModuleService.saveLessonScripts(lessonId, scripts);
       if (res.success && res.data) {
-        alert('Lưu kịch bản phụ đề (Script) thành công!');
+        toast.success('Lưu kịch bản phụ đề (Script) thành công!');
         setCurrentLessonDetail(res.data);
       }
     } catch (error: unknown) {
       console.error('Lỗi lưu kịch bản phụ đề:', error);
-      alert('Không thể lưu kịch bản phụ đề. Vui lòng kiểm tra lại!');
+      toast.error('Không thể lưu kịch bản phụ đề. Vui lòng kiểm tra lại!');
     }
   };
 
@@ -244,10 +260,11 @@ export const useModuleLessonEditor = () => {
   const handleReorderModules = async (orderedIds: number[]) => {
     try {
       await adminModuleService.reorderModules(orderedIds);
+      toast.success('Đã cập nhật thứ tự Module!');
       await fetchModules();
     } catch (error: unknown) {
       console.error('Lỗi sắp xếp Module:', error);
-      alert('Không thể sắp xếp lại Module!');
+      toast.error('Không thể sắp xếp lại Module!');
     }
   };
 
@@ -257,10 +274,11 @@ export const useModuleLessonEditor = () => {
   const handleReorderLessons = async (moduleId: number, orderedIds: number[]) => {
     try {
       await adminModuleService.reorderLessons(moduleId, orderedIds);
+      toast.success('Đã cập nhật thứ tự bài học!');
       await fetchModules();
     } catch (error: unknown) {
       console.error('Lỗi sắp xếp Lesson:', error);
-      alert('Không thể sắp xếp lại bài học!');
+      toast.error('Không thể sắp xếp lại bài học!');
     }
   };
 
@@ -283,4 +301,3 @@ export const useModuleLessonEditor = () => {
     handleReorderLessons,
   };
 };
-
