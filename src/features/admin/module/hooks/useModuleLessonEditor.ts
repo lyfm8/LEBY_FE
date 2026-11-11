@@ -10,6 +10,18 @@ import type {
 import { adminModuleService } from '../services/adminModuleService';
 
 /**
+ * Trích xuất message lỗi từ Axios error response (ApiResponse format).
+ * Tránh dùng `any` bằng cách kiểm tra cấu trúc an toàn.
+ */
+const extractErrorMessage = (error: unknown, fallback: string): string => {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const resp = (error as { response?: { data?: { message?: string } } }).response;
+    if (resp?.data?.message) return resp.data.message;
+  }
+  return fallback;
+};
+
+/**
  * Custom hook quản lý toàn bộ luồng điều phối trạng thái của trang AdminModulePage.
  * Đảm bảo cơ chế Unsaved Changes Guard khi chuyển đổi giữa các view.
  */
@@ -114,10 +126,9 @@ export const useModuleLessonEditor = () => {
           setActiveView({ type: 'MODULE_EDIT', moduleId: res.data.id });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi lưu Module:', error);
-      const msg = error.response?.data?.message || 'Có lỗi xảy ra khi lưu Module!';
-      alert(msg);
+      alert(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu Module!'));
     } finally {
       setIsSubmitting(false);
     }
@@ -137,12 +148,9 @@ export const useModuleLessonEditor = () => {
         await fetchModules();
         setActiveView({ type: 'MODULE_CONFIGS' });
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi xóa Module:', error);
-      const msg =
-        error.response?.data?.message ||
-        'Không thể xóa Module. Module có thể đang nằm trong lộ trình của học viên!';
-      alert(msg);
+      alert(extractErrorMessage(error, 'Không thể xóa Module. Module có thể đang nằm trong lộ trình của học viên!'));
     } finally {
       setIsLoading(false);
     }
@@ -180,10 +188,9 @@ export const useModuleLessonEditor = () => {
           });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi lưu bài học:', error);
-      const msg = error.response?.data?.message || 'Có lỗi xảy ra khi lưu bài học!';
-      alert(msg);
+      alert(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu bài học!'));
     } finally {
       setIsSubmitting(false);
     }
@@ -206,7 +213,7 @@ export const useModuleLessonEditor = () => {
           setActiveView({ type: 'MODULE_EDIT', moduleId });
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi xóa bài học:', error);
       alert('Không thể xóa bài học!');
     } finally {
@@ -224,9 +231,36 @@ export const useModuleLessonEditor = () => {
         alert('Lưu kịch bản phụ đề (Script) thành công!');
         setCurrentLessonDetail(res.data);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Lỗi lưu kịch bản phụ đề:', error);
       alert('Không thể lưu kịch bản phụ đề. Vui lòng kiểm tra lại!');
+    }
+  };
+
+  /**
+   * Sắp xếp lại thứ tự Module bằng cách gửi mảng ID theo thứ tự mới.
+   * Gọi API reorder rồi refresh danh sách để đồng bộ sequence từ BE.
+   */
+  const handleReorderModules = async (orderedIds: number[]) => {
+    try {
+      await adminModuleService.reorderModules(orderedIds);
+      await fetchModules();
+    } catch (error: unknown) {
+      console.error('Lỗi sắp xếp Module:', error);
+      alert('Không thể sắp xếp lại Module!');
+    }
+  };
+
+  /**
+   * Sắp xếp lại thứ tự Lesson trong một Module cụ thể.
+   */
+  const handleReorderLessons = async (moduleId: number, orderedIds: number[]) => {
+    try {
+      await adminModuleService.reorderLessons(moduleId, orderedIds);
+      await fetchModules();
+    } catch (error: unknown) {
+      console.error('Lỗi sắp xếp Lesson:', error);
+      alert('Không thể sắp xếp lại bài học!');
     }
   };
 
@@ -245,6 +279,8 @@ export const useModuleLessonEditor = () => {
     handleSaveLesson,
     handleDeleteLesson,
     handleSaveLessonScripts,
+    handleReorderModules,
+    handleReorderLessons,
   };
 };
 

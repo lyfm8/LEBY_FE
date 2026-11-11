@@ -30,6 +30,8 @@ export const AdminModulePage: React.FC = () => {
     handleSaveLesson,
     handleDeleteLesson,
     handleSaveLessonScripts,
+    handleReorderModules,
+    handleReorderLessons,
   } = useModuleLessonEditor();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -94,6 +96,8 @@ export const AdminModulePage: React.FC = () => {
           onSelectView={navigateView}
           onDeleteModule={handleDeleteModule}
           onDeleteLesson={handleDeleteLesson}
+          onReorderModules={handleReorderModules}
+          onReorderLessons={handleReorderLessons}
           onRefresh={fetchModules}
           isLoading={isLoading}
           onToggleCollapse={() => setIsSidebarCollapsed(true)}

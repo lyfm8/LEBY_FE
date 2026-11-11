@@ -14,6 +14,8 @@ import {
   Heading1,
   Heading2,
   Quote,
+  ClipboardList,
+  Clock,
 } from 'lucide-react';
 
 interface LessonContentTabProps {
@@ -35,6 +37,13 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
   const audioUrl = watch('audioUrl');
   const videoUrl = watch('videoUrl');
   const imageUrl = watch('imageUrl');
+  const lessonType = watch('lessonType');
+  const durationSeconds = watch('durationSeconds') ?? 0;
+
+  /**
+   * Chuyển đổi durationSeconds thành chuỗi mm:ss để hiển thị trực quan.
+   */
+  const durationDisplay = `${String(Math.floor(durationSeconds / 60)).padStart(2, '0')}:${String(durationSeconds % 60).padStart(2, '0')}`;
 
   // Quản lý tên file hiển thị cục bộ khi chọn từ máy tính
   const [audioFileName, setAudioFileName] = useState<string>('');
@@ -181,6 +190,55 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
                 {watch('isFree') ? 'Bài học Miễn phí' : 'Yêu cầu Trả phí (Pro)'}
               </span>
             </div>
+          </div>
+        </div>
+
+        {/* Loại bài học và Thời lượng */}
+        <div className="form-row-2">
+          <div className="form-group">
+            <label className="form-label">
+              Loại bài học <span className="text-red">*</span>
+            </label>
+            <div className="radio-pill-group">
+              <label className={`radio-pill ${lessonType === 'VIDEO' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  {...register('lessonType')}
+                  value="VIDEO"
+                />
+                <Video size={14} />
+                <span>Video bài giảng</span>
+              </label>
+              <label className={`radio-pill ${lessonType === 'PRACTICE' ? 'selected' : ''}`}>
+                <input
+                  type="radio"
+                  {...register('lessonType')}
+                  value="PRACTICE"
+                />
+                <ClipboardList size={14} />
+                <span>Bài thực hành</span>
+              </label>
+            </div>
+            {errors.lessonType && <p className="form-error">{errors.lessonType.message}</p>}
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">
+              Thời lượng bài học (giây)
+              <span className="label-hint"> — Hiển thị: {durationDisplay}</span>
+            </label>
+            <div className="duration-input-wrapper">
+              <Clock size={14} className="duration-icon" />
+              <input
+                {...register('durationSeconds', { valueAsNumber: true })}
+                type="number"
+                min="0"
+                max="86400"
+                className="form-input duration-input"
+                placeholder="VD: 300 (= 05:00)"
+              />
+            </div>
+            {errors.durationSeconds && <p className="form-error">{errors.durationSeconds.message}</p>}
           </div>
         </div>
       </div>

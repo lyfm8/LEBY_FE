@@ -1569,3 +1569,248 @@
   gap: 0.75rem;
   margin-top: 1rem;
 }
+
+
+/* --------------------------------------------------------------------------
+   13. DRAG-AND-DROP & REORDER INDICATORS
+   -------------------------------------------------------------------------- */
+.drag-grip-handle,
+.drag-grip-handle-sm {
+  color: #d1d5db;
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.drag-grip-handle:hover,
+.drag-grip-handle-sm:hover {
+  color: #9ca3af;
+}
+
+.drag-grip-handle:active,
+.drag-grip-handle-sm:active {
+  cursor: grabbing;
+}
+
+/* Viền trên hiển thị vị trí thả khi kéo Module */
+.tree-module-item.drag-over-indicator {
+  border-top: 2px solid #ea580c;
+}
+
+/* Viền trên hiển thị vị trí thả khi kéo Lesson */
+.tree-leaf-item.drag-over-lesson {
+  border-top: 2px solid #ea580c;
+  margin-top: -1px;
+}
+
+/* --------------------------------------------------------------------------
+   14. LESSON TYPE BADGES & DURATION TAGS (TREE)
+   -------------------------------------------------------------------------- */
+.lesson-type-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.lesson-type-badge.type-video {
+  background-color: #dbeafe;
+  color: #1d4ed8;
+}
+
+.lesson-type-badge.type-practice {
+  background-color: #f3e8ff;
+  color: #7e22ce;
+}
+
+.duration-tag {
+  font-size: 0.625rem;
+  font-weight: 600;
+  font-family: monospace;
+  color: #6b7280;
+  background-color: #f3f4f6;
+  padding: 0.05rem 0.3rem;
+  border-radius: 3px;
+  white-space: nowrap;
+}
+
+.badge-archived {
+  background-color: #e5e7eb;
+  color: #6b7280;
+}
+
+.dot-archived {
+  background-color: #9ca3af;
+}
+
+/* --------------------------------------------------------------------------
+   15. MOVE UP/DOWN BUTTONS (TREE LEAF)
+   -------------------------------------------------------------------------- */
+.move-btn-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.tree-icon-btn.move-btn {
+  padding: 1px;
+  color: #d1d5db;
+}
+
+.tree-icon-btn.move-btn:hover:not(:disabled) {
+  color: #ea580c;
+}
+
+.tree-icon-btn.move-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* --------------------------------------------------------------------------
+   16. DURATION INPUT WITH ICON (LESSON EDITOR)
+   -------------------------------------------------------------------------- */
+.duration-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.duration-input-wrapper .duration-icon {
+  position: absolute;
+  left: 0.65rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.duration-input-wrapper .duration-input {
+  padding-left: 2rem;
+}
+
+/* Checkbox toggle switch */
+.checkbox-toggle-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-switch .slider {
+  position: absolute;
+  cursor: pointer;
+  inset: 0;
+  background-color: #d1d5db;
+  transition: 0.2s;
+}
+
+.toggle-switch .slider.round {
+  border-radius: 22px;
+}
+
+.toggle-switch .slider::before {
+  content: '';
+  position: absolute;
+  height: 16px;
+  width: 16px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #ffffff;
+  transition: 0.2s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .slider {
+  background-color: #ea580c;
+}
+
+.toggle-switch input:checked + .slider::before {
+  transform: translateX(18px);
+}
+
+.toggle-label {
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+/* Card header with hint */
+.card-header-with-hint {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.card-header-with-hint .text-xs {
+  font-size: 0.75rem;
+}
+
+/* Media file info */
+.media-file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.file-name {
+  font-size: 0.75rem;
+  color: #4b5563;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.video-preview-wrapper,
+.audio-preview-wrapper,
+.image-preview-wrapper {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+/* Form error */
+.form-error {
+  font-size: 0.75rem;
+  color: #ef4444;
+  margin: 0;
+}
+
+/* Button link */
+.btn-link {
+  background: none;
+  border: none;
+  color: #ea580c;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-link:hover {
+  text-decoration: underline;
+}
+
+.tree-leaf-right {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}

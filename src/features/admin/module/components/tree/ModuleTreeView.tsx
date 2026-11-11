@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback, useRef } from 'react';
 import type { ModuleResponse, EditorActiveView } from '../../types';
 import { ModuleTreeItem } from './ModuleTreeItem';
 import { Plus, Sliders, Search, FolderTree, RefreshCw, PanelLeftClose } from 'lucide-react';
@@ -10,6 +10,8 @@ interface ModuleTreeViewProps {
   onDeleteModule: (id: number) => void;
   onDeleteLesson: (lessonId: number, moduleId: number) => void;
   onRefresh: () => void;
+  onReorderModules: (orderedIds: number[]) => void;
+  onReorderLessons: (moduleId: number, orderedIds: number[]) => void;
   isLoading: boolean;
   onToggleCollapse?: () => void;
 }
@@ -21,10 +23,16 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
   onDeleteModule,
   onDeleteLesson,
   onRefresh,
+  onReorderModules,
+  onReorderLessons,
   isLoading,
   onToggleCollapse,
 }) => {
   const [searchKeyword, setSearchKeyword] = useState<string>('');
+
+  // Trạng thái drag-and-drop cho Module: lưu index đang kéo qua
+  const [dragOverModuleIndex, setDragOverModuleIndex] = useState<number | null>(null);
+  const draggedModuleIndexRef = useRef<number | null>(null);
 
   // Lọc Module theo từ khóa tìm kiếm
   const filteredModules = useMemo(() => {
@@ -39,6 +47,43 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
   }, [modules, searchKeyword]);
 
   const isConfigActive = activeView.type === 'MODULE_CONFIGS';
+
+  // NOTE: Chỉ cho phép drag-drop khi không đang tìm kiếm (tránh reorder sai thứ tự)
+  const isDragEnabled = !searchKeyword.trim();
+
+  const handleModuleDragStart = useCallback((index: number) => {
+    draggedModuleIndexRef.current = index;
+  }, []);
+
+  const handleModuleDragOver = useCallback((e: React.DragEvent, index: number) => {
+    e.preventDefault();
+    setDragOverModuleIndex(index);
+  }, []);
+
+  const handleModuleDrop = useCallback(
+    (targetIndex: number) => {
+      const fromIndex = draggedModuleIndexRef.current;
+      if (fromIndex === null || fromIndex === targetIndex) {
+        setDragOverModuleIndex(null);
+        return;
+      }
+
+      // Tính toán thứ tự mới bằng cách di chuyển phần tử
+      const reordered = [...modules];
+      const [moved] = reordered.splice(fromIndex, 1);
+      reordered.splice(targetIndex, 0, moved);
+
+      onReorderModules(reordered.map((m) => m.id));
+      setDragOverModuleIndex(null);
+      draggedModuleIndexRef.current = null;
+    },
+    [modules, onReorderModules]
+  );
+
+  const handleModuleDragEnd = useCallback(() => {
+    setDragOverModuleIndex(null);
+    draggedModuleIndexRef.current = null;
+  }, []);
 
   return (
     <div className="module-tree-container">
@@ -119,14 +164,22 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
       {/* 4. Tree Content List */}
       <div className="module-tree-body">
         {filteredModules.length > 0 ? (
-          filteredModules.map((mod) => (
+          filteredModules.map((mod, index) => (
             <ModuleTreeItem
               key={mod.id}
               moduleData={mod}
+              index={index}
               activeView={activeView}
               onSelectView={onSelectView}
               onDeleteModule={onDeleteModule}
               onDeleteLesson={onDeleteLesson}
+              onReorderLessons={onReorderLessons}
+              isDragEnabled={isDragEnabled}
+              isDragOver={dragOverModuleIndex === index}
+              onModuleDragStart={handleModuleDragStart}
+              onModuleDragOver={handleModuleDragOver}
+              onModuleDrop={handleModuleDrop}
+              onModuleDragEnd={handleModuleDragEnd}
             />
           ))
         ) : (
