@@ -1118,134 +1118,96 @@
   margin-bottom: 0.85rem;
 }
 
-.threshold-value-display {
-  display: flex;
+.threshold-combo-cell {
+  display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-}
-
-.threshold-number-input {
-  width: 58px;
-  padding: 0.25rem 0.35rem;
-  border: 1.5px solid #ea580c;
   background-color: #ffffff;
+  border: 1px solid #d1d5db;
   border-radius: 6px;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #ea580c;
-  text-align: center;
-  outline: none;
-  box-shadow: 0 1px 2px rgba(234, 88, 12, 0.1);
-}
-
-.threshold-value-display .unit {
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: #7c2d12;
-}
-
-/* Thang trượt có gạch mức và nhãn mốc */
-.slider-scale-wrapper {
-  position: relative;
-  width: 100%;
-  padding-top: 4px;
-  margin-bottom: 0.85rem;
-}
-
-.slider-scale-wrapper .threshold-slider {
-  width: 100%;
-  accent-color: #ea580c;
-  cursor: pointer;
-  height: 8px;
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  background: transparent;
-}
-
-.slider-ticks-scale {
-  position: relative;
-  width: calc(100% - 16px);
-  margin: -11px auto 6px auto;
-  height: 14px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.scale-notch {
-  position: absolute;
-  top: 0;
-  width: 2px;
-  height: 12px;
-  background-color: #94a3b8;
-  transform: translateX(-50%);
-  border-radius: 1px;
-}
-
-.scale-notch.sub {
-  height: 7px;
-  top: 3px;
-  background-color: #cbd5e1;
-}
-
-.scale-notch.milestone {
-  width: 3px;
-  height: 16px;
-  top: -2px;
-  background-color: #ea580c;
-  box-shadow: 0 0 4px rgba(234, 88, 12, 0.4);
-}
-
-.slider-ticks-labels {
-  position: relative;
-  width: calc(100% - 16px);
-  margin: 0 auto;
-  height: 18px;
-}
-
-.tick-label-btn {
-  position: absolute;
-  top: 0;
-  transform: translateX(-50%);
-  background: none;
-  border: none;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #64748b;
-  cursor: pointer;
-  padding: 1px 5px;
-  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  height: 32px;
   transition: all 0.15s;
+}
+
+.threshold-combo-cell:focus-within {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
+}
+
+.threshold-combo-cell.large {
+  height: 38px;
+  min-width: 140px;
+}
+
+.threshold-combo-input {
+  width: 32px;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #111827;
+  text-align: right;
+  outline: none;
+  padding: 0 2px 0 6px;
+}
+
+.threshold-combo-cell.large .threshold-combo-input {
+  width: 48px;
+  font-size: 0.9375rem;
+}
+
+.threshold-combo-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  padding-right: 6px;
+  user-select: none;
   white-space: nowrap;
 }
 
-.tick-label-btn:hover {
-  color: #0f172a;
-  background-color: #f1f5f9;
+.threshold-combo-select {
+  border: none;
+  border-left: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #4b5563;
+  padding: 0 4px;
+  height: 100%;
+  outline: none;
+  cursor: pointer;
+  transition: all 0.15s;
 }
 
-.tick-label-btn.milestone {
-  color: #c2410c;
-  font-weight: 700;
+.threshold-combo-select:hover {
+  background-color: #fff7ed;
+  color: #ea580c;
 }
 
-.tick-label-btn.active {
-  background-color: #ffedd5;
-  color: #c2410c;
-  font-weight: 700;
+.editor-combo-row {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-top: 0.35rem;
 }
 
-.tick-label-btn.first-tick {
-  left: 0 !important;
-  transform: none !important;
-  text-align: left;
+.editor-preset-select {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  outline: none;
 }
 
-.tick-label-btn.last-tick {
-  left: auto !important;
-  right: 0 !important;
-  transform: none !important;
-  text-align: right;
+.editor-preset-select:focus {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 1px #ea580c;
 }
 
 .threshold-note {
@@ -1989,107 +1951,19 @@
   white-space: nowrap;
 }
 
-.threshold-stepper-box {
-  display: inline-flex;
-  align-items: center;
-  background-color: #f9fafb;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  padding: 2px 6px;
-  height: 32px;
-  flex-shrink: 0;
-  white-space: nowrap;
-  gap: 2px;
-}
-
-.threshold-stepper-box:focus-within {
-  border-color: #ea580c;
-  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
-  background-color: #ffffff;
-}
-
 /* Hide browser default number stepper spinners */
-.threshold-pill-input::-webkit-outer-spin-button,
-.threshold-pill-input::-webkit-inner-spin-button,
+.threshold-combo-input::-webkit-outer-spin-button,
+.threshold-combo-input::-webkit-inner-spin-button,
 .threshold-number-input::-webkit-outer-spin-button,
 .threshold-number-input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.threshold-pill-input,
+.threshold-combo-input,
 .threshold-number-input {
   -moz-appearance: textfield;
   appearance: textfield;
-}
-
-.threshold-pill-input {
-  width: 25px;
-  border: none;
-  background: transparent;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #111827;
-  text-align: right;
-  outline: none;
-  padding: 0;
-}
-
-.threshold-pill-unit {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  user-select: none;
-}
-
-.compact-slider-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  flex: 1;
-  min-width: 95px;
-  max-width: 125px;
-  height: 28px;
-}
-
-.compact-slider-container .compact-slider {
-  width: 100%;
-  accent-color: #ea580c;
-  cursor: pointer;
-  height: 6px;
-  position: relative;
-  z-index: 2;
-  margin: 0;
-  background: transparent;
-}
-
-.compact-slider-container .slider-tick-notches {
-  position: absolute;
-  left: 6px;
-  right: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  height: 14px;
-  pointer-events: none;
-  z-index: 1;
-}
-
-.compact-slider-container .tick-notch {
-  position: absolute;
-  top: 1px;
-  width: 2px;
-  height: 11px;
-  background-color: #94a3b8;
-  border-radius: 1px;
-  transform: translateX(-50%);
-}
-
-.compact-slider-container .tick-notch.milestone {
-  background-color: #ea580c;
-  width: 2.5px;
-  height: 15px;
-  top: -1px;
-  box-shadow: 0 0 3px rgba(234, 88, 12, 0.4);
 }
 
 .btn-row-save {

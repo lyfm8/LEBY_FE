@@ -176,20 +176,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
           </div>
         </div>
 
-        {/* Datalist hỗ trợ native browser tick marks */}
-        <datalist id="threshold-score-ticks">
-          <option value="50" label="50đ" />
-          <option value="65" label="65đ" />
-          <option value="80" label="80đ" />
-          <option value="100" label="100đ" />
-        </datalist>
-        <datalist id="threshold-rate-ticks">
-          <option value="50" label="50%" />
-          <option value="70" label="70%" />
-          <option value="80" label="80%" />
-          <option value="100" label="100%" />
-        </datalist>
-
         {/* Matrix Table */}
         <div className="thresholds-table-wrapper">
           <table className="thresholds-table">
@@ -197,8 +183,8 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
               <tr>
                 <th style={{ width: '55px', textAlign: 'center' }}>Thứ tự</th>
                 <th>Tên Module & Part</th>
-                <th style={{ width: '180px' }}>Điểm đỗ bài thi</th>
-                <th style={{ width: '180px' }}>Tỷ lệ bài học</th>
+                <th style={{ width: '160px' }}>Điểm đỗ bài thi</th>
+                <th style={{ width: '160px' }}>Tỷ lệ bài học</th>
                 <th style={{ width: '75px', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
@@ -235,81 +221,71 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
 
                   {/* Điểm đỗ */}
                   <td>
-                    <div className="threshold-inline-control">
-                      <div className="threshold-stepper-box">
-                        <input
-                          type="number"
-                          min="50"
-                          max="100"
-                          value={item.defaultPassScore}
-                          onChange={(e) =>
-                            handleScoreChange(item.id, Number(e.target.value))
-                          }
-                          className="threshold-pill-input"
-                        />
-                        <span className="threshold-pill-unit">đ</span>
-                      </div>
-                      <div className="compact-slider-container">
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          list="threshold-score-ticks"
-                          value={item.defaultPassScore}
-                          onChange={(e) =>
-                            handleScoreChange(item.id, Number(e.target.value))
-                          }
-                          className="compact-slider"
-                          title={`Điểm đỗ: ${item.defaultPassScore}đ`}
-                        />
-                        {/* Vạch gạch mức trực quan trên thanh trượt */}
-                        <div className="slider-tick-notches" aria-hidden="true">
-                          <span className="tick-notch" style={{ left: '0%' }} title="50đ" />
-                          <span className="tick-notch milestone" style={{ left: '30%' }} title="Chuẩn gợi ý: 65đ" />
-                          <span className="tick-notch" style={{ left: '60%' }} title="80đ" />
-                          <span className="tick-notch" style={{ left: '100%' }} title="100đ" />
-                        </div>
-                      </div>
+                    <div className="threshold-combo-cell">
+                      <input
+                        type="number"
+                        min="50"
+                        max="100"
+                        value={item.defaultPassScore}
+                        onChange={(e) =>
+                          handleScoreChange(item.id, Number(e.target.value))
+                        }
+                        className="threshold-combo-input"
+                      />
+                      <span className="threshold-combo-unit">đ</span>
+                      <select
+                        className="threshold-combo-select"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) handleScoreChange(item.id, Number(e.target.value));
+                        }}
+                        title="Chọn nhanh mốc điểm chuẩn"
+                      >
+                        <option value="" disabled>Mốc chuẩn</option>
+                        <option value="50">50đ (Cơ bản)</option>
+                        <option value="60">60đ</option>
+                        <option value="65">65đ (Chuẩn gợi ý)</option>
+                        <option value="70">70đ</option>
+                        <option value="75">75đ</option>
+                        <option value="80">80đ</option>
+                        <option value="90">90đ</option>
+                        <option value="100">100đ (Tối đa)</option>
+                      </select>
                     </div>
                   </td>
 
                   {/* Tỷ lệ hoàn thành */}
                   <td>
-                    <div className="threshold-inline-control">
-                      <div className="threshold-stepper-box">
-                        <input
-                          type="number"
-                          min="50"
-                          max="100"
-                          value={item.requiredCompletionRate}
-                          onChange={(e) =>
-                            handleRateChange(item.id, Number(e.target.value))
-                          }
-                          className="threshold-pill-input"
-                        />
-                        <span className="threshold-pill-unit">%</span>
-                      </div>
-                      <div className="compact-slider-container">
-                        <input
-                          type="range"
-                          min="50"
-                          max="100"
-                          list="threshold-rate-ticks"
-                          value={item.requiredCompletionRate}
-                          onChange={(e) =>
-                            handleRateChange(item.id, Number(e.target.value))
-                          }
-                          className="compact-slider"
-                          title={`Tỷ lệ hoàn thành: ${item.requiredCompletionRate}%`}
-                        />
-                        {/* Vạch gạch mức trực quan trên thanh trượt */}
-                        <div className="slider-tick-notches" aria-hidden="true">
-                          <span className="tick-notch" style={{ left: '0%' }} title="50%" />
-                          <span className="tick-notch" style={{ left: '40%' }} title="70%" />
-                          <span className="tick-notch milestone" style={{ left: '60%' }} title="Chuẩn gợi ý: 80%" />
-                          <span className="tick-notch" style={{ left: '100%' }} title="100%" />
-                        </div>
-                      </div>
+                    <div className="threshold-combo-cell">
+                      <input
+                        type="number"
+                        min="50"
+                        max="100"
+                        value={item.requiredCompletionRate}
+                        onChange={(e) =>
+                          handleRateChange(item.id, Number(e.target.value))
+                        }
+                        className="threshold-combo-input"
+                      />
+                      <span className="threshold-combo-unit">%</span>
+                      <select
+                        className="threshold-combo-select"
+                        value=""
+                        onChange={(e) => {
+                          if (e.target.value) handleRateChange(item.id, Number(e.target.value));
+                        }}
+                        title="Chọn nhanh mốc tỷ lệ chuẩn"
+                      >
+                        <option value="" disabled>Mốc chuẩn</option>
+                        <option value="50">50% (Cơ bản)</option>
+                        <option value="60">60%</option>
+                        <option value="70">70%</option>
+                        <option value="75">75%</option>
+                        <option value="80">80% (Chuẩn gợi ý)</option>
+                        <option value="85">85%</option>
+                        <option value="90">90%</option>
+                        <option value="100">100% (Tối đa)</option>
+                      </select>
                     </div>
                   </td>
 

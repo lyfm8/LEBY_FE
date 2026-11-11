@@ -75,8 +75,6 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
   });
 
   const selectedPartId = watch('partId');
-  const passScoreValue = watch('defaultPassScore');
-  const completionRateValue = watch('requiredCompletionRate');
 
   // Đồng bộ khi partsProp từ cha thay đổi
   useEffect(() => {
@@ -386,87 +384,40 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
             <div className="form-row-2 thresholds-row">
               {/* Điểm đỗ */}
               <div className="threshold-box">
-                <div className="threshold-header">
-                  <label className="form-label font-bold">
-                    1. Điểm đỗ mặc định bài thi vượt ải
-                  </label>
-                  <div className="threshold-value-display">
+                <label className="form-label font-bold">
+                  1. Điểm đỗ mặc định bài thi vượt ải
+                </label>
+                <div className="editor-combo-row">
+                  <div className="threshold-combo-cell large">
                     <input
                       type="number"
                       min="50"
                       max="100"
                       {...register('defaultPassScore', { valueAsNumber: true })}
-                      className="threshold-number-input"
+                      className="threshold-combo-input"
                     />
-                    <span className="unit">/ 100 điểm</span>
+                    <span className="threshold-combo-unit">/ 100 điểm</span>
                   </div>
+                  <select
+                    className="form-input editor-preset-select"
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        setValue('defaultPassScore', Number(e.target.value), { shouldDirty: true });
+                      }
+                    }}
+                  >
+                    <option value="" disabled>-- Chọn nhanh mốc điểm chuẩn --</option>
+                    <option value="50">50 điểm (Cơ bản)</option>
+                    <option value="60">60 điểm</option>
+                    <option value="65">65 điểm (Chuẩn gợi ý TOEIC)</option>
+                    <option value="70">70 điểm</option>
+                    <option value="75">75 điểm</option>
+                    <option value="80">80 điểm</option>
+                    <option value="90">90 điểm</option>
+                    <option value="100">100 điểm (Tối đa)</option>
+                  </select>
                 </div>
-
-                {/* Thang trượt có gạch mức (graduation ticks) */}
-                <div className="slider-scale-wrapper">
-                  <input
-                    type="range"
-                    min="50"
-                    max="100"
-                    value={passScoreValue || 65}
-                    onChange={(e) =>
-                      setValue('defaultPassScore', Number(e.target.value), {
-                        shouldDirty: true,
-                      })
-                    }
-                    className="threshold-slider"
-                  />
-
-                  {/* Vạch gạch mức trực quan trên thanh trượt */}
-                  <div className="slider-ticks-scale" aria-hidden="true">
-                    <span className="scale-notch" style={{ left: '0%' }} title="50đ" />
-                    <span className="scale-notch sub" style={{ left: '20%' }} title="60đ" />
-                    <span className="scale-notch milestone" style={{ left: '30%' }} title="Chuẩn gợi ý: 65đ" />
-                    <span className="scale-notch sub" style={{ left: '40%' }} title="70đ" />
-                    <span className="scale-notch sub" style={{ left: '60%' }} title="80đ" />
-                    <span className="scale-notch sub" style={{ left: '80%' }} title="90đ" />
-                    <span className="scale-notch" style={{ left: '100%' }} title="100đ" />
-                  </div>
-
-                  {/* Nhãn mốc điểm bấm vào để nhảy nhanh */}
-                  <div className="slider-ticks-labels">
-                    <button
-                      type="button"
-                      className={`tick-label-btn first-tick ${passScoreValue === 50 ? 'active' : ''}`}
-                      onClick={() => setValue('defaultPassScore', 50, { shouldDirty: true })}
-                      title="50 điểm (Cơ bản)"
-                    >
-                      50đ
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn milestone ${passScoreValue === 65 ? 'active' : ''}`}
-                      style={{ left: '30%' }}
-                      onClick={() => setValue('defaultPassScore', 65, { shouldDirty: true })}
-                      title="65 điểm (Chuẩn gợi ý TOEIC)"
-                    >
-                      65đ ★ Chuẩn
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn ${passScoreValue === 80 ? 'active' : ''}`}
-                      style={{ left: '60%' }}
-                      onClick={() => setValue('defaultPassScore', 80, { shouldDirty: true })}
-                      title="80 điểm (Nâng cao)"
-                    >
-                      80đ
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn last-tick ${passScoreValue === 100 ? 'active' : ''}`}
-                      onClick={() => setValue('defaultPassScore', 100, { shouldDirty: true })}
-                      title="100 điểm (Tối đa)"
-                    >
-                      100đ
-                    </button>
-                  </div>
-                </div>
-
                 {errors.defaultPassScore && (
                   <p className="form-error">{errors.defaultPassScore.message}</p>
                 )}
@@ -474,86 +425,40 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
 
               {/* Tỷ lệ hoàn thành bài học */}
               <div className="threshold-box">
-                <div className="threshold-header">
-                  <label className="form-label font-bold">
-                    2. Tỷ lệ bài giảng hoàn thành tối thiểu
-                  </label>
-                  <div className="threshold-value-display">
+                <label className="form-label font-bold">
+                  2. Tỷ lệ bài giảng hoàn thành tối thiểu
+                </label>
+                <div className="editor-combo-row">
+                  <div className="threshold-combo-cell large">
                     <input
                       type="number"
                       min="50"
                       max="100"
                       {...register('requiredCompletionRate', { valueAsNumber: true })}
-                      className="threshold-number-input"
+                      className="threshold-combo-input"
                     />
-                    <span className="unit">%</span>
+                    <span className="threshold-combo-unit">%</span>
                   </div>
+                  <select
+                    className="form-input editor-preset-select"
+                    value=""
+                    onChange={(e) => {
+                      if (e.target.value) {
+                        setValue('requiredCompletionRate', Number(e.target.value), { shouldDirty: true });
+                      }
+                    }}
+                  >
+                    <option value="" disabled>-- Chọn nhanh mốc tỷ lệ chuẩn --</option>
+                    <option value="50">50% (Cơ bản)</option>
+                    <option value="60">60%</option>
+                    <option value="70">70%</option>
+                    <option value="75">75%</option>
+                    <option value="80">80% (Chuẩn gợi ý)</option>
+                    <option value="85">85%</option>
+                    <option value="90">90%</option>
+                    <option value="100">100% (Tối đa)</option>
+                  </select>
                 </div>
-
-                {/* Thang trượt có gạch mức (graduation ticks) */}
-                <div className="slider-scale-wrapper">
-                  <input
-                    type="range"
-                    min="50"
-                    max="100"
-                    value={completionRateValue || 80}
-                    onChange={(e) =>
-                      setValue('requiredCompletionRate', Number(e.target.value), {
-                        shouldDirty: true,
-                      })
-                    }
-                    className="threshold-slider"
-                  />
-
-                  {/* Vạch gạch mức trực quan trên thanh trượt */}
-                  <div className="slider-ticks-scale" aria-hidden="true">
-                    <span className="scale-notch" style={{ left: '0%' }} title="50%" />
-                    <span className="scale-notch sub" style={{ left: '20%' }} title="60%" />
-                    <span className="scale-notch sub" style={{ left: '40%' }} title="70%" />
-                    <span className="scale-notch milestone" style={{ left: '60%' }} title="Chuẩn gợi ý: 80%" />
-                    <span className="scale-notch sub" style={{ left: '80%' }} title="90%" />
-                    <span className="scale-notch" style={{ left: '100%' }} title="100%" />
-                  </div>
-
-                  {/* Nhãn mốc tỷ lệ bấm vào để nhảy nhanh */}
-                  <div className="slider-ticks-labels">
-                    <button
-                      type="button"
-                      className={`tick-label-btn first-tick ${completionRateValue === 50 ? 'active' : ''}`}
-                      onClick={() => setValue('requiredCompletionRate', 50, { shouldDirty: true })}
-                      title="50% (Tối thiểu cơ bản)"
-                    >
-                      50%
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn ${completionRateValue === 70 ? 'active' : ''}`}
-                      style={{ left: '40%' }}
-                      onClick={() => setValue('requiredCompletionRate', 70, { shouldDirty: true })}
-                      title="70% (Trung bình)"
-                    >
-                      70%
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn milestone ${completionRateValue === 80 ? 'active' : ''}`}
-                      style={{ left: '60%' }}
-                      onClick={() => setValue('requiredCompletionRate', 80, { shouldDirty: true })}
-                      title="80% (Chuẩn sư phạm gợi ý)"
-                    >
-                      80% ★ Chuẩn
-                    </button>
-                    <button
-                      type="button"
-                      className={`tick-label-btn last-tick ${completionRateValue === 100 ? 'active' : ''}`}
-                      onClick={() => setValue('requiredCompletionRate', 100, { shouldDirty: true })}
-                      title="100% (Toàn bộ bài giảng)"
-                    >
-                      100%
-                    </button>
-                  </div>
-                </div>
-
                 {errors.requiredCompletionRate && (
                   <p className="form-error">
                     {errors.requiredCompletionRate.message}
