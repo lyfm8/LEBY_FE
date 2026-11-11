@@ -1,29 +1,140 @@
+/* ==========================================================================
+   ADMIN PART & ABILITY STYLESHEET (Enterprise Design System)
+   Theo đúng quy chuẩn Monorepo LEBY: Màu sắc, phân cấp, bóng đổ & khoảng cách.
+   ========================================================================== */
 
-
-
-
-
-
-/* Layout for Part Page */
-.part-layout-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-  flex: 1;
-  min-height: 0;
-}
-@media (min-width: 1024px) {
-  .part-layout-grid {
-    grid-template-columns: 1fr 2fr;
-  }
-}
-
-.part-list-col {
-  height: 100%;
+/* --------------------------------------------------------------------------
+   0. PAGE CONTAINER & HEADER (Chuẩn chung mọi trang Admin LEBY)
+   -------------------------------------------------------------------------- */
+.admin-page-container {
+  height: calc(100vh - 170px);
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
+
+.admin-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
+.admin-page-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.25rem 0;
+}
+
+.admin-page-subtitle {
+  font-size: 0.875rem;
+  color: #64748b;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   1. SEGMENTED CONTROL VIEW SWITCHER (Quản trị / Cây phân cấp)
+   -------------------------------------------------------------------------- */
+.admin-segmented-control {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f1f5f9;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  gap: 2px;
+}
+
+.segmented-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #64748b;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+
+.segmented-btn:hover {
+  color: #0f172a;
+}
+
+.segmented-btn.active {
+  background-color: #ffffff;
+  color: #ea580c;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  font-weight: 700;
+}
+
+.segmented-badge {
+  font-size: 0.625rem;
+  font-weight: 700;
+  background-color: #ffedd5;
+  color: #ea580c;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+/* --------------------------------------------------------------------------
+   2. SECTION BADGE PILL
+   -------------------------------------------------------------------------- */
+.section-badge-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.section-badge-pill.listening {
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border: 1px solid #bfdbfe;
+}
+
+.section-badge-pill.reading {
+  background-color: #fefce8;
+  color: #a16207;
+  border: 1px solid #fef08a;
+}
+
+/* --------------------------------------------------------------------------
+   3. QUẢN TRỊ CHIA CỘT (SPLIT LAYOUT)
+   -------------------------------------------------------------------------- */
+.part-layout-grid {
+  display: grid;
+  grid-template-columns: 370px 1fr;
+  gap: 1.15rem;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .part-layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.part-list-col,
 .ability-list-col {
   height: 100%;
   min-height: 0;
@@ -31,246 +142,849 @@
   flex-direction: column;
 }
 
-/* Part List Components */
-.part-list-container {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
+/* Panel card chung */
+.part-panel-card,
+.ability-panel-card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
   height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-}
-.part-list-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-}
-.part-list-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-.part-list-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 0.5rem;
-}
-.part-item {
-  width: 100%;
-  text-align: left;
-  padding: 1rem;
-  margin-bottom: 0.5rem;
-  border-radius: 0.375rem;
-  border: 1px solid transparent;
-  background: none;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  flex-direction: column;
-}
-.part-item:hover {
-  background-color: #f3f4f6;
-}
-.part-item.active {
-  background-color: #ffedd5;
-  border-color: #fdba74;
-}
-.part-item-name {
-  font-weight: 600;
-  font-size: 1rem;
-}
-.part-item.active .part-item-name {
-  color: #c2410c;
-}
-.part-item.inactive .part-item-name {
-  color: #4b5563;
-}
-.part-item-desc {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin-top: 0.25rem;
 }
 
-/* Ability List Components */
-.ability-list-container {
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-  border: 1px solid #e5e7eb;
-  height: 100%;
+/* Header panel */
+.part-panel-header,
+.ability-panel-header {
+  padding: 0.85rem 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #fafaf9;
   display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-.ability-list-header {
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid #e5e7eb;
-  background-color: #f9fafb;
-  display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
 }
-.ability-list-title-wrapper {
+
+.panel-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.panel-icon-badge {
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  background-color: #ffedd5;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.panel-icon-badge.ability {
+  background-color: #eff6ff;
+  color: #2563eb;
+}
+
+.panel-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.panel-count-pill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Title & Breadcrumb bên cột Ability */
+.title-context-block {
   display: flex;
   flex-direction: column;
-}
-.ability-list-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: #111827;
-  margin: 0;
-}
-.ability-list-subtitle {
-  font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-}
-.ability-table-wrapper {
-  flex: 1;
-  overflow-y: auto;
+  gap: 0.15rem;
 }
 
-/* Custom Table Overrides */
-.ability-name { font-weight: 500; color: #111827; margin-bottom: 0.25rem; }
-.ability-desc { color: #6b7280; font-size: 0.8125rem; }
-
-/* ===================================
-   View Mode Toggle (Table / Tree)
-   =================================== */
-.view-toggle-group {
+.title-row {
   display: flex;
-  gap: 0.25rem;
-  background: #f3f4f6;
-  border-radius: 0.375rem;
-  padding: 0.2rem;
+  align-items: center;
+  gap: 0.45rem;
 }
-.view-toggle-btn {
+
+.panel-context-crumb {
+  font-size: 0.75rem;
+  color: #64748b;
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
-  border: none;
-  background: transparent;
-  border-radius: 0.25rem;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.view-toggle-btn:hover { color: #374151; }
-.view-toggle-btn.active {
-  background: white;
-  color: #c2410c;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
 }
 
-/* ===================================
-   Tree View
-   =================================== */
-.tree-view-container {
-  padding: 1rem 1.25rem;
+.context-part-name {
+  color: #ea580c;
+  font-weight: 700;
 }
-.tree-view-loading,
-.tree-view-empty {
-  text-align: center;
-  padding: 2rem;
-  color: #6b7280;
+
+.crumb-badge {
+  display: inline-flex;
+  margin-left: 0.25rem;
 }
-.tree-section {
-  margin-bottom: 1.5rem;
+
+/* Nút bấm hành động trong Panel */
+.btn-panel-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: none;
+  border-radius: 6px;
+  padding: 0.45rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
 }
-.tree-section-header {
+
+.btn-panel-action.primary {
+  background-color: #ea580c;
+  color: #ffffff;
+}
+
+.btn-panel-action.primary:hover {
+  background-color: #c2410c;
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.2);
+}
+
+/* Ô tìm kiếm trong Panel */
+.part-panel-search,
+.ability-panel-search {
+  padding: 0.55rem 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #ffffff;
+}
+
+.search-box {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding-bottom: 0.4rem;
-  border-bottom: 1px solid #e5e7eb;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 0.35rem 0.65rem;
+  transition: all 0.15s ease;
 }
-.tree-section-count {
-  font-size: 0.8125rem;
-  color: #9ca3af;
+
+.search-box:focus-within {
+  border-color: #ea580c;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.12);
 }
-.tree-section-children {
-  padding-left: 0.75rem;
-  border-left: 2px solid #e5e7eb;
-}
-.tree-part-node {
-  margin: 0.25rem 0;
-}
-.tree-part-header {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.6rem;
-  border-radius: 0.375rem;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.tree-part-header:hover {
-  background: #f9fafb;
-}
-.tree-part-header.expanded {
-  background: #fff7ed;
-}
-.tree-toggle {
-  display: flex;
-  align-items: center;
-  color: #9ca3af;
-}
-.tree-part-icon {
-  color: #c2410c;
+
+.search-icon {
+  color: #94a3b8;
   flex-shrink: 0;
 }
-.tree-part-name {
-  font-weight: 600;
-  font-size: 0.9375rem;
-  color: #1f2937;
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.8125rem;
+  color: #1e293b;
+  width: 100%;
 }
-.tree-ability-count {
-  font-size: 0.75rem;
-  color: #9ca3af;
-  margin-left: auto;
+
+.search-input::placeholder {
+  color: #94a3b8;
 }
-.tree-ability-list {
-  padding-left: 2.25rem;
-  margin: 0.15rem 0 0.35rem;
+
+/* --------------------------------------------------------------------------
+   4. DANH SÁCH PART CARD
+   -------------------------------------------------------------------------- */
+.part-cards-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0.65rem;
 }
-.tree-ability-node {
+
+.part-items-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.part-card-item {
+  padding: 0.75rem 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 3px solid transparent;
+  display: flex;
+  flex-direction: column;
+}
+
+.part-card-item:hover {
+  background-color: #f8fafc;
+  border-color: #cbd5e1;
+}
+
+.part-card-item.selected {
+  background-color: #fffaf5;
+  border-color: #fdba74;
+  border-left: 4px solid #ea580c;
+  box-shadow: 0 2px 4px rgba(234, 88, 12, 0.08);
+}
+
+.part-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.part-card-title-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.part-card-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.part-card-item.selected .part-card-title {
+  color: #ea580c;
+}
+
+.part-card-tags {
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.3rem 0;
+}
+
+.part-ability-badge {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #475569;
+  background-color: #f1f5f9;
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+
+.part-card-desc {
+  font-size: 0.78125rem;
+  color: #64748b;
+  margin: 0.4rem 0 0 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Nút hành động trên Card */
+.part-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.part-card-item:hover .part-card-actions {
+  opacity: 1;
+}
+
+.btn-card-action {
+  border: none;
+  background: transparent;
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.15s;
+  padding: 0;
+}
+
+.btn-card-action.edit:hover {
+  color: #ea580c;
+  background-color: #fff7ed;
+}
+
+.btn-card-action.delete:hover {
+  color: #ef4444;
+  background-color: #fee2e2;
+}
+
+/* --------------------------------------------------------------------------
+   5. BẢNG NĂNG LỰC ĐÁNH GIÁ (ABILITY TABLE)
+   -------------------------------------------------------------------------- */
+.ability-table-scroll {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.ability-table-container {
+  width: 100%;
+}
+
+.modern-ability-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.8125rem;
+}
+
+.modern-ability-table thead th {
+  padding: 0.65rem 1rem;
+  background-color: #f8fafc;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #64748b;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 5;
+}
+
+.modern-ability-table tbody td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+.ability-table-row {
+  transition: background-color 0.12s;
+}
+
+.ability-table-row:hover {
+  background-color: #f8fafc;
+}
+
+.ability-row-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.ability-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ability-bullet-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #ea580c;
+  flex-shrink: 0;
+}
+
+.ability-title-text {
   font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
 }
-.tree-connector {
-  color: #d1d5db;
-  font-family: monospace;
+
+.ability-desc-text {
+  font-size: 0.78125rem;
+  color: #64748b;
+  margin: 0.15rem 0 0 0.85rem;
+  line-height: 1.4;
+}
+
+.ability-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+/* Trạng thái rỗng / tải dữ liệu */
+.panel-state-message {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2.5rem;
+  color: #94a3b8;
   font-size: 0.8125rem;
+}
+
+.panel-empty-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.empty-state-icon {
+  color: #cbd5e1;
+  margin-bottom: 0.65rem;
+}
+
+.empty-state-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #475569;
+  margin: 0 0 0.25rem 0;
+}
+
+.empty-state-subtitle {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  margin: 0;
+}
+
+.ability-panel-card.empty-selection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-panel-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 320px;
+  padding: 2rem;
+}
+
+.empty-icon-circle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background-color: #fff7ed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.empty-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 0.4rem 0;
+}
+
+.empty-desc {
+  font-size: 0.8125rem;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+   6. CÂY PHÂN CẤP PART → ABILITY TRỰC QUAN (TREE VIEW)
+   -------------------------------------------------------------------------- */
+.tree-page-wrapper {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  flex: 1 1 0%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tree-view-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.tree-view-toolbar {
+  padding: 0.75rem 1.15rem;
+  border-bottom: 1px solid #f1f5f9;
+  background-color: #fafaf9;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.tree-toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+  max-width: 600px;
+}
+
+.tree-toolbar-left .search-box {
+  flex: 1;
+}
+
+.tree-meta-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.summary-pill strong {
+  color: #ea580c;
+  font-weight: 700;
+}
+
+.summary-divider {
+  color: #cbd5e1;
+}
+
+.tree-toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.btn-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border: 1px solid #e2e8f0;
+  background-color: #ffffff;
+  color: #475569;
+  border-radius: 6px;
+  padding: 0.4rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btn-toolbar:hover {
+  border-color: #ea580c;
+  color: #ea580c;
+  background-color: #fff7ed;
+}
+
+/* Danh sách Sections cuộn */
+.tree-sections-flow {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1.15rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tree-section-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.tree-section-banner {
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.65rem;
+}
+
+.tree-section-banner.listening {
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  border: 1px solid #bfdbfe;
+  color: #1e40af;
+}
+
+.tree-section-banner.reading {
+  background: linear-gradient(135deg, #fefce8 0%, #fef3c7 100%);
+  border: 1px solid #fde047;
+  color: #854d0e;
+}
+
+.section-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.banner-icon {
   flex-shrink: 0;
 }
-.tree-ability-icon {
-  color: #2563eb;
+
+.banner-name {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.banner-count-badge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 1px 7px;
+  border-radius: 9999px;
+  margin-left: 0.4rem;
+}
+
+.tree-section-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* Part Card trong Tree View */
+.tree-part-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: #ffffff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  transition: all 0.15s ease;
+}
+
+.tree-part-header {
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  background-color: #ffffff;
+  transition: background-color 0.12s;
+  user-select: none;
+}
+
+.tree-part-header:hover {
+  background-color: #f8fafc;
+}
+
+.tree-part-header.active-header {
+  background-color: #fffaf5;
+  border-bottom: 1px solid #fed7aa;
+}
+
+.part-header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.part-chevron-btn {
+  border: none;
+  background: transparent;
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  padding: 0;
+}
+
+.part-chevron-btn:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+
+.part-icon-box {
+  width: 26px;
+  height: 26px;
+  border-radius: 5px;
+  background-color: #ffedd5;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   flex-shrink: 0;
 }
-.tree-ability-name {
-  color: #374151;
-  font-weight: 500;
+
+.part-info-group {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
 }
-.tree-ability-desc {
-  color: #9ca3af;
-  font-size: 0.8125rem;
+
+.part-name-text {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.tree-part-header.active-header .part-name-text {
+  color: #ea580c;
+}
+
+.part-desc-preview {
+  font-size: 0.75rem;
+  color: #94a3b8;
+  display: inline-block;
+  max-width: 400px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.tree-ability-empty {
-  color: #9ca3af;
+
+.part-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.part-ability-pill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+/* Nhánh Abilities con (Indented) */
+.tree-abilities-branch {
+  padding: 0.75rem 1rem 0.75rem 1.75rem;
+  background-color: #fafaf9;
+  border-left: 3px solid #fed7aa;
+  margin-left: 1.25rem;
+  margin-top: 0.25rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0 0 6px 0;
+}
+
+.tree-abilities-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 0.55rem;
+}
+
+.tree-ability-card {
+  padding: 0.65rem 0.85rem;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 7px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.03);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  transition: all 0.15s ease;
+}
+
+.tree-ability-card:hover {
+  border-color: #fdba74;
+  box-shadow: 0 2px 5px rgba(234, 88, 12, 0.08);
+}
+
+.ability-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.ability-card-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ability-icon-circle {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.ability-card-name {
   font-size: 0.8125rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.ability-card-desc {
+  font-size: 0.75rem;
+  color: #64748b;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.tree-empty-abilities {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: #94a3b8;
+  font-size: 0.78125rem;
   font-style: italic;
-  padding: 0.25rem 0;
+  padding: 0.5rem 0;
+}
+
+.tree-view-state-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+/* Loading Spinners */
+.loading-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #ffedd5;
+  border-top-color: #ea580c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.loading-spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid #ffedd5;
+  border-top-color: #ea580c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }

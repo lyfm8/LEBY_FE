@@ -1,37 +1,24 @@
 import React from 'react';
 import type { PartSectionType } from '../types';
+import { Headphones, BookOpen } from 'lucide-react';
 
 /**
- * Nhãn hiển thị loại kỹ năng TOEIC (LISTENING / READING) với màu sắc phân biệt.
- * Dùng chung cho PartList, AbilityList, TreeView.
+ * Nhãn hiển thị loại kỹ năng TOEIC (LISTENING / READING) với thiết kế badge pill chuẩn mực.
+ * Hỗ trợ hiển thị icon trực quan (tai nghe / cuốn sách).
  */
-
-const SECTION_STYLES: Record<PartSectionType, { bg: string; color: string }> = {
-  LISTENING: { bg: '#dbeafe', color: '#1e40af' },
-  READING: { bg: '#fef3c7', color: '#92400e' },
-};
 
 interface SectionBadgeProps {
   section: PartSectionType;
+  showIcon?: boolean;
 }
 
-export const SectionBadge: React.FC<SectionBadgeProps> = ({ section }) => {
-  const style = SECTION_STYLES[section];
+export const SectionBadge: React.FC<SectionBadgeProps> = ({ section, showIcon = true }) => {
+  const isListening = section === 'LISTENING';
+
   return (
-    <span
-      className="section-badge"
-      style={{
-        display: 'inline-block',
-        fontSize: '0.7rem',
-        fontWeight: 600,
-        padding: '0.15rem 0.4rem',
-        borderRadius: '0.25rem',
-        backgroundColor: style.bg,
-        color: style.color,
-      }}
-    >
-      {section}
+    <span className={`section-badge-pill ${isListening ? 'listening' : 'reading'}`}>
+      {showIcon && (isListening ? <Headphones size={11} strokeWidth={2.2} /> : <BookOpen size={11} strokeWidth={2.2} />)}
+      <span>{isListening ? 'Listening' : 'Reading'}</span>
     </span>
   );
 };
-
