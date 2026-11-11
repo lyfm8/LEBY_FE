@@ -236,7 +236,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                   {/* Điểm đỗ */}
                   <td>
                     <div className="threshold-inline-control">
-                      <div className="input-group">
+                      <div className="threshold-stepper-box">
                         <input
                           type="number"
                           min="50"
@@ -245,9 +245,9 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                           onChange={(e) =>
                             handleScoreChange(item.id, Number(e.target.value))
                           }
-                          className="compact-number-input"
+                          className="threshold-pill-input"
                         />
-                        <span className="unit">/100đ</span>
+                        <span className="threshold-pill-unit">đ</span>
                       </div>
                       <input
                         type="range"
@@ -265,7 +265,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                   {/* Tỷ lệ hoàn thành */}
                   <td>
                     <div className="threshold-inline-control">
-                      <div className="input-group">
+                      <div className="threshold-stepper-box">
                         <input
                           type="number"
                           min="50"
@@ -274,9 +274,9 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                           onChange={(e) =>
                             handleRateChange(item.id, Number(e.target.value))
                           }
-                          className="compact-number-input"
+                          className="threshold-pill-input"
                         />
-                        <span className="unit">%</span>
+                        <span className="threshold-pill-unit">%</span>
                       </div>
                       <input
                         type="range"

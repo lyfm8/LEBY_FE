@@ -133,6 +133,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
@@ -349,12 +350,14 @@
 }
 
 .module-tree-body {
-  flex: 1;
+  flex: 1 1 0%;
+  min-height: 0;
   overflow-y: auto;
-  padding: 0.65rem;
+  overflow-x: hidden;
+  padding: 0.75rem;
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
 .module-tree-footer {
@@ -370,10 +373,12 @@
    3. CÁC HÀNG CÂY (MODULE & LESSON TREE ITEMS)
    -------------------------------------------------------------------------- */
 .tree-module-item {
+  flex-shrink: 0;
+  width: 100%;
   border: 1px solid #e5e7eb;
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: #ffffff;
-  transition: all 0.15s;
+  transition: border-color 0.15s, box-shadow 0.15s;
   overflow: hidden;
 }
 
@@ -392,15 +397,16 @@
 }
 
 .tree-module-header {
-  padding: 0.55rem 0.65rem;
+  min-height: 42px;
+  padding: 0.55rem 0.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  background-color: #fbfcfd;
+  background-color: #fcfcfd;
   user-select: none;
   transition: background-color 0.15s;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .tree-module-header:hover {
@@ -460,12 +466,20 @@
   background: none;
   border: none;
   color: #6b7280;
-  padding: 2px;
+  width: 22px;
+  height: 22px;
   cursor: pointer;
   display: flex;
   align-items: center;
+  justify-content: center;
   flex-shrink: 0;
-  border-radius: 3px;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+
+.tree-toggle-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
 }
 
 .tree-toggle-btn:hover {
@@ -591,12 +605,16 @@
    4. LESSON LEAF ITEMS
    -------------------------------------------------------------------------- */
 .tree-module-children {
-  padding: 0.35rem 0.45rem 0.45rem 0.85rem;
+  padding: 0.4rem 0.6rem 0.5rem 0.75rem;
+  margin-left: 1.15rem;
+  margin-right: 0.5rem;
+  margin-bottom: 0.4rem;
+  border-left: 2px solid #fed7aa;
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  border-top: 1px solid #f3f4f6;
-  background-color: #ffffff;
+  gap: 0.25rem;
+  background-color: #fafaf9;
+  border-radius: 0 4px 4px 0;
 }
 
 .tree-leaf-item {
@@ -1817,14 +1835,15 @@
 
 .thresholds-table th {
   background-color: #f9fafb;
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 1rem;
   color: #4b5563;
   font-weight: 600;
   border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
 
 .thresholds-table td {
-  padding: 0.75rem 0.85rem;
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid #f3f4f6;
   color: #1f2937;
   vertical-align: middle;
@@ -1841,51 +1860,80 @@
 .module-name-cell {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
+  align-items: flex-start;
+  text-align: left;
+  gap: 0.35rem;
 }
 
 .module-name-cell .name {
   font-weight: 600;
   color: #111827;
+  text-align: left;
+  line-height: 1.4;
 }
 
 .module-name-cell .part-tag {
   font-size: 0.6875rem;
+  font-weight: 600;
   color: #ea580c;
-  background-color: #ffedd5;
+  background-color: #fff7ed;
+  border: 1px solid #ffedd5;
   width: fit-content;
-  padding: 0.05rem 0.35rem;
-  border-radius: 3px;
+  padding: 0.1rem 0.45rem;
+  border-radius: 4px;
+  white-space: nowrap;
 }
 
 .threshold-inline-control {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.5rem;
   width: 100%;
+  white-space: nowrap;
 }
 
-.threshold-inline-control .input-group {
-  display: flex;
+.threshold-stepper-box {
+  display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  background-color: #f9fafb;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  padding: 2px 6px;
+  height: 32px;
   flex-shrink: 0;
+  white-space: nowrap;
+  gap: 2px;
 }
 
-.compact-number-input {
-  width: 44px;
-  padding: 0.2rem 0.25rem;
-  border: 1px solid #d1d5db;
-  border-radius: 4px;
-  font-size: 0.78125rem;
+.threshold-stepper-box:focus-within {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
+  background-color: #ffffff;
+}
+
+.threshold-pill-input {
+  width: 28px;
+  border: none;
+  background: transparent;
+  font-size: 0.875rem;
   font-weight: 700;
+  color: #111827;
   text-align: center;
+  outline: none;
+  padding: 0;
+}
+
+.threshold-pill-unit {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  user-select: none;
 }
 
 .compact-slider {
   flex: 1;
-  min-width: 50px;
-  max-width: 100px;
+  min-width: 60px;
+  max-width: 110px;
   accent-color: #ea580c;
   cursor: pointer;
 }
