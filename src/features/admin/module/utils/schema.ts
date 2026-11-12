@@ -18,6 +18,8 @@ export const lessonFormSchema = z.object({
   title: z.string().min(2, 'Tên bài học tối thiểu 2 ký tự').max(200, 'Tên bài học tối đa 200 ký tự'),
   orderNo: z.number().min(1, 'Thứ tự phải lớn hơn hoặc bằng 1'),
   status: z.enum(['PUBLISHED', 'DRAFT', 'ARCHIVED']),
+  lessonType: z.enum(['VIDEO', 'PRACTICE']),
+  durationSeconds: z.number().min(0, 'Thời lượng không được âm').max(86400, 'Tối đa 24 giờ'),
   abilityId: z.number().nullable().optional(),
   isFree: z.boolean().optional(),
   descriptions: z.string().optional(),

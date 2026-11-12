@@ -11,10 +11,9 @@ import { PanelLeftOpen } from 'lucide-react';
 import '../admin-module.css';
 
 /**
- * Container chính Quản lý Module & Lesson (Use Case A05) theo kiến trúc Split-View Studio.
- * Phân chia 2 vùng:
- * - Bên trái (25%): Danh sách Module dạng cây, [+ Thêm Module], [⚙️ Cấu hình thông số].
- * - Bên phải (75%): Vùng Editor linh hoạt chuyển đổi giữa Module Editor, Cấu hình thông số, Lesson Editor và Module Test.
+ * Container chính Quản lý Module & Lesson (Use Case A05).
+ * Tuân thủ cấu trúc chuẩn admin-page-container và admin-page-header nhất quán với toàn bộ hệ thống LEBY Admin.
+ * Bố cục 2 cột (Left Tree 370px - Right Studio 1fr) với chiều cao vừa khít khung nhìn, không tạo thanh cuộn kép.
  */
 export const AdminModulePage: React.FC = () => {
   const {
@@ -30,6 +29,8 @@ export const AdminModulePage: React.FC = () => {
     handleSaveLesson,
     handleDeleteLesson,
     handleSaveLessonScripts,
+    handleReorderModules,
+    handleReorderLessons,
   } = useModuleLessonEditor();
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState<boolean>(false);
@@ -40,13 +41,14 @@ export const AdminModulePage: React.FC = () => {
   useEffect(() => {
     adminModuleService
       .getParts()
-      .then(async (res: any) => {
+      .then(async (res: unknown) => {
+        const responseData = res as { data?: PartResponse[] | { data?: PartResponse[] } };
         const partList: PartResponse[] = Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-          ? res.data
-          : Array.isArray(res?.data?.data)
-          ? res.data.data
+          ? (res as PartResponse[])
+          : Array.isArray(responseData?.data)
+          ? responseData.data
+          : Array.isArray((responseData?.data as { data?: PartResponse[] })?.data)
+          ? (responseData.data as { data: PartResponse[] }).data
           : [];
 
         if (partList.length > 0) {
@@ -54,11 +56,12 @@ export const AdminModulePage: React.FC = () => {
           const allAbilities: AbilityResponse[] = [];
           for (const part of partList) {
             try {
-              const abRes: any = await adminModuleService.getAbilities(part.id);
+              const abRes: unknown = await adminModuleService.getAbilities(part.id);
+              const abResponseData = abRes as { data?: AbilityResponse[] };
               const abList = Array.isArray(abRes)
-                ? abRes
-                : Array.isArray(abRes?.data)
-                ? abRes.data
+                ? (abRes as AbilityResponse[])
+                : Array.isArray(abResponseData?.data)
+                ? abResponseData.data
                 : [];
               allAbilities.push(...abList);
             } catch {
@@ -83,107 +86,118 @@ export const AdminModulePage: React.FC = () => {
   });
 
   return (
-    <div className={`studio-split-layout ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
-      {/* ======================================================== */}
-      {/* 1. CỘT BÊN TRÁI (25%): CÂY DANH MỤC & ĐIỀU HƯỚNG          */}
-      {/* ======================================================== */}
-      <aside className="studio-left-pane">
-        <ModuleTreeView
-          modules={modules}
-          activeView={activeView}
-          onSelectView={navigateView}
-          onDeleteModule={handleDeleteModule}
-          onDeleteLesson={handleDeleteLesson}
-          onRefresh={fetchModules}
-          isLoading={isLoading}
-          onToggleCollapse={() => setIsSidebarCollapsed(true)}
-        />
-      </aside>
+    <div className="admin-page-container">
+      {/* 1. Header trang chuẩn mực của LEBY Admin */}
+      <div className="admin-page-header">
+        <div>
+          <h1 className="admin-page-title">Quản lý Mô-đun & Bài học (Module & Lesson)</h1>
+          <p className="admin-page-subtitle">
+            Thiết kế lộ trình học tập thích ứng, cấu hình ngưỡng vượt ải và biên soạn nội dung bài giảng đa phương tiện
+          </p>
+        </div>
+      </div>
 
-      {/* Nút mở rộng cột trái khi đang thu gọn (nằm cố định mép trái, không chèn lên Editor) */}
-      {isSidebarCollapsed && (
-        <button
-          type="button"
-          className="studio-sidebar-expand-btn"
-          onClick={() => setIsSidebarCollapsed(false)}
-          title="Mở rộng danh mục mô-đun"
-        >
-          <PanelLeftOpen size={16} />
-        </button>
-      )}
-
-      {/* ======================================================== */}
-      {/* 2. CỘT BÊN PHẢI (75%): KHU VỰC EDITOR & CHI TIẾT          */}
-      {/* ======================================================== */}
-      <main className="studio-right-pane">
-        {/* VIEW 1: TẠO MỚI MODULE */}
-        {activeView.type === 'MODULE_CREATE' && (
-          <ModuleEditorView
-            parts={parts}
-            onSave={handleSaveModule}
-            onCancel={() => navigateView({ type: 'MODULE_CONFIGS' })}
-            isSubmitting={isSubmitting}
-          />
-        )}
-
-        {/* VIEW 2: CHỈNH SỬA MODULE */}
-        {activeView.type === 'MODULE_EDIT' && (
-          <ModuleEditorView
-            moduleId={activeView.moduleId}
-            existingModule={activeModule}
-            parts={parts}
-            onSave={handleSaveModule}
-            onCancel={() => navigateView({ type: 'MODULE_CONFIGS' })}
-            onDelete={handleDeleteModule}
-            isSubmitting={isSubmitting}
-          />
-        )}
-
-        {/* VIEW 3: CẤU HÌNH THÔNG SỐ MODULES */}
-        {activeView.type === 'MODULE_CONFIGS' && (
-          <ModuleThresholdsView
+      {/* 2. Studio Grid 2 cột: Cây danh mục (370px) + Vùng Soạn thảo (1fr) */}
+      <div className={`module-studio-grid ${isSidebarCollapsed ? 'sidebar-collapsed' : ''}`}>
+        {/* CỘT TRÁI: CÂY DANH MỤC MÔ-ĐUN */}
+        <aside className="studio-tree-col">
+          <ModuleTreeView
             modules={modules}
+            activeView={activeView}
+            onSelectView={navigateView}
+            onDeleteModule={handleDeleteModule}
+            onDeleteLesson={handleDeleteLesson}
+            onReorderModules={handleReorderModules}
+            onReorderLessons={handleReorderLessons}
             onRefresh={fetchModules}
-            onEditModule={(id: number) => navigateView({ type: 'MODULE_EDIT', moduleId: id })}
+            isLoading={isLoading}
+            onToggleCollapse={() => setIsSidebarCollapsed(true)}
           />
+        </aside>
+
+        {/* Nút mở rộng sidebar khi đang thu gọn */}
+        {isSidebarCollapsed && (
+          <button
+            type="button"
+            className="studio-sidebar-expand-btn"
+            onClick={() => setIsSidebarCollapsed(false)}
+            title="Mở rộng danh mục mô-đun"
+          >
+            <PanelLeftOpen size={16} />
+          </button>
         )}
 
-        {/* VIEW 4: TẠO MỚI HOẶC SỬA LESSON */}
-        {(activeView.type === 'LESSON_CREATE' || activeView.type === 'LESSON_EDIT') && (
-          <LessonEditorView
-            lessonId={activeView.type === 'LESSON_EDIT' ? activeView.lessonId : undefined}
-            moduleId={activeView.moduleId}
-            moduleTitle={activeModule?.title || 'Mô-đun'}
-            existingLesson={activeView.type === 'LESSON_EDIT' ? currentLessonDetail : null}
-            abilities={abilities}
-            onSaveLesson={handleSaveLesson}
-            onSaveScripts={handleSaveLessonScripts}
-            onCancel={() =>
-              navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
-            }
-            onDeleteLesson={
-              activeView.type === 'LESSON_EDIT'
-                ? () => handleDeleteLesson(activeView.lessonId, activeView.moduleId)
-                : undefined
-            }
-            isSubmitting={isSubmitting}
-          />
-        )}
+        {/* CỘT PHẢI: KHU VỰC SOẠN THẢO CHI TIẾT */}
+        <section className="studio-editor-col">
+          {/* VIEW 1: TẠO MỚI MODULE */}
+          {activeView.type === 'MODULE_CREATE' && (
+            <ModuleEditorView
+              parts={parts}
+              onSave={handleSaveModule}
+              onCancel={() => navigateView({ type: 'MODULE_CONFIGS' })}
+              isSubmitting={isSubmitting}
+            />
+          )}
 
-        {/* VIEW 5: MODULE TEST PLACEHOLDER */}
-        {activeView.type === 'MODULE_TEST' && (
-          <ModuleTestView
-            moduleId={activeView.moduleId}
-            moduleTitle={activeModule?.title || 'Mô-đun'}
-            passScore={activeModule?.defaultPassScore ?? 65}
-            requiredCompletionRate={activeModule?.requiredCompletionRate ?? 80}
-            onBack={() =>
-              navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
-            }
-            onOpenThresholds={() => navigateView({ type: 'MODULE_CONFIGS' })}
-          />
-        )}
-      </main>
+          {/* VIEW 2: CHỈNH SỬA MODULE */}
+          {activeView.type === 'MODULE_EDIT' && (
+            <ModuleEditorView
+              moduleId={activeView.moduleId}
+              existingModule={activeModule}
+              parts={parts}
+              onSave={handleSaveModule}
+              onCancel={() => navigateView({ type: 'MODULE_CONFIGS' })}
+              onDelete={handleDeleteModule}
+              isSubmitting={isSubmitting}
+            />
+          )}
+
+          {/* VIEW 3: CẤU HÌNH THÔNG SỐ MODULES */}
+          {activeView.type === 'MODULE_CONFIGS' && (
+            <ModuleThresholdsView
+              modules={modules}
+              onRefresh={fetchModules}
+              onEditModule={(id: number) => navigateView({ type: 'MODULE_EDIT', moduleId: id })}
+            />
+          )}
+
+          {/* VIEW 4: TẠO MỚI HOẶC SỬA LESSON */}
+          {(activeView.type === 'LESSON_CREATE' || activeView.type === 'LESSON_EDIT') && (
+            <LessonEditorView
+              lessonId={activeView.type === 'LESSON_EDIT' ? activeView.lessonId : undefined}
+              moduleId={activeView.moduleId}
+              moduleTitle={activeModule?.title || 'Mô-đun'}
+              existingLesson={activeView.type === 'LESSON_EDIT' ? currentLessonDetail : null}
+              abilities={abilities}
+              onSaveLesson={handleSaveLesson}
+              onSaveScripts={handleSaveLessonScripts}
+              onCancel={() =>
+                navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
+              }
+              onDeleteLesson={
+                activeView.type === 'LESSON_EDIT'
+                  ? () => handleDeleteLesson(activeView.lessonId, activeView.moduleId)
+                  : undefined
+              }
+              isSubmitting={isSubmitting}
+            />
+          )}
+
+          {/* VIEW 5: MODULE TEST PLACEHOLDER */}
+          {activeView.type === 'MODULE_TEST' && (
+            <ModuleTestView
+              moduleId={activeView.moduleId}
+              moduleTitle={activeModule?.title || 'Mô-đun'}
+              passScore={activeModule?.defaultPassScore ?? 65}
+              requiredCompletionRate={activeModule?.requiredCompletionRate ?? 80}
+              onBack={() =>
+                navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
+              }
+              onOpenThresholds={() => navigateView({ type: 'MODULE_CONFIGS' })}
+            />
+          )}
+        </section>
+      </div>
     </div>
   );
 };

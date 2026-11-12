@@ -11,10 +11,14 @@ import {
   Sliders,
   Layers,
   BookOpen,
-  Info,
   CheckCircle2,
   Trash2,
 } from 'lucide-react';
+import {
+  ThresholdDropdownInput,
+  SCORE_PRESETS,
+  RATE_PRESETS,
+} from './ThresholdDropdownInput';
 
 const DEFAULT_TOEIC_PARTS: PartResponse[] = [
   { id: 1, name: 'Part 1: Photographs', sections: 'LISTENING' },
@@ -76,8 +80,6 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
   });
 
   const selectedPartId = watch('partId');
-  const passScoreValue = watch('defaultPassScore');
-  const completionRateValue = watch('requiredCompletionRate');
 
   // Đồng bộ khi partsProp từ cha thay đổi
   useEffect(() => {
@@ -90,19 +92,21 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
   useEffect(() => {
     adminModuleService
       .getParts()
-      .then((res: any) => {
-        const list = Array.isArray(res)
-          ? res
-          : Array.isArray(res?.data)
-          ? res.data
-          : Array.isArray(res?.data?.data)
-          ? res.data.data
+      .then((res) => {
+        const raw = res as unknown;
+        const responseData = raw as { data?: PartResponse[] | { data?: PartResponse[] } };
+        const list: PartResponse[] = Array.isArray(raw)
+          ? (raw as PartResponse[])
+          : Array.isArray(responseData?.data)
+          ? responseData.data
+          : Array.isArray((responseData?.data as { data?: PartResponse[] })?.data)
+          ? (responseData.data as { data: PartResponse[] }).data
           : [];
         if (list.length > 0) {
           setParts(list);
         }
       })
-      .catch((err) => {
+      .catch((err: unknown) => {
         console.warn('Không thể nạp Parts từ API, dùng fallback danh sách chuẩn:', err);
       });
   }, []);
@@ -112,15 +116,17 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
     if (selectedPartId) {
       adminModuleService
         .getAbilities(Number(selectedPartId))
-        .then((res: any) => {
-          const list = Array.isArray(res)
-            ? res
-            : Array.isArray(res?.data)
-            ? res.data
+        .then((res) => {
+          const raw = res as unknown;
+          const responseData = raw as { data?: AbilityResponse[] };
+          const list: AbilityResponse[] = Array.isArray(raw)
+            ? (raw as AbilityResponse[])
+            : Array.isArray(responseData?.data)
+            ? responseData.data
             : [];
           setAbilities(list);
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           console.warn('Lỗi tải Năng lực theo Part:', err);
           setAbilities([]);
         });
@@ -383,47 +389,25 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
             <div className="form-row-2 thresholds-row">
               {/* Điểm đỗ */}
               <div className="threshold-box">
-                <div className="threshold-header">
-                  <label className="form-label font-bold">
-                    1. Điểm đỗ mặc định bài thi vượt ải
-                  </label>
-                  <div className="threshold-value-display">
-                    <input
-                      type="number"
-                      min="50"
-                      max="100"
-                      {...register('defaultPassScore', { valueAsNumber: true })}
-                      className="threshold-number-input"
-                    />
-                    <span className="unit">/ 100 điểm</span>
-                  </div>
-                </div>
-
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={passScoreValue || 65}
-                  onChange={(e) =>
-                    setValue('defaultPassScore', Number(e.target.value), {
-                      shouldDirty: true,
-                    })
-                  }
-                  className="threshold-slider"
-                />
-
-                <div className="slider-ticks">
-                  <span>50đ (Cơ bản)</span>
-                  <span>65đ (Chuẩn gợi ý)</span>
-                  <span>100đ (Tối đa)</span>
-                </div>
-
-                <div className="threshold-note">
-                  <Info size={13} />
-                  <span>
-                    Điểm số tối thiểu học viên cần đạt ở bài thi cuối Module để được cấp
-                    chứng nhận hoàn thành và mở khóa nội dung tiếp theo.
-                  </span>
+                <label className="form-label font-bold">
+                  1. Điểm đỗ mặc định bài thi vượt ải
+                </label>
+                <div style={{ marginTop: '0.35rem' }}>
+                  <ThresholdDropdownInput
+                    value={watch('defaultPassScore') || 65}
+                    onChange={(val) =>
+                      setValue('defaultPassScore', val, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    unit="đ"
+                    presets={SCORE_PRESETS}
+                    min={50}
+                    max={100}
+                    size="large"
+                    title="Chọn nhanh mốc điểm chuẩn bài thi"
+                  />
                 </div>
                 {errors.defaultPassScore && (
                   <p className="form-error">{errors.defaultPassScore.message}</p>
@@ -432,47 +416,25 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
 
               {/* Tỷ lệ hoàn thành bài học */}
               <div className="threshold-box">
-                <div className="threshold-header">
-                  <label className="form-label font-bold">
-                    2. Tỷ lệ bài giảng hoàn thành tối thiểu
-                  </label>
-                  <div className="threshold-value-display">
-                    <input
-                      type="number"
-                      min="50"
-                      max="100"
-                      {...register('requiredCompletionRate', { valueAsNumber: true })}
-                      className="threshold-number-input"
-                    />
-                    <span className="unit">%</span>
-                  </div>
-                </div>
-
-                <input
-                  type="range"
-                  min="50"
-                  max="100"
-                  value={completionRateValue || 80}
-                  onChange={(e) =>
-                    setValue('requiredCompletionRate', Number(e.target.value), {
-                      shouldDirty: true,
-                    })
-                  }
-                  className="threshold-slider"
-                />
-
-                <div className="slider-ticks">
-                  <span>50%</span>
-                  <span>80% (Chuẩn gợi ý)</span>
-                  <span>100%</span>
-                </div>
-
-                <div className="threshold-note">
-                  <Info size={13} />
-                  <span>
-                    Học viên phải học và hoàn thành đủ tỷ lệ phần trăm số bài giảng lý
-                    thuyết trong Module này mới được phép bắt đầu bài thi vượt ải.
-                  </span>
+                <label className="form-label font-bold">
+                  2. Tỷ lệ bài giảng hoàn thành tối thiểu
+                </label>
+                <div style={{ marginTop: '0.35rem' }}>
+                  <ThresholdDropdownInput
+                    value={watch('requiredCompletionRate') || 80}
+                    onChange={(val) =>
+                      setValue('requiredCompletionRate', val, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
+                    unit="%"
+                    presets={RATE_PRESETS}
+                    min={50}
+                    max={100}
+                    size="large"
+                    title="Chọn nhanh mốc tỷ lệ hoàn thành chuẩn"
+                  />
                 </div>
                 {errors.requiredCompletionRate && (
                   <p className="form-error">

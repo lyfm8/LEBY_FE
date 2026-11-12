@@ -31,7 +31,7 @@ export const AdminPartPage: React.FC = () => {
   const [selectedPartId, setSelectedPartId] = useState<number | null>(null);
   const [viewMode, setViewMode] = useState<ViewMode>('table');
   
-  // Lưu abilities theo partId cho TreeView (tránh gọi lại API khi đã load)
+  // Lưu abilities theo partId cho TreeView và hiển thị số lượng trên Part card
   const [abilitiesMap, setAbilitiesMap] = useState<Record<number, AbilityResponse[]>>({});
   
   const [isPartsLoading, setIsPartsLoading] = useState<boolean>(true);
@@ -49,7 +49,7 @@ export const AdminPartPage: React.FC = () => {
   const toast = useToast();
   const confirm = useConfirm();
 
-  // Fetch danh sách Parts
+  // Fetch danh sách Parts và đồng thời nạp toàn bộ Abilities để bung cây phân cấp ngay lập tức
   const fetchParts = useCallback(async () => {
     try {
       setIsPartsLoading(true);
@@ -64,6 +64,22 @@ export const AdminPartPage: React.FC = () => {
           }
           return exists ? prevId : null;
         });
+
+        // Tải trước toàn bộ Năng lực của mọi Part
+        const promises = res.data.map(async (part) => {
+          try {
+            const aRes = await adminPartService.getAbilities(part.id);
+            return { partId: part.id, abilities: aRes.data || [] };
+          } catch {
+            return { partId: part.id, abilities: [] };
+          }
+        });
+        const results = await Promise.all(promises);
+        const map: Record<number, AbilityResponse[]> = {};
+        results.forEach((r) => {
+          map[r.partId] = r.abilities;
+        });
+        setAbilitiesMap(map);
       }
     } catch (error: unknown) {
       console.error('Failed to fetch parts:', error);
@@ -84,7 +100,7 @@ export const AdminPartPage: React.FC = () => {
       const res = await adminPartService.getAbilities(partId);
       if (res.success && res.data) {
         setAbilities(res.data);
-        // Đồng bộ vào abilitiesMap cho TreeView
+        // Đồng bộ vào abilitiesMap
         setAbilitiesMap(prev => ({ ...prev, [partId]: res.data }));
       } else {
         setAbilities([]);
@@ -182,7 +198,14 @@ export const AdminPartPage: React.FC = () => {
       const res = await adminPartService.deleteAbility(id);
       if (res.success) {
         toast.success('Xóa năng lực thành công.');
-        if (selectedPartId) fetchAbilities(selectedPartId);
+        if (selectedPartId) {
+          fetchAbilities(selectedPartId);
+          // Cập nhật lại abilitiesMap
+          setAbilitiesMap(prev => ({
+            ...prev,
+            [selectedPartId]: (prev[selectedPartId] || []).filter(a => a.id !== id),
+          }));
+        }
       }
     } catch (error: unknown) {
       console.error('Delete ability failed:', error);
@@ -212,41 +235,46 @@ export const AdminPartPage: React.FC = () => {
     }
   };
 
-  const selectedPartObj = parts.find(p => p.id === selectedPartId);
+  const selectedPartObj = parts.find(p => p.id === selectedPartId) || null;
   const selectedPartName = selectedPartObj?.name;
 
   return (
     <div className="admin-page-container">
+      {/* Header chuẩn chung của hệ thống Admin */}
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Quản lý Phần thi & Năng lực (Part & Ability)</h1>
-          <p className="admin-page-subtitle">Quản lý cấu trúc các phần thi TOEIC và danh mục năng lực đánh giá tương ứng</p>
+          <p className="admin-page-subtitle">Cấu trúc phần thi chuẩn TOEIC và ma trận danh mục năng lực đánh giá tương ứng</p>
         </div>
+
         {/* Nút chuyển đổi chế độ xem: Bảng quản trị / Cây phân cấp */}
-        <div className="view-toggle-group">
+        <div className="admin-segmented-control">
           <button
             type="button"
-            className={`view-toggle-btn ${viewMode === 'table' ? 'active' : ''}`}
+            className={`segmented-btn ${viewMode === 'table' ? 'active' : ''}`}
             onClick={() => setViewMode('table')}
           >
-            <LayoutGrid size={16} /> Quản trị
+            <LayoutGrid size={15} />
+            <span>Quản trị</span>
           </button>
           <button
             type="button"
-            className={`view-toggle-btn ${viewMode === 'tree' ? 'active' : ''}`}
+            className={`segmented-btn ${viewMode === 'tree' ? 'active' : ''}`}
             onClick={() => setViewMode('tree')}
           >
-            <GitBranchPlus size={16} /> Cây phân cấp
+            <GitBranchPlus size={15} />
+            <span>Cây phân cấp</span>
           </button>
         </div>
       </div>
 
       {viewMode === 'table' ? (
-        /* Chế độ 1: Bảng quản trị (CRUD) — layout 2 cột */
+        /* Chế độ 1: Bảng quản trị (CRUD) — layout 2 cột hiện đại */
         <div className="part-layout-grid">
           <div className="part-list-col">
             <PartList 
               parts={parts} 
+              abilitiesMap={abilitiesMap}
               selectedPartId={selectedPartId} 
               onSelectPart={handleSelectPart} 
               onAddPart={handleAddPart}
@@ -259,6 +287,7 @@ export const AdminPartPage: React.FC = () => {
             <AbilityList 
               abilities={abilities}
               isLoading={isAbilitiesLoading}
+              selectedPart={selectedPartObj}
               selectedPartName={selectedPartName}
               onAdd={handleAddAbility}
               onEdit={handleEditAbility}
@@ -267,8 +296,8 @@ export const AdminPartPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        /* Chế độ 2: Cây trực quan Part → Ability */
-        <div className="ability-list-container">
+        /* Chế độ 2: Cây phân cấp Part → Ability trực quan toàn màn hình */
+        <div className="tree-page-wrapper">
           <PartAbilityTreeView
             parts={parts}
             abilitiesMap={abilitiesMap}

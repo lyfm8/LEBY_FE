@@ -3,6 +3,7 @@
  */
 
 export type ModuleType = 'THEORY' | 'PRACTICE' | 'EXAM';
+export type LessonType = 'VIDEO' | 'PRACTICE';
 export type StatusType = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
 
 export interface ModuleFilterParams {
@@ -28,6 +29,8 @@ export interface LessonResponse {
   title: string;
   orderNo: number;
   status: StatusType;
+  lessonType: LessonType;
+  durationSeconds: number;
   descriptions?: string | null;
   abilityId: number | null;
   abilityName: string | null;
@@ -78,6 +81,8 @@ export interface CreateLessonRequest {
   title: string;
   orderNo?: number;
   status: StatusType;
+  lessonType: LessonType;
+  durationSeconds?: number;
   descriptions?: string;
   audioUrl?: string;
   videoUrl?: string;

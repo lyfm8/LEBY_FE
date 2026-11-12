@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import type { ModuleResponse } from '../../types';
 import { adminModuleService } from '../../services/adminModuleService';
 import {
-  Sliders,
   Save,
   CheckCircle2,
-  Info,
   Search,
 } from 'lucide-react';
+import {
+  ThresholdDropdownInput,
+  SCORE_PRESETS,
+  RATE_PRESETS,
+} from './ThresholdDropdownInput';
 
 interface ModuleThresholdsViewProps {
   modules: ModuleResponse[];
@@ -142,20 +145,12 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
 
   return (
     <div className="editor-pane-container">
-      {/* Header */}
-      <div className="editor-pane-header">
+      {/* Header tinh gọn tối đa diện tích làm việc */}
+      <div className="editor-pane-header compact-thresholds-header">
         <div className="editor-header-left">
-          <div className="badge-type-pill text-purple">
-            <Sliders size={15} />
-            <span>Cấu hình Tham số Nghiệp vụ</span>
-          </div>
           <h1 className="editor-main-title">
-            Bảng Điều Chỉnh Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module
+            Bảng Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module
           </h1>
-          <p className="editor-subtitle">
-            Tùy biến các tham số động cho từng Mô-đun học tập. Các giá trị này được
-            áp dụng trực tiếp vào điều kiện mở thi và tiêu chuẩn vượt ải của học viên.
-          </p>
         </div>
 
         <div className="editor-header-right">
@@ -184,10 +179,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
               onChange={(e) => setKeyword(e.target.value)}
             />
           </div>
-          <div className="info-badge">
-            <Info size={14} />
-            <span>Điểm chuẩn: 50 - 100đ | Tỷ lệ bài giảng: 50% - 100%</span>
-          </div>
         </div>
 
         {/* Matrix Table */}
@@ -195,11 +186,11 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
           <table className="thresholds-table">
             <thead>
               <tr>
-                <th style={{ width: '80px' }}>Thứ tự</th>
+                <th style={{ width: '55px', textAlign: 'center' }}>Thứ tự</th>
                 <th>Tên Module & Part</th>
-                <th style={{ width: '280px' }}>Điểm đỗ bài thi vượt ải</th>
-                <th style={{ width: '280px' }}>Tỷ lệ bài học tối thiểu</th>
-                <th style={{ width: '120px', textAlign: 'center' }}>Thao tác</th>
+                <th style={{ width: '160px' }}>Điểm đỗ bài thi</th>
+                <th style={{ width: '160px' }}>Tỷ lệ bài học</th>
+                <th style={{ width: '75px', textAlign: 'center' }}>Thao tác</th>
               </tr>
             </thead>
             <tbody>
@@ -208,7 +199,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                   key={item.id}
                   className={item.isDirty ? 'row-dirty' : ''}
                 >
-                  <td className="font-semibold text-muted">
+                  <td className="font-semibold text-muted" style={{ textAlign: 'center' }}>
                     #{item.sequence}
                   </td>
 
@@ -235,60 +226,26 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
 
                   {/* Điểm đỗ */}
                   <td>
-                    <div className="threshold-inline-control">
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          min="50"
-                          max="100"
-                          value={item.defaultPassScore}
-                          onChange={(e) =>
-                            handleScoreChange(item.id, Number(e.target.value))
-                          }
-                          className="compact-number-input"
-                        />
-                        <span className="unit">/100đ</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="50"
-                        max="100"
-                        value={item.defaultPassScore}
-                        onChange={(e) =>
-                          handleScoreChange(item.id, Number(e.target.value))
-                        }
-                        className="compact-slider"
-                      />
-                    </div>
+                    <ThresholdDropdownInput
+                      value={item.defaultPassScore}
+                      onChange={(val) => handleScoreChange(item.id, val)}
+                      unit="đ"
+                      presets={SCORE_PRESETS}
+                      min={50}
+                      max={100}
+                    />
                   </td>
 
                   {/* Tỷ lệ hoàn thành */}
                   <td>
-                    <div className="threshold-inline-control">
-                      <div className="input-group">
-                        <input
-                          type="number"
-                          min="50"
-                          max="100"
-                          value={item.requiredCompletionRate}
-                          onChange={(e) =>
-                            handleRateChange(item.id, Number(e.target.value))
-                          }
-                          className="compact-number-input"
-                        />
-                        <span className="unit">%</span>
-                      </div>
-                      <input
-                        type="range"
-                        min="50"
-                        max="100"
-                        value={item.requiredCompletionRate}
-                        onChange={(e) =>
-                          handleRateChange(item.id, Number(e.target.value))
-                        }
-                        className="compact-slider"
-                      />
-                    </div>
+                    <ThresholdDropdownInput
+                      value={item.requiredCompletionRate}
+                      onChange={(val) => handleRateChange(item.id, val)}
+                      unit="%"
+                      presets={RATE_PRESETS}
+                      min={50}
+                      max={100}
+                    />
                   </td>
 
                   {/* Actions */}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { lessonFormSchema, type LessonFormValues } from '../utils/schema';
 import type { LessonResponse } from '../types';
@@ -22,11 +22,14 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
   const [abilities, setAbilities] = useState<AbilityResponse[]>([]);
 
   const form = useForm<LessonFormValues>({
-    resolver: zodResolver(lessonFormSchema),
+    // NOTE: Type assertion bắt buộc do Zod v4 + @hookform/resolvers v5 có mismatch type giữa input/output schema
+    resolver: zodResolver(lessonFormSchema) as unknown as Resolver<LessonFormValues>,
     defaultValues: {
       title: '',
       orderNo: 1,
       status: 'DRAFT',
+      lessonType: 'VIDEO',
+      durationSeconds: 0,
       abilityId: null,
       descriptions: '',
       audioUrl: '',
@@ -50,6 +53,8 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
           title: lesson.title,
           orderNo: lesson.orderNo,
           status: lesson.status,
+          lessonType: lesson.lessonType || 'VIDEO',
+          durationSeconds: lesson.durationSeconds ?? 0,
           abilityId: lesson.abilityId,
           descriptions: lesson.descriptions || '',
           audioUrl: lesson.audioUrl || '',
@@ -61,6 +66,8 @@ export const LessonFormModal: React.FC<LessonFormModalProps> = ({
           title: '',
           orderNo: 1,
           status: 'DRAFT',
+          lessonType: 'VIDEO',
+          durationSeconds: 0,
           abilityId: null,
           descriptions: '',
           audioUrl: '',
