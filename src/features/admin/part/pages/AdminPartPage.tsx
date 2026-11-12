@@ -255,7 +255,7 @@ export const AdminPartPage: React.FC = () => {
             onClick={() => setViewMode('table')}
           >
             <LayoutGrid size={15} />
-            <span>Quản trị (Chia cột)</span>
+            <span>Quản trị</span>
           </button>
           <button
             type="button"
@@ -264,7 +264,6 @@ export const AdminPartPage: React.FC = () => {
           >
             <GitBranchPlus size={15} />
             <span>Cây phân cấp</span>
-            <span className="segmented-badge">Bung toàn bộ</span>
           </button>
         </div>
       </div>
