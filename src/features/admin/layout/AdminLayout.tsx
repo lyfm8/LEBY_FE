@@ -14,7 +14,7 @@ const navItems = [
   { path: '/admin/modules', label: 'Module & Lesson', icon: <BookOpen size={20} /> },
   { path: '/admin/targets', label: 'Target Profile', icon: <Target size={20} /> },
   { path: '/admin/thresholds', label: 'Threshold & Rule', icon: <Settings size={20} /> },
-  { path: '/admin/diagnostic-tests', label: 'Diagnostic Test', icon: <FileText size={20} /> },
+  { path: '/admin/diagnostic-tests', label: 'Quản lý Đề thi', icon: <FileText size={20} /> },
 ];
 
 export const AdminLayout: React.FC = () => {

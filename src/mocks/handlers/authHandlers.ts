@@ -5,7 +5,7 @@ let currentMockUser = {
     id: 1,
     email: 'demo@leby.edu.vn',
     fullName: 'Nguyễn Hải Nam (Học viên)',
-    role: 'USER',
+    role: 'STUDENT',
     dob: '2001-08-15',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
 };
@@ -36,7 +36,7 @@ export const authHandlers = [
             id: isAdmin ? 1 : 2,
             email: email,
             fullName: isAdmin ? 'Võ Hoàng Quân (Admin)' : 'Nguyễn Hải Nam (Học viên)',
-            role: isAdmin ? 'ADMIN' : 'USER',
+            role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         };
@@ -57,7 +57,7 @@ export const authHandlers = [
             id: isAdmin ? 1 : 2,
             email: email,
             fullName: isAdmin ? 'Võ Hoàng Quân (Admin)' : 'Nguyễn Hải Nam (Học viên)',
-            role: isAdmin ? 'ADMIN' : 'USER',
+            role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
         };
