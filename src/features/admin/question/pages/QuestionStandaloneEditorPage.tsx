@@ -54,16 +54,6 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
     const { parts, abilities, selectedPart, isLoadingParts, isLoadingAbilities } =
         usePartAbilityOptions(partId);
 
-    // Tự động điều chỉnh số lượng đáp án khi đổi Part (ví dụ Part 2 chỉ có 3 đáp án A, B, C)
-    useEffect(() => {
-        if (selectedPart?.name?.toLowerCase().includes('part 2')) {
-            if (options.length > 3) {
-                setOptions(options.slice(0, 3));
-                if (correctKey === 'D') setCorrectKey('A');
-            }
-        }
-    }, [selectedPart, options, correctKey]);
-
     // Load data khi ở chế độ Edit
     useEffect(() => {
         if (!id) return;
@@ -353,6 +343,12 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
                                         const val = e.target.value ? Number(e.target.value) : undefined;
                                         setPartId(val);
                                         setAbilityIds([]);
+                                        // Gợi ý mặc định 3 đáp án khi chọn Part 2, vẫn cho phép người dùng đổi 3 hoặc 4 đáp án
+                                        const pickedPart = parts.find((p) => p.id === val);
+                                        if (pickedPart?.name?.toLowerCase().includes('part 2') && options.length > 3) {
+                                            setOptions(options.slice(0, 3));
+                                            if (correctKey.toUpperCase() === 'D') setCorrectKey('A');
+                                        }
                                     }}
                                     disabled={isLoadingParts}
                                     required

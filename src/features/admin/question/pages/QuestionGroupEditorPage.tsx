@@ -113,12 +113,15 @@ export const QuestionGroupEditorPage: React.FC = () => {
                                 id: it.id,
                                 name: it.name || '',
                                 text: it.text || '',
-                                options: it.options || [
-                                    { key: 'A', text: '' },
-                                    { key: 'B', text: '' },
-                                    { key: 'C', text: '' },
-                                    { key: 'D', text: '' },
-                                ],
+                                options:
+                                    it.options && it.options.length > 0
+                                        ? it.options
+                                        : [
+                                              { key: 'A', text: '' },
+                                              { key: 'B', text: '' },
+                                              { key: 'C', text: '' },
+                                              { key: 'D', text: '' },
+                                          ],
                                 correctKey: it.correctKey || 'A',
                                 abilityIds: it.abilities?.map((a) => a.abilityId) || [],
                                 difficulty: it.difficulty || 3,
@@ -188,10 +191,18 @@ export const QuestionGroupEditorPage: React.FC = () => {
         setExpandedItemIndex(targetIndex);
     };
 
-    const handleUpdateItem = (index: number, field: keyof QuestionGroupItem, value: any) => {
-        const next = [...items];
-        next[index] = { ...next[index], [field]: value };
-        setItems(next);
+    /**
+     * Cập nhật một trường dữ liệu của câu hỏi con bằng functional updater
+     * để tránh mất cập nhật khi đổi số lượng đáp án và đáp án đúng cùng lúc.
+     */
+    const handleUpdateItem = <K extends keyof QuestionGroupItem>(
+        index: number,
+        field: K,
+        value: QuestionGroupItem[K]
+    ) => {
+        setItems((prev) =>
+            prev.map((item, idx) => (idx === index ? { ...item, [field]: value } : item))
+        );
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -211,7 +222,7 @@ export const QuestionGroupEditorPage: React.FC = () => {
             return;
         }
 
-        // Validate từng câu con
+        // Validate từng câu con (cho phép 3 hoặc 4 phương án trả lời)
         for (let i = 0; i < items.length; i++) {
             const it = items[i];
             if (!it.name.trim()) {
@@ -221,6 +232,11 @@ export const QuestionGroupEditorPage: React.FC = () => {
             }
             if (it.abilityIds.length === 0) {
                 setFormError(`Câu hỏi con thứ ${i + 1} chưa được gán kỹ năng (Ability)`);
+                setExpandedItemIndex(i);
+                return;
+            }
+            if (it.options.length < 3 || it.options.length > 4) {
+                setFormError(`Câu hỏi con thứ ${i + 1} phải có từ 3 đến 4 phương án trả lời`);
                 setExpandedItemIndex(i);
                 return;
             }
@@ -441,7 +457,7 @@ export const QuestionGroupEditorPage: React.FC = () => {
                                     Danh sách câu hỏi con ({items.length}/5 câu)
                                 </h3>
                                 <p style={{ margin: '0.2rem 0 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
-                                    Mỗi câu hỏi con có nội dung, 4 phương án, đáp án đúng và kỹ năng riêng.
+                                    Mỗi câu hỏi con có nội dung, 3 hoặc 4 phương án trả lời, đáp án đúng và kỹ năng riêng.
                                 </p>
                             </div>
 
@@ -486,7 +502,7 @@ export const QuestionGroupEditorPage: React.FC = () => {
                                                         {item.name || `Câu hỏi con #${idx + 1}`}
                                                     </div>
                                                     <div style={{ fontSize: '0.75rem', color: '#6b7280' }}>
-                                                        {item.text || 'Chưa nhập đề bài'} · Đáp án đúng:{' '}
+                                                        {item.text || 'Chưa nhập đề bài'} · {item.options.length} đáp án · Đáp án đúng:{' '}
                                                         <span style={{ fontWeight: 700, color: '#15803d' }}>
                                                             ({item.correctKey})
                                                         </span>
@@ -597,7 +613,7 @@ export const QuestionGroupEditorPage: React.FC = () => {
                                                     />
                                                 </div>
 
-                                                {/* Các phương án của câu con */}
+                                                {/* Các phương án của câu con (cho phép 3 hoặc 4 đáp án) */}
                                                 <OptionsEditor
                                                     options={item.options}
                                                     correctKey={item.correctKey}
@@ -607,7 +623,7 @@ export const QuestionGroupEditorPage: React.FC = () => {
                                                     onCorrectKeyChange={(key) =>
                                                         handleUpdateItem(idx, 'correctKey', key)
                                                     }
-                                                    allow3Options={false}
+                                                    allow3Options={true}
                                                 />
 
                                                 {/* Kỹ năng riêng của câu con */}

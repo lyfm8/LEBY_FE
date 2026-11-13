@@ -1,12 +1,17 @@
 .admin-layout-container {
   display: flex;
   height: 100vh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
   background-color: #f9fafb;
 }
 
 /* SIDEBAR: Dark Navy */
 .admin-sidebar {
   width: 256px;
+  flex-shrink: 0;
+  height: 100%;
   background-color: #111827; /* Dark navy */
   color: #9ca3af; /* Light gray text */
   display: flex;
@@ -177,23 +182,50 @@
 }
 
 .admin-main-content {
-  flex: 1;
-  height: 100vh;
-  overflow: hidden;
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 100%;
+  max-height: 100vh;
+  max-height: 100dvh;
+  overflow-y: scroll;
+  overflow-x: hidden;
   background-color: #f9fafb;
-  padding: 1.25rem 1.75rem;
+  padding: 1.25rem 1.75rem 5rem 1.75rem;
   display: flex;
   flex-direction: column;
   min-height: 0;
   box-sizing: border-box;
+  scroll-behavior: smooth;
+  scrollbar-gutter: stable;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 #f1f5f9;
+}
+
+/* Tùy chỉnh thanh cuộn Webkit (Chrome, Edge, Safari) luôn hiển thị rõ nét */
+.admin-main-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.admin-main-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.admin-main-content::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 6px;
+  border: 2px solid #f1f5f9;
+}
+
+.admin-main-content::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
 
 .admin-content-wrapper {
-  flex: 1 1 0%;
-  height: 100%;
-  min-height: 0;
+  flex: 1 0 auto;
+  min-height: min-content;
   display: flex;
   flex-direction: column;
+  padding-bottom: 2rem;
 }
 
 /* =========================================

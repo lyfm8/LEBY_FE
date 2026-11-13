@@ -11,6 +11,10 @@ interface OptionsEditorProps {
     allow3Options?: boolean;
 }
 
+/**
+ * Component biên soạn danh sách phương án trả lời (3 hoặc 4 đáp án A–C / A–D)
+ * và chọn đáp án đúng cho câu hỏi đơn hoặc câu hỏi con trong chùm.
+ */
 export const OptionsEditor: React.FC<OptionsEditorProps> = ({
     options,
     correctKey,
@@ -27,19 +31,23 @@ export const OptionsEditor: React.FC<OptionsEditorProps> = ({
     const handleSetOptionCount = (count: 3 | 4) => {
         if (count === 3 && options.length > 3) {
             const next = options.slice(0, 3);
-            if (correctKey === 'D') {
+            if (correctKey.toUpperCase() === 'D') {
                 onCorrectKeyChange('A');
             }
             onOptionsChange(next);
         } else if (count === 4 && options.length < 4) {
-            const next = [...options, { key: 'D', text: '' }];
+            const keys = ['A', 'B', 'C', 'D'];
+            const next = [...options];
+            while (next.length < 4) {
+                next.push({ key: keys[next.length], text: '' });
+            }
             onOptionsChange(next);
         }
     };
 
     return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                 <label className="form-label" style={{ fontWeight: 600, color: '#111827', margin: 0 }}>
                     Phương án trả lời <span style={{ color: '#dc2626' }}>*</span>
                 </label>
@@ -60,7 +68,7 @@ export const OptionsEditor: React.FC<OptionsEditorProps> = ({
                             }}
                             onClick={() => handleSetOptionCount(3)}
                         >
-                            3 đáp án (Part 2)
+                            3 đáp án (A–C)
                         </button>
                         <button
                             type="button"
@@ -77,7 +85,7 @@ export const OptionsEditor: React.FC<OptionsEditorProps> = ({
                             }}
                             onClick={() => handleSetOptionCount(4)}
                         >
-                            4 đáp án (Part 1, 5, 6, 7)
+                            4 đáp án (A–D)
                         </button>
                     </div>
                 )}

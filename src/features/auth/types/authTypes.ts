@@ -41,7 +41,7 @@ export interface LoginRequest {
 /**
  * Phân quyền tài khoản trong hệ thống LEBY (khớp với ERole bên Backend).
  */
-export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN' | 'USER' | 'STAFF';
+export type UserRole = 'STUDENT' | 'TEACHER' | 'ADMIN';
 
 /**
  * Thông tin học viên / người dùng đã xác thực thành công.

@@ -66,7 +66,7 @@ function AppRoutes() {
                 <Route
                     path="/dashboard"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -74,7 +74,7 @@ function AppRoutes() {
                 <Route
                     path="/home"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -82,7 +82,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-path"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LearningPathPage />
                         </AuthGuard>
                     }
@@ -90,7 +90,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleDetailPage />
                         </AuthGuard>
                     }
@@ -100,7 +100,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/lessons/:lessonId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LessonRoomPage />
                         </AuthGuard>
                     }
@@ -110,7 +110,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestRoomPage />
                         </AuthGuard>
                     }
@@ -118,7 +118,7 @@ function AppRoutes() {
                                 <Route
                     path="/results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -126,7 +126,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -134,7 +134,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -142,7 +142,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -150,7 +150,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/review/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestReviewPage />
                         </AuthGuard>
                     }
@@ -160,7 +160,7 @@ function AppRoutes() {
                 <Route
                     path="/profile"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN', 'USER', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ProfilePage />
                         </AuthGuard>
                     }
