@@ -1,29 +1,38 @@
 import { z } from 'zod';
 
-export const partThresholdSchema = z.object({
-  partId: z.number({ message: 'Vui lòng chọn Part' }).min(1, 'Vui lòng chọn Part'),
-  targetProfileId: z.number({ message: 'Vui lòng chọn Mục tiêu AIM' }).min(1, 'Vui lòng chọn Mục tiêu AIM'),
-  passThreshold: z.number().min(0).max(100),
-  confirmThreshold: z.number().min(0).max(100),
-  weakThreshold: z.number().min(0).max(100),
-}).refine(data => data.weakThreshold < data.confirmThreshold, {
-  message: 'Ngưỡng Yếu phải nhỏ hơn ngưỡng Xác nhận',
-  path: ['weakThreshold']
-}).refine(data => data.confirmThreshold < data.passThreshold, {
-  message: 'Ngưỡng Xác nhận phải nhỏ hơn ngưỡng Pass',
-  path: ['confirmThreshold']
+/**
+ * Validation schema cho từng dòng Ngưỡng Part (A08).
+ * Quy tắc: 0 <= confirmingScore < passScore <= 100
+ */
+export const partThresholdRowSchema = z
+  .object({
+    partId: z.number().min(1, 'Part không hợp lệ'),
+    passScore: z
+      .number({ message: 'Vui lòng nhập số' })
+      .min(0, 'Ngưỡng Đạt chuẩn tối thiểu 0%')
+      .max(100, 'Ngưỡng Đạt chuẩn tối đa 100%'),
+    confirmingScore: z
+      .number({ message: 'Vui lòng nhập số' })
+      .min(0, 'Ngưỡng Cận chuẩn tối thiểu 0%')
+      .max(100, 'Ngưỡng Cận chuẩn tối đa 100%'),
+  })
+  .refine((data) => data.confirmingScore < data.passScore, {
+    message: 'Ngưỡng Cận chuẩn (Confirm) phải nhỏ hơn Ngưỡng Đạt chuẩn (Pass)',
+    path: ['confirmingScore'],
+  });
+
+export type PartThresholdRowValues = z.infer<typeof partThresholdRowSchema>;
+
+/**
+ * Validation schema cho từng dòng Quy tắc Năng lực (A10).
+ * Quy tắc: 0 < stableMin <= 100
+ */
+export const abilityRuleRowSchema = z.object({
+  abilityId: z.number().min(1, 'Năng lực không hợp lệ'),
+  stableMin: z
+    .number({ message: 'Vui lòng nhập số' })
+    .min(1, 'Ngưỡng tối thiểu là 1%')
+    .max(100, 'Ngưỡng tối đa là 100%'),
 });
 
-export type PartThresholdFormValues = z.infer<typeof partThresholdSchema>;
-
-export const abilityRuleSchema = z.object({
-  abilityId: z.number({ message: 'Vui lòng chọn Năng lực' }).min(1, 'Vui lòng chọn Năng lực'),
-  stableThreshold: z.number().min(0).max(100),
-  developingThreshold: z.number().min(0).max(100),
-  status: z.enum(['DRAFT', 'PUBLISHED']),
-}).refine(data => data.developingThreshold < data.stableThreshold, {
-  message: 'Ngưỡng Đang phát triển phải nhỏ hơn ngưỡng Ổn định',
-  path: ['developingThreshold']
-});
-
-export type AbilityRuleFormValues = z.infer<typeof abilityRuleSchema>;
+export type AbilityRuleRowValues = z.infer<typeof abilityRuleRowSchema>;
