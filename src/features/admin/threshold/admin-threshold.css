@@ -1,45 +1,721 @@
-/* Threshold Page Layout */
+/* ==========================================================================
+   LEBY - Module Cấu hình Ngưỡng & Quy tắc Đánh giá (A08 & A10)
+   Thiết kế giao diện hiện đại: Chuỗi tuần tự phân đoạn thời gian thực
+   2 bảng song song, không ngắt dòng, ô nhập liệu rộng rãi không bị lấn chữ số
+   ========================================================================== */
 
-.threshold-grid {
-  display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: 1.5rem;
+.admin-threshold-container {
+  padding: 1.5rem 2rem 2.5rem;
+  max-width: 1720px;
+  margin: 0 auto;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
-@media (min-width: 1280px) {
-  .threshold-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.threshold-table-header {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f3f4f6;
+/* 1. Header Trang */
+.threshold-page-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 1.25rem;
+  gap: 1.5rem;
+}
+
+.header-text-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.header-action-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
   flex-shrink: 0;
-  background-color: #ffffff;
 }
 
-/* Modals */
-.settings-box {
-  background-color: #ffedd5;
-  padding: 1rem;
-  border-radius: 0.375rem;
-  border: 1px solid #fdba74;
-}
-.settings-box.green {
-  background-color: #f0fdf4;
-  border-color: #dcfce7;
+.header-main-title {
+  font-size: 1.625rem;
+  font-weight: 800;
+  color: #111827;
+  letter-spacing: -0.025em;
+  margin: 0 0 0.375rem 0;
 }
 
-.settings-box h4 {
+.header-sub-title {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0;
+  max-width: 720px;
+}
+
+/* 2. Thanh Chọn AIM */
+.aim-selector-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.875rem;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 1.25rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  gap: 1rem;
+}
+
+.aim-tabs-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  flex-wrap: wrap;
+}
+
+.aim-selector-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #4b5563;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.aim-pill-group {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.aim-pill-btn {
+  padding: 0.45rem 1.125rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
   font-weight: 600;
-  color: #c2410c;
-  margin: 0 0 0.75rem 0;
+  border: 1px solid #e5e7eb;
+  background-color: #f9fafb;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.aim-pill-btn:hover {
+  background-color: #f3f4f6;
+  color: #111827;
+}
+
+.aim-pill-btn.is-active {
+  background-color: #ea580c;
+  color: #ffffff;
+  border-color: #ea580c;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+}
+
+/* 3. Banners thông báo Lỗi và Thành công */
+.backend-errors-alert {
+  display: flex;
+  gap: 0.875rem;
+  background-color: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.2s ease-in;
+}
+
+.backend-errors-alert .alert-icon {
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+}
+
+.backend-errors-alert h4 {
+  margin: 0 0 0.375rem 0;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.backend-errors-alert ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.8125rem;
+  line-height: 1.5;
+}
+
+.success-toast-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  background-color: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  padding: 0.75rem 1.25rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 2px 5px rgba(4, 120, 87, 0.08);
+  animation: fadeIn 0.2s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 4. Layout 2 Cột Song Song Luôn Hiển Thị */
+.threshold-main-layout,
+.threshold-main-layout.view-always-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  align-items: start;
+  width: 100%;
+}
+
+@media (max-width: 1024px) {
+  .threshold-main-layout,
+  .threshold-main-layout.view-always-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Card Panel Container */
+.threshold-card-panel {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
+  padding: 1.125rem 1.375rem;
+  border-bottom: 1px solid #f3f4f6;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.panel-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.panel-icon-badge {
+  width: 38px;
+  height: 38px;
+  border-radius: 0.625rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.panel-icon-badge.primary {
+  background-color: #fff7ed;
+  color: #ea580c;
+}
+
+.panel-icon-badge.success {
+  background-color: #ecfdf5;
+  color: #059669;
+}
+
+.panel-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.panel-subtitle {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0.125rem 0 0 0;
+}
+
+/* Bộ lọc & Tìm kiếm Ability */
+.panel-filters-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-input-wrap {
+  position: relative;
+  flex: 1;
+  min-width: 180px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #9ca3af;
+}
+
+.ability-search-input {
+  width: 100%;
+  padding: 0.45rem 0.75rem 0.45rem 2.25rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+  box-sizing: border-box;
+  outline: none;
+  transition: all 0.15s;
+}
+
+.ability-search-input:focus {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.12);
+}
+
+.filter-pill-group {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.filter-pill-btn {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  border: 1px solid #e5e7eb;
+  background-color: #ffffff;
+  color: #4b5563;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-pill-btn:hover {
+  background-color: #f9fafb;
+}
+
+.filter-pill-btn.is-active {
+  background-color: #111827;
+  color: #ffffff;
+  border-color: #111827;
+}
+
+/* 5. Danh sách dòng (Rows List) */
+.part-rows-list,
+.ability-rows-list {
+  display: flex;
+  flex-direction: column;
+  padding: 1rem 1.25rem;
+  gap: 0.75rem;
+  max-height: 700px;
+  overflow-y: auto;
+}
+
+.part-flow-row,
+.ability-flow-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1.125rem;
+  gap: 1.25rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.part-flow-row:hover,
+.ability-flow-row:hover {
+  border-color: #cbd5e1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.part-flow-row.has-error,
+.ability-flow-row.has-error {
+  border-color: #fca5a5;
+  background-color: #fffaf0;
+}
+
+/* Khối thông tin Part & Ability (Luôn nằm ở cột bên trái) */
+.part-meta-block {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.part-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 0.5rem;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 800;
+  font-size: 0.8125rem;
+  flex-shrink: 0;
+}
+
+.part-text-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.part-name {
+  font-weight: 700;
+  font-size: 0.875rem;
+  color: #0f172a;
+  word-break: break-word;
+}
+
+.part-section-chip {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.ability-meta-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.ability-header-badges {
+  display: flex;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.ability-part-tag {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.1rem 0.375rem;
+  background-color: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 0.25rem;
+}
+
+.ability-section-tag {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  padding: 0.1rem 0.375rem;
+  background-color: #f1f5f9;
+  color: #475569;
+  border-radius: 0.25rem;
+}
+
+.ability-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.ability-desc {
+  font-size: 0.72rem;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+/* 6. Chuỗi Tuần Tự (Luôn nằm cố định đồng loạt ở cột bên phải) */
+.threshold-flow-sequence {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  justify-self: end;
+}
+
+/* Đặc thù Ability: Giữ nguyên vẹn 2 mức trên đúng 1 dòng (STABLE - input - WEAK) */
+.threshold-flow-sequence.is-single-line {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: nowrap;
+  flex-shrink: 0;
+  justify-self: end;
+}
+
+.flow-node {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.35rem 0.25rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.flow-node.node-pass,
+.flow-node.node-stable {
+  background-color: #f0fdf4;
+  border-color: #bbf7d0;
+}
+
+.flow-node.node-confirm {
+  background-color: #fffbeb;
+  border-color: #fde68a;
+}
+
+.flow-node.node-weak {
+  background-color: #fff1f2;
+  border-color: #fecdd3;
+  padding-right: 0.5rem;
+}
+
+.flow-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 800;
+  padding: 0.15rem 0.45rem;
+  border-radius: 0.25rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: default;
+  line-height: 1.2;
+}
+
+.flow-badge.badge-pass {
+  min-width: 44px;
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.flow-badge.badge-stable {
+  min-width: 52px;
+  background-color: #d1fae5;
+  color: #047857;
+}
+
+.flow-badge.badge-confirm {
+  min-width: 58px;
+  background-color: #fef3c7;
+  color: #b45309;
+}
+
+.flow-badge.badge-weak {
+  min-width: 44px;
+  background-color: #ffe4e6;
+  color: #be123c;
+}
+
+.flow-input-wrap {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Ô input điểm số: Rộng rãi, không bị đè số, không bị spinner trình duyệt che */
+.flow-number-input {
+  width: 66px;
+  height: 32px;
+  padding: 0 1.35rem 0 0.5rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-align: right;
+  background-color: #ffffff;
+  color: #0f172a;
+  outline: none;
+  box-sizing: border-box;
+  transition: all 0.15s;
+}
+
+/* Ẩn các nút tăng giảm mặc định để số không bị co ép */
+.flow-number-input::-webkit-outer-spin-button,
+.flow-number-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.flow-number-input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.flow-number-input:focus {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2);
+}
+
+.unit-symbol {
+  position: absolute;
+  right: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #64748b;
+  pointer-events: none;
+}
+
+.flow-result-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 58px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #be123c;
+  background-color: #ffffff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  border: 1px dashed #fecdd3;
+  white-space: nowrap;
+}
+
+.flow-arrow {
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+
+/* Thông báo lỗi dòng: Luôn nằm full chiều ngang dưới hàng khi có lỗi */
+.row-logic-error {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin-top: 0.375rem;
+  padding-top: 0.375rem;
+  border-top: 1px dashed #fecaca;
+}
+
+.empty-filter-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: #9ca3af;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.875rem;
 }
-.settings-box.green h4 {
-  color: #166534;
+
+/* 7. Chú thích chân trang (Panel Legend) */
+.panel-footer-legend {
+  padding: 0.75rem 1.25rem;
+  background-color: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+  color: #475569;
+}
+
+.legend-bullet {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legend-bullet.red { background-color: #f43f5e; }
+.legend-bullet.amber { background-color: #f59e0b; }
+.legend-bullet.green { background-color: #10b981; }
+
+/* 8. Nút Lưu cấu hình & Chỉ báo Thay đổi (Header Action) */
+.dirty-indicator-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.875rem;
+  background-color: #fffbeb;
+  color: #b45309;
+  border: 1px solid #fef3c7;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pulsing-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: #f59e0b;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.25);
+  animation: pulse 1.8s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(245, 158, 11, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(245, 158, 11, 0); }
+}
+
+.btn-save-batch {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.75rem;
+  background-color: #ea580c;
+  color: #ffffff;
+  border: none;
+  border-radius: 0.625rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(234, 88, 12, 0.35);
+  transition: all 0.15s;
+}
+
+.btn-save-batch:hover:not(:disabled) {
+  background-color: #c2410c;
+  box-shadow: 0 4px 10px rgba(194, 65, 12, 0.45);
+  transform: translateY(-1px);
+}
+
+.btn-save-batch:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* 9. Loading Spinner */
+.threshold-loading-skeleton {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6rem 1rem;
+  gap: 1rem;
+  color: #64748b;
+  font-size: 0.9375rem;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f1f5f9;
+  border-top-color: #ea580c;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
