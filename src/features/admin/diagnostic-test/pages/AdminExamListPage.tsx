@@ -74,7 +74,7 @@ export const AdminExamListPage: React.FC = () => {
           setTotalPages(res.pagination.totalPages);
         }
       }
-    } catch (err: unknown) {
+    } catch {
       toast.error('Không thể tải danh sách đề thi');
     } finally {
       setLoading(false);
