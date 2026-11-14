@@ -1,89 +1,24 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import React from 'react';
 import { ChevronLeft, Clock, HelpCircle, Headphones, BookOpen, CheckCircle2, Archive, ArrowLeft } from 'lucide-react';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { useToast, useConfirm } from '@/core/ui';
-import type { ExamDetail } from '../types';
-import { adminExamService } from '../services/adminExamService';
+import { useExamDetail } from '../hooks/useExamDetail';
 import '../admin-exam.css';
 
 /**
  * Màn hình 3: Xem chi tiết bộ đề thi và danh sách câu hỏi.
+ * Presentational Component: Chỉ render UI, toàn bộ state & actions được quản lý bởi useExamDetail.
  */
 export const AdminExamDetailPage: React.FC = () => {
-  const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
-  const { user } = useAuth();
-  const toast = useToast();
-  const confirm = useConfirm();
-  const isAdmin = user?.role === 'ADMIN';
-
-  const [exam, setExam] = useState<ExamDetail | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [selectedPartFilter, setSelectedPartFilter] = useState<number | 'ALL'>('ALL');
-
-  const fetchExamDetail = useCallback(async () => {
-    if (!id) return;
-    setLoading(true);
-    try {
-      const res = await adminExamService.getById(Number(id));
-      if (res.data) {
-        setExam(res.data);
-      }
-    } catch {
-      toast.error('Không thể tải chi tiết đề thi');
-    } finally {
-      setLoading(false);
-    }
-  }, [id, toast]);
-
-  useEffect(() => {
-    fetchExamDetail();
-  }, [fetchExamDetail]);
-
-  const isDiagnosticRoute = window.location.pathname.includes('/diagnostic-tests');
-  const handleNavigateBack = () => navigate(isDiagnosticRoute ? '/admin/diagnostic-tests' : '/admin/exams');
-
-  const handleActivate = async () => {
-    if (!exam) return;
-    const isConfirmed = await confirm({
-      title: 'Xác nhận kích hoạt đề thi',
-      message: 'Nếu đây là đề thi chẩn đoán, đề thi đang kích hoạt trước đó sẽ tự động chuyển sang lưu trữ (Archive). Bạn có chắc chắn muốn kích hoạt đề thi này?',
-      confirmText: 'Kích hoạt ngay',
-      cancelText: 'Hủy',
-    });
-
-    if (!isConfirmed) return;
-
-    try {
-      await adminExamService.activate(exam.id);
-      toast.success('Kích hoạt đề thi thành công');
-      fetchExamDetail();
-    } catch (err: unknown) {
-      const errorMsg = (err as { message?: string })?.message || 'Kích hoạt thất bại';
-      toast.error(errorMsg);
-    }
-  };
-
-  const handleArchive = async () => {
-    if (!exam) return;
-    const isConfirmed = await confirm({
-      title: 'Lưu trữ đề thi',
-      message: 'Học viên sẽ không thể bắt đầu làm bài mới từ đề thi này. Bạn có chắc chắn muốn lưu trữ?',
-      confirmText: 'Lưu trữ',
-      cancelText: 'Hủy',
-    });
-
-    if (!isConfirmed) return;
-
-    try {
-      await adminExamService.archive(exam.id);
-      toast.success('Lưu trữ đề thi thành công');
-      fetchExamDetail();
-    } catch {
-      toast.error('Thao tác thất bại');
-    }
-  };
+  const {
+    exam,
+    loading,
+    selectedPartFilter,
+    setSelectedPartFilter,
+    filteredQuestions,
+    isAdmin,
+    handleNavigateBack,
+    handleActivate,
+    handleArchive,
+  } = useExamDetail();
 
   if (loading) {
     return (
@@ -98,17 +33,13 @@ export const AdminExamDetailPage: React.FC = () => {
       <div className="exam-page-container" style={{ textAlign: 'center', padding: '60px', color: '#DC2626' }}>
         Không tìm thấy đề thi yêu cầu.
         <div style={{ marginTop: '16px' }}>
-          <button type="button" className="btn-outline-gray" onClick={() => navigate('/admin/exams')}>
+          <button type="button" className="btn-outline-gray" onClick={handleNavigateBack}>
             Quay lại danh sách
           </button>
         </div>
       </div>
     );
   }
-
-  const filteredQuestions = selectedPartFilter === 'ALL'
-    ? exam.questions
-    : exam.questions.filter((q) => q.partNumber === selectedPartFilter);
 
   return (
     <div className="exam-page-container">
