@@ -5,10 +5,9 @@
    ========================================================================== */
 
 .admin-threshold-container {
-  padding: 1.5rem 2rem 2.5rem;
-  max-width: 1720px;
-  margin: 0 auto;
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   box-sizing: border-box;
 }
 

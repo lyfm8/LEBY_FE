@@ -143,7 +143,7 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
                                         </td>
 
                                         {/* Mã & Tên & Nội dung tóm tắt */}
-                                        <td style={{ maxWidth: '380px' }}>
+                                        <td>
                                             <div className="question-meta-row">
                                                 <span className={`code-pill ${isGroup ? 'group' : 'standalone'}`}>
                                                     {isGroup ? `G-${q.id}` : `Q-${q.id}`}
