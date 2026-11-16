@@ -239,3 +239,104 @@ export type EditorActiveView =
   | { type: 'LESSON_EDIT'; lessonId: number; moduleId: number }
   | { type: 'LESSON_CREATE'; moduleId: number }
   | { type: 'MODULE_TEST'; moduleId: number };
+
+/**
+ * Phương thức thiết lập bộ câu hỏi cho Bài thi vượt ải mô-đun.
+ */
+export type ModuleTestSelectionMode = 'MANUAL' | 'RANDOM_BY_ABILITY';
+
+/**
+ * Dòng tổng quan trạng thái Bài thi vượt ải của từng mô-đun trên trang danh sách.
+ */
+export interface ModuleTestOverviewItem {
+  moduleId: number;
+  moduleTitle: string;
+  sequence: number;
+  moduleStatus: StatusType;
+  partId: number | null;
+  partName: string | null;
+  abilityIds: number[];
+  abilityNames: string[];
+  totalLessons: number;
+  totalVideoLessons: number;
+  defaultPassScore: number;
+  requiredCompletionRate: number;
+  durationMinutes: number;
+  questionCount: number;
+  currentQuestionCount: number;
+  shuffleQuestions: boolean;
+  selectionMode: ModuleTestSelectionMode;
+  hasTestConfigured: boolean;
+  hasNoLessonsWarning: boolean;
+}
+
+/**
+ * Một câu hỏi đã gắn vào danh sách Bài thi vượt ải mô-đun.
+ */
+export interface ModuleTestQuestionItem {
+  id: number | null;
+  questionId: number;
+  orderNo: number;
+  points: number;
+  questionName: string;
+  questionSummary: string;
+  questionType: string;
+  partId: number | null;
+  partName: string | null;
+  section: SectionType | null;
+  difficulty: number | null;
+  parentId: number | null;
+  parentName: string | null;
+  abilityIds: number[];
+  abilityNames: string[];
+  isMatchingAbility: boolean;
+  hasAttemptHistory: boolean;
+}
+
+/**
+ * Chi tiết cấu hình Bài thi vượt ải của một mô-đun.
+ */
+export interface ModuleTestConfigDetail {
+  moduleId: number;
+  moduleTitle: string;
+  sequence: number;
+  moduleStatus: StatusType;
+  partId: number | null;
+  partName: string | null;
+  section: SectionType | null;
+  abilityIds: number[];
+  abilityNames: string[];
+  totalLessons: number;
+  totalVideoLessons: number;
+  defaultPassScore: number;
+  requiredCompletionRate: number;
+  durationMinutes: number;
+  questionCount: number;
+  currentQuestionCount: number;
+  shuffleQuestions: boolean;
+  selectionMode: ModuleTestSelectionMode;
+  availableAbilityQuestionCount: number;
+  hasTestConfigured: boolean;
+  hasNoLessonsWarning: boolean;
+  questions: ModuleTestQuestionItem[];
+}
+
+/**
+ * Payload gửi lên Backend khi lưu cấu hình Bài thi vượt ải mô-đun.
+ */
+export interface SaveModuleTestConfigRequest {
+  durationMinutes: number;
+  questionCount: number;
+  shuffleQuestions: boolean;
+  selectionMode: ModuleTestSelectionMode;
+  questionIds?: number[];
+  confirmMismatchAbility?: boolean;
+}
+
+/**
+ * Payload gửi lên Backend khi tự động bốc ngẫu nhiên câu hỏi theo năng lực mô-đun.
+ */
+export interface AutoSelectModuleTestQuestionsRequest {
+  questionCount: number;
+  onlyMatchingAbilities?: boolean;
+}

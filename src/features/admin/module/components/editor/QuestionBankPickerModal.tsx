@@ -44,6 +44,12 @@ interface QuestionBankPickerModalProps {
   existingQuestionIds: Set<number>;
   // Callback trả danh sách câu hỏi vừa chọn (đã bóc tách câu con nếu là chùm) về Tab 3
   onConfirmSelect: (newQuestions: PracticeQuestionResponse[]) => void;
+  // Tùy chọn tùy biến phụ đề Modal khi tái sử dụng cho Bài thi vượt ải
+  modalSubtitle?: string;
+  // Tùy chọn tùy biến nhãn nút xác nhận thêm
+  confirmLabel?: string;
+  // Tập tên năng lực của mô-đun để gắn nhãn phân biệt câu đúng/ngoài năng lực (tùy chọn)
+  targetAbilityNames?: string[];
 }
 
 /**
@@ -58,6 +64,9 @@ export const QuestionBankPickerModal: React.FC<QuestionBankPickerModalProps> = (
   abilities,
   existingQuestionIds,
   onConfirmSelect,
+  modalSubtitle,
+  confirmLabel,
+  targetAbilityNames,
 }) => {
   // Hook hiển thị thông báo Toast khi có lỗi bóc tách chùm câu hỏi
   const toast = useToast();
@@ -224,7 +233,7 @@ export const QuestionBankPickerModal: React.FC<QuestionBankPickerModalProps> = (
           <div>
             <h3 className="pq-modal-title">Chọn câu hỏi từ Ngân hàng câu hỏi</h3>
             <p className="pq-modal-subtitle">
-              Tìm lọc theo Part, Năng lực hoặc Độ khó để thêm vào bài học.
+              {modalSubtitle ?? 'Tìm lọc theo Part, Năng lực hoặc Độ khó để thêm vào bài học.'}
             </p>
           </div>
           {/* Nút đóng Modal */}
@@ -371,6 +380,13 @@ export const QuestionBankPickerModal: React.FC<QuestionBankPickerModalProps> = (
                         {isAlreadyAttached && (
                           <span className="pq-badge pq-badge-attached">Đã gắn</span>
                         )}
+                        {/* Nhãn cảnh báo nhẹ nếu câu hỏi nằm ngoài năng lực của mô-đun đang cấu hình */}
+                        {targetAbilityNames &&
+                          targetAbilityNames.length > 0 &&
+                          (item.abilityNames ?? []).length > 0 &&
+                          !(item.abilityNames ?? []).some((ab) => targetAbilityNames.includes(ab)) && (
+                            <span className="pq-badge mt-badge-mismatch">Ngoài năng lực mô-đun</span>
+                          )}
                       </div>
 
                       {/* Đoạn tóm tắt đề bài nếu có */}
@@ -444,7 +460,11 @@ export const QuestionBankPickerModal: React.FC<QuestionBankPickerModalProps> = (
                   <span>Đang xử lý...</span>
                 </>
               ) : (
-                <span>Thêm {selectedMap.size > 0 ? `(${selectedMap.size} mục)` : ''} vào bài học</span>
+                <span>
+                  {confirmLabel
+                    ? `${confirmLabel} ${selectedMap.size > 0 ? `(${selectedMap.size} mục)` : ''}`
+                    : `Thêm ${selectedMap.size > 0 ? `(${selectedMap.size} mục)` : ''} vào bài học`}
+                </span>
               )}
             </button>
           </div>
