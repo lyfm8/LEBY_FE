@@ -37,10 +37,12 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onToggleActive, isL
             users.map((user) => (
               <tr key={user.id}>
                 <td>
-                  <div className="user-name">{user.fullName}</div>
-                  {user.role === 'ADMIN' && (
-                    <span className="badge badge-admin" style={{ marginTop: '0.25rem' }}>{user.role}</span>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                    <span className="user-name">{user.fullName}</span>
+                    {user.role === 'ADMIN' && (
+                      <span className="badge badge-admin">{user.role}</span>
+                    )}
+                  </div>
                 </td>
                 <td className="user-email">{user.email}</td>
                 <td style={{ color: '#4b5563', fontWeight: 500 }}>
