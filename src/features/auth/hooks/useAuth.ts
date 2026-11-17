@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthContext } from '@/context/AuthContext';
+import { AuthContext } from '../context/AuthContext';
 
 /**
  * Hook để truy cập AuthContext từ bất kỳ component nào.

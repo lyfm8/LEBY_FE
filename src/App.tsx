@@ -1,4 +1,4 @@
-import { AuthProvider } from '@/context/AuthContext';
+import { AuthProvider } from '@/features/auth';
 import { ToastProvider, ConfirmProvider } from '@/core/ui';
 import AppRoutes from '@/routes';
 

@@ -1,18 +1,31 @@
 import { createContext, useCallback, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import { authService } from '@/features/auth/services/authService';
-import type { AuthUser } from '@/features/auth/types/authTypes';
+import { authService } from '../services/authService';
+import type { AuthUser } from '../types/authTypes';
 
-interface AuthContextValue {
+/**
+ * Interface định nghĩa dữ liệu và các hàm thao tác của AuthContext.
+ */
+export interface AuthContextValue {
+    /** Thông tin người dùng đã xác thực (null nếu chưa đăng nhập hoặc token hết hạn) */
     user: AuthUser | null;
+    /** Trạng thái kiểm tra session ban đầu khi khởi chạy ứng dụng */
     isLoading: boolean;
+    /** Cờ đánh dấu người dùng đã đăng nhập hay chưa */
     isAuthenticated: boolean;
+    /** Hàm cập nhật thông tin user sau khi login hoặc refresh */
     setUser: (user: AuthUser | null) => void;
+    /** Hàm thực hiện đăng xuất và xóa phiên làm việc */
     logout: () => Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
 
+/**
+ * Provider quản lý trạng thái xác thực toàn cục cho ứng dụng LEBY.
+ *
+ * @param children Các component con được bọc bởi AuthProvider
+ */
 export function AuthProvider({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<AuthUser | null>(null);
     const [isLoading, setIsLoading] = useState(true);
