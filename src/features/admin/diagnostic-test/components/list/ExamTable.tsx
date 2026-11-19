@@ -89,9 +89,9 @@ export const ExamTable: React.FC<ExamTableProps> = ({
 
                   <td>
                     {exam.testType === 'DIAGNOSTIC' ? (
-                      <span className="badge-diagnostic">Diagnostic</span>
+                      <span className="badge-diagnostic">Chẩn đoán</span>
                     ) : (
-                      <span className="badge-mock">Mock Test</span>
+                      <span className="badge-mock">Thi thử</span>
                     )}
                   </td>
 
@@ -112,7 +112,7 @@ export const ExamTable: React.FC<ExamTableProps> = ({
                   <td>
                     <span className={`dot-status-badge ${exam.examStatus.toLowerCase()}`}>
                       <span className="dot-indicator" />
-                      <span>{exam.examStatus === 'ACTIVE' ? 'Active' : exam.examStatus === 'ARCHIVE' ? 'Archive' : 'Draft'}</span>
+                      <span>{exam.examStatus === 'ACTIVE' ? 'Đang hoạt động' : exam.examStatus === 'ARCHIVE' ? 'Đã lưu trữ' : 'Bản nháp'}</span>
                     </span>
                   </td>
 
