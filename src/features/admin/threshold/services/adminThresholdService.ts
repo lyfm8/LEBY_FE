@@ -1,68 +1,170 @@
 import { apiClient } from '@/core/api/apiClient';
 import type { ApiResponse } from '@/core/api/apiResponse';
 import type {
-  AimPartThresholdMatrix,
-  SavePartThresholdsBatchRequest,
-  AimAbilityRuleMatrix,
-  SaveAbilityRulesBatchRequest,
-  ThresholdValidationResult,
+  ModuleThresholdMatrixResponse,
+  BatchUpdateModuleThresholdRequest,
+  ModuleTargetThresholdResponse,
+  AbilityEvaluationRuleResponse,
+  CreateAbilityEvaluationRuleRequest,
+  UpdateAbilityEvaluationRuleRequest,
+  TargetPartThresholdResponse,
+  CreateTargetPartThresholdRequest,
+  UpdateTargetPartThresholdRequest,
 } from '../types';
 
 /**
- * Service API giao tiếp với Backend cho Module Cấu hình Ngưỡng & Quy tắc Đánh giá (A08 & A10).
+ * Service quản lý toàn bộ cấu hình Ngưỡng (Thresholds) và Quy tắc Đánh giá Năng lực (Rules).
+ * URL prefix chuẩn: /api/admin/... (Tuân thủ nghiêm ngặt chuẩn kiến trúc không dùng /v1).
  */
 export const adminThresholdService = {
-  // =========================================================================
-  // A08: CẤU HÌNH NGƯỠNG ĐÁNH GIÁ PART THEO AIM
-  // =========================================================================
+  // ===========================================================================
+  // 1. MODULE TARGET THRESHOLDS (MA TRẬN ĐIỂM ĐỖ MODULE THEO AIM)
+  // ===========================================================================
 
   /**
-   * Lấy ma trận 7 Part thresholds của một mục tiêu AIM.
+   * Lấy ma trận điểm đỗ Module x TargetProfile, hỗ trợ lọc theo Part.
    */
-  getPartThresholdMatrix(targetProfileId: number): Promise<ApiResponse<AimPartThresholdMatrix>> {
-    return apiClient.get('/api/admin/threshold-config/parts', {
-      params: { targetProfileId },
-    });
+  getModuleThresholdMatrix(partId?: number): Promise<ApiResponse<ModuleThresholdMatrixResponse>> {
+    return apiClient.get<ApiResponse<ModuleThresholdMatrixResponse>>(
+      '/api/admin/module-target-thresholds/matrix',
+      { params: partId ? { partId } : undefined }
+    );
   },
 
   /**
-   * Lưu hàng loạt (Batch Upsert) 7 Part thresholds cho mục tiêu AIM.
+   * Cập nhật hàng loạt nhiều ô trong ma trận điểm đỗ.
    */
-  savePartThresholdsBatch(data: SavePartThresholdsBatchRequest): Promise<ApiResponse<AimPartThresholdMatrix>> {
-    return apiClient.post('/api/admin/threshold-config/parts/batch', data);
+  batchUpdateModuleThresholds(data: BatchUpdateModuleThresholdRequest): Promise<ApiResponse<ModuleTargetThresholdResponse[]>> {
+    return apiClient.post<ApiResponse<ModuleTargetThresholdResponse[]>>(
+      '/api/admin/module-target-thresholds/batch',
+      data
+    );
   },
 
   /**
-   * Kiểm tra tính hợp lệ toán học của bộ ngưỡng Part (Confirm < Pass).
+   * Cập nhật điểm đỗ của một Module cụ thể tại một Profile AIM.
    */
-  validatePartThresholds(data: SavePartThresholdsBatchRequest): Promise<ApiResponse<ThresholdValidationResult>> {
-    return apiClient.post('/api/admin/threshold-config/parts/validate', data);
-  },
-
-  // =========================================================================
-  // A10: CẤU HÌNH QUY TẮC ĐÁNH GIÁ NĂNG LỰC THEO AIM
-  // =========================================================================
-
-  /**
-   * Lấy ma trận quy tắc toàn bộ Năng lực của một mục tiêu AIM.
-   */
-  getAbilityRuleMatrix(targetProfileId: number): Promise<ApiResponse<AimAbilityRuleMatrix>> {
-    return apiClient.get('/api/admin/threshold-config/abilities', {
-      params: { targetProfileId },
-    });
+  updateSingleModuleThreshold(
+    moduleId: number,
+    targetProfileId: number,
+    passScore?: number | null
+  ): Promise<ApiResponse<ModuleTargetThresholdResponse>> {
+    return apiClient.put<ApiResponse<ModuleTargetThresholdResponse>>(
+      '/api/admin/module-target-thresholds/single',
+      null,
+      { params: { moduleId, targetProfileId, passScore } }
+    );
   },
 
   /**
-   * Lưu hàng loạt quy tắc đánh giá Năng lực cho mục tiêu AIM.
+   * Xóa cấu hình tùy biến để Module tự động khôi phục về điểm đỗ mặc định (defaultPassScore).
    */
-  saveAbilityRulesBatch(data: SaveAbilityRulesBatchRequest): Promise<ApiResponse<AimAbilityRuleMatrix>> {
-    return apiClient.post('/api/admin/threshold-config/abilities/batch', data);
+  resetModuleThreshold(moduleId: number, targetProfileId: number): Promise<ApiResponse<void>> {
+    return apiClient.delete<ApiResponse<void>>(
+      '/api/admin/module-target-thresholds/reset',
+      { params: { moduleId, targetProfileId } }
+    );
+  },
+
+  // ===========================================================================
+  // 2. ABILITY EVALUATION RULES (QUY TẮC ĐÁNH GIÁ NĂNG LỰC)
+  // ===========================================================================
+
+  /**
+   * Lấy danh sách toàn bộ quy tắc đánh giá Ability.
+   */
+  getAbilityRules(): Promise<ApiResponse<AbilityEvaluationRuleResponse[]>> {
+    return apiClient.get<ApiResponse<AbilityEvaluationRuleResponse[]>>(
+      '/api/admin/ability-evaluation-rules'
+    );
   },
 
   /**
-   * Kiểm tra tính hợp lệ của bộ quy tắc Năng lực (0 < stableMin <= 100).
+   * Lấy chi tiết một quy tắc đánh giá Ability theo ID.
    */
-  validateAbilityRules(data: SaveAbilityRulesBatchRequest): Promise<ApiResponse<ThresholdValidationResult>> {
-    return apiClient.post('/api/admin/threshold-config/abilities/validate', data);
+  getAbilityRuleById(id: number): Promise<ApiResponse<AbilityEvaluationRuleResponse>> {
+    return apiClient.get<ApiResponse<AbilityEvaluationRuleResponse>>(
+      `/api/admin/ability-evaluation-rules/${id}`
+    );
+  },
+
+  /**
+   * Tạo mới quy tắc đánh giá Ability.
+   */
+  createAbilityRule(data: CreateAbilityEvaluationRuleRequest): Promise<ApiResponse<AbilityEvaluationRuleResponse>> {
+    return apiClient.post<ApiResponse<AbilityEvaluationRuleResponse>>(
+      '/api/admin/ability-evaluation-rules',
+      data
+    );
+  },
+
+  /**
+   * Cập nhật quy tắc đánh giá Ability.
+   */
+  updateAbilityRule(id: number, data: UpdateAbilityEvaluationRuleRequest): Promise<ApiResponse<AbilityEvaluationRuleResponse>> {
+    return apiClient.put<ApiResponse<AbilityEvaluationRuleResponse>>(
+      `/api/admin/ability-evaluation-rules/${id}`,
+      data
+    );
+  },
+
+  /**
+   * Xóa quy tắc đánh giá Ability.
+   */
+  deleteAbilityRule(id: number): Promise<ApiResponse<void>> {
+    return apiClient.delete<ApiResponse<void>>(
+      `/api/admin/ability-evaluation-rules/${id}`
+    );
+  },
+
+  // ===========================================================================
+  // 3. TARGET PART THRESHOLDS (NGƯỠNG ĐIỂM PART DIAGNOSTIC)
+  // ===========================================================================
+
+  /**
+   * Lấy danh sách toàn bộ cấu hình ngưỡng điểm Part theo AIM.
+   */
+  getPartThresholds(): Promise<ApiResponse<TargetPartThresholdResponse[]>> {
+    return apiClient.get<ApiResponse<TargetPartThresholdResponse[]>>(
+      '/api/admin/target-part-thresholds'
+    );
+  },
+
+  /**
+   * Lấy danh sách cấu hình ngưỡng điểm Part theo Target Profile ID.
+   */
+  getPartThresholdsByProfile(targetProfileId: number): Promise<ApiResponse<TargetPartThresholdResponse[]>> {
+    return apiClient.get<ApiResponse<TargetPartThresholdResponse[]>>(
+      `/api/admin/target-part-thresholds/by-profile/${targetProfileId}`
+    );
+  },
+
+  /**
+   * Tạo mới cấu hình ngưỡng điểm Part.
+   */
+  createPartThreshold(data: CreateTargetPartThresholdRequest): Promise<ApiResponse<TargetPartThresholdResponse>> {
+    return apiClient.post<ApiResponse<TargetPartThresholdResponse>>(
+      '/api/admin/target-part-thresholds',
+      data
+    );
+  },
+
+  /**
+   * Cập nhật cấu hình ngưỡng điểm Part.
+   */
+  updatePartThreshold(id: number, data: UpdateTargetPartThresholdRequest): Promise<ApiResponse<TargetPartThresholdResponse>> {
+    return apiClient.put<ApiResponse<TargetPartThresholdResponse>>(
+      `/api/admin/target-part-thresholds/${id}`,
+      data
+    );
+  },
+
+  /**
+   * Xóa cấu hình ngưỡng điểm Part.
+   */
+  deletePartThreshold(id: number): Promise<ApiResponse<void>> {
+    return apiClient.delete<ApiResponse<void>>(
+      `/api/admin/target-part-thresholds/${id}`
+    );
   },
 };
