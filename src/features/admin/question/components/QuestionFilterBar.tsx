@@ -87,7 +87,7 @@ export const QuestionFilterBar: React.FC<QuestionFilterBarProps> = ({
                             onFilterChange({ partId: val, abilityId: undefined, page: 0 });
                         }}
                     >
-                        <option value="">Tất cả Parts (1 - 7)</option>
+                        <option value="">Tất cả phần thi (Part 1 - 7)</option>
                         {parts.map((p) => (
                             <option key={p.id} value={p.id}>
                                 {p.name} ({p.sections})
@@ -108,7 +108,7 @@ export const QuestionFilterBar: React.FC<QuestionFilterBarProps> = ({
                         }}
                     >
                         <option value="">
-                            {filters.partId ? 'Tất cả năng lực' : 'Chọn Part trước'}
+                            {filters.partId ? 'Tất cả năng lực' : 'Chọn phần thi trước'}
                         </option>
                         {abilities.map((a) => (
                             <option key={a.id} value={a.id}>
