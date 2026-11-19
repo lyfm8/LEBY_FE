@@ -1,5 +1,6 @@
 /**
- * @file Các kiểu dữ liệu cho tính năng Admin Dashboard
+ * @file Các kiểu dữ liệu chuẩn hóa cho tính năng Admin Dashboard (A01).
+ * Tuân thủ nghiêm ngặt Strict Typing (100% không dùng any) và khớp hoàn toàn với Backend DTOs.
  */
 
 export interface DashboardStats {
@@ -7,13 +8,16 @@ export interface DashboardStats {
   totalUsersGrowthPercent: number;
   activeUsersThisMonth: number;
   activeUsersGrowthPercent: number;
-  totalModules: number;
+  learningPathCompletionRate: number;
+  moduleTestPassRate: number;
   totalTestsCompleted: number;
+  totalModules: number;
 }
 
 export interface UsersByMonth {
   month: string;
-  count: number;
+  newUsersCount: number;
+  testSubmissionsCount: number;
 }
 
 export interface AimDistribution {
@@ -22,26 +26,36 @@ export interface AimDistribution {
   percent: number;
 }
 
-export interface ModuleTestPassRate {
-  passPercent: number;
+export interface TopDifficultModule {
+  moduleId: number;
+  moduleTitle: string;
+  partName: string;
+  totalAttempts: number;
+  failCount: number;
   failPercent: number;
 }
 
-export type ResultBadgeType = 'PASS' | 'NEW' | 'SCORE';
+export type ResultBadgeType = 'PASS' | 'FAIL' | 'NEW' | 'SCORE' | 'DIAGNOSTIC';
 
 export interface RecentActivity {
-  userId: number;
+  id?: number;
+  userId: number | null;
   fullName: string;
+  avatar?: string | null;
   action: string;
   aimTarget: string;
   timeAgo: string;
-  resultBadge: ResultBadgeType;
+  timestamp?: string | null;
+  resultBadge: ResultBadgeType | string;
+  score?: number | null;
 }
 
 export interface DashboardSummary {
   stats: DashboardStats;
   usersByMonth: UsersByMonth[];
   aimDistribution: AimDistribution[];
-  moduleTestPassRate: ModuleTestPassRate;
+  topDifficultModules: TopDifficultModule[];
   recentActivities: RecentActivity[];
 }
+
+export type TimeRangeFilter = 'all' | 'this_month' | '30d' | '7d';

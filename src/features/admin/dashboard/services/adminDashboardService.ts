@@ -1,20 +1,21 @@
 import { apiClient } from '@/core/api/apiClient';
 import type { ApiResponse } from '@/core/api/apiResponse';
-import type { DashboardSummary } from '../types';
+import type { DashboardSummary, TimeRangeFilter } from '../types';
 
 /**
- * Service quản lý gọi API liên quan đến thống kê Dashboard (UC-01).
+ * Service quản lý gọi API liên quan đến thống kê Dashboard (A01).
+ * Tuân thủ chuẩn URL tiền tố /api/admin/... (CẤM tiền tố /v1/).
  */
 export const adminDashboardService = {
   /**
-   * Lấy tổng quan dữ liệu hệ thống hiển thị trên Admin Dashboard.
-   * API này tập hợp các chỉ số: số lượng học viên, tăng trưởng, phân bố mục tiêu,
-   * tỷ lệ đỗ Module Test và các hoạt động gần nhất.
+   * Lấy tổng quan dữ liệu hệ thống hiển thị trên Admin Dashboard theo bộ lọc thời gian.
    *
-   * @returns {Promise<ApiResponse<DashboardSummary>>} Object chứa các mảng dữ liệu thống kê (stats, charts, recent activities).
+   * @param {TimeRangeFilter} timeRange - Mốc thời gian lọc ('all' | 'this_month' | '30d' | '7d')
+   * @returns {Promise<ApiResponse<DashboardSummary>>} Object chứa các khối dữ liệu thống kê tổng hợp.
    */
-  getSummary(): Promise<ApiResponse<DashboardSummary>> {
-    return apiClient.get<ApiResponse<DashboardSummary>>('/api/v1/admin/dashboard/summary');
+  getSummary(timeRange: TimeRangeFilter = 'all'): Promise<ApiResponse<DashboardSummary>> {
+    return apiClient.get<ApiResponse<DashboardSummary>>('/api/admin/dashboard/summary', {
+      params: { timeRange },
+    });
   },
 };
-
