@@ -243,7 +243,7 @@ export const AdminPartPage: React.FC = () => {
       {/* Header chuẩn chung của hệ thống Admin */}
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Quản lý Phần thi & Năng lực (Part & Ability)</h1>
+          <h1 className="admin-page-title">Quản lý Phần thi & Năng lực</h1>
           <p className="admin-page-subtitle">Cấu trúc phần thi chuẩn TOEIC và ma trận danh mục năng lực đánh giá tương ứng</p>
         </div>
 
