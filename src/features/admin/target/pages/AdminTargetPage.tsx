@@ -38,9 +38,9 @@ export const AdminTargetPage: React.FC = () => {
     <div className="admin-page-container">
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Mục Tiêu & Lộ Trình (Target Profiles)</h1>
+          <h1 className="admin-page-title">Mục tiêu & Lộ trình</h1>
           <p className="admin-page-subtitle">
-            Quản lý các mốc AIM (450, 550, 650...) và thiết lập ngưỡng Pass Module tương ứng.
+            Quản lý các mốc AIM (450, 550, 650...) và thiết lập ngưỡng đỗ mô-đun tương ứng.
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export const AdminTargetPage: React.FC = () => {
               borderRadius: '0.5rem',
             }}
           >
-            Đang tải Ma trận Ngưỡng Pass...
+            Đang tải Ma trận Ngưỡng Đỗ...
           </div>
         ) : (
           <ThresholdTable

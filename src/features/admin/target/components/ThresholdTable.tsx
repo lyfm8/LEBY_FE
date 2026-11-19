@@ -43,15 +43,15 @@ export const ThresholdTable: React.FC<ThresholdTableProps> = ({ matrix, onUpdate
   return (
     <div className="matrix-container">
       <div className="matrix-header">
-        <h3>Ma trận Ngưỡng Pass Module (% đúng)</h3>
-        <span>Click vào ô để chỉnh sửa</span>
+        <h3>Ma trận Ngưỡng Đỗ Mô-đun (% đúng)</h3>
+        <span>Nhấp vào ô để chỉnh sửa</span>
       </div>
       
       <div className="matrix-table-wrapper">
         <table className="matrix-table">
           <thead>
             <tr>
-              <th className="col-module">Module</th>
+              <th className="col-module">Mô-đun</th>
               {matrix.profileScores.map((score, index) => (
                 <th key={matrix.profileIds[index]} className="col-profile">
                   AIM {score}
@@ -63,7 +63,7 @@ export const ThresholdTable: React.FC<ThresholdTableProps> = ({ matrix, onUpdate
             {matrix.rows.length === 0 ? (
               <tr>
                 <td colSpan={matrix.profileIds.length + 1} style={{ textAlign: 'center', padding: '2.5rem 0', color: '#6b7280' }}>
-                  Chưa có dữ liệu Module hoặc Target Profile
+                  Chưa có dữ liệu Mô-đun hoặc Mục tiêu điểm số
                 </td>
               </tr>
             ) : (
