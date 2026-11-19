@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { abilityRuleSchema, type AbilityRuleFormValues } from '../utils/schema';
@@ -16,49 +16,53 @@ interface AbilityRuleFormModalProps {
 }
 
 /**
- * Component Modal Form dùng để thêm mới hoặc sửa Quy tắc đánh giá Năng lực (Ability).
- * 
- * NOTE: Giao diện yêu cầu nhập các ngưỡng % để xếp loại học viên (Stable/Developing/Weak).
- * Zod schema đảm bảo validation: developingThreshold < stableThreshold.
- * Trạng thái DRAFT (Nháp) hay PUBLISHED (Hoạt động) quyết định rule này có được hệ thống áp dụng tính toán hay không.
- * 
- * @param isOpen Trạng thái hiển thị modal
- * @param onClose Hàm đóng modal
- * @param onSubmit Callback khi form validate thành công và click lưu
- * @param data Dữ liệu bản ghi hiện tại (nếu ở mode Edit)
- * @param abilities Danh sách Năng lực (master data) để bind vào dropdown
- * @param isLoading Trạng thái đang call API
+ * Component Modal Form thêm mới hoặc cập nhật Quy tắc đánh giá Năng lực (Ability).
+ * Tuân thủ mô hình nhị phân 2 ngưỡng cắt độc lập:
+ * - weakMax (developingThreshold, mặc định 50%): Áp dụng khi Part là CONFIRM.
+ * - stableMin (stableThreshold, mặc định 75%): Áp dụng khi Part là WEAK.
  */
 export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
-  isOpen, onClose, onSubmit, data, abilities, isLoading
+  isOpen,
+  onClose,
+  onSubmit,
+  data,
+  abilities,
+  isLoading,
 }) => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<AbilityRuleFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<AbilityRuleFormValues>({
     resolver: zodResolver(abilityRuleSchema),
     defaultValues: {
       abilityId: 0,
-      stableThreshold: 80,
-      developingThreshold: 50,
-      status: 'DRAFT'
-    }
+      weakMax: 50,
+      stableMin: 75,
+      minEvidenceCount: 3,
+    },
   });
 
-  // Tự động load data vào form khi Mở Modal ở chế độ chỉnh sửa, hoặc reset trắng ở chế độ thêm mới.
-  React.useEffect(() => {
+  const watchedWeakMax = watch('weakMax') || 50;
+  const watchedStableMin = watch('stableMin') || 75;
+
+  useEffect(() => {
     if (isOpen) {
       if (data) {
         reset({
           abilityId: data.abilityId,
-          stableThreshold: data.stableThreshold,
-          developingThreshold: data.developingThreshold,
-          status: data.status
+          weakMax: data.weakMax,
+          stableMin: data.stableMin,
+          minEvidenceCount: data.minEvidenceCount,
         });
       } else {
-        // Mặc định an toàn cho form khi tạo mới
         reset({
           abilityId: 0,
-          stableThreshold: 80,
-          developingThreshold: 50,
-          status: 'DRAFT'
+          weakMax: 50,
+          stableMin: 75,
+          minEvidenceCount: 3,
         });
       }
     }
@@ -68,73 +72,130 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content modal-md">
         <div className="modal-header">
           <h2 className="modal-title">
-            {data ? 'Sửa Quy Tắc Đánh Giá Năng Lực' : 'Thêm Quy Tắc Đánh Giá'}
+            {data ? 'Cập nhật Quy tắc Đánh giá Năng lực' : 'Tạo mới Quy tắc Đánh giá Năng lực'}
           </h2>
-          <button onClick={onClose} className="modal-close">
-            <X size={24} />
+          <button type="button" onClick={onClose} className="modal-close-btn" disabled={isLoading}>
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(onSubmit)} className="modal-form">
+          {/* Dropdown Năng lực */}
           <div className="form-group">
-            <label className="form-label">Năng lực (Ability) <span style={{ color: '#ef4444' }}>*</span></label>
+            <label className="form-label required">Năng lực (Ability)</label>
             <select
               {...register('abilityId', { valueAsNumber: true })}
-              className="form-input"
+              disabled={!!data || isLoading}
+              className={`select-input ${errors.abilityId ? 'input-error' : ''}`}
             >
-              <option value={0} disabled>Chọn Năng lực</option>
-              {abilities.map(a => <option key={a.id} value={a.id}>{a.name}</option>)}
+              <option value={0}>-- Chọn Năng lực sư phạm --</option>
+              {abilities.map(a => (
+                <option key={a.id} value={a.id}>
+                  {a.name}
+                </option>
+              ))}
             </select>
-            {errors.abilityId && <p className="form-error">{errors.abilityId.message}</p>}
+            {errors.abilityId && <span className="error-message">{errors.abilityId.message}</span>}
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
-            <div className="form-group">
-              <label className="form-label">Trạng thái (Status)</label>
-              <select
-                {...register('status')}
-                className="form-input"
+          {/* Sơ đồ Trực quan 2 Ngưỡng Cắt */}
+          <div className="threshold-visual-diagram">
+            <div className="visual-diagram-header">
+              <span className="text-xs font-semibold text-gray-700">Mô hình phân loại nhị phân Tầng 2:</span>
+            </div>
+            <div className="visual-range-bar">
+              <div
+                className="range-segment segment-weak"
+                style={{ width: `${Math.min(watchedWeakMax, 100)}%` }}
               >
-                <option value="DRAFT">Nháp (DRAFT)</option>
-                <option value="PUBLISHED">Hoạt động (PUBLISHED)</option>
-              </select>
+                <span>YẾU (&lt; {watchedWeakMax}%)</span>
+              </div>
+              <div
+                className="range-segment segment-developing"
+                style={{
+                  width: `${Math.max(0, Math.min(watchedStableMin - watchedWeakMax, 100))}%`,
+                }}
+              >
+                <span>PHÁT TRIỂN</span>
+              </div>
+              <div
+                className="range-segment segment-stable"
+                style={{ width: `${Math.max(0, 100 - watchedStableMin)}%` }}
+              >
+                <span>VỮNG (&ge; {watchedStableMin}%)</span>
+              </div>
+            </div>
+            <div className="visual-markers">
+              <span>0%</span>
+              <span style={{ left: `${watchedWeakMax}%` }} className="marker-pin marker-weak">
+                {watchedWeakMax}% (CONFIRM cutoff)
+              </span>
+              <span style={{ left: `${watchedStableMin}%` }} className="marker-pin marker-stable">
+                {watchedStableMin}% (WEAK cutoff)
+              </span>
+              <span>100%</span>
             </div>
           </div>
 
-          <div className="settings-box green">
-            <h4>Thiết lập Ngưỡng (%)</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label className="form-label">Stable (Ổn định)</label>
-                <input
-                  type="number"
-                  {...register('stableThreshold', { valueAsNumber: true })}
-                  className="form-input"
-                  style={{ borderColor: '#dcfce7' }}
-                />
-                {errors.stableThreshold && <p className="form-error">{errors.stableThreshold.message}</p>}
-              </div>
-              <div>
-                <label className="form-label">Developing (Đang phát triển)</label>
-                <input
-                  type="number"
-                  {...register('developingThreshold', { valueAsNumber: true })}
-                  className="form-input"
-                  style={{ borderColor: '#dcfce7' }}
-                />
-                {errors.developingThreshold && <p className="form-error">{errors.developingThreshold.message}</p>}
-              </div>
+          {/* Ngưỡng Yếu & Ngưỡng Vững vàng */}
+          <div className="form-grid-2">
+            <div className="form-group">
+              <label className="form-label required">
+                Ngưỡng Yếu (weakMax %)
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                {...register('weakMax', { valueAsNumber: true })}
+                className={`text-input ${errors.weakMax ? 'input-error' : ''}`}
+              />
+              <span className="field-hint">Cutoff nhánh CONFIRM (Mẫu 50.0%)</span>
+              {errors.weakMax && <span className="error-message">{errors.weakMax.message}</span>}
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#15803d', marginTop: '0.75rem' }}>Lưu ý: Dưới mức Developing sẽ được đánh giá là WEAK (Yếu).</p>
+
+            <div className="form-group">
+              <label className="form-label required">
+                Ngưỡng Vững vàng (stableMin %)
+              </label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                {...register('stableMin', { valueAsNumber: true })}
+                className={`text-input ${errors.stableMin ? 'input-error' : ''}`}
+              />
+              <span className="field-hint">Cutoff nhánh WEAK (Mẫu 75.0%)</span>
+              {errors.stableMin && <span className="error-message">{errors.stableMin.message}</span>}
+            </div>
           </div>
 
-          <div className="modal-footer">
+          {/* Số câu hỏi kiểm chứng */}
+          <div className="form-group">
+            <label className="form-label required">Số câu kiểm chứng tối thiểu (Min Evidence)</label>
+            <input
+              type="number"
+              min="1"
+              max="50"
+              {...register('minEvidenceCount', { valueAsNumber: true })}
+              className={`text-input ${errors.minEvidenceCount ? 'input-error' : ''}`}
+            />
+            <span className="field-hint">Số câu hỏi cần thiết trong bài test để đủ độ tin cậy kết luận năng lực (mặc định 3 câu)</span>
+            {errors.minEvidenceCount && (
+              <span className="error-message">{errors.minEvidenceCount.message}</span>
+            )}
+          </div>
+
+          <div className="modal-actions">
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className="btn-secondary"
             >
               Hủy
@@ -144,7 +205,7 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
               disabled={isLoading}
               className="btn-primary"
             >
-              {isLoading ? 'Đang lưu...' : 'Lưu lại'}
+              {isLoading ? 'Đang lưu...' : data ? 'Cập nhật' : 'Tạo mới'}
             </button>
           </div>
         </form>

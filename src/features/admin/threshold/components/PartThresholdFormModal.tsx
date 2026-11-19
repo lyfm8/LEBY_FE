@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { partThresholdSchema, type PartThresholdFormValues } from '../utils/schema';
@@ -18,52 +18,57 @@ interface PartThresholdFormModalProps {
 }
 
 /**
- * Component Modal Form dùng để thêm mới hoặc sửa Ngưỡng điểm của Part.
- * 
- * NOTE: Sử dụng React Hook Form kết hợp Zod Resolver để validate dữ liệu ngay tại Client-side.
- * Form bắt buộc logic: weakThreshold < confirmThreshold < passThreshold.
- * 
- * @param isOpen Trạng thái hiển thị modal
- * @param onClose Hàm đóng modal
- * @param onSubmit Callback khi form validate thành công và ấn submit
- * @param data Dữ liệu bản ghi hiện tại (nếu là chế độ Edit)
- * @param parts Danh sách toàn bộ Part (dropdown)
- * @param profiles Danh sách toàn bộ AIM Profile (dropdown)
- * @param isLoading Trạng thái đang call api lưu
+ * Component Modal Form thêm mới hoặc cập nhật Ngưỡng điểm phần thi (TargetPartThreshold).
+ * Ràng buộc mô hình 4 nhánh Tầng 1 theo thứ tự:
+ * fullPartThreshold (35%) <= confirmingScore (60%) <= passScore (80%).
  */
 export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
-  isOpen, onClose, onSubmit, data, parts, profiles, isLoading
+  isOpen,
+  onClose,
+  onSubmit,
+  data,
+  parts,
+  profiles,
+  isLoading,
 }) => {
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<PartThresholdFormValues>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    watch,
+    formState: { errors },
+  } = useForm<PartThresholdFormValues>({
     resolver: zodResolver(partThresholdSchema),
     defaultValues: {
       partId: 0,
       targetProfileId: 0,
-      passThreshold: 75,
-      confirmThreshold: 50,
-      weakThreshold: 30
-    }
+      passScore: 80,
+      confirmingScore: 60,
+      fullPartThreshold: 35,
+    },
   });
 
-  // Lắng nghe sự thay đổi của props 'isOpen' hoặc 'data' để cập nhật dữ liệu form tương ứng
-  React.useEffect(() => {
+  const watchedPass = watch('passScore') || 80;
+  const watchedConfirm = watch('confirmingScore') || 60;
+  const watchedFullPart = watch('fullPartThreshold') || 35;
+
+  useEffect(() => {
     if (isOpen) {
       if (data) {
         reset({
           partId: data.partId,
           targetProfileId: data.targetProfileId,
-          passThreshold: data.passThreshold,
-          confirmThreshold: data.confirmThreshold,
-          weakThreshold: data.weakThreshold
+          passScore: data.passScore,
+          confirmingScore: data.confirmingScore ?? null,
+          fullPartThreshold: data.fullPartThreshold ?? null,
         });
       } else {
-        // Form mặc định khi thêm mới
         reset({
           partId: 0,
           targetProfileId: 0,
-          passThreshold: 75,
-          confirmThreshold: 50,
-          weakThreshold: 30
+          passScore: 80,
+          confirmingScore: 60,
+          fullPartThreshold: 35,
         });
       }
     }
@@ -73,83 +78,166 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className="modal-content modal-md">
         <div className="modal-header">
           <h2 className="modal-title">
-            {data ? 'Sửa Ngưỡng Điểm Part' : 'Thêm Ngưỡng Điểm Part'}
+            {data ? 'Cập nhật Ngưỡng điểm Part Diagnostic' : 'Tạo mới Ngưỡng điểm Part Diagnostic'}
           </h2>
-          <button onClick={onClose} className="modal-close">
-            <X size={24} />
+          <button type="button" onClick={onClose} className="modal-close-btn" disabled={isLoading}>
+            <X size={18} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1rem' }}>
+        <form onSubmit={handleSubmit(onSubmit)} className="modal-form">
+          {/* Target Profile AIM & Part */}
+          <div className="form-grid-2">
             <div className="form-group">
-              <label className="form-label">Part <span style={{ color: '#ef4444' }}>*</span></label>
-              <select
-                {...register('partId', { valueAsNumber: true })}
-                className="form-input"
-              >
-                <option value={0} disabled>Chọn Part</option>
-                {parts.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-              </select>
-              {errors.partId && <p className="form-error">{errors.partId.message}</p>}
-            </div>
-
-            <div className="form-group">
-              <label className="form-label">Mục tiêu (AIM) <span style={{ color: '#ef4444' }}>*</span></label>
+              <label className="form-label required">Mục tiêu (AIM)</label>
               <select
                 {...register('targetProfileId', { valueAsNumber: true })}
-                className="form-input"
+                disabled={!!data || isLoading}
+                className={`select-input ${errors.targetProfileId ? 'input-error' : ''}`}
               >
-                <option value={0} disabled>Chọn Mục tiêu</option>
-                {profiles.map(p => <option key={p.id} value={p.id}>Mục tiêu {p.aimScore}</option>)}
+                <option value={0}>-- Chọn Mục tiêu AIM --</option>
+                {profiles.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.description || `AIM ${p.aimScore}`}
+                  </option>
+                ))}
               </select>
-              {errors.targetProfileId && <p className="form-error">{errors.targetProfileId.message}</p>}
+              {errors.targetProfileId && (
+                <span className="error-message">{errors.targetProfileId.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label required">Phần thi (Part)</label>
+              <select
+                {...register('partId', { valueAsNumber: true })}
+                disabled={!!data || isLoading}
+                className={`select-input ${errors.partId ? 'input-error' : ''}`}
+              >
+                <option value={0}>-- Chọn Phần thi (Part) --</option>
+                {parts.map(p => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+              {errors.partId && <span className="error-message">{errors.partId.message}</span>}
             </div>
           </div>
 
-          <div className="settings-box">
-            <h4>Thiết lập Ngưỡng (%)</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              <div>
-                <label className="form-label">Pass (Qua bài)</label>
-                <input
-                  type="number"
-                  {...register('passThreshold', { valueAsNumber: true })}
-                  className="form-input"
-                  style={{ borderColor: '#bfdbfe' }}
-                />
-                {errors.passThreshold && <p className="form-error">{errors.passThreshold.message}</p>}
+          {/* Sơ đồ Trực quan 4 Nhánh Tầng 1 */}
+          <div className="threshold-visual-diagram">
+            <div className="visual-diagram-header">
+              <span className="text-xs font-semibold text-gray-700">Phân luồng 4 nhánh kết quả Part Diagnostic:</span>
+            </div>
+            <div className="visual-range-bar">
+              <div
+                className="range-segment segment-fullpart"
+                style={{ width: `${Math.min(watchedFullPart, 100)}%` }}
+              >
+                <span>MẤT GỐC</span>
               </div>
-              <div>
-                <label className="form-label">Confirm (Cần xác nhận lại)</label>
-                <input
-                  type="number"
-                  {...register('confirmThreshold', { valueAsNumber: true })}
-                  className="form-input"
-                  style={{ borderColor: '#bfdbfe' }}
-                />
-                {errors.confirmThreshold && <p className="form-error">{errors.confirmThreshold.message}</p>}
+              <div
+                className="range-segment segment-weak"
+                style={{
+                  width: `${Math.max(0, Math.min(watchedConfirm - watchedFullPart, 100))}%`,
+                }}
+              >
+                <span>YẾU</span>
               </div>
-              <div>
-                <label className="form-label">Weak (Yếu)</label>
-                <input
-                  type="number"
-                  {...register('weakThreshold', { valueAsNumber: true })}
-                  className="form-input"
-                  style={{ borderColor: '#bfdbfe' }}
-                />
-                {errors.weakThreshold && <p className="form-error">{errors.weakThreshold.message}</p>}
+              <div
+                className="range-segment segment-confirm"
+                style={{
+                  width: `${Math.max(0, Math.min(watchedPass - watchedConfirm, 100))}%`,
+                }}
+              >
+                <span>CẬN CHUẨN</span>
               </div>
+              <div
+                className="range-segment segment-pass"
+                style={{ width: `${Math.max(0, 100 - watchedPass)}%` }}
+              >
+                <span>PASS</span>
+              </div>
+            </div>
+            <div className="visual-markers">
+              <span>0%</span>
+              <span style={{ left: `${watchedFullPart}%` }} className="marker-pin marker-fullpart">
+                {watchedFullPart}% (Full Part)
+              </span>
+              <span style={{ left: `${watchedConfirm}%` }} className="marker-pin marker-confirm">
+                {watchedConfirm}% (Confirm)
+              </span>
+              <span style={{ left: `${watchedPass}%` }} className="marker-pin marker-pass">
+                {watchedPass}% (Pass)
+              </span>
+              <span>100%</span>
             </div>
           </div>
 
-          <div className="modal-footer">
+          {/* 3 Mức điểm */}
+          <div className="form-grid-3">
+            <div className="form-group">
+              <label className="form-label required">Điểm Đạt chuẩn (passScore %)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                {...register('passScore', { valueAsNumber: true })}
+                className={`text-input ${errors.passScore ? 'input-error' : ''}`}
+              />
+              <span className="field-hint">Level 3: &ge; điểm này miễn học Part</span>
+              {errors.passScore && <span className="error-message">{errors.passScore.message}</span>}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Điểm Cận chuẩn (confirmingScore %)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                {...register('confirmingScore', {
+                  setValueAs: v => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? null : Number(v)),
+                })}
+                className={`text-input ${errors.confirmingScore ? 'input-error' : ''}`}
+                placeholder="Để trống nếu không áp dụng"
+              />
+              <span className="field-hint">Level 2: Soi Tầng 2 với developingThreshold (50%)</span>
+              {errors.confirmingScore && (
+                <span className="error-message">{errors.confirmingScore.message}</span>
+              )}
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Điểm Mất gốc (fullPartThreshold %)</label>
+              <input
+                type="number"
+                step="0.5"
+                min="0"
+                max="100"
+                {...register('fullPartThreshold', {
+                  setValueAs: v => (v === '' || v === null || v === undefined || Number.isNaN(Number(v)) ? null : Number(v)),
+                })}
+                className={`text-input ${errors.fullPartThreshold ? 'input-error' : ''}`}
+                placeholder="Để trống nếu không áp dụng"
+              />
+              <span className="field-hint">Level 1: &lt; điểm này bốc 100% Module</span>
+              {errors.fullPartThreshold && (
+                <span className="error-message">{errors.fullPartThreshold.message}</span>
+              )}
+            </div>
+          </div>
+
+          <div className="modal-actions">
             <button
               type="button"
               onClick={onClose}
+              disabled={isLoading}
               className="btn-secondary"
             >
               Hủy
@@ -159,7 +247,7 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
               disabled={isLoading}
               className="btn-primary"
             >
-              {isLoading ? 'Đang lưu...' : 'Lưu lại'}
+              {isLoading ? 'Đang lưu...' : data ? 'Cập nhật' : 'Tạo mới'}
             </button>
           </div>
         </form>
