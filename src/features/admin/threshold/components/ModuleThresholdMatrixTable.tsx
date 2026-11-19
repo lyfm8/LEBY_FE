@@ -99,6 +99,16 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
 
   return (
     <div className="matrix-table-container">
+      {/* Header đồng bộ với các Tab khác */}
+      <div className="threshold-table-header">
+        <div>
+          <h2 className="table-section-title">Ma trận Điểm đỗ Module theo AIM</h2>
+          <p className="table-section-desc">
+            Thiết lập điểm chuẩn đỗ Module Test theo từng mốc AIM. Nhập số trực tiếp vào ô để sửa.
+          </p>
+        </div>
+      </div>
+
       {/* Thanh công cụ: Bộ lọc Part, Tìm kiếm, và Nút Lưu Thay Đổi */}
       <div className="matrix-toolbar">
         <div className="matrix-filters">
@@ -181,16 +191,13 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
           <table className="admin-table matrix-table">
             <thead>
               <tr>
-                <th className="sticky-col col-seq">#</th>
-                <th className="sticky-col col-title">Module</th>
-                <th className="col-part">Part</th>
-                <th className="col-default">Mặc định</th>
+                <th className="sticky-col col-seq text-center">#</th>
+                <th className="sticky-col col-title">Tên Module</th>
+                <th className="col-part">Phần thi (Part)</th>
+                <th className="col-default text-center">Mặc định</th>
                 {data.profileIds.map((profId, idx) => (
-                  <th key={profId} className="col-aim">
-                    <div className="aim-header-badge">
-                      <span className="aim-name">{data.profileNames[idx] || `AIM ${data.profileScores[idx]}`}</span>
-                      <span className="aim-score">Target: {data.profileScores[idx]}</span>
-                    </div>
+                  <th key={profId} className="col-aim text-center" title={data.profileNames[idx]}>
+                    <span className="aim-badge">AIM {data.profileScores[idx]}</span>
                   </th>
                 ))}
               </tr>
@@ -210,8 +217,8 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
                     {row.partName || '-'}
                   </td>
                   <td className="col-default text-center">
-                    <span className="badge badge-default">
-                      {row.defaultPassScore} đ
+                    <span className="badge badge-gray font-semibold">
+                      {row.defaultPassScore}%
                     </span>
                   </td>
                   {data.profileIds.map(profId => {
@@ -241,19 +248,19 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
                             value={displayValue}
                             onChange={e => handleCellChange(row.moduleId, profId, e.target.value)}
                             className="matrix-cell-input"
-                            title={`Mặc định: ${row.defaultPassScore} đ ${isCustom ? '(Đang tùy biến)' : '(Kế thừa)'}`}
+                            title={`Mặc định: ${row.defaultPassScore}% ${isCustom ? '(Đang tùy biến)' : '(Kế thừa)'}`}
                           />
                           {isCustom && !isDirty && (
                             <button
                               type="button"
                               onClick={() => onResetCell(row.moduleId, profId)}
                               className="btn-cell-reset"
-                              title="Khôi phục về điểm đỗ mặc định"
+                              title={`Khôi phục về mặc định (${row.defaultPassScore}%)`}
+                              aria-label={`Khôi phục về mặc định (${row.defaultPassScore}%)`}
                             >
-                              <RotateCcw size={10} />
+                              <RotateCcw size={11} />
                             </button>
                           )}
-                          {isDirty && <span className="dirty-indicator" title="Chưa lưu" />}
                         </div>
                       </td>
                     );

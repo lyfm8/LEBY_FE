@@ -50,7 +50,7 @@ export const adminTargetService = {
    * Dùng để render bảng spreadsheet nhập liệu nhanh.
    */
   getThresholdMatrix(): Promise<ApiResponse<ThresholdMatrixResponse>> {
-    return apiClient.get('/api/v1/admin/module-target-thresholds');
+    return apiClient.get('/api/admin/module-target-thresholds/matrix');
   },
 
   /**
@@ -58,7 +58,14 @@ export const adminTargetService = {
    * @param data Chứa danh sách các ô (moduleId, profileId, passThreshold) bị sửa.
    */
   batchUpdateThresholds(data: BatchUpdateThresholdRequest): Promise<ApiResponse<null>> {
-    return apiClient.put('/api/v1/admin/module-target-thresholds', data);
+    const formatted = {
+      items: data.items.map((it) => ({
+        moduleId: it.moduleId,
+        targetProfileId: it.targetProfileId,
+        passScore: it.passThreshold,
+      })),
+    };
+    return apiClient.post('/api/admin/module-target-thresholds/batch', formatted);
   }
 };
 

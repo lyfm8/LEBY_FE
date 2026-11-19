@@ -15,7 +15,7 @@ import type { PartThresholdFormValues, AbilityRuleFormValues } from '../utils/sc
 import { ModuleThresholdMatrixTable } from '../components/ModuleThresholdMatrixTable';
 import { PartThresholdFormModal } from '../components/PartThresholdFormModal';
 import { AbilityRuleFormModal } from '../components/AbilityRuleFormModal';
-import { Edit2, Trash2, Plus, Grid, Sliders, Layers, CheckCircle, AlertCircle, X } from 'lucide-react';
+import { Edit2, Trash2, Plus, Grid, Sliders, Layers, CheckCircle, AlertCircle, X, Search, Filter } from 'lucide-react';
 import '../admin-threshold.css';
 
 type ActiveTab = 'matrix' | 'ability' | 'part';
@@ -45,6 +45,32 @@ export const AdminThresholdPage: React.FC = () => {
   const [selectedPartIdForMatrix, setSelectedPartIdForMatrix] = useState<number | undefined>(undefined);
   const [abilityRules, setAbilityRules] = useState<AbilityEvaluationRuleResponse[]>([]);
   const [partThresholds, setPartThresholds] = useState<TargetPartThresholdResponse[]>([]);
+
+  // Filter states cho Tab 2 & Tab 3
+  const [selectedPartIdForAbilityTab, setSelectedPartIdForAbilityTab] = useState<number | undefined>(undefined);
+  const [searchAbilityQuery, setSearchAbilityQuery] = useState('');
+
+  const [selectedPartIdForPartTab, setSelectedPartIdForPartTab] = useState<number | undefined>(undefined);
+  const [selectedAimForPartTab, setSelectedAimForPartTab] = useState<number | undefined>(undefined);
+
+  const filteredAbilityRules = React.useMemo(() => {
+    return abilityRules.filter(rule => {
+      const matchPart = selectedPartIdForAbilityTab ? rule.partId === selectedPartIdForAbilityTab : true;
+      const matchQuery = searchAbilityQuery.trim()
+        ? rule.abilityName.toLowerCase().includes(searchAbilityQuery.toLowerCase()) ||
+          (rule.partName && rule.partName.toLowerCase().includes(searchAbilityQuery.toLowerCase()))
+        : true;
+      return matchPart && matchQuery;
+    });
+  }, [abilityRules, selectedPartIdForAbilityTab, searchAbilityQuery]);
+
+  const filteredPartThresholds = React.useMemo(() => {
+    return partThresholds.filter(rule => {
+      const matchPart = selectedPartIdForPartTab ? rule.partId === selectedPartIdForPartTab : true;
+      const matchAim = selectedAimForPartTab ? rule.targetProfileId === selectedAimForPartTab : true;
+      return matchPart && matchAim;
+    });
+  }, [partThresholds, selectedPartIdForPartTab, selectedAimForPartTab]);
 
   // =====================================
   // LOADING & MODAL & NOTIFICATION STATE
@@ -338,7 +364,7 @@ export const AdminThresholdPage: React.FC = () => {
           className={`tab-btn ${currentTab === 'matrix' ? 'tab-active' : ''}`}
         >
           <Grid size={16} />
-          <span>Ma trận Điểm đỗ Module (Module x AIM)</span>
+          <span>Ma trận Điểm đỗ Module</span>
         </button>
 
         <button
@@ -347,7 +373,7 @@ export const AdminThresholdPage: React.FC = () => {
           className={`tab-btn ${currentTab === 'ability' ? 'tab-active' : ''}`}
         >
           <Sliders size={16} />
-          <span>Quy tắc Đánh giá Năng lực (Ability Rules)</span>
+          <span>Quy tắc Đánh giá Năng lực</span>
         </button>
 
         <button
@@ -356,7 +382,7 @@ export const AdminThresholdPage: React.FC = () => {
           className={`tab-btn ${currentTab === 'part' ? 'tab-active' : ''}`}
         >
           <Layers size={16} />
-          <span>Ngưỡng điểm Part Diagnostic (Part x AIM)</span>
+          <span>Ngưỡng điểm Part Diagnostic</span>
         </button>
       </div>
 
@@ -387,9 +413,9 @@ export const AdminThresholdPage: React.FC = () => {
           <div className="table-container">
             <div className="threshold-table-header">
               <div>
-                <h2 className="table-section-title">Quy tắc Đánh giá Năng lực (Ability Evaluation Rules)</h2>
+                <h2 className="table-section-title">Quy tắc Đánh giá Năng lực (Ability Rules)</h2>
                 <p className="table-section-desc">
-                  Mô hình 2 ngưỡng cắt nhị phân: weakMax (50% cho nhánh CONFIRM) và stableMin (75% cho nhánh WEAK).
+                  Mô hình 2 ngưỡng cắt nhị phân: Ngưỡng Yếu (&lt; 50%) và Ngưỡng Vững (&ge; 75%).
                 </p>
               </div>
               <button
@@ -404,41 +430,79 @@ export const AdminThresholdPage: React.FC = () => {
               </button>
             </div>
 
+            {/* Thanh công cụ: Lọc Part & Tìm kiếm */}
+            <div className="matrix-toolbar">
+              <div className="matrix-filters">
+                <div className="filter-group">
+                  <Filter size={16} className="filter-icon" />
+                  <select
+                    value={selectedPartIdForAbilityTab ?? ''}
+                    onChange={e => setSelectedPartIdForAbilityTab(e.target.value ? Number(e.target.value) : undefined)}
+                    className="select-input"
+                  >
+                    <option value="">Tất cả các Part (Part 1 - 7)</option>
+                    {parts.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="search-group">
+                  <Search size={16} className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm Năng lực..."
+                    value={searchAbilityQuery}
+                    onChange={e => setSearchAbilityQuery(e.target.value)}
+                    className="search-input"
+                  />
+                </div>
+              </div>
+            </div>
+
             <div className="threshold-table-wrapper">
               {isLoading ? (
                 <div className="matrix-loading-state">
                   <div className="loading-spinner"></div>
                   <p>Đang tải danh sách quy tắc...</p>
                 </div>
-              ) : abilityRules.length === 0 ? (
+              ) : filteredAbilityRules.length === 0 ? (
                 <div className="matrix-empty-state">
-                  <p>Chưa có quy tắc đánh giá Năng lực nào</p>
+                  <p>Không tìm thấy quy tắc đánh giá Năng lực nào phù hợp</p>
                 </div>
               ) : (
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Năng lực (Ability)</th>
-                      <th>Phần thi (Part)</th>
-                      <th className="text-center text-amber-600">Ngưỡng Yếu (weakMax)</th>
-                      <th className="text-center text-emerald-600">Ngưỡng Vững (stableMin)</th>
-                      <th className="text-center">Số câu kiểm chứng</th>
-                      <th className="text-center action-col">Hành động</th>
+                      <th style={{ width: '28%' }}>Năng lực (Ability)</th>
+                      <th style={{ width: '22%' }}>Phần thi (Part)</th>
+                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Yếu (Weak)</th>
+                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Vững (Stable)</th>
+                      <th className="text-center" style={{ width: '12%' }}>Số câu Min</th>
+                      <th className="text-center action-col" style={{ width: '10%' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {abilityRules.map(rule => (
+                    {filteredAbilityRules.map(rule => (
                       <tr key={rule.id}>
                         <td className="font-medium text-gray-900">{rule.abilityName}</td>
-                        <td className="text-sm text-gray-500">{rule.partName || '-'}</td>
-                        <td className="text-center font-bold text-amber-600">
-                          &lt; {rule.weakMax}%
+                        <td className="text-sm text-gray-600">{rule.partName || '-'}</td>
+                        <td className="text-center">
+                          <span className="badge badge-yellow font-bold">
+                            &lt; {rule.weakMax}%
+                          </span>
                         </td>
-                        <td className="text-center font-bold text-emerald-600">
-                          &ge; {rule.stableMin}%
+                        <td className="text-center">
+                          <span className="badge badge-green font-bold">
+                            &ge; {rule.stableMin}%
+                          </span>
                         </td>
-                        <td className="text-center font-mono text-sm">
-                          {rule.minEvidenceCount} câu
+                        <td className="text-center">
+                          <span className="badge badge-gray font-mono">
+                            {rule.minEvidenceCount} câu
+                          </span>
                         </td>
                         <td>
                           <div className="action-buttons justify-center">
@@ -479,7 +543,7 @@ export const AdminThresholdPage: React.FC = () => {
               <div>
                 <h2 className="table-section-title">Ngưỡng điểm Part Diagnostic theo AIM</h2>
                 <p className="table-section-desc">
-                  Phân luồng 4 nhánh kết quả: Đạt chuẩn (PASS), Cận chuẩn (CONFIRM), Dưới chuẩn (WEAK), Mất gốc (FULL_PART).
+                  Phân luồng 4 nhánh kết quả: Đạt chuẩn (Pass), Cận chuẩn (Confirm), Dưới chuẩn (Weak), Mất gốc (Full Part).
                 </p>
               </div>
               <button
@@ -494,69 +558,125 @@ export const AdminThresholdPage: React.FC = () => {
               </button>
             </div>
 
+            {/* Thanh công cụ: Lọc Part & Lọc AIM */}
+            <div className="matrix-toolbar">
+              <div className="matrix-filters">
+                <div className="filter-group">
+                  <Filter size={16} className="filter-icon" />
+                  <select
+                    value={selectedPartIdForPartTab ?? ''}
+                    onChange={e => setSelectedPartIdForPartTab(e.target.value ? Number(e.target.value) : undefined)}
+                    className="select-input"
+                  >
+                    <option value="">Tất cả các Part (Part 1 - 7)</option>
+                    {parts.map(p => (
+                      <option key={p.id} value={p.id}>
+                        {p.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="filter-group">
+                  <Sliders size={16} className="filter-icon" />
+                  <select
+                    value={selectedAimForPartTab ?? ''}
+                    onChange={e => setSelectedAimForPartTab(e.target.value ? Number(e.target.value) : undefined)}
+                    className="select-input"
+                  >
+                    <option value="">Tất cả mốc AIM</option>
+                    {profiles.map(p => (
+                      <option key={p.id} value={p.id}>
+                        AIM {p.aimScore}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
             <div className="threshold-table-wrapper">
               {isLoading ? (
                 <div className="matrix-loading-state">
                   <div className="loading-spinner"></div>
                   <p>Đang tải danh sách ngưỡng Part...</p>
                 </div>
-              ) : partThresholds.length === 0 ? (
+              ) : filteredPartThresholds.length === 0 ? (
                 <div className="matrix-empty-state">
-                  <p>Chưa có cấu hình ngưỡng Part nào</p>
+                  <p>Không tìm thấy cấu hình ngưỡng Part nào phù hợp bộ lọc</p>
                 </div>
               ) : (
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th>Phần thi (Part)</th>
-                      <th>Mục tiêu (AIM)</th>
-                      <th className="text-center text-emerald-600">Đạt chuẩn (Pass)</th>
-                      <th className="text-center text-blue-600">Cận chuẩn (Confirm)</th>
-                      <th className="text-center text-rose-600">Mất gốc (Full Part)</th>
-                      <th className="text-center action-col">Hành động</th>
+                      <th style={{ width: '25%' }}>Phần thi (Part)</th>
+                      <th className="text-center" style={{ width: '15%' }}>Mục tiêu (AIM)</th>
+                      <th className="text-center" style={{ width: '16%' }}>Đạt chuẩn (Pass)</th>
+                      <th className="text-center" style={{ width: '16%' }}>Cận chuẩn (Confirm)</th>
+                      <th className="text-center" style={{ width: '16%' }}>Mất gốc (Full Part)</th>
+                      <th className="text-center action-col" style={{ width: '12%' }}>Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {partThresholds.map(rule => (
-                      <tr key={rule.id}>
-                        <td className="font-medium text-gray-900">{rule.partName}</td>
-                        <td className="font-semibold text-brand-orange">
-                          {rule.targetProfileName || `AIM ${rule.targetProfileScore}`}
-                        </td>
-                        <td className="text-center font-bold text-emerald-600">
-                          &ge; {rule.passScore}%
-                        </td>
-                        <td className="text-center font-bold text-blue-600">
-                          {rule.confirmingScore != null ? `\u2265 ${rule.confirmingScore}%` : '-'}
-                        </td>
-                        <td className="text-center font-bold text-rose-600">
-                          {rule.fullPartThreshold != null ? `< ${rule.fullPartThreshold}%` : '-'}
-                        </td>
-                        <td>
-                          <div className="action-buttons justify-center">
-                            <button
-                              type="button"
-                              className="btn-icon primary"
-                              onClick={() => {
-                                setSelectedPartRule(rule);
-                                setIsPartModalOpen(true);
-                              }}
-                              title="Chỉnh sửa"
-                            >
-                              <Edit2 size={16} />
-                            </button>
-                            <button
-                              type="button"
-                              className="btn-icon danger"
-                              onClick={() => handleDeletePartRule(rule.id)}
-                              title="Xóa"
-                            >
-                              <Trash2 size={16} />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                    {filteredPartThresholds.map(rule => {
+                      const aimNum = rule.targetProfileScore || (rule.targetProfileName?.match(/\d+/)?.[0] ?? rule.targetProfileId);
+                      return (
+                        <tr key={rule.id}>
+                          <td className="font-medium text-gray-900">{rule.partName}</td>
+                          <td className="text-center">
+                            <span className="aim-badge">
+                              AIM {aimNum}
+                            </span>
+                          </td>
+                          <td className="text-center">
+                            <span className="badge badge-green font-bold">
+                              &ge; {rule.passScore}%
+                            </span>
+                          </td>
+                          <td className="text-center">
+                            {rule.confirmingScore != null ? (
+                              <span className="badge badge-blue font-bold">
+                                &ge; {rule.confirmingScore}%
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td className="text-center">
+                            {rule.fullPartThreshold != null ? (
+                              <span className="badge badge-red font-bold">
+                                &lt; {rule.fullPartThreshold}%
+                              </span>
+                            ) : (
+                              <span className="text-gray-400">-</span>
+                            )}
+                          </td>
+                          <td>
+                            <div className="action-buttons justify-center">
+                              <button
+                                type="button"
+                                className="btn-icon primary"
+                                onClick={() => {
+                                  setSelectedPartRule(rule);
+                                  setIsPartModalOpen(true);
+                                }}
+                                title="Chỉnh sửa"
+                              >
+                                <Edit2 size={16} />
+                              </button>
+                              <button
+                                type="button"
+                                className="btn-icon danger"
+                                onClick={() => handleDeletePartRule(rule.id)}
+                                title="Xóa"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               )}

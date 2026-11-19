@@ -101,7 +101,7 @@ export const PartThresholdFormModal: React.FC<PartThresholdFormModalProps> = ({
                 <option value={0}>-- Chọn Mục tiêu AIM --</option>
                 {profiles.map(p => (
                   <option key={p.id} value={p.id}>
-                    {p.description || `AIM ${p.aimScore}`}
+                    AIM {p.aimScore}
                   </option>
                 ))}
               </select>
