@@ -340,7 +340,7 @@ export const AdminThresholdPage: React.FC = () => {
         <div>
           <h1 className="admin-page-title">Cấu hình Ngưỡng & Quy tắc Đánh giá</h1>
           <p className="admin-page-subtitle">
-            Quản trị logic cá nhân hóa: Điểm đỗ Module Test theo AIM, Quy tắc lọc Năng lực nhị phân và Ngưỡng điểm Part Diagnostic.
+            Quản trị logic cá nhân hóa: Điểm đỗ bài thi vượt ải theo mục tiêu, quy tắc lọc năng lực nhị phân và ngưỡng điểm phần thi chẩn đoán.
           </p>
         </div>
       </div>
@@ -364,7 +364,7 @@ export const AdminThresholdPage: React.FC = () => {
           className={`tab-btn ${currentTab === 'matrix' ? 'tab-active' : ''}`}
         >
           <Grid size={16} />
-          <span>Ma trận Điểm đỗ Module</span>
+          <span>Ma trận Điểm đỗ Mô-đun</span>
         </button>
 
         <button
@@ -382,7 +382,7 @@ export const AdminThresholdPage: React.FC = () => {
           className={`tab-btn ${currentTab === 'part' ? 'tab-active' : ''}`}
         >
           <Layers size={16} />
-          <span>Ngưỡng điểm Part Diagnostic</span>
+          <span>Ngưỡng điểm Phần thi Chẩn đoán</span>
         </button>
       </div>
 
@@ -413,7 +413,7 @@ export const AdminThresholdPage: React.FC = () => {
           <div className="table-container">
             <div className="threshold-table-header">
               <div>
-                <h2 className="table-section-title">Quy tắc Đánh giá Năng lực (Ability Rules)</h2>
+                <h2 className="table-section-title">Quy tắc Đánh giá Năng lực</h2>
                 <p className="table-section-desc">
                   Mô hình 2 ngưỡng cắt nhị phân: Ngưỡng Yếu (&lt; 50%) và Ngưỡng Vững (&ge; 75%).
                 </p>
@@ -476,11 +476,11 @@ export const AdminThresholdPage: React.FC = () => {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '28%' }}>Năng lực (Ability)</th>
-                      <th style={{ width: '22%' }}>Phần thi (Part)</th>
-                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Yếu (Weak)</th>
-                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Vững (Stable)</th>
-                      <th className="text-center" style={{ width: '12%' }}>Số câu Min</th>
+                      <th style={{ width: '28%' }}>Năng lực</th>
+                      <th style={{ width: '22%' }}>Phần thi</th>
+                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Yếu</th>
+                      <th className="text-center" style={{ width: '14%' }}>Ngưỡng Vững</th>
+                      <th className="text-center" style={{ width: '12%' }}>Số câu tối thiểu</th>
                       <th className="text-center action-col" style={{ width: '10%' }}>Thao tác</th>
                     </tr>
                   </thead>
@@ -541,9 +541,9 @@ export const AdminThresholdPage: React.FC = () => {
           <div className="table-container">
             <div className="threshold-table-header">
               <div>
-                <h2 className="table-section-title">Ngưỡng điểm Part Diagnostic theo AIM</h2>
+                <h2 className="table-section-title">Ngưỡng điểm Phần thi Chẩn đoán theo Mục tiêu</h2>
                 <p className="table-section-desc">
-                  Phân luồng 4 nhánh kết quả: Đạt chuẩn (Pass), Cận chuẩn (Confirm), Dưới chuẩn (Weak), Mất gốc (Full Part).
+                  Phân luồng 4 nhánh kết quả: Đạt chuẩn, Cận chuẩn, Dưới chuẩn, Mất gốc.
                 </p>
               </div>
               <button
@@ -554,7 +554,7 @@ export const AdminThresholdPage: React.FC = () => {
                 }}
                 className="btn-primary"
               >
-                <Plus size={16} /> Thêm Ngưỡng Part
+                <Plus size={16} /> Thêm Ngưỡng Phần thi
               </button>
             </div>
 
@@ -609,11 +609,11 @@ export const AdminThresholdPage: React.FC = () => {
                 <table className="admin-table">
                   <thead>
                     <tr>
-                      <th style={{ width: '25%' }}>Phần thi (Part)</th>
-                      <th className="text-center" style={{ width: '15%' }}>Mục tiêu (AIM)</th>
-                      <th className="text-center" style={{ width: '16%' }}>Đạt chuẩn (Pass)</th>
-                      <th className="text-center" style={{ width: '16%' }}>Cận chuẩn (Confirm)</th>
-                      <th className="text-center" style={{ width: '16%' }}>Mất gốc (Full Part)</th>
+                      <th style={{ width: '25%' }}>Phần thi</th>
+                      <th className="text-center" style={{ width: '15%' }}>Mục tiêu điểm</th>
+                      <th className="text-center" style={{ width: '16%' }}>Đạt chuẩn</th>
+                      <th className="text-center" style={{ width: '16%' }}>Cận chuẩn</th>
+                      <th className="text-center" style={{ width: '16%' }}>Mất gốc</th>
                       <th className="text-center action-col" style={{ width: '12%' }}>Thao tác</th>
                     </tr>
                   </thead>
