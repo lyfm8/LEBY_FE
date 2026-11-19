@@ -29,12 +29,12 @@
 }
 
 .admin-question-title {
-  font-size: 1.75rem;
+  font-size: 1.875rem;
   font-weight: 700;
   color: #111827;
   letter-spacing: -0.025em;
-  margin: 0 0 0.375rem 0;
-  line-height: 1.2;
+  margin: 0 0 0.5rem 0;
+  line-height: 1.25;
 }
 
 .admin-question-subtitle {

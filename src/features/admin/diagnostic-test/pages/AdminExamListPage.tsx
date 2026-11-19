@@ -39,12 +39,12 @@ export const AdminExamListPage: React.FC = () => {
   } = useExamList();
 
   return (
-    <div className="exam-page-container">
+    <div className="admin-page-container exam-page-container">
       {/* Page Title & Add Button */}
-      <div className="exam-page-header">
+      <div className="admin-page-header exam-page-header">
         <div>
-          <h1 className="exam-page-title">Quản lý Đề thi</h1>
-          <p className="exam-page-subtitle">
+          <h1 className="admin-page-title exam-page-title">Quản lý Đề thi</h1>
+          <p className="admin-page-subtitle exam-page-subtitle">
             Quản lý các bộ đề thi đầu vào và đề thi thử TOEIC của hệ thống.
           </p>
         </div>
