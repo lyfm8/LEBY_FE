@@ -64,8 +64,8 @@
   position: relative;
 }
 
-.filter-icon,
-.search-icon {
+.filter-group .filter-icon,
+.search-group .search-icon {
   position: absolute;
   left: 0.75rem;
   color: #9ca3af;
