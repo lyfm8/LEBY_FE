@@ -375,37 +375,71 @@
   border-top: 1px solid #f3f4f6;
 }
 
-/* --- Tables --- */
-.table-container {
+/* --- Tables & Shared Design System --- */
+.table-container,
+.exam-table-card,
+.question-table-card {
   background-color: white;
   border-radius: 0.75rem;
-  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
   border: 1px solid #e5e7eb;
   overflow-x: auto;
 }
-.admin-table {
+
+.admin-table,
+.exam-table,
+.question-table,
+.modern-ability-table,
+.thresholds-table {
   width: 100%;
   text-align: left;
   border-collapse: collapse;
+  font-size: 0.8125rem;
 }
-.admin-table th {
-  padding: 0.875rem 1.5rem;
-  background-color: #f9fafb;
-  color: #6b7280;
+
+.admin-table th,
+.exam-table th,
+.question-table th,
+.modern-ability-table th,
+.thresholds-table th {
+  padding: 0.75rem 1rem;
+  background-color: #f8fafc;
+  color: #64748b;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
 }
-.admin-table td {
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f3f4f6;
-  font-size: 0.875rem;
+
+.admin-table td,
+.exam-table td,
+.question-table td,
+.modern-ability-table td,
+.thresholds-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.8125rem;
   color: #374151;
+  vertical-align: middle;
 }
-.admin-table tbody tr:last-child td { border-bottom: none; }
-.admin-table tbody tr:hover td { background-color: #f9fafb; }
+
+.admin-table tbody tr:last-child td,
+.exam-table tbody tr:last-child td,
+.question-table tbody tr:last-child td,
+.modern-ability-table tbody tr:last-child td,
+.thresholds-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.admin-table tbody tr:hover td,
+.exam-table tbody tr:hover td,
+.question-table tbody tr:hover td,
+.modern-ability-table tbody tr:hover td,
+.thresholds-table tbody tr:hover td {
+  background-color: #f8fafc;
+}
 
 /* --- Badges --- */
 .badge {
