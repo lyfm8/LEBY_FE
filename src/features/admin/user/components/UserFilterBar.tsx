@@ -38,7 +38,7 @@ export const UserFilterBar: React.FC<UserFilterBarProps> = ({ filters, onFilterC
           value={filters.role || ''}
           onChange={(e) => onFilterChange({ role: e.target.value || undefined, page: 0 })}
         >
-          <option value="">Tất cả Role</option>
+          <option value="">Tất cả vai trò</option>
           <option value="STUDENT">Học viên</option>
           <option value="ADMIN">Quản trị viên</option>
         </select>
