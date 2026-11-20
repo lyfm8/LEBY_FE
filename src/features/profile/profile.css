@@ -315,9 +315,68 @@
     border-color: #ea580c;
 }
 
-.pf-form__input.is-disabled {
+.pf-form__input.is-disabled,
+.pf-form__input:disabled,
+.pf-form__select.is-disabled,
+.pf-form__select:disabled {
     background: #f8fafc;
     color: #94a3b8;
+    cursor: not-allowed;
+    border-color: #e2e8f0;
+}
+
+.pf-form__actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.pf-btn-edit {
+    background: #ffffff;
+    border: 1.5px solid #cbd5e1;
+    color: #334155;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pf-btn-edit:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+.pf-btn-cancel {
+    background: #f1f5f9;
+    border: 1.5px solid #e2e8f0;
+    color: #64748b;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 20px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.pf-btn-cancel:hover:not(:disabled) {
+    background: #e2e8f0;
+    color: #334155;
+}
+
+.pf-btn-cancel:disabled {
+    opacity: 0.6;
     cursor: not-allowed;
 }
 
@@ -332,10 +391,19 @@
     border-radius: 10px;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
+    transition: all 0.15s ease;
 }
 
-.pf-btn-save:hover {
+.pf-btn-save:hover:not(:disabled) {
     background: #c2410c;
+}
+
+.pf-btn-save:disabled {
+    background: #cbd5e1;
+    color: #64748b;
+    box-shadow: none;
+    cursor: not-allowed;
+    opacity: 0.6;
 }
 
 .pf-btn-logout {
@@ -460,6 +528,80 @@
 .pf-skill-badge.is-stable { background: #ecfdf5; color: #059669; }
 .pf-skill-badge.is-developing { background: #fef3c7; color: #d97706; }
 .pf-skill-badge.is-weak { background: #fee2e2; color: #dc2626; }
+.pf-skill-badge.is-uncertain { background: #f1f5f9; color: #64748b; }
+
+.pf-learner-badge {
+    background: #eff6ff;
+    color: #2563eb;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid #bfdbfe;
+}
+
+.pf-avatar-img.is-uploading {
+    opacity: 0.6;
+    filter: blur(1px);
+}
+
+.pf-spin {
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.pf-hero-error {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #dc2626;
+    background: #fee2e2;
+    padding: 4px 8px;
+    border-radius: 6px;
+    display: inline-block;
+}
+
+.pf-required {
+    color: #ef4444;
+    font-weight: 700;
+}
+
+.pf-target-empty {
+    padding: 16px 20px;
+    background: #fff7ed;
+    border-radius: 12px;
+    color: #c2410c;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.pf-skills-empty {
+    padding: 48px 24px;
+    text-align: center;
+    color: #64748b;
+}
+
+.pf-empty-icon {
+    margin: 0 auto 12px;
+    color: #94a3b8;
+}
+
+.pf-empty-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 6px;
+}
+
+.pf-empty-desc {
+    max-width: 480px;
+    margin: 0 auto;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
 
 /* ── Fallbacks ─────────────────────────────────────────────── */
 .pf-loading {
