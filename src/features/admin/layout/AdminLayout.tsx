@@ -7,14 +7,14 @@ import {
 import './admin-layout.css';
 
 const navItems = [
-  { path: '/admin', label: 'Dashboard', icon: <LayoutDashboard size={20} />, exact: true },
-  { path: '/admin/users', label: 'Quản lý User', icon: <Users size={20} /> },
-  { path: '/admin/parts', label: 'Part & Ability', icon: <Settings size={20} /> },
+  { path: '/admin', label: 'Tổng quan', icon: <LayoutDashboard size={20} />, exact: true },
+  { path: '/admin/users', label: 'Quản lý học viên', icon: <Users size={20} /> },
+  { path: '/admin/parts', label: 'Phần thi & Năng lực', icon: <Settings size={20} /> },
   { path: '/admin/questions', label: 'Ngân hàng câu hỏi', icon: <HelpCircle size={20} /> },
-  { path: '/admin/modules', label: 'Module & Lesson', icon: <BookOpen size={20} /> },
-  { path: '/admin/targets', label: 'Target Profile', icon: <Target size={20} /> },
-  { path: '/admin/thresholds', label: 'Threshold & Rule', icon: <Settings size={20} /> },
-  { path: '/admin/diagnostic-tests', label: 'Quản lý Đề thi', icon: <FileText size={20} /> },
+  { path: '/admin/modules', label: 'Mô-đun & Bài học', icon: <BookOpen size={20} /> },
+  { path: '/admin/targets', label: 'Mục tiêu điểm số', icon: <Target size={20} /> },
+  { path: '/admin/thresholds', label: 'Ngưỡng & Quy tắc', icon: <Settings size={20} /> },
+  { path: '/admin/diagnostic-tests', label: 'Đề thi chẩn đoán', icon: <FileText size={20} /> },
 ];
 
 export const AdminLayout: React.FC = () => {
@@ -29,7 +29,7 @@ export const AdminLayout: React.FC = () => {
             <div className="admin-logo-icon">L</div>
             <div className="admin-sidebar-title-wrapper">
               <h1 className="admin-sidebar-title">LEBY</h1>
-              <h2 className="admin-sidebar-subtitle">Admin Portal</h2>
+              <h2 className="admin-sidebar-subtitle">Cổng Quản Trị</h2>
             </div>
           </NavLink>
         </div>

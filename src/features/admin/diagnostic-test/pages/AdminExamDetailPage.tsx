@@ -70,12 +70,12 @@ export const AdminExamDetailPage: React.FC = () => {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <span className={exam.testType === 'FULL_MOCK_TEST' ? 'badge-mock' : 'badge-diagnostic'}>
-              {exam.testType === 'FULL_MOCK_TEST' ? 'MOCK TEST' : 'DIAGNOSTIC TEST'}
+              {exam.testType === 'FULL_MOCK_TEST' ? 'THI THỬ' : 'ĐỀ CHẨN ĐOÁN'}
             </span>
 
             <span className={`dot-status-badge ${exam.examStatus.toLowerCase()}`}>
               <span className="dot-indicator" />
-              <span>{exam.examStatus === 'ACTIVE' ? 'Active' : exam.examStatus === 'ARCHIVE' ? 'Archive' : 'Draft'}</span>
+              <span>{exam.examStatus === 'ACTIVE' ? 'Đang hoạt động' : exam.examStatus === 'ARCHIVE' ? 'Đã lưu trữ' : 'Bản nháp'}</span>
             </span>
           </div>
 
@@ -178,7 +178,7 @@ export const AdminExamDetailPage: React.FC = () => {
               <th style={{ width: '130px' }}>MÃ CÂU HỎI</th>
               <th>NỘI DUNG / TÊN CÂU HỎI</th>
               <th style={{ width: '100px' }}>PHẦN THI</th>
-              <th style={{ width: '180px' }}>KỸ NĂNG (ABILITY)</th>
+              <th style={{ width: '180px' }}>KỸ NĂNG / NĂNG LỰC</th>
               <th style={{ width: '80px', textAlign: 'center' }}>ĐIỂM</th>
             </tr>
           </thead>

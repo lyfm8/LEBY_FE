@@ -43,9 +43,9 @@ export const ExamFilterBar: React.FC<ExamFilterBarProps> = ({
         onChange={(e) => onStatusChange(e.target.value as ExamStatus | 'ALL')}
       >
         <option value="ALL">Tất cả trạng thái</option>
-        <option value="ACTIVE">Active</option>
-        <option value="ARCHIVE">Archive</option>
-        <option value="DRAFT">Draft</option>
+        <option value="ACTIVE">Đang hoạt động</option>
+        <option value="ARCHIVE">Đã lưu trữ</option>
+        <option value="DRAFT">Bản nháp</option>
       </select>
 
       <select
@@ -55,7 +55,7 @@ export const ExamFilterBar: React.FC<ExamFilterBarProps> = ({
       >
         <option value="ALL">Tất cả loại đề</option>
         <option value="DIAGNOSTIC">Đề thi chẩn đoán</option>
-        <option value="FULL_MOCK_TEST">Đề thi thử (Mock Test)</option>
+        <option value="FULL_MOCK_TEST">Đề thi thử</option>
       </select>
 
       <button type="button" className="exam-btn-reset" onClick={onReset} title="Đặt lại bộ lọc">

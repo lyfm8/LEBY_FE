@@ -65,8 +65,8 @@ export const AdminExamCreatePage: React.FC = () => {
       </div>
 
       <div style={{ marginBottom: '24px' }}>
-        <h1 className="exam-page-title">Tạo đề thi mới</h1>
-        <p className="exam-page-subtitle">Thiết lập thông tin, cấu hình câu hỏi và hoàn tất bộ đề.</p>
+        <h1 className="admin-page-title exam-page-title">Tạo đề thi mới</h1>
+        <p className="admin-page-subtitle exam-page-subtitle">Thiết lập thông tin, cấu hình câu hỏi và hoàn tất bộ đề.</p>
       </div>
 
       {/* Stepper 3 bước */}

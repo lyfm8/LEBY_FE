@@ -90,7 +90,7 @@ export const AdminModulePage: React.FC = () => {
       {/* 1. Header trang chuẩn mực của LEBY Admin */}
       <div className="admin-page-header">
         <div>
-          <h1 className="admin-page-title">Quản lý Mô-đun & Bài học (Module & Lesson)</h1>
+          <h1 className="admin-page-title">Quản lý Mô-đun & Bài học</h1>
           <p className="admin-page-subtitle">
             Thiết kế lộ trình học tập thích ứng, cấu hình ngưỡng vượt ải và biên soạn nội dung bài giảng đa phương tiện
           </p>

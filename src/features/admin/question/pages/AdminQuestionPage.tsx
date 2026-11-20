@@ -33,12 +33,12 @@ export const AdminQuestionPage: React.FC = () => {
   } = useQuestionList();
 
   return (
-    <div className="admin-question-page">
+    <div className="admin-page-container admin-question-page">
       {/* Header trang */}
-      <div className="admin-question-header">
+      <div className="admin-page-header admin-question-header">
         <div>
-          <h1 className="admin-question-title">Ngân hàng câu hỏi</h1>
-          <p className="admin-question-subtitle">
+          <h1 className="admin-page-title admin-question-title">Ngân hàng câu hỏi</h1>
+          <p className="admin-page-subtitle admin-question-subtitle">
             Quản lý, biên soạn và tổ chức toàn bộ kho câu hỏi TOEIC tại một nơi.
           </p>
         </div>

@@ -20,7 +20,7 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onToggleActive, isL
           <tr>
             <th>Họ Tên</th>
             <th>Email</th>
-            <th>AIM Target</th>
+            <th>Mục tiêu điểm</th>
             <th style={{ textAlign: 'center' }}>Trạng thái</th>
             <th>Ngày Đăng Ký</th>
             <th style={{ textAlign: 'right' }}>Hành động</th>
@@ -40,7 +40,7 @@ export const UserTable: React.FC<UserTableProps> = ({ users, onToggleActive, isL
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                     <span className="user-name">{user.fullName}</span>
                     {user.role === 'ADMIN' && (
-                      <span className="badge badge-admin">{user.role}</span>
+                      <span className="badge badge-admin">Quản trị viên</span>
                     )}
                   </div>
                 </td>
