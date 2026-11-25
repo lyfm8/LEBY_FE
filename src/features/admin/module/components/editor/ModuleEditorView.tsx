@@ -335,7 +335,7 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                 })}
                 className="form-input"
               >
-                <option value="">-- Chọn Part tương ứng --</option>
+                <option value="">Tổng ôn toàn diện (Không chia Part)</option>
                 {parts.map((p) => (
                   <option key={p.id} value={p.id}>
                     {p.name} ({p.sections})

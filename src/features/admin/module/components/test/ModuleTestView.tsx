@@ -33,9 +33,6 @@ export const ModuleTestView: React.FC<ModuleTestViewProps> = ({
           <h1 className="editor-main-title">
             Module Test: {moduleTitle}
           </h1>
-          <p className="editor-subtitle">
-            Bài kiểm tra đánh giá năng lực cuối mô-đun để xác định học viên đủ điều kiện tiến sang nội dung tiếp theo.
-          </p>
         </div>
 
         <div className="editor-header-right">
@@ -88,7 +85,7 @@ export const ModuleTestView: React.FC<ModuleTestViewProps> = ({
                     className="btn-inline-link"
                     onClick={onOpenThresholds}
                   >
-                    Cấu hình thông số
+                    Cấu hình chuẩn
                   </button>
                   .
                 </span>

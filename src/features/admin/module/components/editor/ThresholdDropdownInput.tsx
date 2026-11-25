@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { ChevronDown, Check } from 'lucide-react';
 
 export interface ThresholdPreset {
@@ -49,14 +50,24 @@ export const ThresholdDropdownInput: React.FC<ThresholdDropdownInputProps> = ({
   title = 'Chọn nhanh mốc chuẩn',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [openUpward, setOpenUpward] = useState(false);
+  const [coords, setCoords] = useState<{ top: number; left: number; width: number }>({ top: 0, left: 0, width: 220 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  const updateCoords = () => {
+    if (containerRef.current) {
+      const rect = containerRef.current.getBoundingClientRect();
+      const popoverHeight = 220;
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const top = spaceBelow < popoverHeight ? Math.max(8, rect.top - popoverHeight - 4) : rect.bottom + 4;
+      const left = Math.max(8, Math.min(window.innerWidth - 230, rect.right - 220));
+      setCoords({ top, left, width: Math.max(220, rect.width) });
+    }
+  };
 
   const toggleDropdown = () => {
-    if (!isOpen && containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      const spaceBelow = window.innerHeight - rect.bottom;
-      setOpenUpward(spaceBelow < 190);
+    if (!isOpen) {
+      updateCoords();
     }
     setIsOpen((prev) => !prev);
   };
@@ -64,10 +75,17 @@ export const ThresholdDropdownInput: React.FC<ThresholdDropdownInputProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
+    const handleScrollOrResize = () => {
+      updateCoords();
+    };
+
     const handleClickOutside = (e: MouseEvent) => {
+      const target = e.target as Node;
       if (
         containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
+        !containerRef.current.contains(target) &&
+        popoverRef.current &&
+        !popoverRef.current.contains(target)
       ) {
         setIsOpen(false);
       }
@@ -79,9 +97,14 @@ export const ThresholdDropdownInput: React.FC<ThresholdDropdownInputProps> = ({
 
     document.addEventListener('mousedown', handleClickOutside);
     document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('scroll', handleScrollOrResize, true);
+    window.addEventListener('resize', handleScrollOrResize);
+
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
       document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('scroll', handleScrollOrResize, true);
+      window.removeEventListener('resize', handleScrollOrResize);
     };
   }, [isOpen]);
 
@@ -137,45 +160,54 @@ export const ThresholdDropdownInput: React.FC<ThresholdDropdownInputProps> = ({
         </button>
       </div>
 
-      {isOpen && (
-        <div
-          className={`threshold-preset-popover ${openUpward ? 'drop-up' : 'drop-down'}`}
-          role="listbox"
-        >
-          <div className="threshold-popover-header">Mốc gợi ý chuẩn</div>
-          <div className="threshold-preset-list">
-            {presets.map((p) => {
-              const isSelected = value === p.value;
-              return (
-                <button
-                  key={p.value}
-                  type="button"
-                  className={`threshold-preset-item ${isSelected ? 'selected' : ''}`}
-                  onClick={() => handleSelectPreset(p.value)}
-                  role="option"
-                  aria-selected={isSelected}
-                >
-                  <div className="preset-item-val">
-                    <span className="preset-num">{p.value}</span>
-                    <span className="preset-unit">{unit}</span>
-                  </div>
+      {isOpen &&
+        createPortal(
+          <div
+            ref={popoverRef}
+            className="threshold-preset-popover portal-popover"
+            style={{
+              position: 'fixed',
+              top: `${coords.top}px`,
+              left: `${coords.left}px`,
+              zIndex: 99999,
+            }}
+            role="listbox"
+          >
+            <div className="threshold-popover-header">Mốc gợi ý chuẩn</div>
+            <div className="threshold-preset-list">
+              {presets.map((p) => {
+                const isSelected = value === p.value;
+                return (
+                  <button
+                    key={p.value}
+                    type="button"
+                    className={`threshold-preset-item ${isSelected ? 'selected' : ''}`}
+                    onClick={() => handleSelectPreset(p.value)}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className="preset-item-val">
+                      <span className="preset-num">{p.value}</span>
+                      <span className="preset-unit">{unit}</span>
+                    </div>
 
-                  <div className="preset-item-info">
-                    <span className="preset-label">{p.label}</span>
-                    {p.isRecommended && (
-                      <span className="preset-badge-star">Khuyên dùng</span>
+                    <div className="preset-item-info">
+                      <span className="preset-label">{p.label}</span>
+                      {p.isRecommended && (
+                        <span className="preset-badge-star">Khuyên dùng</span>
+                      )}
+                    </div>
+
+                    {isSelected && (
+                      <Check size={14} className="preset-check-icon" />
                     )}
-                  </div>
-
-                  {isSelected && (
-                    <Check size={14} className="preset-check-icon" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>,
+          document.body
+        )}
     </div>
   );
 };

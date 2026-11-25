@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import type { LessonFormValues } from '../../utils/schema';
 import type { AbilityResponse } from '@/features/admin/part/types';
+import { useMediaUpload } from '@/features/media/hooks/useMediaUpload';
 import {
   Upload,
   Video,
@@ -16,6 +17,7 @@ import {
   Quote,
   ClipboardList,
   Clock,
+  Loader2,
 } from 'lucide-react';
 
 interface LessonContentTabProps {
@@ -49,19 +51,69 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
   const [audioFileName, setAudioFileName] = useState<string>('');
   const [videoFileName, setVideoFileName] = useState<string>('');
   const [imageFileName, setImageFileName] = useState<string>('');
+  const [uploadingField, setUploadingField] = useState<'video' | 'audio' | 'image' | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   const audioInputRef = useRef<HTMLInputElement | null>(null);
   const videoInputRef = useRef<HTMLInputElement | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
+  const { uploadSingle } = useMediaUpload();
+
+  // Helper: upload file lên Cloudinary, preview bằng blob trong lúc chờ
+  const uploadMedia = async (
+    file: File,
+    field: 'video' | 'audio' | 'image',
+    setFileName: (n: string) => void,
+    formKey: 'videoUrl' | 'audioUrl' | 'imageUrl',
+    onDuration?: (d: number) => void,
+  ) => {
+    setFileName(file.name);
+    setUploadError(null);
+    const blobUrl = URL.createObjectURL(file);
+    // Preview ngay bằng blob local
+    setValue(formKey, blobUrl, { shouldDirty: true });
+
+    if (onDuration) {
+      const el = document.createElement(field === 'video' ? 'video' : 'audio');
+      el.preload = 'metadata';
+      el.src = blobUrl;
+      el.onloadedmetadata = () => {
+        const d = Math.round(el.duration);
+        if (!Number.isNaN(d) && d > 0) onDuration(d);
+      };
+    }
+
+    setUploadingField(field);
+    try {
+      const saved = await uploadSingle(file);
+      // Thay blob URL bằng URL Cloudinary thật
+      setValue(formKey, saved.url, { shouldDirty: true });
+    } catch (err: unknown) {
+      let detail = err instanceof Error ? err.message : String(err);
+      if (typeof err === 'object' && err !== null && 'response' in err) {
+        const respData = (err as { response?: { data?: { message?: string; errors?: Record<string, string> } } }).response?.data;
+        if (respData?.errors && Object.keys(respData.errors).length > 0) {
+          detail = Object.entries(respData.errors).map(([k, v]) => `${k}: ${v}`).join('; ');
+        } else if (respData?.message) {
+          detail = respData.message;
+        }
+      }
+      setUploadError(`Upload ${field} thất bại: ${detail}`);
+      // Giữ blob URL để preview, user có thể lưu lại sau
+    } finally {
+      setUploadingField(null);
+    }
+  };
+
   // Xử lý chọn file Video từ máy
   const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setVideoFileName(file.name);
-      const blobUrl = URL.createObjectURL(file);
-      setValue('videoUrl', blobUrl, { shouldDirty: true });
+      void uploadMedia(file, 'video', setVideoFileName, 'videoUrl', (d) =>
+        setValue('durationSeconds', d, { shouldDirty: true }),
+      );
     }
   };
 
@@ -69,9 +121,9 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
   const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setAudioFileName(file.name);
-      const blobUrl = URL.createObjectURL(file);
-      setValue('audioUrl', blobUrl, { shouldDirty: true });
+      void uploadMedia(file, 'audio', setAudioFileName, 'audioUrl', (d) =>
+        setValue('durationSeconds', d, { shouldDirty: true }),
+      );
     }
   };
 
@@ -79,9 +131,7 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
   const handleImageFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageFileName(file.name);
-      const blobUrl = URL.createObjectURL(file);
-      setValue('imageUrl', blobUrl, { shouldDirty: true });
+      void uploadMedia(file, 'image', setImageFileName, 'imageUrl');
     }
   };
 
@@ -248,9 +298,13 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
         <div className="card-header-with-hint">
           <h3 className="tab-card-title">Tài liệu Đa phương tiện (Upload từ máy)</h3>
           <span className="text-muted text-xs">
-            * Chọn tệp trực tiếp từ máy để xem trước (Preview) ngay trên giao diện
+            * Chọn tệp — sẽ upload Cloudinary tự động, preview ngay trong lúc chờ
           </span>
         </div>
+
+        {uploadError && (
+          <div className="form-error" style={{ marginBottom: 8 }}>⚠ {uploadError}</div>
+        )}
 
         <div className="media-dropzones-grid">
           {/* Ô 1: Video bài giảng */}
@@ -260,16 +314,24 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
                 <Video size={16} />
                 <span>Video bài giảng (.mp4, .webm)</span>
               </div>
-              {videoUrl && (
-                <button
-                  type="button"
-                  className="btn-remove-media"
-                  onClick={removeVideo}
-                  title="Xóa video"
-                >
-                  <Trash2 size={13} />
-                </button>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {uploadingField === 'video' && (
+                  <span className="upload-loading-badge">
+                    <Loader2 size={12} className="spin-icon" /> Đang upload...
+                  </span>
+                )}
+                {videoUrl && (
+                  <button
+                    type="button"
+                    className="btn-remove-media"
+                    onClick={removeVideo}
+                    title="Xóa video"
+                    disabled={uploadingField === 'video'}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {videoUrl ? (
@@ -307,16 +369,24 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
                 <Music size={16} />
                 <span>File Âm thanh (.mp3, .wav)</span>
               </div>
-              {audioUrl && (
-                <button
-                  type="button"
-                  className="btn-remove-media"
-                  onClick={removeAudio}
-                  title="Xóa audio"
-                >
-                  <Trash2 size={13} />
-                </button>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {uploadingField === 'audio' && (
+                  <span className="upload-loading-badge">
+                    <Loader2 size={12} className="spin-icon" /> Đang upload...
+                  </span>
+                )}
+                {audioUrl && (
+                  <button
+                    type="button"
+                    className="btn-remove-media"
+                    onClick={removeAudio}
+                    title="Xóa audio"
+                    disabled={uploadingField === 'audio'}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {audioUrl ? (
@@ -354,16 +424,24 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
                 <ImageIcon size={16} />
                 <span>Hình ảnh minh họa (.png, .jpg)</span>
               </div>
-              {imageUrl && (
-                <button
-                  type="button"
-                  className="btn-remove-media"
-                  onClick={removeImage}
-                  title="Xóa hình ảnh"
-                >
-                  <Trash2 size={13} />
-                </button>
-              )}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                {uploadingField === 'image' && (
+                  <span className="upload-loading-badge">
+                    <Loader2 size={12} className="spin-icon" /> Đang upload...
+                  </span>
+                )}
+                {imageUrl && (
+                  <button
+                    type="button"
+                    className="btn-remove-media"
+                    onClick={removeImage}
+                    title="Xóa hình ảnh"
+                    disabled={uploadingField === 'image'}
+                  >
+                    <Trash2 size={13} />
+                  </button>
+                )}
+              </div>
             </div>
 
             {imageUrl ? (
