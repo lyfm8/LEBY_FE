@@ -17,12 +17,13 @@ const NON_REDIRECTABLE_PATHS = [
  * Xác định trang đích mặc định sau khi đăng nhập thành công theo đúng vai trò người dùng:
  * - ADMIN   → /admin (Cổng Quản trị - Tổng quan hệ thống)
  * - TEACHER → /admin/modules (Cổng Giảng viên - Quản lý Mô-đun & Bài học)
- * - STUDENT → /dashboard (Bảng điều khiển học tập của học viên)
+ * - STUDENT → /target-selection (nếu chưa chọn AIM) hoặc /dashboard
  *
- * @param role Vai trò tài khoản từ Backend
+ * @param role              Vai trò tài khoản từ Backend
+ * @param hasSelectedTarget Trạng thái học viên đã chọn mục tiêu AIM hay chưa
  * @returns Đường dẫn trang chủ tương ứng với vai trò
  */
-export function getDefaultRouteByRole(role: UserRole): string {
+export function getDefaultRouteByRole(role: UserRole, hasSelectedTarget?: boolean): string {
     switch (role) {
         case 'ADMIN':
             return '/admin';
@@ -30,6 +31,9 @@ export function getDefaultRouteByRole(role: UserRole): string {
             return '/admin/modules';
         case 'STUDENT':
         default:
+            if (hasSelectedTarget === false) {
+                return '/target-selection';
+            }
             return '/dashboard';
     }
 }
@@ -63,15 +67,24 @@ export function canRoleAccessPath(role: UserRole, pathname: string): boolean {
 
 /**
  * Tính toán đường dẫn đích an toàn ngay sau khi đăng nhập thành công.
- * Ưu tiên trả về trang user đang truy cập dở nếu hợp lệ với vai trò; ngược lại đưa về trang mặc định theo vai trò.
+ * Ưu tiên điều hướng học viên chưa chọn AIM về /target-selection (BR01),
+ * sau đó mới khôi phục trang đang truy cập dở hoặc trang mặc định theo vai trò.
  *
- * @param role         Vai trò tài khoản vừa xác thực
- * @param fromPathname Đường dẫn trước đó (nếu bị AuthGuard đẩy về /login)
+ * @param role              Vai trò tài khoản vừa xác thực
+ * @param fromPathname      Đường dẫn trước đó (nếu bị AuthGuard đẩy về /login)
+ * @param hasSelectedTarget Trạng thái học viên đã chọn mục tiêu AIM hay chưa
  * @returns Đường dẫn đích hợp lệ
  */
-export function resolvePostLoginRedirect(role: UserRole, fromPathname?: string): string {
+export function resolvePostLoginRedirect(
+    role: UserRole,
+    fromPathname?: string,
+    hasSelectedTarget?: boolean
+): string {
+    if (role === 'STUDENT' && hasSelectedTarget === false) {
+        return '/target-selection';
+    }
     if (fromPathname && canRoleAccessPath(role, fromPathname)) {
         return fromPathname;
     }
-    return getDefaultRouteByRole(role);
+    return getDefaultRouteByRole(role, hasSelectedTarget);
 }

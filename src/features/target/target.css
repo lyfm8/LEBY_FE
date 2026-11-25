@@ -87,6 +87,27 @@
     background-color: #ea580c;
 }
 
+.target-header__back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    transition: all 0.15s ease;
+}
+
+.target-header__back-link:hover {
+    color: #0f172a;
+    background: #f8fafc;
+    border-color: #cbd5e1;
+}
+
 /* â”€â”€ Main Container â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 .target-container {
     max-width: 1200px;
@@ -185,18 +206,42 @@
     justify-content: center;
 }
 
-.target-card__level {
-    font-size: 12px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: #94a3b8;
-    margin-bottom: 8px;
-    transition: color 0.15s;
+.target-card__badges {
+    min-height: 22px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.target-card.is-selected .target-card__level {
+.target-card__pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.target-card__pill.is-recommended {
+    background-color: #fff7ed;
     color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+
+.target-card__pill.is-current {
+    background-color: #ecfdf5;
+    color: #059669;
+    border: 1px solid #a7f3d0;
+}
+
+.target-card.is-current {
+    border-color: #10b981;
+}
+
+.target-card.is-current.is-selected {
+    border-color: #ea580c;
 }
 
 .target-card__score {
@@ -216,11 +261,36 @@
     margin-top: auto;
 }
 
-/* â”€â”€ Actions â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ── Actions ───────────────────────────────────────────────── */
 .target-actions {
     display: flex;
     justify-content: center;
+    align-items: center;
+    gap: 14px;
     width: 100%;
+    flex-wrap: wrap;
+}
+
+.target-cancel-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    color: #475569;
+    border: 1.5px solid #cbd5e1;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 13px 28px;
+    border-radius: 12px;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.target-cancel-btn:hover {
+    background-color: #f8fafc;
+    color: #0f172a;
+    border-color: #94a3b8;
 }
 
 .target-submit-btn {
@@ -289,4 +359,163 @@
     to {
         transform: rotate(360deg);
     }
+}
+
+/* ── Confirmation Modal (Đổi AIM) ─────────────────────────── */
+.target-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.55);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.target-modal {
+    background: #ffffff;
+    border-radius: 20px;
+    max-width: 480px;
+    width: 100%;
+    padding: 24px;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    border: 1px solid #e2e8f0;
+}
+
+.target-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.target-modal__title-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.target-modal__icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background-color: #fff7ed;
+    color: #ea580c;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.target-modal__title {
+    margin: 0;
+    font-size: 17px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.target-modal__close {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 8px;
+}
+
+.target-modal__close:hover:not(:disabled) {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.target-modal__score-diff {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 12px;
+}
+
+.target-modal__score-pill {
+    font-size: 15px;
+    font-weight: 700;
+    color: #475569;
+    background: #e2e8f0;
+    padding: 6px 14px;
+    border-radius: 9999px;
+}
+
+.target-modal__score-pill.is-new {
+    background: #fff7ed;
+    color: #ea580c;
+    border: 1px solid #fed7aa;
+}
+
+.target-modal__arrow {
+    font-weight: 700;
+    color: #94a3b8;
+}
+
+.target-modal__desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: #475569;
+    margin: 0 0 14px;
+}
+
+.target-modal__downgrade-warn {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #b45309;
+    font-size: 13.5px;
+    line-height: 1.5;
+    padding: 12px 14px;
+    border-radius: 10px;
+    margin-bottom: 16px;
+}
+
+.target-modal__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.target-modal__btn {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.target-modal__btn.is-cancel {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+}
+
+.target-modal__btn.is-cancel:hover:not(:disabled) {
+    background: #f8fafc;
+}
+
+.target-modal__btn.is-confirm {
+    background: #ea580c;
+    border: none;
+    color: #ffffff;
+}
+
+.target-modal__btn.is-confirm:hover:not(:disabled) {
+    background: #c2410c;
+}
+
+.target-modal__btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
 }

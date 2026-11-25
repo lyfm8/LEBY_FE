@@ -73,4 +73,10 @@ export interface AuthUser {
     avatar: string | null;
     /** Vai trò / quyền hạn trong hệ thống */
     role: UserRole;
+    /** Học viên đã chọn mục tiêu AIM ít nhất một lần hay chưa (UC05) */
+    hasSelectedTarget?: boolean;
+    /** ID mốc mục tiêu AIM hiện tại của người dùng */
+    targetProfileId?: number | null;
+    /** Điểm mục tiêu AIM hiện tại của người dùng */
+    targetTotalScore?: number | null;
 }

@@ -37,7 +37,7 @@ export const ForgotPasswordPage: React.FC = () => {
     // Nếu người dùng đã đăng nhập sẵn, không cho ở lại trang quên mật khẩu mà đưa về trang chủ đúng vai trò
     useEffect(() => {
         if (!isAuthLoading && user) {
-            navigate(getDefaultRouteByRole(user.role), { replace: true });
+            navigate(getDefaultRouteByRole(user.role, user.hasSelectedTarget), { replace: true });
         }
     }, [isAuthLoading, user, navigate]);
 

@@ -24,7 +24,7 @@ export const RegisterPage: React.FC = () => {
     // Nếu người dùng đã đăng nhập, tự động chuyển về trang chủ theo vai trò
     useEffect(() => {
         if (!isAuthLoading && user) {
-            navigate(getDefaultRouteByRole(user.role), { replace: true });
+            navigate(getDefaultRouteByRole(user.role, user.hasSelectedTarget), { replace: true });
         }
     }, [isAuthLoading, user, navigate]);
 

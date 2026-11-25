@@ -4,14 +4,18 @@ import type { TargetProfile } from '../types/targetTypes';
 interface TargetCardProps {
     target: TargetProfile;
     isSelected: boolean;
+    isCurrent?: boolean;
     onSelect: (id: number) => void;
 }
 
-export function TargetCard({ target, isSelected, onSelect }: TargetCardProps) {
+/**
+ * Thẻ hiển thị một mốc điểm TOEIC mục tiêu (AIM) cho phép học viên lựa chọn.
+ */
+export function TargetCard({ target, isSelected, isCurrent = false, onSelect }: TargetCardProps) {
     return (
         <button
             type="button"
-            className={`target-card ${isSelected ? 'is-selected' : ''}`}
+            className={`target-card ${isSelected ? 'is-selected' : ''} ${isCurrent ? 'is-current' : ''}`}
             onClick={() => onSelect(target.id)}
             aria-pressed={isSelected}
         >
@@ -21,11 +25,20 @@ export function TargetCard({ target, isSelected, onSelect }: TargetCardProps) {
                 </div>
             )}
 
-            <div className="target-card__level">{target.level}</div>
+            <div className="target-card__badges">
+                {isCurrent && (
+                    <span className="target-card__pill is-current">Mục tiêu hiện tại</span>
+                )}
+                {target.isRecommended && !isCurrent && (
+                    <span className="target-card__pill is-recommended">Được đề xuất</span>
+                )}
+            </div>
+
             <div className="target-card__score">
                 {target.targetTotalScore}
                 {target.targetTotalScore === 850 ? '+' : ''}
             </div>
+
             <p className="target-card__desc">{target.description}</p>
         </button>
     );

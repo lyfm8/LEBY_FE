@@ -36,7 +36,7 @@ export const LoginPage: React.FC = () => {
     // Nếu người dùng đã có phiên đăng nhập hợp lệ, tự động đưa thẳng về trang chủ đúng vai trò
     useEffect(() => {
         if (!isAuthLoading && user) {
-            navigate(getDefaultRouteByRole(user.role), { replace: true });
+            navigate(getDefaultRouteByRole(user.role, user.hasSelectedTarget), { replace: true });
         }
     }, [isAuthLoading, user, navigate]);
 
@@ -57,7 +57,11 @@ export const LoginPage: React.FC = () => {
             // Bước 2: Cập nhật AuthContext và điều hướng an toàn theo đúng vai trò (chống điều hướng chéo 403)
             if (res.success && res.data) {
                 setUser(res.data);
-                const targetPath = resolvePostLoginRedirect(res.data.role, fromPathname);
+                const targetPath = resolvePostLoginRedirect(
+                    res.data.role,
+                    fromPathname,
+                    res.data.hasSelectedTarget
+                );
                 navigate(targetPath, { replace: true });
             } else {
                 setServerError(res.message ?? 'Đăng nhập thất bại. Vui lòng thử lại.');

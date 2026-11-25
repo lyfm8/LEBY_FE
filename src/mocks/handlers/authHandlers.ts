@@ -8,6 +8,9 @@ let currentMockUser = {
     role: 'STUDENT',
     dob: '2001-08-15',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    hasSelectedTarget: true,
+    targetProfileId: 3,
+    targetTotalScore: 650,
 };
 
 export const authHandlers = [
@@ -39,6 +42,9 @@ export const authHandlers = [
             role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            hasSelectedTarget: true,
+            targetProfileId: 3,
+            targetTotalScore: 650,
         };
 
         return HttpResponse.json({
@@ -60,6 +66,9 @@ export const authHandlers = [
             role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            hasSelectedTarget: true,
+            targetProfileId: 3,
+            targetTotalScore: 650,
         };
 
         return HttpResponse.json({
@@ -78,6 +87,12 @@ export const authHandlers = [
     }),
 
     http.post('*/api/auth/register', () => {
+        currentMockUser = {
+            ...currentMockUser,
+            hasSelectedTarget: false,
+            targetProfileId: null as unknown as number,
+            targetTotalScore: null as unknown as number,
+        };
         return HttpResponse.json({
             success: true,
             message: 'Đăng ký thành công',
