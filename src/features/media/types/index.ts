@@ -7,6 +7,7 @@ export interface MediaUploadSignature {
     apiKey: string;
     cloudName: string;
     expiresIn: number;
+    folder?: string;
 }
 
 /**

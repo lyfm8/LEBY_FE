@@ -73,6 +73,9 @@ export class MediaService {
         formData.append('timestamp', signatureData.timestamp.toString());
         formData.append('signature', signatureData.signature);
         formData.append('tags', 'tmp');
+        if (signatureData.folder) {
+            formData.append('folder', signatureData.folder);
+        }
 
         const uploadUrl = `https://api.cloudinary.com/v1_1/${signatureData.cloudName}/auto/upload`;
         const response = await fetch(uploadUrl, {
@@ -130,18 +133,21 @@ export class MediaService {
             const uploadPromises = files.map((file) => this.uploadToCloudinary(file, signatureData));
             const cloudinaryResults = await Promise.all(uploadPromises);
 
-            // Bước 4: Chuyển đổi và lưu metadata về Backend
-            const saveRequests: SaveMediaRequest[] = cloudinaryResults.map((result, idx) => ({
-                public_id: result.public_id,
-                secure_url: result.secure_url,
-                resource_type: result.resource_type,
-                format: result.format,
-                bytes: result.bytes,
-                width: result.width,
-                height: result.height,
-                original_filename: result.original_filename || files[idx]?.name,
-                duration: result.duration,
-            }));
+            // Bước 4: Chuyển đổi và lưu metadata về Backend (lọc bỏ width/height/duration = 0 của file audio)
+            const saveRequests: SaveMediaRequest[] = cloudinaryResults.map((result, idx) => {
+                const fallbackExt = files[idx]?.name.split('.').pop()?.toLowerCase() || 'bin';
+                return {
+                    public_id: result.public_id,
+                    secure_url: result.secure_url,
+                    resource_type: result.resource_type,
+                    format: result.format || fallbackExt,
+                    bytes: result.bytes,
+                    width: result.width && result.width > 0 ? result.width : undefined,
+                    height: result.height && result.height > 0 ? result.height : undefined,
+                    original_filename: result.original_filename || files[idx]?.name,
+                    duration: result.duration && result.duration > 0 ? result.duration : undefined,
+                };
+            });
 
             return await this.saveMedias(saveRequests);
         } catch (error) {
