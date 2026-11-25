@@ -56,19 +56,17 @@ const generateMockQuestions = (): DiagnosticQuestion[] => {
 
         if (i <= 6) {
             partNo = 1;
-            partName = 'Photographs';
+            partName = 'Part 1: Photographs';
             imageUrl = 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=1000&auto=format&fit=crop&q=80';
         } else if (i <= 31) {
             partNo = 2;
-            partName = 'Question-Response';
+            partName = 'Part 2: Question-Response';
         } else if (i <= 70) {
             partNo = 3;
-            partName = 'Conversations';
-            passage = 'Conversation between a project manager and a client discussing deadline and deliverables.';
-        } else if (i <= 100) {
+            partName = 'Part 3: Conversations';
+        } else {
             partNo = 4;
-            partName = 'Short Talks';
-            passage = 'A public announcement at the central train station regarding weather delays.';
+            partName = 'Part 4: Short Talks';
         }
 
         if (i === 15) {
@@ -77,7 +75,7 @@ const generateMockQuestions = (): DiagnosticQuestion[] => {
                 orderNo: 15,
                 partId: 1,
                 partNo: 1,
-                partName: 'Photographs',
+                partName: 'Part 1: Photographs',
                 section: 'LISTENING',
                 title: 'Câu hỏi 15: Look at the picture and select the best statement that describes what you see.',
                 audioUrl: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
@@ -118,9 +116,11 @@ const generateMockQuestions = (): DiagnosticQuestion[] => {
 export const mockDiagnosticTest: DiagnosticTest = {
     testId: 1,
     attemptId: 501,
+    targetProfileId: 3,
     title: 'Bài đánh giá tổng hợp — Tier 1',
     description: 'Bài kiểm tra chẩn đoán toàn diện giúp xác định chính xác năng lực TOEIC ban đầu.',
     durationMinutes: 45,
+    remainingSeconds: 45 * 60,
     totalQuestions: 100,
     questions: generateMockQuestions(),
 };
@@ -129,6 +129,7 @@ export const mockDiagnosticResult: DiagnosticResult = {
     attemptId: 501,
     testTitle: 'Bài đánh giá tổng hợp — Chẩn đoán toàn diện',
     completedAt: '2026-09-07T16:15:00Z',
+    learningPathId: 1,
     predictedScore: 550,
     targetScore: 650,
     totalQuestions: 100,
@@ -136,88 +137,141 @@ export const mockDiagnosticResult: DiagnosticResult = {
     sectionScores: {
         listening: 305,
         reading: 245,
+        listeningCorrect: 27,
+        listeningTotal: 60,
+        readingCorrect: 31,
+        readingTotal: 40,
         listeningPercent: 45,
         readingPercent: 61,
     },
     partResults: [
         {
+            partId: 1,
             partNo: 1,
             name: 'Part 1: Photographs',
+            correctCount: 9,
+            totalQuestions: 10,
             score: 90,
             maxScore: 100,
             directive: 'PASS',
-            directiveLabel: 'PASS',
+            directiveLabel: 'Đạt chuẩn',
             aiFeedback: 'Kỹ năng nghe miêu tả tranh xuất sắc, tiếp tục duy trì phát huy.',
+            abilities: [
+                { abilityId: 1, abilityName: 'Nghe miêu tả tranh có người', partNo: 1, partName: 'Part 1', correctCount: 5, totalCount: 5, accuracyPercent: 100, status: 'STABLE' },
+                { abilityId: 2, abilityName: 'Nghe miêu tả tranh vật', partNo: 1, partName: 'Part 1', correctCount: 4, totalCount: 5, accuracyPercent: 80, status: 'STABLE' },
+            ],
         },
         {
+            partId: 2,
             partNo: 2,
             name: 'Part 2: Question-Response',
+            correctCount: 9,
+            totalQuestions: 12,
             score: 75,
             maxScore: 100,
             directive: 'PASS',
-            directiveLabel: 'PASS',
+            directiveLabel: 'Đạt chuẩn',
             aiFeedback: 'Khá ổn, cần lưu ý thêm một số bẫy thông tin đồng âm.',
+            abilities: [
+                { abilityId: 3, abilityName: 'Câu hỏi Wh-Question', partNo: 2, partName: 'Part 2', correctCount: 9, totalCount: 12, accuracyPercent: 75, status: 'STABLE' },
+            ],
         },
         {
+            partId: 3,
             partNo: 3,
             name: 'Part 3: Conversations',
+            correctCount: 11,
+            totalQuestions: 20,
             score: 55,
             maxScore: 100,
             directive: 'CONFIRM',
-            directiveLabel: 'CONFIRM',
+            directiveLabel: 'Cận chuẩn',
             aiFeedback: 'Khả năng bắt keyword còn chậm. Cần cải thiện chiến thuật đọc đề trước.',
+            abilities: [
+                { abilityId: 6, abilityName: 'Nghe thông tin chi tiết', partNo: 3, partName: 'Part 3', correctCount: 11, totalCount: 20, accuracyPercent: 55, status: 'DEVELOPING' },
+            ],
         },
         {
+            partId: 4,
             partNo: 4,
             name: 'Part 4: Short Talks',
+            correctCount: 7,
+            totalQuestions: 20,
             score: 35,
             maxScore: 100,
-            directive: 'WEAK',
-            directiveLabel: 'WEAK',
+            directive: 'ABILITY_DIAGNOSTIC',
+            directiveLabel: 'Dưới chuẩn',
             aiFeedback: 'Từ vựng độc thoại còn mỏng. Hệ thống sẽ tối ưu hóa lộ trình nghe cho bạn.',
+            abilities: [
+                { abilityId: 8, abilityName: 'Nghe bài nói độc thoại', partNo: 4, partName: 'Part 4', correctCount: 7, totalCount: 20, accuracyPercent: 35, status: 'WEAK' },
+            ],
         },
         {
+            partId: 5,
             partNo: 5,
             name: 'Part 5: Incomplete Sentences',
+            correctCount: 12,
+            totalQuestions: 15,
             score: 80,
             maxScore: 100,
             directive: 'PASS',
-            directiveLabel: 'PASS',
+            directiveLabel: 'Đạt chuẩn',
             aiFeedback: 'Ngữ pháp nền tảng tốt. Tập trung tối ưu thời gian làm bài dưới 15 giây/câu.',
+            abilities: [
+                { abilityId: 10, abilityName: 'Ngữ pháp & Cấu trúc', partNo: 5, partName: 'Part 5', correctCount: 12, totalCount: 15, accuracyPercent: 80, status: 'STABLE' },
+            ],
         },
         {
+            partId: 6,
             partNo: 6,
             name: 'Part 6: Text Completion',
+            correctCount: 5,
+            totalQuestions: 8,
             score: 62,
             maxScore: 100,
             directive: 'CONFIRM',
-            directiveLabel: 'CONFIRM',
+            directiveLabel: 'Cận chuẩn',
             aiFeedback: 'Cần cải thiện kỹ năng đọc hiểu văn cảnh và liên kết từ loại.',
+            abilities: [
+                { abilityId: 13, abilityName: 'Từ vựng ngữ cảnh', partNo: 6, partName: 'Part 6', correctCount: 5, totalCount: 8, accuracyPercent: 62, status: 'DEVELOPING' },
+            ],
         },
         {
+            partId: 7,
             partNo: 7,
             name: 'Part 7: Reading Comprehension',
+            correctCount: 6,
+            totalQuestions: 15,
             score: 40,
             maxScore: 100,
             directive: 'FULL_PART',
-            directiveLabel: 'FULL PART',
+            directiveLabel: 'Mất gốc',
             aiFeedback: 'Yếu nhất phần đọc hiểu dài. Cần tăng tốc độ đọc quét (scanning) & từ vựng.',
+            abilities: [
+                { abilityId: 15, abilityName: 'Đọc quét & Bắt ý chính', partNo: 7, partName: 'Part 7', correctCount: 6, totalCount: 15, accuracyPercent: 40, status: 'WEAK' },
+            ],
         },
     ],
     abilitiesRadar: [
-        { code: 'P1_P2_BASIC', name: 'Nghe miêu tả tranh & hỏi đáp', score: 85, status: 'STABLE' },
-        { code: 'P3_P4_DETAIL', name: 'Nghe thông tin chi tiết', score: 42, status: 'WEAK' },
-        { code: 'P5_GRAMMAR', name: 'Ngữ pháp & Cấu trúc', score: 80, status: 'STABLE' },
-        { code: 'P5_P6_VOCAB', name: 'Từ vựng ngữ cảnh', score: 58, status: 'DEVELOPING' },
-        { code: 'P7_SCANNING', name: 'Đọc quét & Bắt ý chính', score: 38, status: 'WEAK' },
-        { code: 'P7_INFERENCE', name: 'Đọc hiểu suy luận logic', score: 45, status: 'WEAK' },
+        { partNo: 1, code: 'PART_1', name: 'Part 1', score: 90, status: 'STABLE' },
+        { partNo: 2, code: 'PART_2', name: 'Part 2', score: 75, status: 'STABLE' },
+        { partNo: 3, code: 'PART_3', name: 'Part 3', score: 55, status: 'DEVELOPING' },
+        { partNo: 4, code: 'PART_4', name: 'Part 4', score: 35, status: 'WEAK' },
+        { partNo: 5, code: 'PART_5', name: 'Part 5', score: 80, status: 'STABLE' },
+        { partNo: 6, code: 'PART_6', name: 'Part 6', score: 62, status: 'DEVELOPING' },
+        { partNo: 7, code: 'PART_7', name: 'Part 7', score: 40, status: 'WEAK' },
     ],
+    weakAbilities: [
+        { abilityId: 8, abilityName: 'Nghe bài nói độc thoại', partNo: 4, partName: 'Part 4', correctCount: 7, totalCount: 20, accuracyPercent: 35, status: 'WEAK' },
+        { abilityId: 15, abilityName: 'Đọc quét & Bắt ý chính', partNo: 7, partName: 'Part 7', correctCount: 6, totalCount: 15, accuracyPercent: 40, status: 'WEAK' },
+    ],
+    passedParts: ['Part 1: Photographs', 'Part 2: Question-Response', 'Part 5: Incomplete Sentences'],
     aiRoadmapSummary: {
-        radarInsight: 'Phân tích AI cho thấy khối lượng kỹ năng nghe hiểu nhóm (Part 3-4) đang là rào cản chính hạn chế điểm mục tiêu của bạn.',
-        roadmapDays: 48,
-        focusParts: [4, 7],
-        recommendedAction: 'Bắt đầu lộ trình học thích ứng',
-        secondaryAction: 'Làm bài đánh giá chuyên sâu Part 7',
+        radarInsight: 'Phân tích AI cho thấy khối lượng kỹ năng nghe hiểu nhóm (Part 4) và đọc hiểu dài (Part 7) đang là rào cản chính hạn chế điểm mục tiêu của bạn.',
+        focusParts: [3, 4, 6, 7],
+        moduleCount: 4,
+        recommendedAction: 'Xem lộ trình học cá nhân của tôi',
+        secondaryAction: 'Tải báo cáo tóm tắt',
     },
 };
 

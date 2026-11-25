@@ -20,7 +20,7 @@ export const AdminUserPage: React.FC = () => {
   } = useAdminUsers();
 
   return (
-    <div className="admin-page-container">
+    <div className="admin-page-container admin-user-page">
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Quản lý Học viên & Tài khoản</h1>

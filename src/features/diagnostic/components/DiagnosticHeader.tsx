@@ -1,27 +1,56 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Clock } from 'lucide-react';
+import { Clock, Pause, Play } from 'lucide-react';
 
 interface DiagnosticHeaderProps {
     title: string;
     currentQuestion: number;
     totalQuestions: number;
-    durationMinutes: number;
+    initialSeconds: number;
+    isPaused: boolean;
+    isLocked: boolean;
+    onTogglePause: () => void;
+    onSecondsChange?: (secondsLeft: number) => void;
     onTimeOut?: () => void;
 }
 
+/**
+ * Header phòng thi chẩn đoán gồm đồng hồ đếm ngược, nút tạm dừng client-side (Luồng 4b)
+ * và kích hoạt tự động nộp bài khi chạm mốc 00:00 (BR07).
+ */
 export function DiagnosticHeader({
     title,
     currentQuestion,
     totalQuestions,
-    durationMinutes,
+    initialSeconds,
+    isPaused,
+    isLocked,
+    onTogglePause,
+    onSecondsChange,
     onTimeOut,
 }: DiagnosticHeaderProps) {
-    const [secondsLeft, setSecondsLeft] = useState(durationMinutes * 60);
+    const [secondsLeft, setSecondsLeft] = useState(Math.max(0, Math.floor(initialSeconds)));
+    const hasTriggeredTimeoutRef = useRef(false);
 
     useEffect(() => {
+        setSecondsLeft(Math.max(0, Math.floor(initialSeconds)));
+        hasTriggeredTimeoutRef.current = false;
+    }, [initialSeconds]);
+
+    useEffect(() => {
+        onSecondsChange?.(secondsLeft);
+    }, [secondsLeft, onSecondsChange]);
+
+    useEffect(() => {
+        if (isLocked || isPaused) {
+            return;
+        }
+
         if (secondsLeft <= 0) {
-            onTimeOut?.();
+            if (!hasTriggeredTimeoutRef.current) {
+                hasTriggeredTimeoutRef.current = true;
+                onTimeOut?.();
+            }
             return;
         }
 
@@ -30,17 +59,17 @@ export function DiagnosticHeader({
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [secondsLeft, onTimeOut]);
+    }, [secondsLeft, isPaused, isLocked, onTimeOut]);
 
     const minutes = Math.floor(secondsLeft / 60);
     const seconds = secondsLeft % 60;
     const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    const isUrgent = secondsLeft < 300;
+    const isUrgent = secondsLeft > 0 && secondsLeft < 300;
 
     return (
         <header className="diag-header">
             <div className="diag-header__container">
-                <Link to="/" className="diag-header__logo">
+                <Link to="/dashboard" className="diag-header__logo">
                     <div className="diag-header__logo-badge">L</div>
                     <span className="diag-header__logo-text">LEBY</span>
                 </Link>
@@ -52,10 +81,21 @@ export function DiagnosticHeader({
                         Câu {currentQuestion} / {totalQuestions}
                     </span>
 
-                    <div className={`diag-header__timer ${isUrgent ? 'is-urgent' : ''}`}>
+                    <div className={`diag-header__timer ${isUrgent ? 'is-urgent' : ''} ${isPaused ? 'is-paused' : ''}`}>
                         <Clock size={16} />
                         <span>{formattedTime}</span>
                     </div>
+
+                    <button
+                        type="button"
+                        className={`diag-header__pause-btn ${isPaused ? 'is-resuming' : ''}`}
+                        onClick={onTogglePause}
+                        disabled={isLocked || secondsLeft <= 0}
+                        title={isPaused ? 'Tiếp tục làm bài' : 'Tạm dừng làm bài'}
+                    >
+                        {isPaused ? <Play size={14} /> : <Pause size={14} />}
+                        <span>{isPaused ? 'Tiếp tục' : 'Tạm dừng'}</span>
+                    </button>
                 </div>
             </div>
         </header>

@@ -1,33 +1,69 @@
 import { useState, useRef, useEffect } from 'react';
-import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Play, Pause, Volume2, VolumeX, Lock, AlertTriangle } from 'lucide-react';
 
 interface AudioPlayerProps {
     src?: string | null;
+    isLocked: boolean;
+    isPaused?: boolean;
+    onAudioEnded: () => void;
 }
 
-export function AudioPlayer({ src }: AudioPlayerProps) {
+/**
+ * Trình phát âm thanh tuân thủ BR08 / BR13:
+ * - Trong bài thi chẩn đoán, bản ghi âm chỉ được phát đúng 1 lần duy nhất.
+ * - Vô hiệu hóa tua lại thanh tiến trình để đảm bảo tính chuẩn hóa khảo thí TOEIC.
+ * - Tự động tạm dừng khi học viên bấm Tạm dừng phòng thi (Luồng 4b).
+ */
+export function AudioPlayer({ src, isLocked, isPaused = false, onAudioEnded }: AudioPlayerProps) {
     const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(45);
-    const [duration, setDuration] = useState(135);
+    const [currentTime, setCurrentTime] = useState(0);
+    const [duration, setDuration] = useState(0);
     const [isMuted, setIsMuted] = useState(false);
+    const [replayNotice, setReplayNotice] = useState('');
     const audioRef = useRef<HTMLAudioElement | null>(null);
 
+    // Reset trình phát mỗi khi chuyển sang file audio khác
     useEffect(() => {
         setIsPlaying(false);
         setCurrentTime(0);
+        setDuration(0);
+        setReplayNotice('');
         if (audioRef.current) {
+            audioRef.current.pause();
             audioRef.current.currentTime = 0;
         }
     }, [src]);
 
+    // Tạm dừng audio ngay lập tức nếu học viên bấm Tạm dừng bài thi
+    useEffect(() => {
+        if (isPaused && isPlaying && audioRef.current) {
+            audioRef.current.pause();
+            setIsPlaying(false);
+        }
+    }, [isPaused, isPlaying]);
+
     function togglePlay() {
-        if (!audioRef.current) return;
+        if (isLocked) {
+            setReplayNotice(
+                'Bản ghi âm bài thi chẩn đoán chỉ được phát một lần duy nhất theo quy định khảo thí chuẩn TOEIC.'
+            );
+            return;
+        }
+        if (!audioRef.current || !src || isPaused) return;
+
         if (isPlaying) {
             audioRef.current.pause();
             setIsPlaying(false);
         } else {
-            audioRef.current.play().catch(() => {});
-            setIsPlaying(true);
+            audioRef.current
+                .play()
+                .then(() => {
+                    setIsPlaying(true);
+                    setReplayNotice('');
+                })
+                .catch(() => {
+                    setIsPlaying(false);
+                });
         }
     }
 
@@ -40,12 +76,16 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
         }
     }
 
-    function handleSeek(e: React.ChangeEvent<HTMLInputElement>) {
-        const val = Number(e.target.value);
-        setCurrentTime(val);
-        if (audioRef.current) {
-            audioRef.current.currentTime = val;
+    function handleLoadedMetadata() {
+        if (audioRef.current && !isNaN(audioRef.current.duration) && audioRef.current.duration > 0) {
+            setDuration(audioRef.current.duration);
         }
+    }
+
+    function handleEnded() {
+        setIsPlaying(false);
+        setCurrentTime(duration);
+        onAudioEnded();
     }
 
     function toggleMute() {
@@ -56,59 +96,88 @@ export function AudioPlayer({ src }: AudioPlayerProps) {
     }
 
     const formatTime = (secs: number) => {
+        if (!isFinite(secs) || secs < 0) return '0:00';
         const m = Math.floor(secs / 60);
         const s = Math.floor(secs % 60);
         return `${m}:${String(s).padStart(2, '0')}`;
     };
 
+    const progressPercent = duration > 0 ? Math.min(100, (currentTime / duration) * 100) : 0;
+
     return (
-        <div className="audio-player">
-            {src && (
-                <audio
-                    ref={audioRef}
-                    src={src}
-                    onTimeUpdate={handleTimeUpdate}
-                    onEnded={() => setIsPlaying(false)}
-                />
-            )}
+        <div className="audio-player-wrap">
+            <div className={`audio-player ${isLocked ? 'is-locked' : ''}`}>
+                {src && (
+                    <audio
+                        ref={audioRef}
+                        src={src}
+                        preload="metadata"
+                        onLoadedMetadata={handleLoadedMetadata}
+                        onTimeUpdate={handleTimeUpdate}
+                        onEnded={handleEnded}
+                    />
+                )}
 
-            <button
-                type="button"
-                className="audio-player__play-btn"
-                onClick={togglePlay}
-                aria-label={isPlaying ? 'Tạm dừng audio' : 'Phát audio'}
-            >
-                {isPlaying ? <Pause size={18} fill="#ffffff" /> : <Play size={18} fill="#ffffff" />}
-            </button>
+                <button
+                    type="button"
+                    className={`audio-player__play-btn ${isLocked ? 'is-locked' : ''}`}
+                    onClick={togglePlay}
+                    aria-disabled={isLocked}
+                    aria-label={
+                        isLocked
+                            ? 'Audio đã phát 1 lần'
+                            : isPlaying
+                              ? 'Tạm dừng audio'
+                              : 'Phát audio'
+                    }
+                    title={isLocked ? 'Đã hết lượt phát (BR13)' : isPlaying ? 'Tạm dừng' : 'Phát audio'}
+                >
+                    {isLocked ? (
+                        <Lock size={16} color="#ffffff" />
+                    ) : isPlaying ? (
+                        <Pause size={18} fill="#ffffff" />
+                    ) : (
+                        <Play size={18} fill="#ffffff" />
+                    )}
+                </button>
 
-            <span className="audio-player__time-current">{formatTime(currentTime)}</span>
+                <span className="audio-player__time-current">{formatTime(currentTime)}</span>
 
-            <div className="audio-player__track-wrapper">
-                <input
-                    type="range"
-                    min={0}
-                    max={duration || 100}
-                    value={currentTime}
-                    onChange={handleSeek}
-                    className="audio-player__seeker"
-                    aria-label="Thanh trượt audio"
-                />
                 <div
-                    className="audio-player__progress-fill"
-                    style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
-                />
+                    className="audio-player__track-wrapper"
+                    title="Không được phép tua lại bản ghi âm trong bài thi chẩn đoán"
+                >
+                    <div
+                        className="audio-player__progress-fill"
+                        style={{ width: `${isLocked ? 100 : progressPercent}%` }}
+                    />
+                </div>
+
+                <span className="audio-player__time-total">{formatTime(duration)}</span>
+
+                <span className={`audio-player__rule-tag ${isLocked ? 'is-used' : ''}`}>
+                    {isLocked ? 'Đã phát 1/1 lần' : 'Nghe 1 lần'}
+                </span>
+
+                <button
+                    type="button"
+                    className="audio-player__mute-btn"
+                    onClick={toggleMute}
+                    aria-label={isMuted ? 'Bật tiếng' : 'Tắt tiếng'}
+                >
+                    {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
+                </button>
             </div>
 
-            <span className="audio-player__time-total">{formatTime(duration)}</span>
-
-            <button
-                type="button"
-                className="audio-player__mute-btn"
-                onClick={toggleMute}
-                aria-label={isMuted ? 'Bật tiếng' : 'Tắt tiếng'}
-            >
-                {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-            </button>
+            {(isLocked || replayNotice) && (
+                <div className="audio-player__notice" role="status">
+                    <AlertTriangle size={14} />
+                    <span>
+                        {replayNotice ||
+                            'Bản ghi âm bài thi chẩn đoán chỉ được phát một lần duy nhất theo quy định khảo thí chuẩn TOEIC.'}
+                    </span>
+                </div>
+            )}
         </div>
     );
 }
