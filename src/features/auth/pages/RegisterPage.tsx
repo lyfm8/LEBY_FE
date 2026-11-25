@@ -6,14 +6,18 @@ import { RegisterForm } from '../components/RegisterForm';
 import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteByRole } from '../utils/authRedirect';
+import { formatIsoToDdMmYy, parseDdMmYyToIso } from '../utils/dateFormat';
 import type { RegisterFormValues } from '../schemas/authSchema';
+import type { RegisterRequest } from '../types/authTypes';
 import '../auth.css';
+
+type PendingRegister = Omit<RegisterRequest, 'otp'>;
 
 /**
  * Smart / Container Component: Trang Đăng ký tài khoản học viên mới (UC01).
  * Đúng quy trình UC01 Bước 3-5:
- * - Kiểm tra email & gửi ngay mã OTP 6 chữ số (hiệu lực 10 phút) khi học viên bấm "Đăng ký tài khoản"
- * - Nếu email đã tồn tại → báo lỗi ngay tại trang Đăng ký (không đẩy sang màn OTP vô ích)
+ * - Nhập thông tin tài khoản + thông tin cá nhân (ngày sinh dd/mm/yy, đối tượng học)
+ * - Kiểm tra email & gửi ngay mã OTP 6 chữ số (hiệu lực 10 phút) khi bấm "Đăng ký tài khoản"
  * - Nếu gửi thành công → chuyển sang /verify-otp kèm trạng thái otpAlreadySent = true
  */
 export const RegisterPage: React.FC = () => {
@@ -28,8 +32,18 @@ export const RegisterPage: React.FC = () => {
         }
     }, [isAuthLoading, user, navigate]);
 
-    // Dữ liệu khôi phục nếu học viên ấn "Quay lại đăng ký" từ màn hình OTP
-    const saved = (location.state as { savedForm?: Partial<RegisterFormValues> })?.savedForm;
+    // Dữ liệu khôi phục nếu học viên ấn "Quay lại đăng ký" từ màn hình OTP (dob chuyển ngược từ ISO về dd/mm/yy)
+    const rawSaved = (location.state as { savedForm?: Partial<PendingRegister> })?.savedForm;
+    const saved: Partial<RegisterFormValues> | undefined = rawSaved
+        ? {
+              fullName: rawSaved.fullName,
+              email: rawSaved.email,
+              dob: formatIsoToDdMmYy(rawSaved.dob) || rawSaved.dob || '',
+              learnerType: rawSaved.learnerType,
+              password: rawSaved.password,
+              confirmPassword: rawSaved.confirmPassword,
+          }
+        : undefined;
 
     const [isLoading, setIsLoading] = useState(false);
     const [serverError, setServerError] = useState('');
@@ -38,6 +52,12 @@ export const RegisterPage: React.FC = () => {
      * Gọi BE gửi mã OTP đăng ký và chuyển sang màn hình xác thực OTP.
      */
     const handleRegisterSubmit = async (data: RegisterFormValues) => {
+        const isoDob = parseDdMmYyToIso(data.dob);
+        if (!isoDob) {
+            setServerError('Ngày sinh không hợp lệ (định dạng dd/mm/yy).');
+            return;
+        }
+
         setIsLoading(true);
         setServerError('');
 
@@ -55,6 +75,8 @@ export const RegisterPage: React.FC = () => {
                         pendingRegister: {
                             fullName: data.fullName.trim(),
                             email: cleanEmail,
+                            dob: isoDob,
+                            learnerType: data.learnerType,
                             password: data.password,
                             confirmPassword: data.confirmPassword,
                         },
@@ -79,6 +101,7 @@ export const RegisterPage: React.FC = () => {
             id="register-page"
             title="Tạo tài khoản LEBY"
             subtitle="Trải nghiệm học tập tối ưu hóa ngay hôm nay"
+            wide
         >
             <RegisterForm
                 onSubmit={handleRegisterSubmit}

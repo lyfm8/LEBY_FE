@@ -161,7 +161,7 @@ export const OtpVerifyPage: React.FC = () => {
 
             if (res.success && res.data) {
                 setUser(res.data);
-                // UC01 Bước 8 → UC05: Sau khi đăng ký tài khoản học viên mới thành công, dẫn sang chọn mục tiêu AIM
+                // UC01 Bước 8 → UC05: Sau khi đăng ký tài khoản học viên mới thành công, dẫn thẳng sang chọn mục tiêu AIM
                 navigate('/target-selection', { replace: true });
             } else {
                 setGlobalError(res.message ?? 'Xác thực thất bại. Vui lòng thử lại.');

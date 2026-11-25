@@ -1,3 +1,5 @@
+import type { ELearnerType } from '@/features/profile/types/profileTypes';
+
 // ─── Request types (khớp với BE DTO) ─────────────────────────────────────────
 
 /**
@@ -18,6 +20,10 @@ export interface RegisterRequest {
     email: string;
     /** Họ và tên học viên */
     fullName: string;
+    /** Ngày sinh (định dạng ISO YYYY-MM-DD khớp LocalDate Backend) */
+    dob: string;
+    /** Phân loại đối tượng người học */
+    learnerType: ELearnerType;
     /** Mật khẩu tài khoản */
     password: string;
     /** Xác nhận mật khẩu */
@@ -73,6 +79,8 @@ export interface AuthUser {
     avatar: string | null;
     /** Vai trò / quyền hạn trong hệ thống */
     role: UserRole;
+    /** Phân loại đối tượng người học */
+    learnerType?: ELearnerType | null;
     /** Học viên đã chọn mục tiêu AIM ít nhất một lần hay chưa (UC05) */
     hasSelectedTarget?: boolean;
     /** ID mốc mục tiêu AIM hiện tại của người dùng */

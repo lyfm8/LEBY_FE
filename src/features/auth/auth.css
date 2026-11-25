@@ -26,6 +26,10 @@
         0 20px 48px rgba(0, 0, 0, 0.08);
 }
 
+.auth-card--wide {
+    max-width: 540px;
+}
+
 /* ── Logo & header ─────────────────────────────────────────── */
 .auth-card__logo {
     width: 48px;
@@ -72,6 +76,22 @@
     display: flex;
     flex-direction: column;
     gap: 6px;
+}
+
+.auth-form__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+@media (max-width: 520px) {
+    .auth-card {
+        padding: 32px 22px 28px;
+    }
+
+    .auth-form__row {
+        grid-template-columns: 1fr;
+    }
 }
 
 .auth-form__label-row {
@@ -127,6 +147,55 @@
 .auth-form__input.is-error {
     border-color: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+}
+
+.auth-form__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+.auth-form__date-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.auth-form__date-input {
+    padding-right: 44px;
+}
+
+.auth-form__date-picker-btn {
+    position: absolute;
+    right: 6px;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: #64748b;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.auth-form__date-picker-btn:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.auth-form__date-native-hidden {
+    position: absolute;
+    right: 6px;
+    width: 34px;
+    height: 34px;
+    opacity: 0;
+    pointer-events: none;
 }
 
 /* OTP row: input + send button side by side */

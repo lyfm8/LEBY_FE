@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { isPastIsoDate, parseDdMmYyToIso } from '../utils/dateFormat';
 
 /**
  * Schema xác thực dữ liệu Form Đăng nhập
@@ -18,7 +19,7 @@ export const loginSchema = z.object({
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
 /**
- * Schema xác thực dữ liệu Form Đăng ký
+ * Schema xác thực dữ liệu Form Đăng ký (bao gồm ngày sinh dd/mm/yy & đối tượng học tập)
  * Khớp với RegisterRequest (Backend)
  */
 export const registerSchema = z
@@ -26,13 +27,39 @@ export const registerSchema = z
         fullName: z
             .string()
             .trim()
-            .min(1, 'Vui lòng nhập họ và tên.')
+            .min(2, 'Họ và tên phải có từ 2 ký tự trở lên.')
             .max(150, 'Họ và tên không được vượt quá 150 ký tự.'),
         email: z
             .string()
             .trim()
             .min(1, 'Vui lòng nhập email.')
             .email('Email không hợp lệ.'),
+        dob: z
+            .string()
+            .trim()
+            .min(1, 'Vui lòng nhập ngày sinh (dd/mm/yy).')
+            .refine((val) => parseDdMmYyToIso(val) !== null, {
+                message: 'Ngày sinh không hợp lệ (dd/mm/yy).',
+            })
+            .refine((val) => {
+                const iso = parseDdMmYyToIso(val);
+                return iso !== null && isPastIsoDate(iso);
+            }, {
+                message: 'Ngày sinh phải nằm trong quá khứ.',
+            }),
+        learnerType: z.enum(
+            [
+                'PRIMARY_STUDENT',
+                'SECONDARY_STUDENT',
+                'HIGH_SCHOOL_STUDENT',
+                'UNIVERSITY_STUDENT',
+                'WORKING',
+                'OTHER',
+            ],
+            {
+                message: 'Vui lòng chọn đối tượng học tập.',
+            }
+        ),
         password: z
             .string()
             .min(8, 'Mật khẩu phải từ 8 ký tự trở lên.')

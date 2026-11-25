@@ -12,16 +12,18 @@ export interface AuthCardProps {
     subtitle: React.ReactNode;
     /** Nội dung form và liên kết điều hướng bên trong thẻ */
     children: React.ReactNode;
+    /** Mở rộng thẻ cho form đăng ký 2 cột */
+    wide?: boolean;
 }
 
 /**
  * Presentational Component: Khung thẻ Card dùng chung cho các màn hình Auth (Đăng nhập, Đăng ký, OTP).
  * Đóng gói logo nhận diện thương hiệu, tiêu đề, và căn chỉnh giao diện chuẩn mực.
  */
-export const AuthCard: React.FC<AuthCardProps> = ({ id, title, subtitle, children }) => {
+export const AuthCard: React.FC<AuthCardProps> = ({ id, title, subtitle, children, wide = false }) => {
     return (
         <div className="auth-page" id={id}>
-            <div className="auth-card" role="main">
+            <div className={`auth-card${wide ? ' auth-card--wide' : ''}`} role="main">
                 {/* Logo thương hiệu LEBY */}
                 <div className="auth-card__logo" aria-hidden="true">
                     L
