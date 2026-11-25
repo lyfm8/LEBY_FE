@@ -81,7 +81,7 @@ export function ProfileSecurityTab() {
     async function handleLogout() {
         if (window.confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
             await logout();
-            navigate('/login');
+            navigate('/login', { replace: true });
         }
     }
 

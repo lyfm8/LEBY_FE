@@ -2,132 +2,321 @@
    LEBY - Roadmap & Module Detail Styles
    ═══════════════════════════════════════════════════════════ */
 
-/* Layout with Left Sidebar */
+/* Layout với Thanh điều hướng ngang trên đầu (Top Navigation Bar) cho không gian Học viên */
 .app-layout {
     display: flex;
+    flex-direction: column;
     min-height: 100vh;
     background-color: #f8fafc;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     color: #0f172a;
 }
 
-/* ── Sidebar ───────────────────────────────────────────────── */
-.app-sidebar {
-    width: 260px;
-    background: #ffffff;
-    border-right: 1px solid #e2e8f0;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+/* ── Top Navigation Bar (Học viên) ─────────────────────────── */
+.app-topbar {
     position: sticky;
     top: 0;
-    height: 100vh;
+    z-index: 40;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid #e2e8f0;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.04);
+}
+
+.app-topbar__inner {
+    max-width: 1320px;
+    height: 68px;
+    margin: 0 auto;
+    padding: 0 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
     box-sizing: border-box;
-    flex-shrink: 0;
 }
 
-@media (max-width: 900px) {
-    .app-sidebar {
-        display: none;
-    }
-}
-
-.app-sidebar__top {
-    padding: 24px 20px;
-}
-
-.app-sidebar__logo {
+/* Brand */
+.app-topbar__brand {
     display: flex;
     align-items: center;
     gap: 10px;
     text-decoration: none;
-    margin-bottom: 36px;
-    padding-left: 8px;
+    flex-shrink: 0;
 }
 
-.app-sidebar__logo-badge {
-    width: 32px;
-    height: 32px;
-    background: #0b1120;
+.app-topbar__logo-badge {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
     color: #ffffff;
-    border-radius: 6px;
+    border-radius: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 900;
-    font-size: 16px;
-}
-
-.app-sidebar__logo-text {
     font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    color: #0b1120;
+    box-shadow: 0 3px 8px rgba(234, 88, 12, 0.25);
 }
 
-.app-sidebar__nav {
+.app-topbar__brand-text {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    line-height: 1.1;
 }
 
-.app-sidebar__nav-item {
+.app-topbar__logo-name {
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    color: #0f172a;
+}
+
+.app-topbar__logo-tag {
+    font-size: 10.5px;
+    font-weight: 600;
+    color: #ea580c;
+    letter-spacing: 0.02em;
+}
+
+/* Horizontal Navigation */
+.app-topbar__nav {
     display: flex;
     align-items: center;
-    gap: 14px;
-    padding: 12px 16px;
-    border-radius: 12px;
-    font-size: 14.5px;
-    font-weight: 600;
-    color: #64748b;
-    text-decoration: none;
-    transition: all 0.15s ease;
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
 }
 
-.app-sidebar__nav-item:hover {
+.app-topbar__nav-item {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 16px;
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.16s ease;
+    white-space: nowrap;
+}
+
+.app-topbar__nav-item:hover {
     color: #0f172a;
     background-color: #f1f5f9;
 }
 
-.app-sidebar__nav-item.is-active {
+.app-topbar__nav-item.is-active {
     color: #ea580c;
-    background-color: #fffaf5;
+    background-color: #fff7ed;
     font-weight: 700;
 }
 
-.app-sidebar__bottom {
-    padding: 20px;
-    border-top: 1px solid #f1f5f9;
+.app-topbar__nav-pill {
+    font-size: 10px;
+    font-weight: 700;
+    color: #ffffff;
+    background: #ea580c;
+    padding: 2px 7px;
+    border-radius: 999px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
 }
 
-.app-sidebar__user-card {
+/* Right Actions & Account Dropdown */
+.app-topbar__actions {
     display: flex;
     align-items: center;
     gap: 12px;
-    text-decoration: none;
-    color: #0f172a;
+    flex-shrink: 0;
 }
 
-.app-sidebar__avatar {
-    width: 38px;
-    height: 38px;
+.app-topbar__portal-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 13px;
+    border-radius: 999px;
+    background-color: #0f172a;
+    color: #ffffff;
+    font-size: 12.5px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+    white-space: nowrap;
+}
+
+.app-topbar__portal-btn:hover {
+    background-color: #1e293b;
+}
+
+.app-topbar__account {
+    position: relative;
+}
+
+.app-topbar__user-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 12px 5px 6px;
+    border-radius: 999px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    cursor: pointer;
+    color: #0f172a;
+    transition: all 0.15s ease;
+}
+
+.app-topbar__user-trigger:hover,
+.app-topbar__user-trigger.is-open {
+    border-color: #cbd5e1;
+    background-color: #f8fafc;
+}
+
+.app-topbar__avatar {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
 }
 
-.app-sidebar__avatar-fallback {
-    width: 38px;
-    height: 38px;
+.app-topbar__avatar-fallback {
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
-    background: #0b1120;
+    background: #0f172a;
     color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 15px;
+    font-size: 13.5px;
     flex-shrink: 0;
+}
+
+.app-topbar__user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #0f172a;
+    max-width: 130px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.app-topbar__chevron {
+    color: #64748b;
+    transition: transform 0.16s ease;
+}
+
+.app-topbar__chevron.is-rotated {
+    transform: rotate(180deg);
+}
+
+.app-topbar__dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 260px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 16px 36px rgba(15, 23, 42, 0.12);
+    padding: 8px;
+    z-index: 60;
+}
+
+.app-topbar__dropdown-header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 10px 12px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    margin-bottom: 6px;
+}
+
+.app-topbar__dropdown-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.app-topbar__dropdown-email {
+    font-size: 12px;
+    color: #64748b;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.app-topbar__dropdown-role {
+    display: inline-block;
+    align-self: flex-start;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #ea580c;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 2px 8px;
+    border-radius: 999px;
+}
+
+.app-topbar__dropdown-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.app-topbar__dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 9px 12px;
+    border-radius: 10px;
+    border: none;
+    background: transparent;
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #334155;
+    text-decoration: none;
+    cursor: pointer;
+    box-sizing: border-box;
+    text-align: left;
+    transition: all 0.14s ease;
+}
+
+.app-topbar__dropdown-item:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.app-topbar__dropdown-item.is-active {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.app-topbar__dropdown-item.is-danger {
+    color: #dc2626;
+}
+
+.app-topbar__dropdown-item.is-danger:hover {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.app-topbar__dropdown-item:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.app-topbar__dropdown-divider {
+    height: 1px;
+    background: #f1f5f9;
+    margin: 6px 4px;
 }
 
 /* Mobile Navigation Bar */
@@ -136,6 +325,21 @@
 }
 
 @media (max-width: 900px) {
+    .app-topbar__inner {
+        padding: 0 16px;
+        height: 60px;
+    }
+
+    .app-topbar__nav,
+    .app-topbar__portal-btn,
+    .app-topbar__user-name {
+        display: none;
+    }
+
+    .app-topbar__user-trigger {
+        padding: 4px 8px 4px 4px;
+    }
+
     .app-mobile-nav {
         display: flex;
         position: fixed;
@@ -172,32 +376,18 @@
     }
 }
 
-.app-sidebar__user-info {
-    display: flex;
-    flex-direction: column;
-}
-
-.app-sidebar__user-name {
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.app-sidebar__user-badge {
-    font-size: 11px;
-    color: #94a3b8;
-}
-
 /* ── Main Area ─────────────────────────────────────────────── */
 .roadmap-main {
     flex: 1;
-    padding: 40px 48px;
+    width: 100%;
+    padding: 32px 32px 56px;
     overflow-y: auto;
     box-sizing: border-box;
 }
 
 @media (max-width: 640px) {
     .roadmap-main {
-        padding: 24px 16px;
+        padding: 20px 16px 84px;
     }
 }
 
