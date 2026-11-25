@@ -36,6 +36,20 @@ export interface LoginRequest {
     password: string;
 }
 
+/**
+ * Request đặt lại mật khẩu mới qua mã OTP (UC04 - Quên mật khẩu).
+ */
+export interface ResetPasswordRequest {
+    /** Địa chỉ email tài khoản cần đặt lại mật khẩu */
+    email: string;
+    /** Mã OTP 6 chữ số nhận qua email */
+    otp: string;
+    /** Mật khẩu mới (tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số) */
+    newPassword: string;
+    /** Nhập lại mật khẩu mới để đối chiếu */
+    confirmPassword: string;
+}
+
 // ─── Response types (khớp với AuthResponse.java) ─────────────────────────────
 
 /**

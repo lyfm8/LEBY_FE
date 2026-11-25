@@ -40,8 +40,13 @@ export const OtpVerifyPage: React.FC = () => {
     const location = useLocation();
     const { setUser } = useAuth();
 
-    // Lấy thông tin đăng ký tạm từ router state
-    const pending = (location.state as { pendingRegister?: PendingRegister })?.pendingRegister;
+    // Lấy thông tin đăng ký tạm và cờ otpAlreadySent từ router state (RegisterPage đã gửi OTP sẵn theo UC01 Bước 4-5)
+    const routerState = location.state as {
+        pendingRegister?: PendingRegister;
+        otpAlreadySent?: boolean;
+    } | null;
+    const pending = routerState?.pendingRegister;
+    const otpAlreadySent = Boolean(routerState?.otpAlreadySent);
 
     // Bước 1: Kiểm tra hợp lệ. Nếu truy cập trực tiếp URL mà không qua form đăng ký → quay về /register
     useEffect(() => {
@@ -51,28 +56,28 @@ export const OtpVerifyPage: React.FC = () => {
     }, [pending, navigate]);
 
     const [globalError, setGlobalError] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState(
+        otpAlreadySent ? 'Mã OTP 6 chữ số đã được gửi đến email của bạn (hiệu lực 10 phút).' : ''
+    );
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    // Trạng thái đếm ngược OTP
-    const [otpSent, setOtpSent] = useState(false);
+    // Trạng thái đếm ngược OTP: cooldown 60s gửi lại + hiệu lực 10 phút (600s theo BR01)
+    const [otpSent, setOtpSent] = useState(otpAlreadySent);
     const [cooldown, setCooldown] = useState(0);
+    const [expirySeconds, setExpirySeconds] = useState(otpAlreadySent ? 600 : 0);
     const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-    // Dọn dẹp timer khi component unmount
-    useEffect(() => {
-        return () => {
-            if (timerRef.current) {
-                clearInterval(timerRef.current);
-            }
-        };
-    }, []);
+    const expiryTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     /**
-     * Bắt đầu đếm ngược 60 giây trước khi cho phép gửi lại OTP
+     * Khởi chạy đồng thời 2 bộ đếm: 60 giây chờ gửi lại OTP và 10 phút hiệu lực OTP (BR01).
      */
     const startCooldown = () => {
+        if (timerRef.current) clearInterval(timerRef.current);
+        if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
+
         setCooldown(60);
+        setExpirySeconds(600);
+
         timerRef.current = setInterval(() => {
             setCooldown((prev) => {
                 if (prev <= 1) {
@@ -82,7 +87,29 @@ export const OtpVerifyPage: React.FC = () => {
                 return prev - 1;
             });
         }, 1000);
+
+        expiryTimerRef.current = setInterval(() => {
+            setExpirySeconds((prev) => {
+                if (prev <= 1) {
+                    if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
     };
+
+    // Nếu OTP đã được gửi tự động từ RegisterPage thì bật luôn đồng hồ đếm ngược khi vừa vào màn OTP
+    useEffect(() => {
+        if (otpAlreadySent) {
+            startCooldown();
+        }
+        return () => {
+            if (timerRef.current) clearInterval(timerRef.current);
+            if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     /**
      * Kích hoạt gửi mã xác thực OTP về email học viên
@@ -134,7 +161,8 @@ export const OtpVerifyPage: React.FC = () => {
 
             if (res.success && res.data) {
                 setUser(res.data);
-                navigate('/home', { replace: true });
+                // UC01 Bước 8 → UC05: Sau khi đăng ký tài khoản học viên mới thành công, dẫn sang chọn mục tiêu AIM
+                navigate('/target-selection', { replace: true });
             } else {
                 setGlobalError(res.message ?? 'Xác thực thất bại. Vui lòng thử lại.');
             }
@@ -151,6 +179,8 @@ export const OtpVerifyPage: React.FC = () => {
 
     if (!pending) return null;
 
+    const formattedExpiry = `${String(Math.floor(expirySeconds / 60)).padStart(2, '0')}:${String(expirySeconds % 60).padStart(2, '0')}`;
+
     return (
         <AuthCard
             id="verify-otp-page"
@@ -159,6 +189,16 @@ export const OtpVerifyPage: React.FC = () => {
                 <>
                     Nhập mã OTP được gửi đến{' '}
                     <strong style={{ color: '#0f172a' }}>{maskEmail(pending.email)}</strong>
+                    {otpSent && (
+                        <>
+                            <br />
+                            <span style={{ fontSize: '0.82rem', color: expirySeconds > 0 ? '#64748b' : '#dc2626' }}>
+                                {expirySeconds > 0
+                                    ? `Mã có hiệu lực trong ${formattedExpiry}`
+                                    : 'Mã OTP đã hết hạn 10 phút, vui lòng bấm Gửi lại OTP'}
+                            </span>
+                        </>
+                    )}
                 </>
             }
         >

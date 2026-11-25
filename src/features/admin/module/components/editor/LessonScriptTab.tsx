@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import type { LessonScriptDto } from '../../types';
 import { useMediaPlaybackSync } from '../../hooks/useMediaPlaybackSync';
 import {
@@ -12,6 +12,11 @@ import {
   ArrowUp,
   ArrowDown,
   Info,
+  FileText,
+  HelpCircle,
+  X,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 interface LessonScriptTabProps {
@@ -56,6 +61,10 @@ export const LessonScriptTab: React.FC<LessonScriptTabProps> = ({
   const [formSpeaker, setFormSpeaker] = useState<string>('');
   const [formContentEn, setFormContentEn] = useState<string>('');
   const [formContentVi, setFormContentVi] = useState<string>('');
+  const [isSampleModalOpen, setIsSampleModalOpen] = useState<boolean>(false);
+  const [sampleFormat, setSampleFormat] = useState<'srt' | 'json' | 'vtt'>('srt');
+  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setScripts(initialScripts);
@@ -136,6 +145,94 @@ export const LessonScriptTab: React.FC<LessonScriptTabProps> = ({
     setScripts(reordered);
   };
 
+  // Chuyển timestamp vtt/srt thành mm:ss
+  const parseTimestampToMmSs = (timeStr: string): string => {
+    const clean = timeStr.trim().replace(',', '.');
+    const parts = clean.split(':');
+    if (parts.length === 3) {
+      const min = Number(parts[0]) * 60 + Number(parts[1]);
+      const sec = Math.floor(Number(parts[2]));
+      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+    if (parts.length === 2) {
+      const min = Number(parts[0]);
+      const sec = Math.floor(Number(parts[1]));
+      return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+    }
+    return timeStr.slice(0, 5);
+  };
+
+  // Xử lý nạp kịch bản từ file (.srt, .vtt, .txt, .json)
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (!text) return;
+
+      const parsedScripts: LessonScriptDto[] = [];
+      const extension = file.name.split('.').pop()?.toLowerCase();
+
+      if (extension === 'json') {
+        try {
+          const json = JSON.parse(text);
+          if (Array.isArray(json)) {
+            json.forEach((item, idx) => {
+              parsedScripts.push({
+                orderNo: idx + 1,
+                startTime: item.startTime || '00:00',
+                endTime: item.endTime || '00:03',
+                speaker: item.speaker || '',
+                contentEn: item.contentEn || item.textEn || '',
+                contentVi: item.contentVi || item.textVi || '',
+              });
+            });
+          }
+        } catch (err) {
+          console.error('Lỗi đọc file JSON:', err);
+        }
+      } else {
+        const blocks = text.replace(/\r\n/g, '\n').split(/\n\s*\n/);
+        blocks.forEach((block) => {
+          const lines = block.trim().split('\n').map((l) => l.trim()).filter(Boolean);
+          if (lines.length === 0 || lines[0] === 'WEBVTT') return;
+
+          let timeIndex = 0;
+          if (/^\d+$/.test(lines[0]) && lines.length > 1) {
+            timeIndex = 1;
+          }
+
+          const timeLine = lines[timeIndex];
+          if (timeLine && timeLine.includes('-->')) {
+            const [startRaw, endRaw] = timeLine.split('-->').map((s) => s.trim());
+            const textLines = lines.slice(timeIndex + 1);
+            const contentEn = textLines[0] || '';
+            const contentVi = textLines.slice(1).join(' ') || '';
+
+            parsedScripts.push({
+              orderNo: parsedScripts.length + 1,
+              startTime: parseTimestampToMmSs(startRaw),
+              endTime: parseTimestampToMmSs(endRaw),
+              speaker: '',
+              contentEn,
+              contentVi,
+            });
+          }
+        });
+      }
+
+      if (parsedScripts.length > 0) {
+        setScripts(parsedScripts);
+      } else {
+        alert('Không tìm thấy phụ đề hợp lệ trong file. Vui lòng kiểm tra định dạng .srt, .vtt hoặc .json.');
+      }
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    };
+    reader.readAsText(file);
+  };
+
   return (
     <div className="tab-content-wrapper">
       {/* 1. Trình phát Media kết nối với File ở Tab 1 */}
@@ -208,11 +305,39 @@ export const LessonScriptTab: React.FC<LessonScriptTabProps> = ({
           <div>
             <h3 className="tab-card-title">Kịch bản lời thoại (Script)</h3>
             <span className="text-muted text-xs">
-              💡 Bấm vào mốc thời gian để nghe phát thử câu thoại đó trên audio
+              💡 Bấm vào mốc thời gian để nghe phát thử câu thoại đó trên audio.
             </span>
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="btn-secondary compact"
+              onClick={() => setIsSampleModalOpen(true)}
+              title="Xem cấu trúc và copy file mẫu để nhập"
+            >
+              <HelpCircle size={14} className="text-orange" />
+              <span>Xem File Mẫu</span>
+            </button>
+
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".srt,.vtt,.json,.txt"
+              onChange={handleImportFile}
+              style={{ display: 'none' }}
+            />
+
+            <button
+              type="button"
+              className="btn-secondary compact"
+              onClick={() => fileInputRef.current?.click()}
+              title="Nhập kịch bản từ file .srt, .vtt, .json"
+            >
+              <FileText size={14} />
+              <span>Nhập từ File</span>
+            </button>
+
             <button
               type="button"
               className="btn-secondary compact"
@@ -407,6 +532,112 @@ export const LessonScriptTab: React.FC<LessonScriptTabProps> = ({
                 onClick={handleSaveItem}
               >
                 Lưu vào danh sách
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 4. Modal Hướng dẫn & Xem file mẫu */}
+      {isSampleModalOpen && (
+        <div className="modal-backdrop">
+          <div className="modal-dialog-card modal-lg">
+            <div className="modal-dialog-header">
+              <div className="flex items-center gap-2">
+                <FileText size={18} className="text-orange" />
+                <h3 className="modal-dialog-title">Mẫu Định Dạng File Kịch Bản (Script)</h3>
+              </div>
+              <button
+                type="button"
+                className="btn-close-modal"
+                onClick={() => setIsSampleModalOpen(false)}
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="modal-dialog-body">
+              <p className="text-sm text-muted mb-3">
+                Bạn có thể copy mẫu bên dưới hoặc lưu thành file để tải trực tiếp vào hệ thống qua nút <strong>Nhập từ File</strong>:
+              </p>
+
+              {/* Format switcher tabs */}
+              <div className="flex gap-2 mb-3">
+                <button
+                  type="button"
+                  className={`btn-secondary compact ${sampleFormat === 'srt' ? 'active-tab-btn' : ''}`}
+                  onClick={() => setSampleFormat('srt')}
+                >
+                  File .SRT (Khuyên dùng)
+                </button>
+                <button
+                  type="button"
+                  className={`btn-secondary compact ${sampleFormat === 'json' ? 'active-tab-btn' : ''}`}
+                  onClick={() => setSampleFormat('json')}
+                >
+                  File .JSON
+                </button>
+                <button
+                  type="button"
+                  className={`btn-secondary compact ${sampleFormat === 'vtt' ? 'active-tab-btn' : ''}`}
+                  onClick={() => setSampleFormat('vtt')}
+                >
+                  File .VTT
+                </button>
+              </div>
+
+              {/* Code preview & copy */}
+              <div className="sample-code-box">
+                <div className="sample-code-header">
+                  <span className="sample-file-badge font-mono">
+                    {sampleFormat === 'srt'
+                      ? 'sample_script.srt'
+                      : sampleFormat === 'json'
+                      ? 'sample_script.json'
+                      : 'sample_script.vtt'}
+                  </span>
+                  <button
+                    type="button"
+                    className="btn-copy-code"
+                    onClick={() => {
+                      const code =
+                        sampleFormat === 'srt'
+                          ? `1\n00:00:01,000 --> 00:00:04,500\nWelcome to today's TOEIC listening practice session.\nChào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay.\n\n2\n00:00:05,000 --> 00:00:09,200\nLook at the photograph marked number one in your test book.\nHãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn.`
+                          : sampleFormat === 'json'
+                          ? `[\n  {\n    "startTime": "00:01",\n    "endTime": "00:04",\n    "speaker": "Instructor",\n    "contentEn": "Welcome to today's TOEIC listening practice session.",\n    "contentVi": "Chào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay."\n  },\n  {\n    "startTime": "00:05",\n    "endTime": "00:09",\n    "speaker": "Speaker A",\n    "contentEn": "Look at the photograph marked number one in your test book.",\n    "contentVi": "Hãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn."\n  }\n]`
+                          : `WEBVTT\n\n00:01.000 --> 00:04.500\nWelcome to today's TOEIC listening practice session.\nChào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay.\n\n00:05.000 --> 00:09.200\nLook at the photograph marked number one in your test book.\nHãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn.`;
+                      navigator.clipboard.writeText(code);
+                      setIsCopied(true);
+                      setTimeout(() => setIsCopied(false), 2000);
+                    }}
+                  >
+                    {isCopied ? <Check size={14} className="text-green" /> : <Copy size={14} />}
+                    <span>{isCopied ? 'Đã sao chép' : 'Sao chép mẫu'}</span>
+                  </button>
+                </div>
+                <pre className="sample-code-content font-mono">
+                  {sampleFormat === 'srt'
+                    ? `1\n00:00:01,000 --> 00:00:04,500\nWelcome to today's TOEIC listening practice session.\nChào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay.\n\n2\n00:00:05,000 --> 00:00:09,200\nLook at the photograph marked number one in your test book.\nHãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn.`
+                    : sampleFormat === 'json'
+                    ? `[\n  {\n    "startTime": "00:01",\n    "endTime": "00:04",\n    "speaker": "Instructor",\n    "contentEn": "Welcome to today's TOEIC listening practice session.",\n    "contentVi": "Chào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay."\n  },\n  {\n    "startTime": "00:05",\n    "endTime": "00:09",\n    "speaker": "Speaker A",\n    "contentEn": "Look at the photograph marked number one in your test book.",\n    "contentVi": "Hãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn."\n  }\n]`
+                    : `WEBVTT\n\n00:01.000 --> 00:04.500\nWelcome to today's TOEIC listening practice session.\nChào mừng các bạn đến với buổi luyện nghe TOEIC hôm nay.\n\n00:05.000 --> 00:09.200\nLook at the photograph marked number one in your test book.\nHãy nhìn vào bức ảnh được đánh số một trong cuốn sách bài thi của bạn.`}
+                </pre>
+              </div>
+
+              <div className="info-callout-box mt-3">
+                <Info size={14} />
+                <span className="text-xs">
+                  💡 <strong>Gợi ý:</strong> File .SRT là định dạng chuẩn thông dụng nhất khi xuất phụ đề từ Youtube hoặc Premiere. Dòng 1 là câu Tiếng Anh, dòng 2 là bản dịch Tiếng Việt.
+                </span>
+              </div>
+            </div>
+
+            <div className="modal-dialog-footer">
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={() => setIsSampleModalOpen(false)}
+              >
+                Đóng
               </button>
             </div>
           </div>

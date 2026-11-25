@@ -1,9 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthGuard from '@/core/auth/auth.guard';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import LandingPage from '@/features/landing/LandingPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 import OtpVerifyPage from '@/features/auth/pages/OtpVerifyPage';
+import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 
 // 1. Onboarding & Diagnostic
 import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
@@ -42,25 +44,78 @@ import { AdminDiagnosticTestPage } from '@/features/admin/diagnostic-test/pages/
 import { AdminLayout } from '@/features/admin/layout/AdminLayout';
 
 /**
+ * Điều hướng trang mặc định của cổng quản trị theo vai trò:
+ * - ADMIN: vào AdminDashboardPage
+ * - TEACHER: chuyển thẳng sang trang Quản lý Mô-đun & Bài học (không có quyền xem Dashboard tổng quan)
+ */
+function AdminIndexRoute() {
+    const { user } = useAuth();
+    if (user?.role === 'TEACHER') {
+        return <Navigate to="/admin/modules" replace />;
+    }
+    return (
+        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+            <AdminDashboardPage />
+        </AuthGuard>
+    );
+}
+
+/**
  * Cấu trúc routes của ứng dụng LEBY TOEIC Adaptive Learning.
  */
 function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* ── PUBLIC: Landing & Auth ─────────────────────────────────── */}
+                {/* ── PUBLIC: Landing & Auth (UC01, UC02, UC04) ──────────────── */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/verify-otp" element={<OtpVerifyPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-                {/* ── ONBOARDING & DIAGNOSTIC ────────────────────────────────── */}
-                <Route path="/target-selection" element={<TargetSelectionPage />} />
-                <Route path="/onboarding/target" element={<TargetSelectionPage />} />
-                <Route path="/diagnostic/room" element={<DiagnosticRoomPage />} />
-                <Route path="/diagnostic/results/:attemptId" element={<DiagnosticResultPage />} />
-                <Route path="/diagnostic/results" element={<DiagnosticResultPage />} />
+                {/* ── PROTECTED: Onboarding & Diagnostic (UC05 - UC07) ───────── */}
+                <Route
+                    path="/target-selection"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/onboarding/target"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/room"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
 
                 {/* ── PROTECTED: Trang chủ học tập & Lộ trình ────────────────── */}
                 <Route
@@ -166,17 +221,24 @@ function AppRoutes() {
                     }
                 />
 
-                {/* ── PROTECTED: Hệ thống Quản trị (Admin) ──────────────────────── */}
-                <Route 
-                    path="/admin" 
+                {/* ── PROTECTED: Hệ thống Quản trị (Admin & Teacher) ────────────── */}
+                <Route
+                    path="/admin"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN', 'TEACHER']}>
                             <AdminLayout />
                         </AuthGuard>
                     }
                 >
-                    <Route index element={<AdminDashboardPage />} />
-                    <Route path="users" element={<AdminUserPage />} />
+                    <Route index element={<AdminIndexRoute />} />
+                    <Route
+                        path="users"
+                        element={
+                            <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                                <AdminUserPage />
+                            </AuthGuard>
+                        }
+                    />
                     <Route path="parts" element={<AdminPartPage />} />
                     <Route path="questions" element={<AdminQuestionPage />} />
                     <Route path="questions/new" element={<QuestionStandaloneEditorPage />} />

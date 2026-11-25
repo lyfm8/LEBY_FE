@@ -108,20 +108,78 @@
 }
 
 .admin-sidebar-footer {
-  padding: 1rem;
+  padding: 0.85rem 0.75rem 1rem;
   border-top: 1px solid #1f2937;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.admin-user-card {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.45rem 0.5rem;
+}
+
+.admin-user-meta {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.admin-username {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #ffffff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-user-role {
+  font-size: 0.72rem;
+  color: #9ca3af;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.admin-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.admin-switch-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: #cbd5e1;
+  background-color: #1f2937;
+  border-radius: 0.5rem;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.admin-switch-view-btn:hover {
+  background-color: #374151;
+  color: #ffffff;
 }
 
 .admin-logout-btn {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: #d1d5db;
-  background: none;
-  border: none;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: #fca5a5;
+  background-color: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.25);
   width: 100%;
   border-radius: 0.5rem;
   cursor: pointer;
@@ -129,9 +187,15 @@
   text-align: left;
 }
 
-.admin-logout-btn:hover {
+.admin-logout-btn:hover:not(:disabled) {
   color: #ffffff;
-  background-color: #1f2937;
+  background-color: #dc2626;
+  border-color: #dc2626;
+}
+
+.admin-logout-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 .admin-main-wrapper {
