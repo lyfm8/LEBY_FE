@@ -12,12 +12,12 @@ export const roadmapHandlers = [
         return HttpResponse.json({ success: true, message: 'OK', data: mockDashboardSummary });
     }),
 
-    // ── Roadmap ──
-    http.get('*/api/v1/roadmap', () => {
+    // ── Roadmap (Chuẩn /api/users/roadmap) ──
+    http.get('*/api/users/roadmap', () => {
         return HttpResponse.json({ success: true, message: 'OK', data: mockRoadmapData });
     }),
 
-    http.get('*/api/v1/modules/:moduleId', () => {
+    http.get('*/api/users/roadmap/modules/:moduleId', () => {
         return HttpResponse.json({ success: true, message: 'OK', data: mockModuleDetail });
     }),
 
