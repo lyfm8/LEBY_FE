@@ -14,12 +14,19 @@ export interface LoginFormProps {
     isLoading: boolean;
     /** Thông báo lỗi từ server nếu đăng nhập thất bại */
     serverError?: string;
+    /** Thông báo thành công (VD: vừa đặt lại mật khẩu xong) */
+    infoMessage?: string;
 }
 
 /**
  * Presentational Component: Form đăng nhập tài khoản người dùng
  */
-export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading, serverError }) => {
+export const LoginForm: React.FC<LoginFormProps> = ({
+    onSubmit,
+    isLoading,
+    serverError,
+    infoMessage,
+}) => {
     const {
         register,
         handleSubmit,
@@ -35,6 +42,13 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading, serve
     return (
         <>
             <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                {/* Banner thông báo thành công (VD: vừa đổi mật khẩu thành công từ UC04) */}
+                {infoMessage && (
+                    <div className="auth-form__banner auth-form__banner--success" role="status">
+                        {infoMessage}
+                    </div>
+                )}
+
                 {/* Banner hiển thị lỗi từ server */}
                 {serverError && (
                     <div className="auth-form__banner" role="alert">
@@ -64,9 +78,9 @@ export const LoginForm: React.FC<LoginFormProps> = ({ onSubmit, isLoading, serve
                         <label className="auth-form__label" htmlFor="login-password">
                             Mật khẩu
                         </label>
-                        <a href="#" className="auth-form__forgot">
+                        <Link to="/forgot-password" className="auth-form__forgot">
                             Quên mật khẩu?
-                        </a>
+                        </Link>
                     </div>
                     <input
                         id="login-password"

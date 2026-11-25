@@ -5,6 +5,7 @@ import LandingPage from '@/features/landing/LandingPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 import OtpVerifyPage from '@/features/auth/pages/OtpVerifyPage';
+import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 
 // 1. Onboarding & Diagnostic
 import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
@@ -66,19 +67,55 @@ function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* ── PUBLIC: Landing & Auth ─────────────────────────────────── */}
+                {/* ── PUBLIC: Landing & Auth (UC01, UC02, UC04) ──────────────── */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/verify-otp" element={<OtpVerifyPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-                {/* ── ONBOARDING & DIAGNOSTIC ────────────────────────────────── */}
-                <Route path="/target-selection" element={<TargetSelectionPage />} />
-                <Route path="/onboarding/target" element={<TargetSelectionPage />} />
-                <Route path="/diagnostic/room" element={<DiagnosticRoomPage />} />
-                <Route path="/diagnostic/results/:attemptId" element={<DiagnosticResultPage />} />
-                <Route path="/diagnostic/results" element={<DiagnosticResultPage />} />
+                {/* ── PROTECTED: Onboarding & Diagnostic (UC05 - UC07) ───────── */}
+                <Route
+                    path="/target-selection"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/onboarding/target"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/room"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
 
                 {/* ── PROTECTED: Trang chủ học tập & Lộ trình ────────────────── */}
                 <Route

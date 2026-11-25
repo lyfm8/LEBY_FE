@@ -9,15 +9,24 @@ import { registerSchema, type RegisterFormValues } from '../schemas/authSchema';
  */
 export interface RegisterFormProps {
     /** Hàm callback được gọi khi submit form hợp lệ */
-    onSubmit: (values: RegisterFormValues) => void;
+    onSubmit: (values: RegisterFormValues) => Promise<void> | void;
     /** Dữ liệu khởi tạo (khôi phục từ bước trước nếu user quay lại) */
     defaultValues?: Partial<RegisterFormValues>;
+    /** Trạng thái đang gọi API gửi mã OTP đăng ký */
+    isLoading?: boolean;
+    /** Thông báo lỗi từ Backend (VD: email đã tồn tại trong hệ thống) */
+    serverError?: string;
 }
 
 /**
- * Presentational Component: Form đăng ký tài khoản học viên mới
+ * Presentational Component: Form đăng ký tài khoản học viên mới (UC01)
  */
-export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, defaultValues }) => {
+export const RegisterForm: React.FC<RegisterFormProps> = ({
+    onSubmit,
+    defaultValues,
+    isLoading = false,
+    serverError,
+}) => {
     const {
         register,
         handleSubmit,
@@ -36,6 +45,13 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, defaultVal
     return (
         <>
             <form className="auth-form" onSubmit={handleSubmit(onSubmit)} noValidate>
+                {/* Banner lỗi từ Backend (VD: Email đã đăng ký) */}
+                {serverError && (
+                    <div className="auth-form__banner" role="alert">
+                        {serverError}
+                    </div>
+                )}
+
                 {/* Họ và tên */}
                 <div className="auth-form__group">
                     <label className="auth-form__label" htmlFor="reg-fullName">
@@ -122,9 +138,14 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({ onSubmit, defaultVal
                     {errors.terms && <span className="auth-form__error">{errors.terms.message}</span>}
                 </div>
 
-                {/* Nút Tiếp theo */}
-                <button id="reg-submit-btn" type="submit" className="auth-form__submit">
-                    Tiếp theo
+                {/* Nút Đăng ký & Gửi mã OTP */}
+                <button
+                    id="reg-submit-btn"
+                    type="submit"
+                    className="auth-form__submit"
+                    disabled={isLoading}
+                >
+                    {isLoading ? 'Đang gửi mã OTP...' : 'Đăng ký tài khoản'}
                 </button>
             </form>
 
