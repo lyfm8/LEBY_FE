@@ -5,8 +5,12 @@
 
 /* Layout & Containers */
 .exam-page-container {
-  padding: 8px 0 100px 0;
+  padding: 8px 0 80px 0;
   width: 100%;
+  height: auto;
+  min-height: 100%;
+  flex: 1 0 auto;
+  overflow: visible;
   color: #1E293B;
   font-family: 'Inter', sans-serif;
   box-sizing: border-box;
@@ -273,7 +277,9 @@
   background-color: #FFFFFF;
   border: 1px solid #E2E8F0;
   border-radius: 10px;
-  overflow: hidden;
+  overflow-x: auto;
+  overflow-y: visible;
+  width: 100%;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 

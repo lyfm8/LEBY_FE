@@ -6,8 +6,16 @@ import { LoginForm } from '../components/LoginForm';
 import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteByRole, resolvePostLoginRedirect } from '../utils/authRedirect';
+import type { UserRole } from '../types/authTypes';
 import type { LoginFormValues } from '../schemas/authSchema';
 import '../auth.css';
+
+function canStudentSubmitDiagnostic(role: UserRole, hasSelectedTarget?: boolean): boolean {
+    if (role === 'STUDENT' && hasSelectedTarget === false) {
+        return false;
+    }
+    return true;
+}
 
 interface LoginLocationState {
     from?: { pathname?: string };
@@ -57,6 +65,15 @@ export const LoginPage: React.FC = () => {
             // Bước 2: Cập nhật AuthContext và điều hướng an toàn theo đúng vai trò (chống điều hướng chéo 403)
             if (res.success && res.data) {
                 setUser(res.data);
+
+                // UC06 Ngoại lệ 9a: Nếu học viên bị hết phiên đúng lúc nộp bài chẩn đoán,
+                // quay lại /diagnostic/room để tự động nộp tiếp dữ liệu bài làm đã lưu tạm
+                const hasPendingDiagnosticSubmit = Boolean(localStorage.getItem('leby_diag_pending_submit'));
+                if (hasPendingDiagnosticSubmit && canStudentSubmitDiagnostic(res.data.role, res.data.hasSelectedTarget)) {
+                    navigate('/diagnostic/room', { replace: true });
+                    return;
+                }
+
                 const targetPath = resolvePostLoginRedirect(
                     res.data.role,
                     fromPathname,

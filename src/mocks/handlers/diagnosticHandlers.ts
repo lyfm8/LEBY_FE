@@ -48,20 +48,51 @@ export const diagnosticHandlers = [
         });
     }),
 
-    // ── Diagnostic ──
-    http.get('*/api/v1/diagnostic/comprehensive-test', () => {
-        return HttpResponse.json({ success: true, message: 'OK', data: mockDiagnosticTest });
-    }),
-
-    http.post('*/api/v1/diagnostic/submit', async () => {
+    // ── Diagnostic (UC06 & UC07 - chuẩn endpoint /api/users/diagnostic) ──
+    http.post('*/api/users/diagnostic/start', () => {
         return HttpResponse.json({
             success: true,
-            message: 'Chấm bài chẩn đoán thành công',
-            data: { attemptId: 501, redirectUrl: '/diagnostic/results/501' },
+            message: 'Bắt đầu bài kiểm tra chẩn đoán thành công',
+            data: {
+                attemptId: mockDiagnosticTest.attemptId,
+                diagnosticTestId: mockDiagnosticTest.testId,
+                targetProfileId: currentMockTargetId ?? 3,
+                startedAt: new Date().toISOString(),
+                durationMinutes: mockDiagnosticTest.durationMinutes,
+            },
         });
     }),
 
-    http.get('*/api/v1/diagnostic/results/:attemptId', () => {
+    http.get('*/api/users/diagnostic/resume', () => {
+        return HttpResponse.json({
+            success: true,
+            message: 'Không có phiên làm bài chẩn đoán đang diễn ra',
+            data: null,
+        });
+    }),
+
+    http.get('*/api/users/diagnostic/exam/:attemptId', () => {
+        return HttpResponse.json({ success: true, message: 'OK', data: mockDiagnosticTest });
+    }),
+
+    http.post('*/api/users/diagnostic/submit', () => {
+        return HttpResponse.json({
+            success: true,
+            message: 'Chấm điểm thành công. Lộ trình học tập cá nhân hóa đã được tạo',
+            data: {
+                attemptId: 501,
+                totalCorrect: 58,
+                totalQuestions: mockDiagnosticTest.totalQuestions,
+                learningPathId: 101,
+            },
+        });
+    }),
+
+    http.get('*/api/users/diagnostic/results/latest', () => {
+        return HttpResponse.json({ success: true, message: 'OK', data: mockDiagnosticResult });
+    }),
+
+    http.get('*/api/users/diagnostic/results/:attemptId', () => {
         return HttpResponse.json({ success: true, message: 'OK', data: mockDiagnosticResult });
     }),
 ];

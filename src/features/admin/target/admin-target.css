@@ -1,4 +1,16 @@
 /* Target Profile Page Layout */
+.admin-target-page {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  flex: 1 0 auto;
+  overflow: visible;
+  padding-bottom: 2.5rem;
+  box-sizing: border-box;
+}
 
 
 /* AimCardList */

@@ -35,7 +35,7 @@ export const AdminTargetPage: React.FC = () => {
   });
 
   return (
-    <div className="admin-page-container">
+    <div className="admin-page-container admin-target-page">
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Mục tiêu & Lộ trình</h1>
