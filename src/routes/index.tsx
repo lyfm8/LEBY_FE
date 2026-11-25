@@ -1,5 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthGuard from '@/core/auth/auth.guard';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import LandingPage from '@/features/landing/LandingPage';
 import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
@@ -40,6 +41,23 @@ import { AdminTargetPage } from '@/features/admin/target/pages/AdminTargetPage';
 import { AdminThresholdPage } from '@/features/admin/threshold/pages/AdminThresholdPage';
 import { AdminDiagnosticTestPage } from '@/features/admin/diagnostic-test/pages/AdminDiagnosticTestPage';
 import { AdminLayout } from '@/features/admin/layout/AdminLayout';
+
+/**
+ * Điều hướng trang mặc định của cổng quản trị theo vai trò:
+ * - ADMIN: vào AdminDashboardPage
+ * - TEACHER: chuyển thẳng sang trang Quản lý Mô-đun & Bài học (không có quyền xem Dashboard tổng quan)
+ */
+function AdminIndexRoute() {
+    const { user } = useAuth();
+    if (user?.role === 'TEACHER') {
+        return <Navigate to="/admin/modules" replace />;
+    }
+    return (
+        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+            <AdminDashboardPage />
+        </AuthGuard>
+    );
+}
 
 /**
  * Cấu trúc routes của ứng dụng LEBY TOEIC Adaptive Learning.
@@ -166,17 +184,24 @@ function AppRoutes() {
                     }
                 />
 
-                {/* ── PROTECTED: Hệ thống Quản trị (Admin) ──────────────────────── */}
-                <Route 
-                    path="/admin" 
+                {/* ── PROTECTED: Hệ thống Quản trị (Admin & Teacher) ────────────── */}
+                <Route
+                    path="/admin"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN', 'TEACHER']}>
                             <AdminLayout />
                         </AuthGuard>
                     }
                 >
-                    <Route index element={<AdminDashboardPage />} />
-                    <Route path="users" element={<AdminUserPage />} />
+                    <Route index element={<AdminIndexRoute />} />
+                    <Route
+                        path="users"
+                        element={
+                            <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                                <AdminUserPage />
+                            </AuthGuard>
+                        }
+                    />
                     <Route path="parts" element={<AdminPartPage />} />
                     <Route path="questions" element={<AdminQuestionPage />} />
                     <Route path="questions/new" element={<QuestionStandaloneEditorPage />} />
