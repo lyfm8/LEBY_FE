@@ -1,5 +1,6 @@
 import { apiClient } from '@/core/api/apiClient';
 import type { ApiResponse } from '@/core/api/apiResponse';
+import { ENV } from '@/core/config/env.config';
 import type {
     SendOtpRequest,
     RegisterRequest,
@@ -7,6 +8,8 @@ import type {
     ResetPasswordRequest,
     AuthUser,
 } from '../types/authTypes';
+
+const OTP_FLOW_TIMEOUT_MS = ENV.API_TIMEOUT * 3;
 
 /**
  * Service xử lý các thao tác xác thực và quản lý tài khoản người dùng (UC01 - UC04).
@@ -24,7 +27,9 @@ export const authService = {
      * @returns Promise trả về ApiResponse rỗng (null) khi gửi mã thành công
      */
     sendOtp(data: SendOtpRequest): Promise<ApiResponse<null>> {
-        return apiClient.post<ApiResponse<null>>('/api/auth/send-otp', data);
+        return apiClient.post<ApiResponse<null>>('/api/auth/send-otp', data, {
+            timeout: OTP_FLOW_TIMEOUT_MS,
+        });
     },
 
     /**
@@ -35,7 +40,9 @@ export const authService = {
      * @returns Promise trả về thông tin user mới đăng ký và set HTTP-Only Cookie
      */
     register(data: RegisterRequest): Promise<ApiResponse<AuthUser>> {
-        return apiClient.post<ApiResponse<AuthUser>>('/api/auth/register', data);
+        return apiClient.post<ApiResponse<AuthUser>>('/api/auth/register', data, {
+            timeout: OTP_FLOW_TIMEOUT_MS,
+        });
     },
 
     /**

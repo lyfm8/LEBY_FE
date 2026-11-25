@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { AuthCard } from '../components/AuthCard';
 import { RegisterForm } from '../components/RegisterForm';
-import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteByRole } from '../utils/authRedirect';
 import { formatIsoToDdMmYy, parseDdMmYyToIso } from '../utils/dateFormat';
@@ -15,10 +13,7 @@ type PendingRegister = Omit<RegisterRequest, 'otp'>;
 
 /**
  * Smart / Container Component: Trang Đăng ký tài khoản học viên mới (UC01).
- * Đúng quy trình UC01 Bước 3-5:
- * - Nhập thông tin tài khoản + thông tin cá nhân (ngày sinh dd/mm/yy, đối tượng học)
- * - Kiểm tra email & gửi ngay mã OTP 6 chữ số (hiệu lực 10 phút) khi bấm "Đăng ký tài khoản"
- * - Nếu gửi thành công → chuyển sang /verify-otp kèm trạng thái otpAlreadySent = true
+ * Ngay khi dữ liệu form hợp lệ, chuyển tức thì sang trang nhập OTP (/verify-otp) mà không cần chờ gửi email xong.
  */
 export const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
@@ -32,8 +27,12 @@ export const RegisterPage: React.FC = () => {
         }
     }, [isAuthLoading, user, navigate]);
 
-    // Dữ liệu khôi phục nếu học viên ấn "Quay lại đăng ký" từ màn hình OTP (dob chuyển ngược từ ISO về dd/mm/yy)
-    const rawSaved = (location.state as { savedForm?: Partial<PendingRegister> })?.savedForm;
+    // Dữ liệu & thông báo lỗi khôi phục khi học viên quay lại từ màn OTP (hoặc khi BE báo email đã tồn tại)
+    const routerState = location.state as {
+        savedForm?: Partial<PendingRegister>;
+        serverError?: string;
+    } | null;
+    const rawSaved = routerState?.savedForm;
     const saved: Partial<RegisterFormValues> | undefined = rawSaved
         ? {
               fullName: rawSaved.fullName,
@@ -45,55 +44,34 @@ export const RegisterPage: React.FC = () => {
           }
         : undefined;
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [serverError, setServerError] = useState('');
+    const [serverError, setServerError] = useState(routerState?.serverError ?? '');
 
     /**
-     * Gọi BE gửi mã OTP đăng ký và chuyển sang màn hình xác thực OTP.
+     * Đóng gói dữ liệu đăng ký hợp lệ và chuyển ngay sang màn hình nhập OTP.
+     * Quá trình gọi API /api/auth/send-otp sẽ được kích hoạt tự động tại OtpVerifyPage.
      */
-    const handleRegisterSubmit = async (data: RegisterFormValues) => {
+    const handleRegisterSubmit = (data: RegisterFormValues) => {
         const isoDob = parseDdMmYyToIso(data.dob);
         if (!isoDob) {
             setServerError('Ngày sinh không hợp lệ (định dạng dd/mm/yy).');
             return;
         }
 
-        setIsLoading(true);
         setServerError('');
 
-        try {
-            const cleanEmail = data.email.trim();
-            const res = await authService.sendOtp({
-                email: cleanEmail,
-                purpose: 'REGISTER',
-            });
-
-            if (res.success) {
-                navigate('/verify-otp', {
-                    state: {
-                        otpAlreadySent: true,
-                        pendingRegister: {
-                            fullName: data.fullName.trim(),
-                            email: cleanEmail,
-                            dob: isoDob,
-                            learnerType: data.learnerType,
-                            password: data.password,
-                            confirmPassword: data.confirmPassword,
-                        },
-                    },
-                });
-            } else {
-                setServerError(res.message ?? 'Không thể gửi mã OTP đăng ký. Vui lòng thử lại.');
-            }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                setServerError(String(error.response.data.message));
-            } else {
-                setServerError('Không thể gửi mã OTP. Vui lòng kiểm tra email và kết nối mạng.');
-            }
-        } finally {
-            setIsLoading(false);
-        }
+        navigate('/verify-otp', {
+            state: {
+                shouldAutoSendOtp: true,
+                pendingRegister: {
+                    fullName: data.fullName.trim(),
+                    email: data.email.trim(),
+                    dob: isoDob,
+                    learnerType: data.learnerType,
+                    password: data.password,
+                    confirmPassword: data.confirmPassword,
+                },
+            },
+        });
     };
 
     return (
@@ -104,9 +82,10 @@ export const RegisterPage: React.FC = () => {
             wide
         >
             <RegisterForm
-                onSubmit={handleRegisterSubmit}
+                onSubmit={(data) => {
+                    handleRegisterSubmit(data);
+                }}
                 defaultValues={saved}
-                isLoading={isLoading}
                 serverError={serverError}
             />
         </AuthCard>
