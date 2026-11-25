@@ -113,6 +113,63 @@
     height: 38px;
     border-radius: 50%;
     object-fit: cover;
+    flex-shrink: 0;
+}
+
+.app-sidebar__avatar-fallback {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #0b1120;
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    flex-shrink: 0;
+}
+
+/* Mobile Navigation Bar */
+.app-mobile-nav {
+    display: none;
+}
+
+@media (max-width: 900px) {
+    .app-mobile-nav {
+        display: flex;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        padding: 8px 12px;
+        justify-content: space-around;
+        z-index: 50;
+    }
+
+    .app-mobile-nav__item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        color: #64748b;
+        text-decoration: none;
+        padding: 4px 10px;
+        border-radius: 8px;
+    }
+
+    .app-mobile-nav__item.is-active {
+        color: #ea580c;
+        background: #fffaf5;
+    }
+
+    .roadmap-main {
+        padding-bottom: 84px;
+    }
 }
 
 .app-sidebar__user-info {
@@ -738,4 +795,278 @@
     border-top-color: #ea580c;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* ── Eyebrow & Filter Bar ──────────────────────────────────── */
+.roadmap-header__eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    color: #ea580c;
+    margin-bottom: 6px;
+}
+
+.roadmap-filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 14px 20px;
+    margin-bottom: 28px;
+}
+
+.roadmap-filter-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.roadmap-filter-group__label {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #64748b;
+    margin-right: 4px;
+}
+
+.roadmap-filter-chip {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    color: #475569;
+    font-size: 12.5px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.roadmap-filter-chip:hover {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+.roadmap-filter-chip.is-active {
+    background: #0b1120;
+    border-color: #0b1120;
+    color: #ffffff;
+}
+
+/* ── Timeline Adaptive Badges ──────────────────────────────── */
+.timeline-card__meta-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+}
+
+.timeline-card__order {
+    font-size: 11px;
+    font-weight: 800;
+    color: #0b1120;
+    background: #f1f5f9;
+    padding: 3px 9px;
+    border-radius: 6px;
+}
+
+.timeline-card__part-tag {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #475569;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.timeline-card__ability-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #c2410c;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 3px 10px;
+    border-radius: 6px;
+}
+
+.timeline-card__badge.is-unlocked {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.timeline-card__action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* ── State Cards (Error / Empty) ───────────────────────────── */
+.roadmap-state-card {
+    max-width: 560px;
+    margin: 48px auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 40px 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+.roadmap-state-card.is-compact {
+    margin: 24px auto;
+    padding: 28px 24px;
+}
+
+.roadmap-state-card__icon.is-error {
+    color: #ef4444;
+}
+
+.roadmap-state-card__icon.is-empty {
+    color: #ea580c;
+}
+
+.roadmap-state-card__title {
+    font-size: 20px !important;
+    font-weight: 800 !important;
+    color: #0f172a !important;
+    margin: 0 !important;
+}
+
+.roadmap-state-card__desc {
+    font-size: 14px;
+    color: #64748b;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.roadmap-state-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.roadmap-btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ea580c;
+    color: #ffffff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.roadmap-btn-primary:hover {
+    background: #c2410c;
+}
+
+.roadmap-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.roadmap-btn-secondary:hover {
+    background: #f1f5f9;
+}
+
+/* ── Module Detail Enhancements ────────────────────────────── */
+.module-hero-card__ability {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #fdba74;
+    background: rgba(234, 88, 12, 0.16);
+    border: 1px solid rgba(251, 146, 60, 0.35);
+    padding: 4px 12px;
+    border-radius: 9999px;
+    margin-bottom: 12px;
+}
+
+.module-lesson-item__title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.module-lesson-item__free-badge {
+    font-size: 10.5px;
+    font-weight: 800;
+    color: #059669;
+    background: #ecfdf5;
+    padding: 2px 8px;
+    border-radius: 9999px;
+}
+
+.module-lesson-item__check-wrap {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.module-lesson-item__review-link {
+    font-size: 13px;
+    font-weight: 700;
+    color: #475569;
+    text-decoration: none;
+}
+
+.module-lesson-item__review-link:hover {
+    color: #0f172a;
+    text-decoration: underline;
+}
+
+@media (max-width: 720px) {
+    .timeline-card__footer,
+    .module-test-card__footer,
+    .module-lesson-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+
+    .module-hero-card__progress-wrap {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 }
