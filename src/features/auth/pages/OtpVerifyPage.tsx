@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { AuthCard } from '../components/AuthCard';
@@ -15,9 +15,6 @@ type PendingRegister = Omit<RegisterRequest, 'otp'>;
 /**
  * Hàm tiện ích ẩn một phần ký tự email nhằm bảo vệ quyền riêng tư người dùng
  * Ví dụ: user123@gmail.com -> use***@gmail.com
- *
- * @param email Địa chỉ email gốc
- * @returns Email đã được che bớt ký tự
  */
 function maskEmail(email: string): string {
     const [local, domain] = email.split('@');
@@ -27,28 +24,25 @@ function maskEmail(email: string): string {
 }
 
 /**
- * Smart / Container Component: Trang Xác thực mã OTP và hoàn tất đăng ký tài khoản.
- * Luồng nghiệp vụ:
- * - Bước 1: Kiểm tra dữ liệu đăng ký pending (nếu không có → redirect về /register)
- * - Bước 2: Quản lý bộ đếm thời gian (cooldown) gửi lại OTP
- * - Bước 3: Gửi OTP tới email học viên qua authService.sendOtp
- * - Bước 4: Xác thực OTP và tạo tài khoản qua authService.register
- * - Bước 5: Cập nhật thông tin vào AuthContext và chuyển hướng về /home
+ * Smart / Container Component: Trang Xác thực mã OTP và hoàn tất đăng ký tài khoản (UC01).
+ * Tự động kích hoạt gửi mã OTP ngay khi điều hướng từ trang Đăng ký, giúp người dùng không phải
+ * chờ gửi mail xong mới chuyển trang, và vẫn có nút Gửi lại OTP nếu cần.
  */
 export const OtpVerifyPage: React.FC = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { setUser } = useAuth();
 
-    // Lấy thông tin đăng ký tạm và cờ otpAlreadySent từ router state (RegisterPage đã gửi OTP sẵn theo UC01 Bước 4-5)
     const routerState = location.state as {
         pendingRegister?: PendingRegister;
         otpAlreadySent?: boolean;
+        shouldAutoSendOtp?: boolean;
     } | null;
     const pending = routerState?.pendingRegister;
     const otpAlreadySent = Boolean(routerState?.otpAlreadySent);
+    const shouldAutoSendOtp = Boolean(routerState?.shouldAutoSendOtp);
 
-    // Bước 1: Kiểm tra hợp lệ. Nếu truy cập trực tiếp URL mà không qua form đăng ký → quay về /register
+    // Nếu truy cập trực tiếp URL mà không qua form đăng ký → quay về /register
     useEffect(() => {
         if (!pending) {
             navigate('/register', { replace: true });
@@ -57,92 +51,137 @@ export const OtpVerifyPage: React.FC = () => {
 
     const [globalError, setGlobalError] = useState('');
     const [successMessage, setSuccessMessage] = useState(
-        otpAlreadySent ? 'Mã OTP 6 chữ số đã được gửi đến email của bạn (hiệu lực 10 phút).' : ''
+        otpAlreadySent
+            ? 'Mã OTP 6 chữ số đã được gửi đến email của bạn (hiệu lực 10 phút).'
+            : shouldAutoSendOtp
+              ? 'Đang gửi mã OTP 6 chữ số đến email của bạn. Vui lòng kiểm tra hộp thư...'
+              : ''
     );
+    const [isSendingOtp, setIsSendingOtp] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Trạng thái đếm ngược OTP: cooldown 60s gửi lại + hiệu lực 10 phút (600s theo BR01)
-    const [otpSent, setOtpSent] = useState(otpAlreadySent);
-    const [cooldown, setCooldown] = useState(0);
-    const [expirySeconds, setExpirySeconds] = useState(otpAlreadySent ? 600 : 0);
-    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-    const expiryTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+    const [otpSent, setOtpSent] = useState(otpAlreadySent || shouldAutoSendOtp);
+    const [cooldown, setCooldown] = useState(otpAlreadySent || shouldAutoSendOtp ? 60 : 0);
+    const [expirySeconds, setExpirySeconds] = useState(otpAlreadySent || shouldAutoSendOtp ? 600 : 0);
+    // Chặn gọi trùng API sendOtp 2 lần khi React StrictMode mount lại component trong môi trường dev
+    const initialSendTriggeredRef = useRef(false);
 
-    /**
-     * Khởi chạy đồng thời 2 bộ đếm: 60 giây chờ gửi lại OTP và 10 phút hiệu lực OTP (BR01).
-     */
-    const startCooldown = () => {
-        if (timerRef.current) clearInterval(timerRef.current);
-        if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
+    const hasCooldown = cooldown > 0;
+    const hasExpiry = expirySeconds > 0;
 
+    useEffect(() => {
+        if (!hasCooldown) return;
+        const id = setInterval(() => {
+            setCooldown((prev) => (prev <= 1 ? 0 : prev - 1));
+        }, 1000);
+        return () => clearInterval(id);
+    }, [hasCooldown]);
+
+    useEffect(() => {
+        if (!hasExpiry) return;
+        const id = setInterval(() => {
+            setExpirySeconds((prev) => (prev <= 1 ? 0 : prev - 1));
+        }, 1000);
+        return () => clearInterval(id);
+    }, [hasExpiry]);
+
+    const startCooldown = useCallback(() => {
         setCooldown(60);
         setExpirySeconds(600);
-
-        timerRef.current = setInterval(() => {
-            setCooldown((prev) => {
-                if (prev <= 1) {
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-
-        expiryTimerRef.current = setInterval(() => {
-            setExpirySeconds((prev) => {
-                if (prev <= 1) {
-                    if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-    };
-
-    // Nếu OTP đã được gửi tự động từ RegisterPage thì bật luôn đồng hồ đếm ngược khi vừa vào màn OTP
-    useEffect(() => {
-        if (otpAlreadySent) {
-            startCooldown();
-        }
-        return () => {
-            if (timerRef.current) clearInterval(timerRef.current);
-            if (expiryTimerRef.current) clearInterval(expiryTimerRef.current);
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     /**
-     * Kích hoạt gửi mã xác thực OTP về email học viên
+     * Gọi API gửi / gửi lại mã OTP.
+     * Nếu lỗi nghiệp vụ (4xx như 409 email đã tồn tại) ở lần gửi đầu → quay lại /register kèm lỗi.
      */
-    const handleSendOtp = async () => {
-        if (!pending) return;
+    const dispatchSendOtp = useCallback(
+        async (isInitialAutoSend: boolean) => {
+            if (!pending) return;
 
-        setGlobalError('');
-        setSuccessMessage('');
-
-        try {
-            const res = await authService.sendOtp({ email: pending.email, purpose: 'REGISTER' });
-            if (res.success) {
+            setIsSendingOtp(true);
+            setGlobalError('');
+            if (isInitialAutoSend) {
                 setOtpSent(true);
-                setSuccessMessage('Mã OTP đã được gửi thành công đến email của bạn.');
                 startCooldown();
+                // Gỡ cờ shouldAutoSendOtp khỏi history state để F5 không tự gửi lại mã mới đè mã cũ
+                navigate(location.pathname, {
+                    replace: true,
+                    state: { pendingRegister: pending, otpAlreadySent: true },
+                });
             } else {
-                setGlobalError(res.message ?? 'Gửi OTP thất bại. Vui lòng thử lại.');
+                setSuccessMessage('');
             }
-        } catch (error: unknown) {
-            if (axios.isAxiosError(error) && error.response?.data?.message) {
-                setGlobalError(error.response.data.message);
-            } else {
-                setGlobalError('Không thể gửi OTP. Vui lòng kiểm tra kết nối.');
+
+            try {
+                const res = await authService.sendOtp({ email: pending.email, purpose: 'REGISTER' });
+                if (res.success) {
+                    setOtpSent(true);
+                    setSuccessMessage('Mã OTP 6 chữ số đã được gửi đến email của bạn (hiệu lực 10 phút).');
+                    if (!isInitialAutoSend) {
+                        startCooldown();
+                    }
+                } else {
+                    const msg = res.message ?? 'Gửi OTP thất bại. Vui lòng thử lại.';
+                    setSuccessMessage('');
+                    if (isInitialAutoSend) {
+                        navigate('/register', {
+                            replace: true,
+                            state: { savedForm: pending, serverError: msg },
+                        });
+                    } else {
+                        setGlobalError(msg);
+                    }
+                }
+            } catch (error: unknown) {
+                setSuccessMessage('');
+                const serverMessage = axios.isAxiosError(error)
+                    ? (error.response?.data as { message?: unknown } | undefined)?.message
+                    : undefined;
+                const resolvedMessage =
+                    typeof serverMessage === 'string' && serverMessage.trim().length > 0
+                        ? serverMessage
+                        : 'Không thể gửi OTP. Vui lòng kiểm tra kết nối.';
+
+                // Nếu BE trả về lỗi nghiệp vụ cụ thể (vd 409 email đã tồn tại) ở lần tự gửi đầu → đưa về /register để sửa email
+                if (
+                    axios.isAxiosError(error) &&
+                    error.response &&
+                    error.response.status >= 400 &&
+                    error.response.status < 500
+                ) {
+                    if (isInitialAutoSend) {
+                        navigate('/register', {
+                            replace: true,
+                            state: { savedForm: pending, serverError: resolvedMessage },
+                        });
+                    } else {
+                        setGlobalError(resolvedMessage);
+                    }
+                    return;
+                }
+
+                setGlobalError(resolvedMessage);
+                setCooldown(0);
+            } finally {
+                setIsSendingOtp(false);
             }
+        },
+        [pending, location.pathname, navigate, startCooldown]
+    );
+
+    useEffect(() => {
+        if (pending && shouldAutoSendOtp && !initialSendTriggeredRef.current) {
+            initialSendTriggeredRef.current = true;
+            void dispatchSendOtp(true);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    const handleSendOtp = async () => {
+        await dispatchSendOtp(false);
     };
 
-    /**
-     * Gửi yêu cầu hoàn tất đăng ký với mã OTP đã nhập
-     *
-     * @param data Dữ liệu chứa mã OTP 6 số
-     */
     const handleVerifyOtp = async (data: OtpFormValues) => {
         if (!pending) return;
 
@@ -161,14 +200,14 @@ export const OtpVerifyPage: React.FC = () => {
 
             if (res.success && res.data) {
                 setUser(res.data);
-                // UC01 Bước 8 → UC05: Sau khi đăng ký tài khoản học viên mới thành công, dẫn sang chọn mục tiêu AIM
+                // UC01 Bước 8 → UC05: Sau khi đăng ký tài khoản học viên mới thành công, dẫn thẳng sang chọn mục tiêu AIM
                 navigate('/target-selection', { replace: true });
             } else {
                 setGlobalError(res.message ?? 'Xác thực thất bại. Vui lòng thử lại.');
             }
         } catch (error: unknown) {
             if (axios.isAxiosError(error) && error.response?.data?.message) {
-                setGlobalError(error.response.data.message);
+                setGlobalError(String(error.response.data.message));
             } else {
                 setGlobalError('Đã xảy ra lỗi. Vui lòng thử lại.');
             }
@@ -206,6 +245,7 @@ export const OtpVerifyPage: React.FC = () => {
                 onSubmit={handleVerifyOtp}
                 onSendOtp={handleSendOtp}
                 isSubmitting={isSubmitting}
+                isSendingOtp={isSendingOtp}
                 otpSent={otpSent}
                 cooldown={cooldown}
                 globalError={globalError}

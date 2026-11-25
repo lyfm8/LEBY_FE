@@ -15,6 +15,8 @@ export interface OtpVerifyFormProps {
     onSendOtp: () => Promise<void> | void;
     /** Trạng thái đang gửi request xác thực */
     isSubmitting: boolean;
+    /** Trạng thái đang gọi API gửi OTP lần đầu hoặc gửi lại */
+    isSendingOtp?: boolean;
     /** Trạng thái đã gửi OTP ít nhất 1 lần hay chưa */
     otpSent: boolean;
     /** Thời gian đếm ngược (giây) trước khi được phép gửi lại */
@@ -34,6 +36,7 @@ export const OtpVerifyForm: React.FC<OtpVerifyFormProps> = ({
     onSubmit,
     onSendOtp,
     isSubmitting,
+    isSendingOtp = false,
     otpSent,
     cooldown,
     globalError,
@@ -82,18 +85,20 @@ export const OtpVerifyForm: React.FC<OtpVerifyFormProps> = ({
                             style={{
                                 background: 'none',
                                 border: 'none',
-                                cursor: cooldown > 0 ? 'not-allowed' : 'pointer',
+                                cursor: cooldown > 0 || isSendingOtp ? 'not-allowed' : 'pointer',
                                 padding: 0,
                             }}
                             onClick={onSendOtp}
-                            disabled={cooldown > 0}
+                            disabled={cooldown > 0 || isSendingOtp}
                             aria-label={otpSent ? 'Gửi lại mã OTP' : 'Gửi mã OTP'}
                         >
-                            {cooldown > 0
-                                ? `Gửi lại (${cooldown}s)`
-                                : otpSent
-                                  ? 'Gửi lại OTP'
-                                  : 'Gửi OTP'}
+                            {isSendingOtp
+                                ? 'Đang gửi OTP...'
+                                : cooldown > 0
+                                  ? `Gửi lại (${cooldown}s)`
+                                  : otpSent
+                                    ? 'Gửi lại OTP'
+                                    : 'Gửi OTP'}
                         </button>
                     </div>
 

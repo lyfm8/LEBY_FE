@@ -11,21 +11,18 @@ export const mockTargetProfiles: TargetProfile[] = [
     {
         id: 1,
         targetTotalScore: 450,
-        level: 'CƠ BẢN',
         description: 'Đạt chuẩn tốt nghiệp Đại học hoặc phục vụ công việc căn bản.',
         status: true,
     },
     {
         id: 2,
         targetTotalScore: 550,
-        level: 'TRUNG CẤP',
         description: 'Đủ điều kiện làm việc trong môi trường đa quốc gia.',
         status: true,
     },
     {
         id: 3,
         targetTotalScore: 650,
-        level: 'NÂNG CAO',
         description: 'Mục tiêu vàng cho quản lý và nhân sự công nghệ.',
         status: true,
         isRecommended: true,
@@ -33,14 +30,12 @@ export const mockTargetProfiles: TargetProfile[] = [
     {
         id: 4,
         targetTotalScore: 750,
-        level: 'CHUYÊN SÂU',
         description: 'Thành thạo giao tiếp thuyết trình chuyên sâu.',
         status: true,
     },
     {
         id: 5,
         targetTotalScore: 850,
-        level: 'THÀNH THẠO',
         description: 'Làm chủ hoàn toàn kỹ năng nghe đọc học thuật.',
         status: true,
     },

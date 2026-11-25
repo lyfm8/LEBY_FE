@@ -8,6 +8,10 @@ let currentMockUser = {
     role: 'STUDENT',
     dob: '2001-08-15',
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+    learnerType: 'UNIVERSITY_STUDENT',
+    hasSelectedTarget: true,
+    targetProfileId: 3,
+    targetTotalScore: 650,
 };
 
 export const authHandlers = [
@@ -39,6 +43,10 @@ export const authHandlers = [
             role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            learnerType: isAdmin ? 'WORKING' : 'UNIVERSITY_STUDENT',
+            hasSelectedTarget: true,
+            targetProfileId: 3,
+            targetTotalScore: 650,
         };
 
         return HttpResponse.json({
@@ -60,6 +68,10 @@ export const authHandlers = [
             role: isAdmin ? 'ADMIN' : 'STUDENT',
             dob: '2001-08-15',
             avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            learnerType: isAdmin ? 'WORKING' : 'UNIVERSITY_STUDENT',
+            hasSelectedTarget: true,
+            targetProfileId: 3,
+            targetTotalScore: 650,
         };
 
         return HttpResponse.json({
@@ -77,7 +89,23 @@ export const authHandlers = [
         return HttpResponse.json({ success: true, message: 'Đăng xuất thành công', data: null });
     }),
 
-    http.post('*/api/auth/register', () => {
+    http.post('*/api/auth/register', async ({ request }) => {
+        const body = (await request.json().catch(() => ({}))) as {
+            email?: string;
+            fullName?: string;
+            dob?: string;
+            learnerType?: string;
+        };
+        currentMockUser = {
+            ...currentMockUser,
+            email: body.email?.trim() || currentMockUser.email,
+            fullName: body.fullName?.trim() || currentMockUser.fullName,
+            dob: body.dob || '2003-08-15',
+            learnerType: body.learnerType || 'UNIVERSITY_STUDENT',
+            hasSelectedTarget: false,
+            targetProfileId: null as unknown as number,
+            targetTotalScore: null as unknown as number,
+        };
         return HttpResponse.json({
             success: true,
             message: 'Đăng ký thành công',
