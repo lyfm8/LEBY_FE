@@ -47,26 +47,7 @@ export class MediaService {
         file: File,
         signatureData: MediaUploadSignature
     ): Promise<CloudinaryUploadResult> {
-        // Hỗ trợ chế độ giả lập Mock khi dev offline
-        if (import.meta.env.VITE_USE_MOCK === 'true') {
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    const ext = file.name.split('.').pop() || 'png';
-                    const isVideo = file.type.startsWith('video') || file.type.startsWith('audio');
-                    resolve({
-                        public_id: `mock_media_${Date.now()}_${Math.random().toString(36).substring(7)}`,
-                        secure_url: URL.createObjectURL(file),
-                        format: ext,
-                        resource_type: isVideo ? 'video' : 'image',
-                        bytes: file.size,
-                        original_filename: file.name,
-                        duration: isVideo ? 78 : undefined,
-                        tags: ['tmp'],
-                    });
-                }, 800);
-            });
-        }
-
+        // Khởi tạo FormData chứa tệp tin và chữ ký xác thực để tải trực tiếp lên Cloudinary
         const formData = new FormData();
         formData.append('file', file);
         formData.append('api_key', signatureData.apiKey);

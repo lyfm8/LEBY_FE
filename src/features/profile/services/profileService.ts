@@ -5,23 +5,18 @@ import type {
     UpdateProfileRequest,
     ChangePasswordRequest,
 } from '../types/profileTypes';
-import { mockProfileData } from '@/mocks/mockData';
 
 /**
- * Service giao tiếp với Backend cho các tính năng Hồ sơ cá nhân (UC15 & UC16).
+ * Service giao tiếp trực tiếp với Backend cho các tính năng Hồ sơ cá nhân (UC15 & UC16).
  */
 export const profileService = {
     /**
      * Lấy toàn bộ thông tin hồ sơ cá nhân và ma trận năng lực của người dùng hiện tại (UC15).
+     *
+     * @returns Phản hồi chuẩn ApiResponse chứa thông tin ProfileResponse từ Backend
      */
     async getProfile(): Promise<ApiResponse<ProfileResponse>> {
-        if (import.meta.env.VITE_USE_MOCK === 'true') {
-            return {
-                success: true,
-                message: 'Thành công (Mock)',
-                data: mockProfileData,
-            };
-        }
+        // Gọi trực tiếp endpoint hồ sơ người dùng đang đăng nhập (xác thực qua JWT cookie/header)
         return apiClient.get<ApiResponse<ProfileResponse>>('/api/users/profile');
     },
 
@@ -29,22 +24,10 @@ export const profileService = {
      * Cập nhật thông tin hồ sơ cá nhân (UC16).
      *
      * @param data Dữ liệu cập nhật bao gồm fullName, dob, avatar, learnerType
+     * @returns Phản hồi chuẩn ApiResponse chứa thông tin ProfileResponse sau khi lưu
      */
     async updateProfile(data: UpdateProfileRequest): Promise<ApiResponse<ProfileResponse>> {
-        if (import.meta.env.VITE_USE_MOCK === 'true') {
-            mockProfileData.user = {
-                ...mockProfileData.user,
-                fullName: data.fullName,
-                dob: data.dob,
-                avatar: data.avatar !== undefined ? data.avatar : mockProfileData.user.avatar,
-                learnerType: data.learnerType !== undefined ? data.learnerType : mockProfileData.user.learnerType,
-            };
-            return {
-                success: true,
-                message: 'Cập nhật thành công (Mock)',
-                data: mockProfileData,
-            };
-        }
+        // Gửi payload cập nhật hồ sơ lên Backend để lưu xuống cơ sở dữ liệu
         return apiClient.put<ApiResponse<ProfileResponse>>('/api/users/profile', data);
     },
 
@@ -52,15 +35,10 @@ export const profileService = {
      * Đổi mật khẩu tài khoản người dùng (UC16).
      *
      * @param data Mật khẩu hiện tại, mật khẩu mới và xác nhận mật khẩu
+     * @returns Phản hồi chuẩn ApiResponse thông báo kết quả đổi mật khẩu
      */
     async changePassword(data: ChangePasswordRequest): Promise<ApiResponse<null>> {
-        if (import.meta.env.VITE_USE_MOCK === 'true') {
-            return {
-                success: true,
-                message: 'Đổi mật khẩu thành công (Mock)',
-                data: null,
-            };
-        }
+        // Gọi API đổi mật khẩu; Backend sẽ tự tăng tokenVersion để vô hiệu hóa các phiên đăng nhập cũ
         return apiClient.post<ApiResponse<null>>('/api/users/change-password', data);
     },
 };
