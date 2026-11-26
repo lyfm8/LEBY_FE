@@ -81,13 +81,7 @@ export const OtpVerifyForm: React.FC<OtpVerifyFormProps> = ({
                         <button
                             type="button"
                             id="otp-send-btn"
-                            className="auth-form__forgot"
-                            style={{
-                                background: 'none',
-                                border: 'none',
-                                cursor: cooldown > 0 || isSendingOtp ? 'not-allowed' : 'pointer',
-                                padding: 0,
-                            }}
+                            className="auth-form__link-btn"
                             onClick={onSendOtp}
                             disabled={cooldown > 0 || isSendingOtp}
                             aria-label={otpSent ? 'Gửi lại mã OTP' : 'Gửi mã OTP'}

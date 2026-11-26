@@ -227,11 +227,11 @@ export const OtpVerifyPage: React.FC = () => {
             subtitle={
                 <>
                     Nhập mã OTP được gửi đến{' '}
-                    <strong style={{ color: '#0f172a' }}>{maskEmail(pending.email)}</strong>
+                    <strong className="auth-card__email">{maskEmail(pending.email)}</strong>
                     {otpSent && (
                         <>
                             <br />
-                            <span style={{ fontSize: '0.82rem', color: expirySeconds > 0 ? '#64748b' : '#dc2626' }}>
+                            <span className={`auth-card__expiry${expirySeconds <= 0 ? ' auth-card__expiry--expired' : ''}`}>
                                 {expirySeconds > 0
                                     ? `Mã có hiệu lực trong ${formattedExpiry}`
                                     : 'Mã OTP đã hết hạn 10 phút, vui lòng bấm Gửi lại OTP'}
