@@ -1,10 +1,12 @@
-import React from 'react';
-import { AlertCircle, ChevronLeft, ChevronRight, Layers, Plus } from 'lucide-react';
+import React, { useState } from 'react';
+import { AlertCircle, ChevronLeft, ChevronRight, FileSpreadsheet, ImagePlus, Layers, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useQuestionList } from '../hooks/useQuestionList';
 import { QuestionFilterBar } from '../components/QuestionFilterBar';
 import { QuestionTable } from '../components/QuestionTable';
 import { ConfirmDialog } from '../components/common/ConfirmDialog';
+import { MediaLibraryModal } from '../components/media/MediaLibraryModal';
+import { ImportQuestionsModal } from '../components/import/ImportQuestionsModal';
 import '../admin-question.css';
 
 /**
@@ -13,6 +15,8 @@ import '../admin-question.css';
  */
 export const AdminQuestionPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isMediaModalOpen, setIsMediaModalOpen] = useState<boolean>(false);
+  const [isImportModalOpen, setIsImportModalOpen] = useState<boolean>(false);
 
   const {
     filters,
@@ -30,6 +34,7 @@ export const AdminQuestionPage: React.FC = () => {
     handleFilterChange,
     handleResetFilters,
     handleDeleteConfirm,
+    refetchQuestions,
   } = useQuestionList();
 
   return (
@@ -44,6 +49,22 @@ export const AdminQuestionPage: React.FC = () => {
         </div>
 
         <div className="admin-question-header-actions">
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setIsMediaModalOpen(true)}
+          >
+            <ImagePlus size={16} />
+            <span>Upload media</span>
+          </button>
+          <button
+            type="button"
+            className="btn-secondary"
+            onClick={() => setIsImportModalOpen(true)}
+          >
+            <FileSpreadsheet size={16} />
+            <span>Nhập từ tệp</span>
+          </button>
           <button
             type="button"
             className="btn-secondary"
@@ -158,6 +179,20 @@ export const AdminQuestionPage: React.FC = () => {
         isLoading={isDeleting}
         onConfirm={handleDeleteConfirm}
         onCancel={() => setDeleteTarget(null)}
+      />
+
+      {/* Popup Upload Media & Lịch sử phân trang */}
+      <MediaLibraryModal
+        isOpen={isMediaModalOpen}
+        onClose={() => setIsMediaModalOpen(false)}
+      />
+
+      {/* Modal Import câu hỏi hàng loạt từ Excel */}
+      <ImportQuestionsModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+        onSuccess={refetchQuestions}
+        onOpenMediaModal={() => setIsMediaModalOpen(true)}
       />
     </div>
   );

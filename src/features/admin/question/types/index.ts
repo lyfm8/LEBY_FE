@@ -155,3 +155,22 @@ export interface CreateQuestionGroupPayload {
 }
 
 export type UpdateQuestionGroupPayload = CreateQuestionGroupPayload;
+
+export interface ImportRowError {
+    sheet: string;
+    rowNumber: number;
+    groupRowId?: string;
+    questionName?: string;
+    messages: string[];
+}
+
+export interface QuestionImportResult {
+    imported: boolean;
+    totalRows: number;
+    standaloneCount: number;
+    groupCount: number;
+    groupItemCount: number;
+    successCount: number;
+    failCount: number;
+    errors: ImportRowError[];
+}

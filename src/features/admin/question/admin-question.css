@@ -1590,3 +1590,325 @@
   color: #15803d;
   font-weight: 600;
 }
+
+/* --------------------------------------------------------------------------
+   8. MEDIA LIBRARY POPUP & BULK EXCEL IMPORT MODAL
+   -------------------------------------------------------------------------- */
+.media-lib-modal,
+.import-questions-modal {
+  max-width: 860px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.5rem;
+}
+
+.media-lib-body,
+.import-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.125rem;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.media-lib-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.media-lib-history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.media-lib-subheading {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 0.25rem;
+}
+
+.media-lib-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.media-lib-item {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.625rem;
+  background-color: #ffffff;
+  padding: 0.625rem 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.media-lib-item.is-recent {
+  border-color: #fb923c;
+  background-color: #fffaf5;
+  box-shadow: 0 0 0 1px rgba(234, 88, 12, 0.15);
+}
+
+.media-recent-pill {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 0.1rem 0.45rem;
+  border-radius: 9999px;
+  background-color: #ffedd5;
+  color: #c2410c;
+}
+
+.media-lib-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.media-lib-item-info {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.media-lib-item-text {
+  min-width: 0;
+  flex: 1;
+}
+
+.media-lib-filename {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #111827;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.media-lib-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  font-size: 0.725rem;
+  color: #6b7280;
+  margin-top: 0.2rem;
+}
+
+.media-lib-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.media-id-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: #9a3412;
+  background-color: #ffedd5;
+  border: 1px solid #fdba74;
+  padding: 0.25rem 0.55rem;
+  border-radius: 0.375rem;
+}
+
+.media-action-btn.copied-btn {
+  background-color: #dcfce7;
+  color: #15803d;
+  border: 1px solid #86efac;
+}
+
+.media-lib-preview-box {
+  border-top: 1px solid #f3f4f6;
+  padding-top: 0.625rem;
+}
+
+.media-lib-preview-img {
+  max-height: 180px;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  cursor: pointer;
+  object-fit: contain;
+}
+
+.media-lib-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.75rem 1rem;
+  border: 1px dashed #e5e7eb;
+  border-radius: 0.625rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+}
+
+/* Import Steps & Error Table */
+.import-steps-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .import-steps-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.import-step-card,
+.import-upload-card {
+  background-color: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.import-step-badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #ea580c;
+  background-color: #ffedd5;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.import-step-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.import-step-desc {
+  margin: 0;
+  font-size: 0.775rem;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.import-selected-file {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  background-color: #ffffff;
+  border: 1px solid #86efac;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1rem;
+}
+
+.import-error-panel {
+  border: 1px solid #fecaca;
+  background-color: #fef2f2;
+  border-radius: 0.625rem;
+  padding: 0.875rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.import-error-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.import-error-summary {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.import-error-table-wrap {
+  max-height: 260px;
+  overflow: auto;
+  background-color: #ffffff;
+  border: 1px solid #fee2e2;
+  border-radius: 0.5rem;
+}
+
+.import-error-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem;
+  text-align: left;
+}
+
+.import-error-table th {
+  position: sticky;
+  top: 0;
+  background-color: #fff5f5;
+  color: #991b1b;
+  font-weight: 700;
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid #fecaca;
+  white-space: nowrap;
+}
+
+.import-error-table td {
+  padding: 0.5rem 0.625rem;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  vertical-align: top;
+}
+
+.import-sheet-badge {
+  display: inline-block;
+  padding: 0.125rem 0.4rem;
+  border-radius: 0.25rem;
+  background-color: #f3f4f6;
+  color: #374151;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.import-err-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.import-err-list {
+  margin: 0;
+  padding-left: 1rem;
+  color: #b91c1c;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.import-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 0.875rem;
+  border-top: 1px solid #f3f4f6;
+}
