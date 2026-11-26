@@ -155,10 +155,6 @@ export function AudioPlayer({ src, isLocked, isPaused = false, onAudioEnded }: A
 
                 <span className="audio-player__time-total">{formatTime(duration)}</span>
 
-                <span className={`audio-player__rule-tag ${isLocked ? 'is-used' : ''}`}>
-                    {isLocked ? 'Đã phát 1/1 lần' : 'Nghe 1 lần'}
-                </span>
-
                 <button
                     type="button"
                     className="audio-player__mute-btn"
@@ -168,16 +164,6 @@ export function AudioPlayer({ src, isLocked, isPaused = false, onAudioEnded }: A
                     {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
                 </button>
             </div>
-
-            {(isLocked || replayNotice) && (
-                <div className="audio-player__notice" role="status">
-                    <AlertTriangle size={14} />
-                    <span>
-                        {replayNotice ||
-                            'Bản ghi âm bài thi chẩn đoán chỉ được phát một lần duy nhất theo quy định khảo thí chuẩn TOEIC.'}
-                    </span>
-                </div>
-            )}
         </div>
     );
 }

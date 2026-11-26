@@ -1,4 +1,4 @@
-import { Lightbulb, ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import type { PartResult, DirectiveType, AbilityStatus } from '../types/diagnosticTypes';
 
 interface PartResultCardProps {
@@ -65,11 +65,6 @@ export function PartResultCard({ result, isExpanded, onToggleExpand }: PartResul
                     className={`diag-part-card__bar-fill ${barClass}`}
                     style={{ width: `${percent}%` }}
                 />
-            </div>
-
-            <div className="diag-part-card__insight">
-                <Lightbulb size={16} className="diag-part-card__insight-icon" />
-                <p className="diag-part-card__insight-text">{result.aiFeedback}</p>
             </div>
 
             {hasAbilities && (

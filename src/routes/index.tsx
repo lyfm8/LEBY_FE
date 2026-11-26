@@ -31,6 +31,7 @@ import ProfilePage from '@/features/profile/pages/ProfilePage';
 // 6. Admin
 import { AdminDashboardPage } from '@/features/admin/dashboard/pages/AdminDashboardPage';
 import { AdminUserPage } from '@/features/admin/user/pages/AdminUserPage';
+import { AdminUserDetailPage } from '@/features/admin/user/pages/AdminUserDetailPage';
 import { AdminPartPage } from '@/features/admin/part/pages/AdminPartPage';
 import {
     AdminQuestionPage,
@@ -236,6 +237,14 @@ function AppRoutes() {
                         element={
                             <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
                                 <AdminUserPage />
+                            </AuthGuard>
+                        }
+                    />
+                    <Route
+                        path="users/:id"
+                        element={
+                            <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                                <AdminUserDetailPage />
                             </AuthGuard>
                         }
                     />

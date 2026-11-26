@@ -102,7 +102,6 @@ export interface PartResult {
     maxScore: number;
     directive: DirectiveType;
     directiveLabel: string;
-    aiFeedback: string;
     abilities: PartAbilityBreakdown[];
 }
 

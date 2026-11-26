@@ -1233,25 +1233,6 @@
 .diag-part-card__bar-fill.is-weak { background-color: #ef4444; }
 .diag-part-card__bar-fill.is-full-part { background-color: #dc2626; }
 
-.diag-part-card__insight {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-}
-
-.diag-part-card__insight-icon {
-    color: #f59e0b;
-    flex-shrink: 0;
-    margin-top: 2px;
-}
-
-.diag-part-card__insight-text {
-    font-size: 13.5px;
-    color: #475569;
-    line-height: 1.5;
-    margin: 0;
-}
-
 .diag-part-card__abilities-section {
     border-top: 1px dashed #e2e8f0;
     padding-top: 10px;
