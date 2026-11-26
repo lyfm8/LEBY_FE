@@ -255,13 +255,7 @@ export const ForgotPasswordPage: React.FC = () => {
                             </label>
                             <button
                                 type="button"
-                                className="auth-form__forgot"
-                                style={{
-                                    background: 'none',
-                                    border: 'none',
-                                    cursor: cooldown > 0 ? 'not-allowed' : 'pointer',
-                                    padding: 0,
-                                }}
+                                className="auth-form__link-btn"
                                 onClick={() => void handleResendOtp()}
                                 disabled={cooldown > 0}
                             >
@@ -328,11 +322,11 @@ export const ForgotPasswordPage: React.FC = () => {
                         {isSubmitting ? 'Đang cập nhật mật khẩu...' : 'Xác nhận đặt lại mật khẩu'}
                     </button>
 
-                    <p className="auth-card__footer">
+                    <div className="auth-card__footer auth-card__footer-actions">
+                        {/* Nút quay lại bước 1 để nhập địa chỉ email khác */}
                         <button
                             type="button"
-                            className="auth-form__forgot"
-                            style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+                            className="auth-form__link-btn"
                             onClick={() => {
                                 setStep('EMAIL');
                                 setServerError('');
@@ -341,9 +335,11 @@ export const ForgotPasswordPage: React.FC = () => {
                         >
                             Đổi địa chỉ email khác
                         </button>
-                        {' · '}
+                        {/* Dấu phân cách giữa hai tùy chọn điều hướng */}
+                        <span className="auth-card__footer-sep" aria-hidden="true">|</span>
+                        {/* Liên kết quay lại trang đăng nhập */}
                         <Link to="/login">Quay lại đăng nhập</Link>
-                    </p>
+                    </div>
                 </form>
             )}
         </AuthCard>

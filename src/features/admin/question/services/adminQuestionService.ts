@@ -1,10 +1,13 @@
 import { apiClient } from '@/core/api/apiClient';
+import { axiosInstance } from '@/core/api/axios';
 import type { ApiResponse } from '@/core/api/apiResponse';
 import type {
     CreateQuestionGroupPayload,
     CreateStandaloneQuestionPayload,
+    ImportRowError,
     QuestionDetail,
     QuestionFilterParams,
+    QuestionImportResult,
     QuestionListItem,
     UpdateQuestionGroupPayload,
     UpdateStandaloneQuestionPayload,
@@ -65,5 +68,44 @@ export const adminQuestionService = {
      */
     delete(id: number): Promise<ApiResponse<void>> {
         return apiClient.delete<ApiResponse<void>>(`${BASE_URL}/${id}`);
+    },
+
+    /**
+     * Tải xuống file Excel (.xlsx) mẫu để nhập câu hỏi hàng loạt.
+     */
+    async downloadImportTemplate(): Promise<Blob> {
+        const response = await axiosInstance.get<Blob>(`${BASE_URL}/import/template`, {
+            responseType: 'blob',
+        });
+        return response.data;
+    },
+
+    /**
+     * Tải lên file Excel (.xlsx) để kiểm tra và import hàng loạt câu hỏi.
+     */
+    async importFromExcel(file: File): Promise<ApiResponse<QuestionImportResult>> {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axiosInstance.post<ApiResponse<QuestionImportResult>>(
+            `${BASE_URL}/import`,
+            formData,
+            {
+                headers: { 'Content-Type': 'multipart/form-data' },
+                timeout: 60000,
+            }
+        );
+        return response.data;
+    },
+
+    /**
+     * Xuất danh sách lỗi import ra file Excel (.xlsx) để quản trị viên tải về điều chỉnh.
+     */
+    async downloadErrorReport(errors: ImportRowError[]): Promise<Blob> {
+        const response = await axiosInstance.post<Blob>(
+            `${BASE_URL}/import/error-report`,
+            { errors },
+            { responseType: 'blob' }
+        );
+        return response.data;
     },
 };

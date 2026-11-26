@@ -33,6 +33,7 @@ export interface SavedMedia {
     publicId: string;
     url: string;
     resourceType: string;
+    kind?: 'IMAGE' | 'AUDIO' | 'VIDEO';
     format: string;
     bytes: number;
     width?: number;
@@ -40,6 +41,12 @@ export interface SavedMedia {
     originalFilename?: string;
     duration?: number;
     status: 'PENDING' | 'ACTIVE';
+    createdAt?: string;
+}
+
+export interface MediaHistoryParams {
+    page?: number;
+    size?: number;
 }
 
 /**

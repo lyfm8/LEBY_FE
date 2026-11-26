@@ -2,6 +2,7 @@ import { apiClient } from '@/core/api/apiClient';
 import type { ApiResponse } from '@/core/api/apiResponse';
 import type {
     CloudinaryUploadResult,
+    MediaHistoryParams,
     MediaUploadSignature,
     SavedMedia,
     SaveMediaRequest,
@@ -81,6 +82,13 @@ export class MediaService {
             throw new Error(res.message || 'Không thể lưu thông tin media vào hệ thống');
         }
         return res.data;
+    }
+
+    /**
+     * Lấy danh sách lịch sử media đã tải lên hệ thống có phân trang (mặc định 5 mục/trang).
+     */
+    async getMedias(params: MediaHistoryParams = { page: 0, size: 5 }): Promise<ApiResponse<SavedMedia[]>> {
+        return apiClient.get<ApiResponse<SavedMedia[]>>('/api/media', { params });
     }
 
     /**
