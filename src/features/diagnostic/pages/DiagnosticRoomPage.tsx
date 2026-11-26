@@ -1,13 +1,8 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import {
     AlertTriangle,
-    Award,
     ChevronLeft,
     ChevronRight,
-    Compass,
-    Flag,
     PauseCircle,
     Play,
     WifiOff,
@@ -17,390 +12,65 @@ import { AudioPlayer } from '../components/AudioPlayer';
 import { QuestionCard } from '../components/QuestionCard';
 import { QuestionPalette } from '../components/QuestionPalette';
 import { SubmitModal } from '../components/SubmitModal';
-import { diagnosticService } from '../services/diagnosticService';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import type {
-    DiagnosticTest,
-    OptionKey,
-    SubmitDiagnosticRequest,
-} from '../types/diagnosticTypes';
+import { DiagnosticBlockedView } from '../components/DiagnosticBlockedView';
+import { useDiagnosticRoom } from '../hooks/useDiagnosticRoom';
 import '../diagnostic.css';
-
-const DRAFT_STORAGE_PREFIX = 'leby_diag_draft_';
-const PENDING_SUBMIT_KEY = 'leby_diag_pending_submit';
-
-interface DiagnosticDraft {
-    answers: Record<number, OptionKey | null>;
-    flagged: number[];
-    playedAudios: string[];
-}
-
-interface PendingSubmitPayload {
-    userId: number;
-    request: SubmitDiagnosticRequest;
-}
-
-type RoomBlockState =
-    | { type: 'ALREADY_COMPLETED'; message: string }
-    | { type: 'NO_ACTIVE_EXAM'; message: string }
-    | { type: 'NO_TARGET'; message: string }
-    | { type: 'ERROR'; message: string };
-
-// Khóa đồng bộ khởi tạo phiên thi tránh gọi /start 2 lần khi React StrictMode mount kép
-let inFlightRoomInit: Promise<DiagnosticTest> | null = null;
-
-function readDraft(attemptId: number): DiagnosticDraft | null {
-    try {
-        const raw = localStorage.getItem(`${DRAFT_STORAGE_PREFIX}${attemptId}`);
-        if (!raw) return null;
-        return JSON.parse(raw) as DiagnosticDraft;
-    } catch {
-        return null;
-    }
-}
-
-function writeDraft(attemptId: number, draft: DiagnosticDraft) {
-    try {
-        localStorage.setItem(`${DRAFT_STORAGE_PREFIX}${attemptId}`, JSON.stringify(draft));
-    } catch {
-        // Bỏ qua nếu bộ nhớ trình duyệt bị đầy
-    }
-}
-
-function clearDraft(attemptId: number) {
-    try {
-        localStorage.removeItem(`${DRAFT_STORAGE_PREFIX}${attemptId}`);
-    } catch {
-        // Không xử lý thêm
-    }
-}
 
 /**
  * Trang Phòng thi chẩn đoán trực tuyến (UC06).
- * Tích hợp đầy đủ: khôi phục phiên (Luồng 5a), lưu nháp real-time localStorage (BR12),
- * audio phát 1 lần duy nhất (BR13), tạm dừng client-side (Luồng 4b), tự động nộp bài khi hết giờ (BR07),
- * cảnh báo mất kết nối (Ngoại lệ 5b) và tự nộp bài sau khi đăng nhập lại (Ngoại lệ 9a).
+ * Tích hợp: gom câu hỏi chùm trên 1 trang, phát audio liên tục, Flag từng câu,
+ * khóa/mở bảng Palette theo tiến độ Phần Nghe, ngưng đọng đồng hồ khi thoát/crash và tùy chọn thi lại.
  */
 export default function DiagnosticRoomPage() {
+    // Hook điều hướng tới trang Báo cáo, Lộ trình, Chọn AIM hoặc Dashboard
     const navigate = useNavigate();
-    const { user } = useAuth();
+    // Lấy toàn bộ state và hành động điều khiển phòng thi từ custom hook chuyên biệt
+    const {
+        test,
+        steps,
+        currentStep,
+        currentStepIndex,
+        focusedOrderNo,
+        totalQuestions,
+        answeredCount,
+        activeQuestionOrderNos,
+        answers,
+        flagged,
+        initialSeconds,
+        isLoading,
+        isSubmitting,
+        isAutoSubmitting,
+        isRetaking,
+        isPaused,
+        isPaletteCollapsed,
+        isSubmitModalOpen,
+        isRetakeConfirmOpen,
+        isOffline,
+        blockState,
+        submitError,
+        hasStartedAudio,
+        isCurrentAudioLocked,
+        isListeningCompleted,
+        isListeningTransitionLocked,
+        isInteractionLocked,
+        setIsPaletteCollapsed,
+        setIsSubmitModalOpen,
+        setIsRetakeConfirmOpen,
+        setHasStartedAudio,
+        handleSelectOption,
+        handleToggleFlag,
+        handleAudioEnded,
+        handlePrevStep,
+        handleNextStep,
+        handleSelectQuestionFromPalette,
+        handleSecondsChange,
+        handleTogglePause,
+        submitExamPayload,
+        handleTimeOut,
+        handleConfirmRetake,
+    } = useDiagnosticRoom();
 
-    const [test, setTest] = useState<DiagnosticTest | null>(null);
-    const [currentIndex, setCurrentIndex] = useState<number>(0);
-    const [answers, setAnswers] = useState<Record<number, OptionKey | null>>({});
-    const [flagged, setFlagged] = useState<Set<number>>(new Set());
-    const [playedAudios, setPlayedAudios] = useState<Set<string>>(new Set());
-    const [initialSeconds, setInitialSeconds] = useState<number>(45 * 60);
-
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-    const [isAutoSubmitting, setIsAutoSubmitting] = useState<boolean>(false);
-    const [isPaused, setIsPaused] = useState<boolean>(false);
-    const [isPaletteCollapsed, setIsPaletteCollapsed] = useState<boolean>(false);
-    const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-    const [isOffline, setIsOffline] = useState<boolean>(() => !navigator.onLine);
-    const [blockState, setBlockState] = useState<RoomBlockState | null>(null);
-    const [submitError, setSubmitError] = useState<string>('');
-
-    const remainingSecondsRef = useRef<number>(45 * 60);
-
-    // Lắng nghe trạng thái kết nối mạng (UC06 Ngoại lệ 5b)
-    useEffect(() => {
-        const handleOffline = () => setIsOffline(true);
-        const handleOnline = () => setIsOffline(false);
-        window.addEventListener('offline', handleOffline);
-        window.addEventListener('online', handleOnline);
-        return () => {
-            window.removeEventListener('offline', handleOffline);
-            window.removeEventListener('online', handleOnline);
-        };
-    }, []);
-
-    // Nạp phiên làm bài hiện tại hoặc khởi tạo phiên mới (kèm tự nộp bài nếu vừa đăng nhập lại từ Ngoại lệ 9a)
-    useEffect(() => {
-        let isMounted = true;
-
-        async function bootstrapRoom() {
-            // Bước 1: Kiểm tra xem học viên vừa bị hết phiên đúng lúc bấm nộp bài ở lần trước hay không (Ngoại lệ 9a)
-            const rawPending = localStorage.getItem(PENDING_SUBMIT_KEY);
-            if (rawPending && user) {
-                try {
-                    const pending = JSON.parse(rawPending) as PendingSubmitPayload;
-                    if (pending.userId === user.id && pending.request?.attemptId) {
-                        setIsSubmitting(true);
-                        const submitRes = await diagnosticService.submitTest(pending.request);
-                        localStorage.removeItem(PENDING_SUBMIT_KEY);
-                        clearDraft(pending.request.attemptId);
-                        if (submitRes.success && submitRes.data) {
-                            navigate(`/diagnostic/results/${submitRes.data.attemptId}`, { replace: true });
-                            return;
-                        }
-                    }
-                } catch (err: unknown) {
-                    if (!axios.isAxiosError(err) || err.response?.status !== 401) {
-                        localStorage.removeItem(PENDING_SUBMIT_KEY);
-                    }
-                } finally {
-                    if (isMounted) setIsSubmitting(false);
-                }
-            }
-
-            // Bước 2: Nếu user chưa chọn mục tiêu AIM -> báo yêu cầu thiết lập AIM trước (BR01)
-            if (user && !user.targetProfileId) {
-                if (isMounted) {
-                    setBlockState({
-                        type: 'NO_TARGET',
-                        message:
-                            'Bạn cần thiết lập mốc điểm mục tiêu TOEIC (AIM) trước khi tham gia bài thi chẩn đoán.',
-                    });
-                    setIsLoading(false);
-                }
-                return;
-            }
-
-            // Bước 3: Kiểm tra phiên làm bài đang diễn ra hoặc tạo mới lượt thi
-            try {
-                if (!inFlightRoomInit) {
-                    inFlightRoomInit = (async () => {
-                        const resumeRes = await diagnosticService.getActiveSession();
-                        if (resumeRes.success && resumeRes.data) {
-                            return resumeRes.data;
-                        }
-
-                        const startRes = await diagnosticService.startDiagnostic({
-                            targetProfileId: user?.targetProfileId ?? undefined,
-                        });
-                        if (!startRes.success || !startRes.data) {
-                            throw new Error(startRes.message || 'Không thể khởi tạo bài thi chẩn đoán.');
-                        }
-
-                        const examRes = await diagnosticService.getExamForAttempt(startRes.data.attemptId);
-                        if (!examRes.success || !examRes.data) {
-                            throw new Error(examRes.message || 'Không thể tải danh sách câu hỏi bài thi.');
-                        }
-                        return examRes.data;
-                    })();
-                }
-
-                const roomData = await inFlightRoomInit;
-                if (!isMounted) return;
-
-                setTest(roomData);
-                const serverRemaining =
-                    roomData.remainingSeconds !== undefined
-                        ? roomData.remainingSeconds
-                        : roomData.durationMinutes * 60;
-                setInitialSeconds(serverRemaining);
-                remainingSecondsRef.current = serverRemaining;
-
-                // Khôi phục đáp án, cờ đánh dấu và danh sách audio đã phát từ localStorage (BR12 & BR13)
-                const draft = readDraft(roomData.attemptId);
-                if (draft) {
-                    setAnswers(draft.answers || {});
-                    setFlagged(new Set(draft.flagged || []));
-                    setPlayedAudios(new Set(draft.playedAudios || []));
-                } else {
-                    setAnswers({});
-                    setFlagged(new Set());
-                    setPlayedAudios(new Set());
-                }
-            } catch (err: unknown) {
-                if (!isMounted) return;
-                if (axios.isAxiosError(err)) {
-                    const data = err.response?.data as { code?: string; message?: string } | undefined;
-                    const errCode = data?.code;
-                    const errMsg = data?.message;
-
-                    if (errCode === 'DIAGNOSTIC_ALREADY_COMPLETED') {
-                        setBlockState({
-                            type: 'ALREADY_COMPLETED',
-                            message:
-                                errMsg ||
-                                'Bạn đã hoàn thành bài thi chẩn đoán cho mục tiêu này. Vui lòng xem lại báo cáo hoặc tiến hành học theo lộ trình.',
-                        });
-                        return;
-                    }
-                    if (errCode === 'EXAM_NOT_ACTIVE' || errCode === 'EXAM_NOT_FOUND') {
-                        setBlockState({
-                            type: 'NO_ACTIVE_EXAM',
-                            message:
-                                errMsg ||
-                                'Đề thi chẩn đoán hiện đang được ban chuyên môn chuẩn bị. Vui lòng quay lại sau ít phút hoặc liên hệ quản trị viên.',
-                        });
-                        return;
-                    }
-                    setBlockState({
-                        type: 'ERROR',
-                        message: errMsg || 'Không thể tải bài thi chẩn đoán. Vui lòng thử lại.',
-                    });
-                } else {
-                    setBlockState({
-                        type: 'ERROR',
-                        message: 'Không thể tải bài thi chẩn đoán. Vui lòng tải lại trang.',
-                    });
-                }
-            } finally {
-                inFlightRoomInit = null;
-                if (isMounted) setIsLoading(false);
-            }
-        }
-
-        void bootstrapRoom();
-
-        return () => {
-            isMounted = false;
-        };
-    }, [user, navigate]);
-
-    // BR12: Tự động lưu nháp đáp án, cờ đánh dấu và audio đã phát vào localStorage ngay khi thay đổi
-    useEffect(() => {
-        if (!test) return;
-        writeDraft(test.attemptId, {
-            answers,
-            flagged: Array.from(flagged),
-            playedAudios: Array.from(playedAudios),
-        });
-    }, [test, answers, flagged, playedAudios]);
-
-    const currentQuestion = test?.questions[currentIndex];
-    const totalQuestions = test?.totalQuestions || test?.questions.length || 0;
-    const currentQNo = currentQuestion?.orderNo ?? currentIndex + 1;
-    const isCurrentFlagged = flagged.has(currentQNo);
-
-    // Key nhận diện audio duy nhất (dùng audioUrl để nhóm các câu Part 3/4 chung 1 đoạn nghe)
-    const currentAudioKey = currentQuestion?.audioUrl
-        ? currentQuestion.audioUrl
-        : currentQuestion
-          ? `q_${currentQuestion.questionId}`
-          : '';
-    const isCurrentAudioLocked = currentAudioKey ? playedAudios.has(currentAudioKey) : false;
-
-    const handleSelectOption = useCallback(
-        (opt: OptionKey) => {
-            if (isPaused || isSubmitting || isAutoSubmitting) return;
-            setAnswers((prev) => ({
-                ...prev,
-                [currentQNo]: opt,
-            }));
-        },
-        [currentQNo, isPaused, isSubmitting, isAutoSubmitting]
-    );
-
-    const handleToggleFlag = useCallback(() => {
-        if (isPaused || isSubmitting || isAutoSubmitting) return;
-        setFlagged((prev) => {
-            const next = new Set(prev);
-            if (next.has(currentQNo)) {
-                next.delete(currentQNo);
-            } else {
-                next.add(currentQNo);
-            }
-            return next;
-        });
-    }, [currentQNo, isPaused, isSubmitting, isAutoSubmitting]);
-
-    const handleAudioEnded = useCallback(() => {
-        if (!currentAudioKey) return;
-        setPlayedAudios((prev) => {
-            const next = new Set(prev);
-            next.add(currentAudioKey);
-            return next;
-        });
-    }, [currentAudioKey]);
-
-    const handlePrev = useCallback(() => {
-        setCurrentIndex((prev) => Math.max(0, prev - 1));
-    }, []);
-
-    const handleNext = useCallback(() => {
-        setCurrentIndex((prev) => Math.min(totalQuestions - 1, prev + 1));
-    }, [totalQuestions]);
-
-    const handleSecondsChange = useCallback((secs: number) => {
-        remainingSecondsRef.current = secs;
-    }, []);
-
-    const submitExamPayload = useCallback(
-        async (isTimeoutAuto: boolean) => {
-            if (!test || isSubmitting) return;
-
-            const resolvedTargetId = test.targetProfileId ?? user?.targetProfileId;
-            if (!resolvedTargetId) {
-                setSubmitError('Không xác định được mục tiêu điểm TOEIC (AIM) để chấm điểm bài thi.');
-                setIsModalOpen(false);
-                return;
-            }
-
-            if (isTimeoutAuto) {
-                setIsAutoSubmitting(true);
-            }
-            setIsSubmitting(true);
-            setSubmitError('');
-
-            const totalSecondsAllowed = (test.durationMinutes || 45) * 60;
-            const elapsedSeconds = Math.max(1, totalSecondsAllowed - remainingSecondsRef.current);
-
-            const formattedAnswers = test.questions.map((q) => {
-                const selected = answers[q.orderNo];
-                return {
-                    questionId: q.questionId,
-                    userAnswer: selected ? JSON.stringify({ selected }) : null,
-                    isFlagged: flagged.has(q.orderNo),
-                };
-            });
-
-            const requestPayload: SubmitDiagnosticRequest = {
-                attemptId: test.attemptId,
-                targetProfileId: resolvedTargetId,
-                durationSeconds: elapsedSeconds,
-                answers: formattedAnswers,
-            };
-
-            // UC06 Ngoại lệ 9a: Lưu tạm payload trước khi gọi API để bảo toàn nếu hết phiên 401 đúng lúc nộp bài
-            if (user?.id) {
-                localStorage.setItem(
-                    PENDING_SUBMIT_KEY,
-                    JSON.stringify({ userId: user.id, request: requestPayload })
-                );
-            }
-
-            try {
-                const res = await diagnosticService.submitTest(requestPayload);
-                localStorage.removeItem(PENDING_SUBMIT_KEY);
-
-                if (res.success && res.data) {
-                    clearDraft(test.attemptId);
-                    navigate(`/diagnostic/results/${res.data.attemptId}`, { replace: true });
-                } else {
-                    setSubmitError(res.message || 'Lỗi khi nộp bài.');
-                    setIsModalOpen(false);
-                    setIsAutoSubmitting(false);
-                }
-            } catch (err: unknown) {
-                // Nếu 401 thì giữ PENDING_SUBMIT_KEY để error.interceptor đưa sang /login và nộp lại sau đăng nhập
-                if (!axios.isAxiosError(err) || err.response?.status !== 401) {
-                    localStorage.removeItem(PENDING_SUBMIT_KEY);
-                }
-                const serverMsg = axios.isAxiosError(err)
-                    ? (err.response?.data as { message?: string } | undefined)?.message
-                    : undefined;
-                setSubmitError(serverMsg || 'Đã xảy ra lỗi nộp bài. Vui lòng thử lại.');
-                setIsModalOpen(false);
-                setIsAutoSubmitting(false);
-            } finally {
-                setIsSubmitting(false);
-            }
-        },
-        [test, isSubmitting, user, answers, flagged, navigate]
-    );
-
-    // BR07: Cưỡng chế nộp bài tự động khi đồng hồ đếm ngược chạm 00:00
-    const handleTimeOut = useCallback(() => {
-        setIsModalOpen(false);
-        setIsPaused(false);
-        void submitExamPayload(true);
-    }, [submitExamPayload]);
-
+    // Hiển thị màn hình chờ trong lúc đang gọi API nạp hoặc khôi phục đề thi
     if (isLoading) {
         return (
             <div className="diag-loading-page">
@@ -410,70 +80,27 @@ export default function DiagnosticRoomPage() {
         );
     }
 
+    // Hiển thị màn hình thông báo trạng thái nếu chưa đủ điều kiện hoặc đã hoàn thành bài thi (có tùy chọn Làm lại)
     if (blockState) {
         return (
-            <div className="diag-state-page">
-                <div className="diag-state-card">
-                    <div className="diag-state-card__icon">
-                        <AlertTriangle size={36} color="#ea580c" />
-                    </div>
-                    <h2 className="diag-state-card__title">
-                        {blockState.type === 'ALREADY_COMPLETED'
-                            ? 'Bạn đã hoàn thành bài thi chẩn đoán'
-                            : blockState.type === 'NO_ACTIVE_EXAM'
-                              ? 'Đề thi chẩn đoán đang được chuẩn bị'
-                              : blockState.type === 'NO_TARGET'
-                                ? 'Chưa thiết lập mục tiêu TOEIC'
-                                : 'Không thể mở phòng thi'}
-                    </h2>
-                    <p className="diag-state-card__desc">{blockState.message}</p>
-
-                    <div className="diag-state-card__actions">
-                        {blockState.type === 'ALREADY_COMPLETED' && (
-                            <>
-                                <button
-                                    type="button"
-                                    className="diag-action-btn is-submit"
-                                    onClick={() => navigate('/diagnostic/results')}
-                                >
-                                    <Award size={16} />
-                                    <span>Xem báo cáo chẩn đoán</span>
-                                </button>
-                                <button
-                                    type="button"
-                                    className="diag-action-btn is-outline"
-                                    onClick={() => navigate('/learning-path')}
-                                >
-                                    <Compass size={16} />
-                                    <span>Tiến hành học theo lộ trình</span>
-                                </button>
-                            </>
-                        )}
-                        {blockState.type === 'NO_TARGET' && (
-                            <button
-                                type="button"
-                                className="diag-action-btn is-submit"
-                                onClick={() => navigate('/target-selection')}
-                            >
-                                Chọn mục tiêu AIM ngay
-                            </button>
-                        )}
-                        {(blockState.type === 'NO_ACTIVE_EXAM' || blockState.type === 'ERROR') && (
-                            <button
-                                type="button"
-                                className="diag-action-btn is-outline"
-                                onClick={() => navigate('/dashboard')}
-                            >
-                                Quay về trang tổng quan
-                            </button>
-                        )}
-                    </div>
-                </div>
-            </div>
+            <DiagnosticBlockedView
+                blockState={blockState}
+                submitError={submitError}
+                isRetakeConfirmOpen={isRetakeConfirmOpen}
+                isRetaking={isRetaking}
+                onViewResults={() => navigate('/diagnostic/results')}
+                onViewLearningPath={() => navigate('/learning-path')}
+                onGoTargetSelection={() => navigate('/target-selection')}
+                onGoDashboard={() => navigate('/dashboard')}
+                onOpenRetakeConfirm={() => setIsRetakeConfirmOpen(true)}
+                onCloseRetakeConfirm={() => setIsRetakeConfirmOpen(false)}
+                onConfirmRetake={() => void handleConfirmRetake()}
+            />
         );
     }
 
-    if (!test || !currentQuestion) {
+    // Fallback an toàn nếu dữ liệu đề thi hoặc màn hình câu hỏi rỗng
+    if (!test || !currentStep) {
         return (
             <div className="diag-error-page">
                 <p>Không tìm thấy dữ liệu bài thi chẩn đoán.</p>
@@ -481,8 +108,21 @@ export default function DiagnosticRoomPage() {
         );
     }
 
-    const answeredCount = Object.values(answers).filter((v) => v !== null && v !== undefined).length;
-    const isInteractionLocked = isPaused || isSubmitting || isAutoSubmitting;
+    // Lấy số câu đầu tiên của màn hình hiện tại
+    const firstOrderNo = currentStep.questions[0]?.orderNo ?? 1;
+    // Lấy số câu cuối cùng của màn hình hiện tại (khác firstOrderNo nếu là câu chùm)
+    const lastOrderNo = currentStep.questions[currentStep.questions.length - 1]?.orderNo ?? firstOrderNo;
+    // Tạo nhãn tiến độ hiển thị trên Header cho cả câu đơn lẫn câu chùm
+    const questionLabel =
+        firstOrderNo === lastOrderNo
+            ? `Câu ${firstOrderNo} / ${totalQuestions}`
+            : `Câu ${firstOrderNo}–${lastOrderNo} / ${totalQuestions}`;
+
+    // Kiểm tra vô hiệu hóa nút Câu trước (ở trang đầu, đang tạm dừng hoặc đang khóa trong lúc audio Nghe chạy)
+    const isPrevDisabled = currentStepIndex === 0 || isInteractionLocked || isListeningTransitionLocked;
+    // Kiểm tra vô hiệu hóa nút Câu tiếp (ở trang cuối, đang tạm dừng hoặc đang khóa trong lúc audio Nghe chạy)
+    const isNextDisabled =
+        currentStepIndex === steps.length - 1 || isInteractionLocked || isListeningTransitionLocked;
 
     return (
         <div className="diag-room-page">
@@ -491,23 +131,27 @@ export default function DiagnosticRoomPage() {
                 <div className="diag-offline-banner" role="alert">
                     <WifiOff size={16} />
                     <span>
-                        Đang mất kết nối máy chủ. Câu trả lời của bạn đang được tạm lưu cục bộ, vui lòng không tắt trình duyệt.
+                        Đang mất kết nối máy chủ. Câu trả lời của bạn đang được tạm lưu cục bộ, vui lòng không tắt
+                        trình duyệt.
                     </span>
                 </div>
             )}
 
+            {/* Thanh tiêu đề gồm bộ đếm câu, đồng hồ đếm ngược và nút Tạm dừng */}
             <DiagnosticHeader
                 title={test.title}
-                currentQuestion={currentQNo}
+                currentQuestion={firstOrderNo}
                 totalQuestions={totalQuestions}
+                questionLabel={questionLabel}
                 initialSeconds={initialSeconds}
                 isPaused={isPaused}
                 isLocked={isSubmitting || isAutoSubmitting}
-                onTogglePause={() => setIsPaused((prev) => !prev)}
+                onTogglePause={handleTogglePause}
                 onSecondsChange={handleSecondsChange}
                 onTimeOut={handleTimeOut}
             />
 
+            {/* Banner báo lỗi nộp bài nếu có sự cố từ máy chủ */}
             {submitError && (
                 <div className="diag-submit-error-banner" role="alert">
                     <AlertTriangle size={16} />
@@ -515,31 +159,46 @@ export default function DiagnosticRoomPage() {
                 </div>
             )}
 
+            {/* Bố cục chính 2 cột: khu vực làm bài bên trái + bảng Palette Nghe/Đọc bên phải */}
             <main className={`diag-room-layout ${isPaletteCollapsed ? 'is-palette-collapsed' : ''}`}>
                 <section className="diag-main-column">
-                    {currentQuestion.section === 'LISTENING' && currentQuestion.audioUrl && (
+                    {/* Thanh phát audio cho phần Listening, tự động chuyển và phát nối tiếp khi hết đoạn nghe */}
+                    {currentStep.section === 'LISTENING' && currentStep.audioUrl && (
                         <AudioPlayer
-                            src={currentQuestion.audioUrl}
+                            stepKey={currentStep.audioKey || `step_${currentStep.stepIndex}`}
+                            src={currentStep.audioUrl}
                             isLocked={isCurrentAudioLocked}
-                            isPaused={isPaused || isSubmitting || isAutoSubmitting}
+                            isPaused={isInteractionLocked}
+                            shouldAutoPlay={hasStartedAudio}
+                            onUserStartedAudio={() => setHasStartedAudio(true)}
                             onAudioEnded={handleAudioEnded}
                         />
                     )}
 
+                    {/* Khung hiển thị câu hỏi đơn hoặc cả chùm câu hỏi cùng icon Flag ở đầu từng câu */}
                     <QuestionCard
-                        question={currentQuestion}
-                        selectedOption={answers[currentQNo] ?? null}
+                        step={currentStep}
+                        answers={answers}
+                        flagged={flagged}
+                        focusedOrderNo={focusedOrderNo}
                         disabled={isInteractionLocked}
                         onSelectOption={handleSelectOption}
+                        onToggleFlag={handleToggleFlag}
                     />
 
+                    {/* Thanh điều hướng dưới cùng: nút Câu trước / Câu tiếp (khóa khi audio đang chạy) và Nộp bài thi */}
                     <footer className="diag-action-bar">
                         <div className="diag-action-bar__left">
                             <button
                                 type="button"
                                 className="diag-action-btn is-outline"
-                                onClick={handlePrev}
-                                disabled={currentIndex === 0 || isInteractionLocked}
+                                onClick={handlePrevStep}
+                                disabled={isPrevDisabled}
+                                title={
+                                    isListeningTransitionLocked
+                                        ? 'Không thể chuyển câu trong khi audio phần Nghe đang chạy'
+                                        : 'Quay lại câu trước'
+                                }
                             >
                                 <ChevronLeft size={16} />
                                 <span>Câu trước</span>
@@ -548,8 +207,13 @@ export default function DiagnosticRoomPage() {
                             <button
                                 type="button"
                                 className="diag-action-btn is-outline"
-                                onClick={handleNext}
-                                disabled={currentIndex === totalQuestions - 1 || isInteractionLocked}
+                                onClick={handleNextStep}
+                                disabled={isNextDisabled}
+                                title={
+                                    isListeningTransitionLocked
+                                        ? 'Vui lòng nghe hết bản ghi âm để tự động chuyển sang câu tiếp theo'
+                                        : 'Chuyển sang câu tiếp theo'
+                                }
                             >
                                 <span>Câu tiếp</span>
                                 <ChevronRight size={16} />
@@ -557,20 +221,11 @@ export default function DiagnosticRoomPage() {
                         </div>
 
                         <div className="diag-action-bar__right">
-                            <button
-                                type="button"
-                                className={`diag-action-btn is-flag ${isCurrentFlagged ? 'is-active' : ''}`}
-                                onClick={handleToggleFlag}
-                                disabled={isInteractionLocked}
-                            >
-                                <Flag size={16} fill={isCurrentFlagged ? '#f59e0b' : 'none'} />
-                                <span>Đánh dấu</span>
-                            </button>
-
+                            {/* Nút mở modal kiểm tra tổng hợp số câu đã làm / bỏ sót / đánh dấu trước khi nộp */}
                             <button
                                 type="button"
                                 className="diag-action-btn is-submit"
-                                onClick={() => setIsModalOpen(true)}
+                                onClick={() => setIsSubmitModalOpen(true)}
                                 disabled={isInteractionLocked}
                             >
                                 Nộp bài thi
@@ -579,33 +234,33 @@ export default function DiagnosticRoomPage() {
                     </footer>
                 </section>
 
+                {/* Cột phải: Bảng Palette chia 2 nhóm Phần Nghe / Phần Đọc */}
                 <section className="diag-sidebar-column">
                     <QuestionPalette
-                        total={totalQuestions}
-                        currentIndex={currentIndex}
+                        questions={test.questions}
+                        activeOrderNos={activeQuestionOrderNos}
                         answers={answers}
                         flagged={flagged}
                         isCollapsed={isPaletteCollapsed}
+                        isListeningCompleted={isListeningCompleted}
                         onToggleCollapse={() => setIsPaletteCollapsed((prev) => !prev)}
-                        onSelectQuestion={(idx) => {
-                            if (!isInteractionLocked) setCurrentIndex(idx);
-                        }}
+                        onSelectQuestion={handleSelectQuestionFromPalette}
                     />
                 </section>
             </main>
 
-            {/* Modal xác nhận nộp bài (UC06 Bước 8 & Ngoại lệ 7a) */}
+            {/* Modal xác nhận nộp bài giữ nguyên kiểm tra và cảnh báo số câu chưa làm (UC06 Bước 8 & Ngoại lệ 7a) */}
             <SubmitModal
-                isOpen={isModalOpen}
+                isOpen={isSubmitModalOpen}
                 totalQuestions={totalQuestions}
                 answeredCount={answeredCount}
                 flaggedCount={flagged.size}
                 isSubmitting={isSubmitting}
-                onClose={() => setIsModalOpen(false)}
+                onClose={() => setIsSubmitModalOpen(false)}
                 onConfirm={() => void submitExamPayload(false)}
             />
 
-            {/* Overlay Tạm dừng phòng thi (UC06 Luồng 4b - client-side) */}
+            {/* Overlay Tạm dừng phòng thi (UC06 Luồng 4b — đồng hồ đã đồng bộ ngưng đọng lên server) */}
             {isPaused && !isAutoSubmitting && (
                 <div className="diag-modal-backdrop" role="dialog" aria-modal="true">
                     <div className="diag-modal-card">
@@ -614,13 +269,20 @@ export default function DiagnosticRoomPage() {
                         </div>
                         <h3 className="diag-modal-card__title">Bài thi đang tạm dừng</h3>
                         <p className="diag-modal-card__desc">
-                            Đồng hồ đếm ngược và mọi thao tác câu hỏi đã được tạm khóa. Nếu bạn đóng trình duyệt, hệ thống sẽ bảo lưu đáp án đã chọn và khôi phục lại phiên làm bài khi quay lại.
+                            Đồng hồ đếm ngược đã được ngưng đọng và tạm khóa thao tác. Nếu bạn đóng trình duyệt,
+                            hệ thống sẽ bảo lưu đáp án và thời gian còn lại khi bạn quay trở lại.
                         </p>
                         <button
                             type="button"
                             className="diag-modal-btn is-confirm"
-                            onClick={() => setIsPaused(false)}
-                            style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', width: '100%' }}
+                            onClick={handleTogglePause}
+                            style={{
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                gap: '8px',
+                                width: '100%',
+                            }}
                         >
                             <Play size={16} />
                             <span>Tiếp tục làm bài</span>
@@ -636,7 +298,8 @@ export default function DiagnosticRoomPage() {
                         <div className="diag-spinner" style={{ margin: '0 auto 16px' }} />
                         <h3 className="diag-modal-card__title">Đã hết thời gian làm bài thi</h3>
                         <p className="diag-modal-card__desc">
-                            Đã hết thời gian làm bài thi. Hệ thống đang tiến hành nộp bài tự động và phân tích năng lực của bạn...
+                            Đã hết thời gian làm bài thi. Hệ thống đang tiến hành nộp bài tự động và phân tích
+                            năng lực của bạn...
                         </p>
                     </div>
                 </div>
