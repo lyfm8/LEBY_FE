@@ -43,8 +43,44 @@ export interface DiagnosticTest {
 
 /** Payload yêu cầu bắt đầu lượt thi chẩn đoán. */
 export interface StartDiagnosticRequest {
+    // ID đề thi muốn khởi tạo cụ thể (tùy chọn)
     diagnosticTestId?: number;
+    // ID mục tiêu điểm TOEIC (AIM) áp dụng cho lượt thi
     targetProfileId?: number;
+    // Cờ cho phép thi lại ngay cả khi đã hoàn thành bài chẩn đoán ở mốc AIM hiện tại
+    forceRetake?: boolean;
+}
+
+/** Payload đồng bộ số giây làm bài còn lại lên máy chủ. */
+export interface SyncDiagnosticTimerRequest {
+    // ID lượt thi đang diễn ra trên phòng thi
+    attemptId: number;
+    // Số giây còn lại của đồng hồ đếm ngược
+    remainingSeconds: number;
+}
+
+/** Một màn hình / bước hiển thị trong phòng thi (có thể là 1 câu đơn hoặc 1 chùm câu hỏi Part 3/4/6/7). */
+export interface DiagnosticExamStep {
+    // Chỉ số thứ tự của màn hình hiện tại (bắt đầu từ 0)
+    stepIndex: number;
+    // Nhóm kỹ năng của màn hình hiện tại: LISTENING hoặc READING
+    section: SectionType;
+    // Số thứ tự Part (1..7)
+    partNo: number;
+    // Tên hiển thị của Part
+    partName: string;
+    // Khóa định danh audio duy nhất theo câu hoặc chùm câu để tránh xung đột URL seed
+    audioKey: string | null;
+    // Đường dẫn file audio dùng chung cho câu đơn hoặc cả chùm câu Listening
+    audioUrl: string | null;
+    // Đường dẫn hình ảnh minh họa dùng chung (nếu có)
+    imageUrl: string | null;
+    // Đoạn văn đọc hiểu dùng chung cho chùm Part 6/7 (nếu có)
+    passage: string | null;
+    // Chỉ dẫn ngữ cảnh chung của câu hỏi hoặc chùm câu hỏi
+    instruction: string | null;
+    // Danh sách 1 câu đơn hoặc nhiều câu con thuộc cùng một chùm hiển thị trên cùng trang
+    questions: DiagnosticQuestion[];
 }
 
 /** Thông tin phiên làm bài trả về khi khởi tạo lượt thi. */
