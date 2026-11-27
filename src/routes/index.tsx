@@ -11,6 +11,7 @@ import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
 import DiagnosticRoomPage from '@/features/diagnostic/pages/DiagnosticRoomPage';
 import DiagnosticResultPage from '@/features/diagnostic/pages/DiagnosticResultPage';
+import DiagnosticReviewPage from '@/features/diagnostic/pages/DiagnosticReviewPage';
 
 // 2. Dashboard & Learning Path
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
@@ -114,6 +115,14 @@ function AppRoutes() {
                     element={
                         <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/review/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticReviewPage />
                         </AuthGuard>
                     }
                 />

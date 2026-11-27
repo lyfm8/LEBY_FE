@@ -1,6 +1,12 @@
 import { useEffect } from 'react';
-import { Flag } from 'lucide-react';
-import type { DiagnosticExamStep, DiagnosticQuestion, OptionKey } from '../types/diagnosticTypes';
+import { Check, Flag, X } from 'lucide-react';
+import type {
+    DiagnosticExamStep,
+    DiagnosticQuestion,
+    DiagnosticReviewQuestion,
+    OptionKey,
+} from '../types/diagnosticTypes';
+import { ExplanationPanel } from './ExplanationPanel';
 
 interface QuestionCardProps {
     // Màn hình câu hỏi hiện tại (chứa 1 câu đơn hoặc 1 chùm câu hỏi cùng parentId)
@@ -13,8 +19,12 @@ interface QuestionCardProps {
     focusedOrderNo?: number | null;
     // Vô hiệu hóa tương tác khi phòng thi đang tạm dừng hoặc đang nộp bài
     disabled?: boolean;
-    // Hàm cập nhật đáp án cho một câu hỏi cụ thể
-    onSelectOption: (orderNo: number, option: OptionKey) => void;
+    // Bật chế độ Xem lại: hiển thị đáp án đúng/sai và panel Giải thích bên dưới từng câu
+    isReviewMode?: boolean;
+    // Bản đồ dữ liệu chi tiết review (đáp án đúng, trạng thái đúng/sai, giải thích) theo orderNo
+    reviewQuestionMap?: Record<number, DiagnosticReviewQuestion>;
+    // Hàm cập nhật đáp án cho một câu hỏi cụ thể (không bắt buộc khi đang xem lại)
+    onSelectOption?: (orderNo: number, option: OptionKey) => void;
     // Hàm bật/tắt cờ đánh dấu cho một câu hỏi cụ thể
     onToggleFlag: (orderNo: number) => void;
 }
@@ -23,6 +33,7 @@ interface QuestionCardProps {
  * Hiển thị nội dung câu hỏi đơn hoặc toàn bộ chùm câu hỏi (Part 3, 4, 6, 7) trên cùng một trang:
  * - Câu có hình ảnh hoặc đoạn văn đọc hiểu dùng bố cục 2 nửa (trái: ảnh/đoạn văn, phải: các câu hỏi con).
  * - Mỗi câu hỏi đều có nút icon Flag đặt ngay ở đầu câu để đồng bộ khi hiển thị theo chùm.
+ * - Trong chế độ Xem lại (isReviewMode), tô khung xanh/đỏ đáp án và gắn khối Giải thích mở rộng ngay dưới mỗi câu.
  */
 export function QuestionCard({
     step,
@@ -30,6 +41,8 @@ export function QuestionCard({
     flagged,
     focusedOrderNo,
     disabled = false,
+    isReviewMode = false,
+    reviewQuestionMap,
     onSelectOption,
     onToggleFlag,
 }: QuestionCardProps) {
@@ -57,7 +70,7 @@ export function QuestionCard({
         targetEl?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }, [focusedOrderNo, step.stepIndex]);
 
-    // Hàm dựng giao diện cho từng câu hỏi đơn lẻ (tiêu đề câu + icon Flag đầu câu + 4 đáp án)
+    // Hàm dựng giao diện cho từng câu hỏi đơn lẻ (tiêu đề câu + icon Flag đầu câu + 4 đáp án + giải thích nếu xem lại)
     const renderQuestionBlock = (question: DiagnosticQuestion, showPartPill: boolean) => {
         // Lấy đáp án hiện tại của câu hỏi này
         const selectedOption = answers[question.orderNo] ?? null;
@@ -65,6 +78,8 @@ export function QuestionCard({
         const isFlagged = flagged.has(question.orderNo);
         // Kiểm tra câu hỏi này có đang là câu được focus từ Palette hay không
         const isFocused = focusedOrderNo === question.orderNo;
+        // Tra cứu dữ liệu đáp án đúng và giải thích nếu đang ở chế độ Xem lại
+        const reviewInfo = isReviewMode ? reviewQuestionMap?.[question.orderNo] : undefined;
 
         return (
             <div
@@ -72,7 +87,7 @@ export function QuestionCard({
                 id={`diag-q-item-${question.orderNo}`}
                 className={`diag-question-block ${isGroupStep ? 'is-grouped' : ''} ${isFocused ? 'is-focused' : ''}`}
             >
-                {/* Hàng tiêu đề đầu mỗi câu hỏi: số câu, nhãn Part/Section và nút icon Flag */}
+                {/* Hàng tiêu đề đầu mỗi câu hỏi: số câu, nhãn Part/Section, kết quả đúng/sai và nút icon Flag */}
                 <div className="diag-question-meta-row">
                     <div className="diag-question-meta-row__left">
                         <span className="diag-question-badge">Câu {question.orderNo}</span>
@@ -80,6 +95,23 @@ export function QuestionCard({
                             <span className="diag-part-pill">{question.partName}</span>
                         ) : (
                             <span className="diag-section-tag">{question.section}</span>
+                        )}
+                        {isReviewMode && reviewInfo && (
+                            <span
+                                className={`diag-review-status-pill ${
+                                    reviewInfo.isCorrect
+                                        ? 'is-correct'
+                                        : reviewInfo.userAnswer == null
+                                          ? 'is-skipped'
+                                          : 'is-wrong'
+                                }`}
+                            >
+                                {reviewInfo.isCorrect
+                                    ? 'Đúng'
+                                    : reviewInfo.userAnswer == null
+                                      ? 'Chưa chọn đáp án'
+                                      : 'Sai'}
+                            </span>
                         )}
                     </div>
 
@@ -105,22 +137,65 @@ export function QuestionCard({
                     {question.options.map((opt) => {
                         // Xác định phương án này có đang được chọn hay không
                         const isSelected = selectedOption === opt.key;
+                        // Xác định phương án này có phải đáp án đúng trong chế độ Xem lại không
+                        const isCorrectOption = Boolean(isReviewMode && reviewInfo?.correctAnswer === opt.key);
+                        // Xác định người dùng đã chọn nhầm phương án này hay không
+                        const isWrongSelected = Boolean(isReviewMode && reviewInfo && isSelected && !isCorrectOption);
+
+                        // Lắp ghép class trạng thái đáp án theo chế độ làm bài hay xem lại
+                        let reviewClass = '';
+                        if (isReviewMode) {
+                            if (isCorrectOption) {
+                                reviewClass = 'is-review-mode is-review-correct';
+                            } else if (isWrongSelected) {
+                                reviewClass = 'is-review-mode is-review-wrong';
+                            } else {
+                                reviewClass = 'is-review-mode';
+                            }
+                        }
+
                         return (
                             <button
                                 key={opt.key}
                                 type="button"
-                                disabled={disabled}
-                                className={`diag-option-item ${isSelected ? 'is-selected' : ''}`}
-                                onClick={() => onSelectOption(question.orderNo, opt.key)}
+                                disabled={disabled || isReviewMode}
+                                className={`diag-option-item ${!isReviewMode && isSelected ? 'is-selected' : ''} ${reviewClass}`}
+                                onClick={() => {
+                                    if (!isReviewMode) {
+                                        onSelectOption?.(question.orderNo, opt.key);
+                                    }
+                                }}
                                 role="radio"
                                 aria-checked={isSelected}
                             >
-                                <span className="diag-option-item__badge">{opt.key}</span>
-                                <span className="diag-option-item__text">{opt.text}</span>
+                                <span className="diag-option-item__badge">
+                                    {isCorrectOption ? (
+                                        <Check size={15} strokeWidth={2.75} />
+                                    ) : isWrongSelected ? (
+                                        <X size={15} strokeWidth={2.75} />
+                                    ) : (
+                                        opt.key
+                                    )}
+                                </span>
+                                <span className="diag-option-item__text">
+                                    {isReviewMode && (isCorrectOption || isWrongSelected) ? (
+                                        <strong>{opt.key}. </strong>
+                                    ) : null}
+                                    {opt.text}
+                                </span>
                             </button>
                         );
                     })}
                 </div>
+
+                {/* Khối "Giải thích ^" mở rộng/thu gọn ngay bên dưới từng câu trong chế độ Xem lại */}
+                {isReviewMode && (
+                    <ExplanationPanel
+                        key={question.questionId}
+                        explanation={reviewInfo?.explanation ?? null}
+                        questionOrderNo={question.orderNo}
+                    />
+                )}
             </div>
         );
     };
