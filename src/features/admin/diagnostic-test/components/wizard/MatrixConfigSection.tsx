@@ -1,6 +1,6 @@
-import React from 'react';
-import { Headphones, BookOpen, Sparkles, AlertTriangle, ShieldCheck } from 'lucide-react';
-import type { ExamMatrixAvailability, ExamType } from '../../types';
+import React, { useMemo } from 'react';
+import { Headphones, BookOpen, AlertTriangle, ShieldCheck } from 'lucide-react';
+import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../../types';
 import {
   DEFAULT_MIN_EVIDENCE_COUNT,
   ETS_MOCK_TEST_MATRIX,
@@ -12,6 +12,7 @@ import {
 interface MatrixConfigSectionProps {
   testType: ExamType;
   targetTotal: number;
+  selectedQuestions: ExamQuestionItem[];
   availability: ExamMatrixAvailability | null;
   onAutoSelect: () => void;
   isAutoSelecting: boolean;
@@ -24,6 +25,7 @@ interface MatrixConfigSectionProps {
 export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
   testType,
   targetTotal,
+  selectedQuestions,
   availability,
   onAutoSelect,
   isAutoSelecting,
@@ -35,6 +37,27 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
   const partAvailableCounts = availability?.partAvailableCounts || {};
   const abilities = availability?.abilities || [];
   const diagnosticSummary = !isMockTest ? buildDiagnosticMatrixSummary(abilities, targetTotal) : null;
+
+  const { selectedCountByPart, selectedCountByAbilityName } = useMemo(() => {
+    const byPart: Record<number, number> = {};
+    const byAbility: Record<string, number> = {};
+
+    for (const q of selectedQuestions) {
+      const partNo = q.partNumber || 1;
+      byPart[partNo] = (byPart[partNo] || 0) + 1;
+
+      if (q.abilityNames) {
+        for (const abName of q.abilityNames) {
+          const normalized = abName.trim().toLowerCase();
+          if (normalized) {
+            byAbility[normalized] = (byAbility[normalized] || 0) + 1;
+          }
+        }
+      }
+    }
+
+    return { selectedCountByPart: byPart, selectedCountByAbilityName: byAbility };
+  }, [selectedQuestions]);
 
   const getRequiredCount = (part: PartMatrixConfig): number =>
     isMockTest ? part.standardCount : (diagnosticSummary?.partCounts[part.partNumber] ?? part.standardCount);
@@ -61,17 +84,17 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
       })
     : [];
 
-  const renderAvailabilityBadge = (avail: number, req: number) => {
-    if (avail >= req) {
+  const renderSelectionStatusBadge = (selectedCount: number, requiredCount: number) => {
+    if (selectedCount >= requiredCount) {
       return (
         <span style={{ fontSize: '11px', color: '#16A34A', backgroundColor: '#DCFCE7', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
-          ✓ Đủ câu hỏi
+          Đã chọn đủ
         </span>
       );
     }
     return (
       <span style={{ fontSize: '11px', color: '#D97706', backgroundColor: '#FEF3C7', padding: '2px 8px', borderRadius: '4px', fontWeight: 600 }}>
-        Thiếu {req - avail} câu
+        Chưa chọn đủ
       </span>
     );
   };
@@ -112,7 +135,8 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
           {parts.map((p) => {
             const req = getRequiredCount(p);
             const avail = partAvailableCounts[p.partNumber] || 0;
-            const isEnough = avail >= req;
+            const selectedCount = selectedCountByPart[p.partNumber] || 0;
+            const isBankEnough = avail >= req;
 
             return (
               <tr key={p.partNumber}>
@@ -121,10 +145,10 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
                   <div style={{ fontSize: '11px', color: '#64748B' }}>{p.questionTypeName}</div>
                 </td>
                 <td style={{ textAlign: 'center', fontWeight: 600 }}>{req}</td>
-                <td style={{ textAlign: 'center', color: isEnough ? '#1E293B' : '#D97706', fontWeight: 600 }}>
+                <td style={{ textAlign: 'center', color: isBankEnough ? '#1E293B' : '#D97706', fontWeight: 600 }}>
                   {avail}/{req}
                 </td>
-                <td style={{ textAlign: 'right' }}>{renderAvailabilityBadge(avail, req)}</td>
+                <td style={{ textAlign: 'right' }}>{renderSelectionStatusBadge(selectedCount, req)}</td>
               </tr>
             );
           })}
@@ -137,7 +161,7 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
               <td style={{ textAlign: 'center' }}>54</td>
               <td style={{ textAlign: 'center' }}>{partAvailableCounts[7] || 0}/54</td>
               <td style={{ textAlign: 'right' }}>
-                <span style={{ fontSize: '11px', color: '#16A34A' }}>✓ Chuẩn ETS</span>
+                {renderSelectionStatusBadge(selectedCountByPart[7] || 0, 54)}
               </td>
             </tr>
           )}
@@ -236,17 +260,18 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
                 const minReq =
                   ab.minEvidenceCount && ab.minEvidenceCount > 0 ? ab.minEvidenceCount : DEFAULT_MIN_EVIDENCE_COUNT;
                 const avail = ab.availableQuestionCount || 0;
-                const isEnough = avail >= minReq;
+                const selectedForAbility = selectedCountByAbilityName[ab.name.trim().toLowerCase()] || 0;
+                const isBankEnough = avail >= minReq;
 
                 return (
                   <tr key={ab.id}>
                     <td style={{ fontWeight: 600, color: '#1E293B' }}>{ab.name}</td>
                     <td style={{ textAlign: 'center', color: '#64748B' }}>Part {ab.partNumber ?? '-'}</td>
                     <td style={{ textAlign: 'center', fontWeight: 600 }}>{minReq}</td>
-                    <td style={{ textAlign: 'center', color: isEnough ? '#1E293B' : '#D97706', fontWeight: 600 }}>
+                    <td style={{ textAlign: 'center', color: isBankEnough ? '#1E293B' : '#D97706', fontWeight: 600 }}>
                       {avail}/{minReq}
                     </td>
-                    <td style={{ textAlign: 'right' }}>{renderAvailabilityBadge(avail, minReq)}</td>
+                    <td style={{ textAlign: 'right' }}>{renderSelectionStatusBadge(selectedForAbility, minReq)}</td>
                   </tr>
                 );
               })}
@@ -289,8 +314,7 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
           onClick={onAutoSelect}
           disabled={isAutoSelecting}
         >
-          <Sparkles size={16} className="text-amber-400" />
-          <span>{isAutoSelecting ? 'Đang bốc câu hỏi...' : '✨ Tự động chọn câu hỏi'}</span>
+          <span>{isAutoSelecting ? 'Đang bốc câu hỏi...' : 'Tự động chọn câu hỏi'}</span>
         </button>
       </div>
     </div>

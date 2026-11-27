@@ -96,6 +96,7 @@ export const Step2_Questions: React.FC<Step2Props> = ({
           <MatrixConfigSection
             testType={testType}
             targetTotal={targetTotal}
+            selectedQuestions={selectedQuestions}
             availability={availability}
             onAutoSelect={onAutoSelect}
             isAutoSelecting={isAutoSelecting}
