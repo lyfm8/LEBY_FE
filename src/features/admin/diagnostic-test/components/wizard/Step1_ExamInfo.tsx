@@ -1,5 +1,6 @@
 import React from 'react';
 import { TrendingUp, FileText, HelpCircle, Clock } from 'lucide-react';
+import { DEFAULT_EXAM_CONFIGS } from '../../utils/matrixConstants';
 import type { ExamType } from '../../types';
 
 interface Step1Props {
@@ -8,6 +9,7 @@ interface Step1Props {
   description: string;
   durationMinutes: number;
   totalQuestions: number;
+  minDiagnosticQuestions?: number;
   onTypeChange: (type: ExamType) => void;
   onTitleChange: (val: string) => void;
   onDescriptionChange: (val: string) => void;
@@ -27,6 +29,7 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
   description,
   durationMinutes,
   totalQuestions,
+  minDiagnosticQuestions = DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions,
   onTypeChange,
   onTitleChange,
   onDescriptionChange,
@@ -47,7 +50,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
             <span style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>Loại đề thi</span>
           </div>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '0 0 16px 0' }}>
-            Chọn loại đề phù hợp với mục đích đánh giá.
           </p>
 
           <div className="radio-cards-grid">
@@ -70,7 +72,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                 />
               </div>
               <p className="radio-card-desc">Đánh giá năng lực đầu vào của học viên.</p>
-              <div className="radio-card-meta">45 phút • Gợi ý 60 câu</div>
             </div>
 
             {/* Card 2: Đề thi thử */}
@@ -92,7 +93,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                 />
               </div>
               <p className="radio-card-desc">Bài thi TOEIC tổng hợp theo cấu trúc ETS.</p>
-              <div className="radio-card-meta">120 phút • 200 câu</div>
             </div>
           </div>
         </div>
@@ -104,7 +104,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
             <span style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A' }}>Thông tin cơ bản</span>
           </div>
           <p style={{ fontSize: '13px', color: '#64748B', margin: '0 0 16px 0' }}>
-            Nhập thông tin hiển thị của bộ đề thi.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
@@ -117,7 +116,7 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                 type="text"
                 className="exam-search-input"
                 style={{ paddingLeft: '14px', backgroundColor: '#FFFFFF' }}
-                placeholder="Nhập tên bộ đề thi (ví dụ: TOEIC Mock Test 03)"
+                placeholder={DEFAULT_EXAM_CONFIGS[testType].titlePlaceholder}
                 value={title}
                 onChange={(e) => onTitleChange(e.target.value)}
               />
@@ -136,7 +135,7 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                   backgroundColor: '#FFFFFF',
                   resize: 'vertical',
                 }}
-                placeholder="Nhập mô tả tóm tắt nội dung và mục đích của bộ đề..."
+                placeholder={DEFAULT_EXAM_CONFIGS[testType].descriptionPlaceholder}
                 value={description}
                 onChange={(e) => onDescriptionChange(e.target.value)}
               />
@@ -160,9 +159,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                   <span style={{ position: 'absolute', right: '14px', top: '10px', fontSize: '13px', color: '#94A3B8' }}>
                     phút
                   </span>
-                </div>
-                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px' }}>
-                  Thời gian mặc định theo loại đề
                 </div>
               </div>
 
@@ -190,11 +186,11 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                     câu
                   </span>
                 </div>
-                <div style={{ fontSize: '12px', color: '#94A3B8', marginTop: '4px' }}>
-                  {testType === 'FULL_MOCK_TEST'
-                    ? 'Tự động xác định theo cấu hình ETS'
-                    : 'Gợi ý 60 câu (có thể chỉnh sửa theo nhu cầu)'}
-                </div>
+                {testType === 'DIAGNOSTIC' && totalQuestions > 0 && totalQuestions < minDiagnosticQuestions && (
+                  <p style={{ fontSize: '12px', color: '#D97706', margin: '6px 0 0 0', fontWeight: 500 }}>
+                    Số câu tối thiểu phải &gt;={minDiagnosticQuestions}
+                  </p>
+                )}
               </div>
             </div>
 

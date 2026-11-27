@@ -1,9 +1,12 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useToast } from '@/core/ui';
 import { adminExamService } from '../services/adminExamService';
-import { DEFAULT_EXAM_CONFIGS } from '../utils/matrixConstants';
+import {
+  DEFAULT_EXAM_CONFIGS,
+  buildDiagnosticMatrixSummary,
+  getMinRequiredDiagnosticQuestions,
+} from '../utils/matrixConstants';
 import { validateExamBeforeSave } from '../utils/checklistValidation';
 import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../types';
 
@@ -14,19 +17,15 @@ import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../type
  */
 export function useExamWizard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const toast = useToast();
-  const isAdmin = user?.role === 'ADMIN';
 
   // Quản lý bước hiện tại
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
   // Form State
   const [testType, setTestType] = useState<ExamType>('FULL_MOCK_TEST');
-  const [title, setTitle] = useState<string>(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.titlePlaceholder);
-  const [description, setDescription] = useState<string>(
-    DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.descriptionPlaceholder
-  );
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [durationMinutes, setDurationMinutes] = useState<number>(
     DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.durationMinutes
   );
@@ -34,17 +33,8 @@ export function useExamWizard() {
     DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions
   );
 
-  // Danh sách câu hỏi đã chọn và ma trận phân bổ chuẩn
+  // Danh sách câu hỏi đã chọn
   const [selectedQuestions, setSelectedQuestions] = useState<ExamQuestionItem[]>([]);
-  const [customMatrix] = useState<Record<number, number>>({
-    1: 6,
-    2: 25,
-    3: 39,
-    4: 30,
-    5: 30,
-    6: 16,
-    7: 54,
-  });
 
   // Dữ liệu khả dụng từ Question Bank
   const [availability, setAvailability] = useState<ExamMatrixAvailability | null>(null);
@@ -74,17 +64,9 @@ export function useExamWizard() {
    */
   const handleTypeChange = useCallback((newType: ExamType) => {
     setTestType(newType);
-    if (newType === 'DIAGNOSTIC') {
-      setTitle(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.titlePlaceholder);
-      setDescription(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.descriptionPlaceholder);
-      setDurationMinutes(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.durationMinutes);
-      setTargetTotalQuestions(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions);
-    } else {
-      setTitle(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.titlePlaceholder);
-      setDescription(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.descriptionPlaceholder);
-      setDurationMinutes(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.durationMinutes);
-      setTargetTotalQuestions(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions);
-    }
+    const config = DEFAULT_EXAM_CONFIGS[newType];
+    setDurationMinutes(config.durationMinutes);
+    setTargetTotalQuestions(config.totalQuestions);
   }, []);
 
   /**
@@ -101,16 +83,32 @@ export function useExamWizard() {
     setSelectedQuestions((prev) => prev.filter((q) => q.questionId !== questionId));
   }, []);
 
+  const minDiagnosticQuestions = useMemo(
+    () => getMinRequiredDiagnosticQuestions(availability?.abilities),
+    [availability?.abilities]
+  );
+
   /**
    * Tự động chọn câu hỏi ngẫu nhiên theo ma trận phân bổ.
    */
   const handleAutoSelect = useCallback(async () => {
     setIsAutoSelecting(true);
     try {
+      const diagnosticSummary =
+        testType === 'DIAGNOSTIC'
+          ? buildDiagnosticMatrixSummary(availability?.abilities || [], targetTotalQuestions)
+          : null;
+
       const res = await adminExamService.autoSelect({
         testType,
-        totalQuestions: testType === 'DIAGNOSTIC' ? targetTotalQuestions : 200,
-        customDistribution: testType === 'FULL_MOCK_TEST' ? customMatrix : undefined,
+        totalQuestions:
+          testType === 'DIAGNOSTIC'
+            ? targetTotalQuestions
+            : DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions,
+        customDistribution:
+          diagnosticSummary && !diagnosticSummary.isBelowMinimum
+            ? diagnosticSummary.partCounts
+            : undefined,
       });
 
       if (res.data && res.data.questions) {
@@ -126,7 +124,7 @@ export function useExamWizard() {
     } finally {
       setIsAutoSelecting(false);
     }
-  }, [testType, targetTotalQuestions, customMatrix, toast]);
+  }, [testType, targetTotalQuestions, availability?.abilities, toast]);
 
   /**
    * Kết quả checklist kiểm tra thời gian thực.
@@ -212,7 +210,6 @@ export function useExamWizard() {
   }, [validationResult.canSaveOfficial, title, description, testType, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
 
   return {
-    isAdmin,
     currentStep,
     setCurrentStep,
     testType,
@@ -224,8 +221,8 @@ export function useExamWizard() {
     setDurationMinutes,
     targetTotalQuestions,
     setTargetTotalQuestions,
+    minDiagnosticQuestions,
     selectedQuestions,
-    customMatrix,
     availability,
     isAutoSelecting,
     isSaving,

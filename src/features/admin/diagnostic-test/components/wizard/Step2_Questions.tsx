@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { MousePointerClick, LayoutGrid, UploadCloud } from 'lucide-react';
+import { MousePointerClick, LayoutGrid } from 'lucide-react';
 import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../../types';
+import { DEFAULT_EXAM_CONFIGS } from '../../utils/matrixConstants';
 import type { ValidationResult } from '../../utils/checklistValidation';
 import { ManualPickerSection } from './ManualPickerSection';
 import { MatrixConfigSection } from './MatrixConfigSection';
@@ -8,11 +9,9 @@ import { ChecklistCard } from './ChecklistCard';
 
 interface Step2Props {
   testType: ExamType;
-  isAdmin: boolean;
   targetTotalQuestions: number;
   selectedQuestions: ExamQuestionItem[];
   availability: ExamMatrixAvailability | null;
-  customMatrix: Record<number, number>;
   validationResult: ValidationResult;
   onAddQuestion: (q: ExamQuestionItem) => void;
   onRemoveQuestion: (id: number) => void;
@@ -28,11 +27,9 @@ interface Step2Props {
  */
 export const Step2_Questions: React.FC<Step2Props> = ({
   testType,
-  isAdmin,
   targetTotalQuestions,
   selectedQuestions,
   availability,
-  customMatrix,
   validationResult,
   onAddQuestion,
   onRemoveQuestion,
@@ -44,7 +41,10 @@ export const Step2_Questions: React.FC<Step2Props> = ({
 }) => {
   const [method, setMethod] = useState<'MANUAL' | 'MATRIX'>('MANUAL');
 
-  const targetTotal = testType === 'FULL_MOCK_TEST' ? 200 : (targetTotalQuestions || 60);
+  const targetTotal =
+    testType === 'FULL_MOCK_TEST'
+      ? DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions
+      : (targetTotalQuestions || DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', alignItems: 'start' }}>
@@ -81,13 +81,6 @@ export const Step2_Questions: React.FC<Step2Props> = ({
                 <span>Tự động theo ma trận</span>
               </span>
             </button>
-
-            <button type="button" className="segmented-btn" disabled title="Tính năng sắp ra mắt">
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <UploadCloud size={15} />
-                <span>Nhập từ file (Sắp ra mắt)</span>
-              </span>
-            </button>
           </div>
         </div>
 
@@ -101,9 +94,10 @@ export const Step2_Questions: React.FC<Step2Props> = ({
           />
         ) : (
           <MatrixConfigSection
-            isAdmin={isAdmin}
+            testType={testType}
+            targetTotal={targetTotal}
+            selectedQuestions={selectedQuestions}
             availability={availability}
-            customMatrix={customMatrix}
             onAutoSelect={onAutoSelect}
             isAutoSelecting={isAutoSelecting}
           />

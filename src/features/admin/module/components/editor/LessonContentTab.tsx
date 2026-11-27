@@ -275,7 +275,6 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
           <div className="form-group">
             <label className="form-label">
               Thời lượng bài học (giây)
-              <span className="label-hint"> — Hiển thị: {durationDisplay}</span>
             </label>
             <div className="duration-input-wrapper">
               <Clock size={14} className="duration-icon" />
@@ -297,10 +296,7 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
       {lessonType === 'VIDEO' && (
       <div className="tab-card">
         <div className="card-header-with-hint">
-          <h3 className="tab-card-title">Tài liệu Đa phương tiện (Upload từ máy)</h3>
-          <span className="text-muted text-xs">
-            * Chọn tệp — sẽ upload tự động và xem trước ngay
-          </span>
+          <h3 className="tab-card-title">Media</h3>
         </div>
 
         {uploadError && (

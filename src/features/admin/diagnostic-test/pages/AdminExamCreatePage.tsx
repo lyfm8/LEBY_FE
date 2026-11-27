@@ -13,7 +13,6 @@ import '../admin-exam.css';
  */
 export const AdminExamCreatePage: React.FC = () => {
   const {
-    isAdmin,
     currentStep,
     setCurrentStep,
     testType,
@@ -25,8 +24,8 @@ export const AdminExamCreatePage: React.FC = () => {
     setDurationMinutes,
     targetTotalQuestions,
     setTargetTotalQuestions,
+    minDiagnosticQuestions,
     selectedQuestions,
-    customMatrix,
     availability,
     isAutoSelecting,
     isSaving,
@@ -80,6 +79,7 @@ export const AdminExamCreatePage: React.FC = () => {
           description={description}
           durationMinutes={durationMinutes}
           totalQuestions={targetTotalQuestions}
+          minDiagnosticQuestions={minDiagnosticQuestions}
           onTypeChange={handleTypeChange}
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}
@@ -94,11 +94,9 @@ export const AdminExamCreatePage: React.FC = () => {
       {currentStep === 2 && (
         <Step2_Questions
           testType={testType}
-          isAdmin={isAdmin}
           targetTotalQuestions={targetTotalQuestions}
           selectedQuestions={selectedQuestions}
           availability={availability}
-          customMatrix={customMatrix}
           validationResult={validationResult}
           onAddQuestion={handleAddQuestion}
           onRemoveQuestion={handleRemoveQuestion}
