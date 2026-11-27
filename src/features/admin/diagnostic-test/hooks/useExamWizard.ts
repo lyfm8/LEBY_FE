@@ -23,10 +23,8 @@ export function useExamWizard() {
 
   // Form State
   const [testType, setTestType] = useState<ExamType>('FULL_MOCK_TEST');
-  const [title, setTitle] = useState<string>(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.titlePlaceholder);
-  const [description, setDescription] = useState<string>(
-    DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.descriptionPlaceholder
-  );
+  const [title, setTitle] = useState<string>('');
+  const [description, setDescription] = useState<string>('');
   const [durationMinutes, setDurationMinutes] = useState<number>(
     DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.durationMinutes
   );
@@ -74,17 +72,9 @@ export function useExamWizard() {
    */
   const handleTypeChange = useCallback((newType: ExamType) => {
     setTestType(newType);
-    if (newType === 'DIAGNOSTIC') {
-      setTitle(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.titlePlaceholder);
-      setDescription(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.descriptionPlaceholder);
-      setDurationMinutes(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.durationMinutes);
-      setTargetTotalQuestions(DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions);
-    } else {
-      setTitle(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.titlePlaceholder);
-      setDescription(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.descriptionPlaceholder);
-      setDurationMinutes(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.durationMinutes);
-      setTargetTotalQuestions(DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions);
-    }
+    const config = DEFAULT_EXAM_CONFIGS[newType];
+    setDurationMinutes(config.durationMinutes);
+    setTargetTotalQuestions(config.totalQuestions);
   }, []);
 
   /**

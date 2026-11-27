@@ -275,7 +275,6 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
           <div className="form-group">
             <label className="form-label">
               Thời lượng bài học (giây)
-              <span className="label-hint"> — Hiển thị: {durationDisplay}</span>
             </label>
             <div className="duration-input-wrapper">
               <Clock size={14} className="duration-icon" />
@@ -296,10 +295,7 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
       {/* 2. Tài liệu Đa phương tiện (Upload từ máy tính) */}
       <div className="tab-card">
         <div className="card-header-with-hint">
-          <h3 className="tab-card-title">Tài liệu Đa phương tiện (Upload từ máy)</h3>
-          <span className="text-muted text-xs">
-            * Chọn tệp — sẽ upload Cloudinary tự động, preview ngay trong lúc chờ
-          </span>
+          <h3 className="tab-card-title">Media</h3>
         </div>
 
         {uploadError && (
