@@ -66,6 +66,7 @@ export interface AbilityAvailabilityItem {
   section?: string;
   partNumber?: number;
   availableQuestionCount: number;
+  minEvidenceCount?: number;
 }
 
 /**

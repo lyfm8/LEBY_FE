@@ -9,6 +9,7 @@ interface Step1Props {
   description: string;
   durationMinutes: number;
   totalQuestions: number;
+  minDiagnosticQuestions?: number;
   onTypeChange: (type: ExamType) => void;
   onTitleChange: (val: string) => void;
   onDescriptionChange: (val: string) => void;
@@ -28,6 +29,7 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
   description,
   durationMinutes,
   totalQuestions,
+  minDiagnosticQuestions = DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions,
   onTypeChange,
   onTitleChange,
   onDescriptionChange,
@@ -184,6 +186,11 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                     câu
                   </span>
                 </div>
+                {testType === 'DIAGNOSTIC' && totalQuestions > 0 && totalQuestions < minDiagnosticQuestions && (
+                  <p style={{ fontSize: '12px', color: '#D97706', margin: '6px 0 0 0', fontWeight: 500 }}>
+                    Số câu tối thiểu phải &gt;={minDiagnosticQuestions}
+                  </p>
+                )}
               </div>
             </div>
 

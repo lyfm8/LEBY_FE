@@ -1,5 +1,5 @@
 import type { AbilityAvailabilityItem, ChecklistItemStatus, ExamQuestionItem, ExamType } from '../types';
-import { ETS_MOCK_TEST_MATRIX } from './matrixConstants';
+import { DEFAULT_EXAM_CONFIGS, ETS_MOCK_TEST_MATRIX } from './matrixConstants';
 
 export interface ValidationParams {
   testType: ExamType;
@@ -143,7 +143,7 @@ function validateDiagnosticTest(
   durationMinutes: number,
   selectedQuestions: ExamQuestionItem[],
   allDbAbilities: AbilityAvailabilityItem[],
-  targetTotalQuestions: number = 60
+  targetTotalQuestions: number = DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions
 ): ValidationResult {
   // 1. Tên đề thi
   const hasTitle = title.trim().length >= 3;
@@ -153,7 +153,7 @@ function validateDiagnosticTest(
 
   // 3. Số lượng câu hỏi đạt yêu cầu theo số lượng đã thiết lập
   const totalQuestions = selectedQuestions.length;
-  const target = targetTotalQuestions > 0 ? targetTotalQuestions : 60;
+  const target = targetTotalQuestions > 0 ? targetTotalQuestions : DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions;
   const hasEnoughQuestions = totalQuestions === target;
 
   // 4. BAO PHỦ TOÀN BỘ ABILITY TRONG DATABASE

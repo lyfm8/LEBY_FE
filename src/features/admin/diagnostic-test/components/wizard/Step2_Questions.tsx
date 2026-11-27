@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { MousePointerClick, LayoutGrid } from 'lucide-react';
 import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../../types';
+import { DEFAULT_EXAM_CONFIGS } from '../../utils/matrixConstants';
 import type { ValidationResult } from '../../utils/checklistValidation';
 import { ManualPickerSection } from './ManualPickerSection';
 import { MatrixConfigSection } from './MatrixConfigSection';
@@ -40,7 +41,10 @@ export const Step2_Questions: React.FC<Step2Props> = ({
 }) => {
   const [method, setMethod] = useState<'MANUAL' | 'MATRIX'>('MANUAL');
 
-  const targetTotal = testType === 'FULL_MOCK_TEST' ? 200 : (targetTotalQuestions || 60);
+  const targetTotal =
+    testType === 'FULL_MOCK_TEST'
+      ? DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions
+      : (targetTotalQuestions || DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions);
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '24px', alignItems: 'start' }}>
@@ -90,6 +94,8 @@ export const Step2_Questions: React.FC<Step2Props> = ({
           />
         ) : (
           <MatrixConfigSection
+            testType={testType}
+            targetTotal={targetTotal}
             availability={availability}
             onAutoSelect={onAutoSelect}
             isAutoSelecting={isAutoSelecting}

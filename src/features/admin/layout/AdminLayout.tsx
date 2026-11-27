@@ -24,7 +24,7 @@ const navItems: AdminNavItem[] = [
   { path: '/admin/modules', label: 'Mô-đun & Bài học', icon: <BookOpen size={20} />, allowedRoles: ['ADMIN', 'TEACHER'] },
   { path: '/admin/targets', label: 'Mục tiêu điểm số', icon: <Target size={20} />, allowedRoles: ['ADMIN', 'TEACHER'] },
   { path: '/admin/thresholds', label: 'Ngưỡng & Quy tắc', icon: <Settings size={20} />, allowedRoles: ['ADMIN', 'TEACHER'] },
-  { path: '/admin/diagnostic-tests', label: 'Đề thi chẩn đoán', icon: <FileText size={20} />, allowedRoles: ['ADMIN', 'TEACHER'] },
+  { path: '/admin/diagnostic-tests', label: 'Đề thi', icon: <FileText size={20} />, allowedRoles: ['ADMIN', 'TEACHER'] },
 ];
 
 export const AdminLayout: React.FC = () => {

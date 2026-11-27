@@ -24,6 +24,7 @@ export const AdminExamCreatePage: React.FC = () => {
     setDurationMinutes,
     targetTotalQuestions,
     setTargetTotalQuestions,
+    minDiagnosticQuestions,
     selectedQuestions,
     availability,
     isAutoSelecting,
@@ -78,6 +79,7 @@ export const AdminExamCreatePage: React.FC = () => {
           description={description}
           durationMinutes={durationMinutes}
           totalQuestions={targetTotalQuestions}
+          minDiagnosticQuestions={minDiagnosticQuestions}
           onTypeChange={handleTypeChange}
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}

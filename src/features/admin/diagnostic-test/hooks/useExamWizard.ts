@@ -2,7 +2,11 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/core/ui';
 import { adminExamService } from '../services/adminExamService';
-import { DEFAULT_EXAM_CONFIGS } from '../utils/matrixConstants';
+import {
+  DEFAULT_EXAM_CONFIGS,
+  buildDiagnosticMatrixSummary,
+  getMinRequiredDiagnosticQuestions,
+} from '../utils/matrixConstants';
 import { validateExamBeforeSave } from '../utils/checklistValidation';
 import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../types';
 
@@ -79,15 +83,32 @@ export function useExamWizard() {
     setSelectedQuestions((prev) => prev.filter((q) => q.questionId !== questionId));
   }, []);
 
+  const minDiagnosticQuestions = useMemo(
+    () => getMinRequiredDiagnosticQuestions(availability?.abilities),
+    [availability?.abilities]
+  );
+
   /**
    * Tự động chọn câu hỏi ngẫu nhiên theo ma trận phân bổ.
    */
   const handleAutoSelect = useCallback(async () => {
     setIsAutoSelecting(true);
     try {
+      const diagnosticSummary =
+        testType === 'DIAGNOSTIC'
+          ? buildDiagnosticMatrixSummary(availability?.abilities || [], targetTotalQuestions)
+          : null;
+
       const res = await adminExamService.autoSelect({
         testType,
-        totalQuestions: testType === 'DIAGNOSTIC' ? targetTotalQuestions : 200,
+        totalQuestions:
+          testType === 'DIAGNOSTIC'
+            ? targetTotalQuestions
+            : DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions,
+        customDistribution:
+          diagnosticSummary && !diagnosticSummary.isBelowMinimum
+            ? diagnosticSummary.partCounts
+            : undefined,
       });
 
       if (res.data && res.data.questions) {
@@ -103,7 +124,7 @@ export function useExamWizard() {
     } finally {
       setIsAutoSelecting(false);
     }
-  }, [testType, targetTotalQuestions, toast]);
+  }, [testType, targetTotalQuestions, availability?.abilities, toast]);
 
   /**
    * Kết quả checklist kiểm tra thời gian thực.
@@ -200,6 +221,7 @@ export function useExamWizard() {
     setDurationMinutes,
     targetTotalQuestions,
     setTargetTotalQuestions,
+    minDiagnosticQuestions,
     selectedQuestions,
     availability,
     isAutoSelecting,
