@@ -9,6 +9,13 @@ import type {
   CreateLessonRequest,
   UpdateModuleThresholdsRequest,
   LessonScriptDto,
+  PracticeQuestionResponse,
+  PracticeQuestionItemDto,
+  QuestionBankFilterParams,
+  QuestionBankItem,
+  QuestionDetailDto,
+  QuickCreateQuestionPayload,
+  QuickCreateQuestionGroupPayload,
 } from '../types';
 
 /**
@@ -120,6 +127,72 @@ export const adminModuleService = {
    */
   saveLessonScripts(lessonId: number, scripts: LessonScriptDto[]): Promise<ApiResponse<LessonResponse>> {
     return apiClient.put<ApiResponse<LessonResponse>>(`/api/admin/lessons/${lessonId}/scripts`, { scripts });
+  },
+
+  // =====================================
+  // PRACTICE QUESTIONS MANAGEMENT (TAB 3 - UC A05)
+  // =====================================
+
+  /**
+   * Lấy danh sách câu hỏi luyện tập đang gắn với một bài học.
+   */
+  getPracticeQuestions(lessonId: number): Promise<ApiResponse<PracticeQuestionResponse[]>> {
+    // Gọi API GET danh sách câu hỏi luyện tập theo lessonId
+    return apiClient.get<ApiResponse<PracticeQuestionResponse[]>>(
+      `/api/admin/lessons/${lessonId}/practice-questions`
+    );
+  },
+
+  /**
+   * Lưu/đồng bộ toàn bộ danh sách câu hỏi luyện tập của một bài học.
+   */
+  savePracticeQuestions(
+    lessonId: number,
+    items: PracticeQuestionItemDto[]
+  ): Promise<ApiResponse<LessonResponse>> {
+    // Gửi mảng items gồm questionId, orderNo, points lên Backend để đồng bộ bảng practice_questions
+    return apiClient.put<ApiResponse<LessonResponse>>(
+      `/api/admin/lessons/${lessonId}/practice-questions`,
+      { items }
+    );
+  },
+
+  /**
+   * Tìm kiếm và lọc câu hỏi trong Ngân hàng câu hỏi (tái sử dụng API UC A04).
+   */
+  searchQuestionBank(params: QuestionBankFilterParams): Promise<ApiResponse<QuestionBankItem[]>> {
+    // Gọi API GET /api/admin/questions kèm bộ lọc đa tiêu chí và phân trang
+    return apiClient.get<ApiResponse<QuestionBankItem[]>>('/api/admin/questions', { params });
+  },
+
+  /**
+   * Lấy chi tiết một câu hỏi từ Ngân hàng câu hỏi (phục vụ bóc tách câu con khi chọn chùm câu hỏi).
+   */
+  getQuestionDetail(questionId: number): Promise<ApiResponse<QuestionDetailDto>> {
+    // Gọi API GET chi tiết câu hỏi theo ID
+    return apiClient.get<ApiResponse<QuestionDetailDto>>(`/api/admin/questions/${questionId}`);
+  },
+
+  /**
+   * Tạo nhanh một câu hỏi đơn lập trực tiếp từ bài học.
+   * Câu hỏi mới tự động được lưu vào Ngân hàng câu hỏi.
+   */
+  quickCreateStandaloneQuestion(
+    payload: QuickCreateQuestionPayload
+  ): Promise<ApiResponse<QuestionDetailDto>> {
+    // Gọi API POST /api/admin/questions/standalone để tạo câu hỏi đơn mới trong Ngân hàng câu hỏi
+    return apiClient.post<ApiResponse<QuestionDetailDto>>('/api/admin/questions/standalone', payload);
+  },
+
+  /**
+   * Tạo nhanh một chùm câu hỏi (Part 3, 4, 6, 7) trực tiếp từ bài học.
+   * Chùm câu hỏi mới tự động được lưu vào Ngân hàng câu hỏi kèm toàn bộ câu con.
+   */
+  quickCreateQuestionGroup(
+    payload: QuickCreateQuestionGroupPayload
+  ): Promise<ApiResponse<QuestionDetailDto>> {
+    // Gọi API POST /api/admin/questions/groups để tạo chùm câu hỏi mới trong Ngân hàng câu hỏi
+    return apiClient.post<ApiResponse<QuestionDetailDto>>('/api/admin/questions/groups', payload);
   },
 
   /**
