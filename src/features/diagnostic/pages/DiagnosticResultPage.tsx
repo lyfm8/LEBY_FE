@@ -332,6 +332,15 @@ export default function DiagnosticResultPage() {
                                     </Link>
                                 )}
 
+                                {/* Nút mở lại phòng thi ở chế độ Xem lại bài làm và giải thích (UC07 - BR14) */}
+                                <button
+                                    type="button"
+                                    className="diag-roadmap-btn is-outline"
+                                    onClick={() => navigate(`/diagnostic/review/${result.attemptId}`)}
+                                >
+                                    Xem lại bài thi
+                                </button>
+
                                 <button
                                     type="button"
                                     className="diag-roadmap-btn is-outline"

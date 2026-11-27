@@ -1836,3 +1836,303 @@
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
 }
+
+/* ═══════════════════════════════════════════════════════════════
+   CHẾ ĐỘ XEM LẠI BÀI THI CHẨN ĐOÁN (UC07 - BR14 REVIEW MODE)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Header chế độ xem lại (không icon, không đồng hồ) */
+.diag-header__review-badge {
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #0f172a;
+    background: #e2e8f0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.diag-header__review-score {
+    font-size: 13px;
+    font-weight: 700;
+    color: #15803d;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    padding: 6px 12px;
+    border-radius: 8px;
+    white-space: nowrap;
+}
+
+.diag-header__back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #334155;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.diag-header__back-btn:hover {
+    background: #f1f5f9;
+    border-color: #94a3b8;
+    color: #0f172a;
+}
+
+/* Thanh tua Audio tương tác trong chế độ xem lại */
+.audio-player__seek-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    height: 20px;
+}
+
+.audio-player__track-wrapper.is-seekable {
+    width: 100%;
+    cursor: pointer;
+}
+
+.audio-player__seek-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.audio-player__seek-input:disabled {
+    cursor: default;
+}
+
+/* Nhãn trạng thái câu hỏi đúng / sai / chưa trả lời ở đầu mỗi câu */
+.diag-review-status-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.diag-review-status-pill.is-correct {
+    background: #dcfce7;
+    color: #15803d;
+    border: 1px solid #86efac;
+}
+
+.diag-review-status-pill.is-wrong {
+    background: #fee2e2;
+    color: #b91c1c;
+    border: 1px solid #fca5a5;
+}
+
+.diag-review-status-pill.is-skipped {
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+}
+
+/* Trạng thái đáp án đúng (khung xanh lá) và chọn sai (khung đỏ) */
+.diag-option-item.is-review-mode:disabled {
+    opacity: 1;
+    cursor: default;
+}
+
+.diag-option-item.is-review-mode:hover:not(:disabled) {
+    background: #ffffff;
+    border-color: #e2e8f0;
+}
+
+.diag-option-item.is-review-correct {
+    border-color: #16a34a !important;
+    background-color: #f0fdf4 !important;
+    box-shadow: inset 0 0 0 1px #16a34a;
+}
+
+.diag-option-item.is-review-correct .diag-option-item__badge {
+    border-color: #16a34a;
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.diag-option-item.is-review-wrong {
+    border-color: #dc2626 !important;
+    background-color: #fef2f2 !important;
+    box-shadow: inset 0 0 0 1px #dc2626;
+}
+
+.diag-option-item.is-review-wrong .diag-option-item__badge {
+    border-color: #dc2626;
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+/* Khối "Giải thích ^" mở rộng / thu gọn bên dưới từng câu */
+.diag-explanation-box {
+    margin-top: 4px;
+    border-top: 1px solid #f1f5f9;
+    padding-top: 10px;
+}
+
+.diag-explanation-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    color: #0f172a;
+    padding: 7px 14px;
+    border-radius: 8px;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.diag-explanation-toggle:hover,
+.diag-explanation-toggle.is-open {
+    background: #fff7ed;
+    border-color: #fdba74;
+    color: #c2410c;
+}
+
+.diag-explanation-body {
+    margin-top: 10px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.diag-explanation-empty {
+    margin: 0;
+    font-size: 13px;
+    color: #64748b;
+    font-style: italic;
+}
+
+.diag-explanation-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.diag-explanation-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.diag-explanation-item.is-clue {
+    background: #fffbeb;
+    border-left: 3px solid #f59e0b;
+    padding: 10px 12px;
+    border-radius: 6px;
+}
+
+.diag-explanation-label {
+    font-size: 11.5px;
+    font-weight: 800;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+}
+
+.diag-explanation-text {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.6;
+    color: #1e293b;
+}
+
+.diag-explanation-text.is-pre {
+    white-space: pre-wrap;
+}
+
+.diag-explanation-vocab-list {
+    margin: 2px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.diag-explanation-vocab-row {
+    font-size: 13px;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.diag-explanation-vocab-word {
+    color: #0f172a;
+    margin-right: 4px;
+}
+
+.diag-explanation-vocab-type {
+    color: #64748b;
+    font-size: 12px;
+    margin-right: 4px;
+}
+
+/* Bảng Palette chế độ xem lại: câu đúng xanh lá, câu sai đỏ, bộ lọc 2x2 */
+.diag-palette-filters.is-review {
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.diag-palette-legend__indicator.is-review-correct {
+    background-color: #16a34a;
+}
+
+.diag-palette-legend__indicator.is-review-incorrect {
+    background-color: #dc2626;
+}
+
+.diag-palette-legend__indicator.is-review-current {
+    background-color: #ffffff;
+    border: 2.5px solid #ea580c;
+}
+
+.diag-palette-btn.is-review-correct {
+    background-color: #16a34a;
+    color: #ffffff;
+}
+
+.diag-palette-btn.is-review-correct:hover {
+    background-color: #15803d;
+}
+
+.diag-palette-btn.is-review-incorrect {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.diag-palette-btn.is-review-incorrect:hover {
+    background-color: #b91c1c;
+}
+
+.diag-palette-btn.is-review-current {
+    box-shadow: 0 0 0 3px #0f172a, 0 0 0 5px #fdba74;
+}
+
+@media (max-width: 768px) {
+    .diag-header__container {
+        flex-wrap: wrap;
+        padding: 12px 16px;
+    }
+
+    .diag-header__stats {
+        flex-wrap: wrap;
+        width: 100%;
+        justify-content: flex-start;
+    }
+}

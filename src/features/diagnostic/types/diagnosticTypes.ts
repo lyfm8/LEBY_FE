@@ -60,7 +60,7 @@ export interface SyncDiagnosticTimerRequest {
 }
 
 /** Một màn hình / bước hiển thị trong phòng thi (có thể là 1 câu đơn hoặc 1 chùm câu hỏi Part 3/4/6/7). */
-export interface DiagnosticExamStep {
+export interface DiagnosticExamStep<TQuestion extends DiagnosticQuestion = DiagnosticQuestion> {
     // Chỉ số thứ tự của màn hình hiện tại (bắt đầu từ 0)
     stepIndex: number;
     // Nhóm kỹ năng của màn hình hiện tại: LISTENING hoặc READING
@@ -80,7 +80,7 @@ export interface DiagnosticExamStep {
     // Chỉ dẫn ngữ cảnh chung của câu hỏi hoặc chùm câu hỏi
     instruction: string | null;
     // Danh sách 1 câu đơn hoặc nhiều câu con thuộc cùng một chùm hiển thị trên cùng trang
-    questions: DiagnosticQuestion[];
+    questions: TQuestion[];
 }
 
 /** Thông tin phiên làm bài trả về khi khởi tạo lượt thi. */
@@ -169,6 +169,62 @@ export interface AiRoadmapSummary {
     moduleCount: number;
     recommendedAction: string;
     secondaryAction: string;
+}
+
+/** Một mục từ vựng trọng tâm nằm trong lời giải chi tiết câu hỏi TOEIC. */
+export interface DiagnosticVocabularyItem {
+    // Từ vựng tiếng Anh
+    word: string;
+    // Từ loại (n, v, adj, adv...)
+    type: string;
+    // Nghĩa tiếng Việt tương ứng
+    meaning: string;
+}
+
+/** Nội dung giải thích chi tiết của một câu hỏi phục vụ màn hình Xem lại. */
+export interface DiagnosticExplanation {
+    // Lời thoại băng nghe (chủ yếu cho Part 1-4)
+    transcript?: string | null;
+    // Bản dịch nghĩa tiếng Việt
+    translation?: string | null;
+    // Manh mối nhận diện đáp án đúng
+    clue?: string | null;
+    // Phân tích lý do chọn đáp án đúng và loại phương án bẫy
+    analysis?: string | null;
+    // Danh sách từ vựng học thuật đáng chú ý
+    vocabulary?: DiagnosticVocabularyItem[] | null;
+}
+
+/** Câu hỏi đầy đủ trong chế độ Xem lại bài thi chẩn đoán (BR14). */
+export interface DiagnosticReviewQuestion extends DiagnosticQuestion {
+    // Ký hiệu đáp án học viên đã chọn (null nếu bỏ qua)
+    userAnswer: OptionKey | null;
+    // Ký hiệu đáp án đúng của hệ thống
+    correctAnswer: OptionKey | null;
+    // Kết quả câu hỏi đúng hay sai
+    isCorrect: boolean;
+    // Trạng thái gắn cờ đánh dấu đã lưu từ lúc thi
+    isFlagged: boolean;
+    // Lời giải chi tiết kèm transcript và từ vựng
+    explanation: DiagnosticExplanation | null;
+}
+
+/** Dữ liệu tổng hợp của một phiên Xem lại bài thi chẩn đoán (UC07 - BR14). */
+export interface DiagnosticReviewData {
+    // ID lượt làm bài chẩn đoán
+    attemptId: number;
+    // ID đề thi gốc
+    testId: number;
+    // Tiêu đề bài thi chẩn đoán
+    testTitle: string;
+    // Thời điểm học viên hoàn thành bài thi
+    completedAt: string;
+    // Tổng số câu hỏi của bài thi
+    totalQuestions: number;
+    // Tổng số câu trả lời đúng
+    correctCount: number;
+    // Danh sách toàn bộ câu hỏi đã sắp xếp theo thứ tự trong đề
+    questions: DiagnosticReviewQuestion[];
 }
 
 /** Báo cáo kết quả chẩn đoán chi tiết toàn diện phục vụ UC07. */

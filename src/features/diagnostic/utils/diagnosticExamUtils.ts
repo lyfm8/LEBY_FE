@@ -137,14 +137,16 @@ export function resolveStepAudioKey(question: DiagnosticQuestion): string | null
  * Gom danh sách câu hỏi thành các bước hiển thị theo từng trang:
  * các câu liên tiếp có cùng parentId (Part 3, 4, 6, 7) được hiển thị trên cùng 1 trang.
  */
-export function buildExamSteps(questions: DiagnosticQuestion[]): DiagnosticExamStep[] {
+export function buildExamSteps<TQuestion extends DiagnosticQuestion = DiagnosticQuestion>(
+    questions: TQuestion[]
+): DiagnosticExamStep<TQuestion>[] {
     // Nếu danh sách rỗng thì trả về mảng rỗng ngay
     if (!questions || questions.length === 0) return [];
 
     // Sao chép mảng và sắp xếp tăng dần theo orderNo để bảo đảm đúng thứ tự đề thi
     const sorted = [...questions].sort((a, b) => a.orderNo - b.orderNo);
     // Khởi tạo mảng chứa các bước (mỗi bước tương ứng 1 trang câu đơn hoặc 1 chùm câu)
-    const steps: DiagnosticExamStep[] = [];
+    const steps: DiagnosticExamStep<TQuestion>[] = [];
 
     // Con trỏ duyệt qua từng phần tử trong danh sách đã sắp xếp
     let cursor = 0;
@@ -153,7 +155,7 @@ export function buildExamSteps(questions: DiagnosticQuestion[]): DiagnosticExamS
         // Lấy câu hỏi đầu tiên làm gốc cho bước hiện tại
         const first = sorted[cursor];
         // Khởi tạo danh sách câu hỏi thuộc bước hiện tại
-        const groupQuestions: DiagnosticQuestion[] = [first];
+        const groupQuestions: TQuestion[] = [first];
         // Dịch con trỏ sang phần tử tiếp theo để kiểm tra xem có thuộc cùng chùm hay không
         let lookahead = cursor + 1;
 
@@ -211,7 +213,9 @@ export function buildExamSteps(questions: DiagnosticQuestion[]): DiagnosticExamS
 /**
  * Tạo bảng ánh xạ nhanh từ số thứ tự câu hỏi (orderNo) sang chỉ số màn hình (stepIndex).
  */
-export function buildQuestionToStepMap(steps: DiagnosticExamStep[]): Map<number, number> {
+export function buildQuestionToStepMap<TQuestion extends DiagnosticQuestion = DiagnosticQuestion>(
+    steps: DiagnosticExamStep<TQuestion>[]
+): Map<number, number> {
     // Khởi tạo Map tra cứu O(1) khi học viên bấm chọn câu trên bảng Palette
     const map = new Map<number, number>();
     // Duyệt từng bước hiển thị

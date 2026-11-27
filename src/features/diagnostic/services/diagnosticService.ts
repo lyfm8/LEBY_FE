@@ -3,6 +3,7 @@ import { ENV } from '@/core/config/env.config';
 import type { ApiResponse } from '@/core/api/apiResponse';
 import type {
     DiagnosticTest,
+    DiagnosticReviewData,
     StartDiagnosticRequest,
     StartDiagnosticResponse,
     SubmitDiagnosticRequest,
@@ -101,5 +102,15 @@ export const diagnosticService = {
     async getLatestResults(): Promise<ApiResponse<DiagnosticResult>> {
         // Truy vấn báo cáo của lượt thi chẩn đoán gần nhất
         return apiClient.get<ApiResponse<DiagnosticResult>>('/api/users/diagnostic/results/latest');
+    },
+
+    /**
+     * Tải toàn bộ câu hỏi, đáp án đã chọn, đáp án đúng và giải thích phục vụ Xem lại bài thi (UC07 - BR14).
+     */
+    async getReviewData(attemptId: number | string): Promise<ApiResponse<DiagnosticReviewData>> {
+        // Gọi API lấy dữ liệu phòng xem lại cho lượt thi chẩn đoán tương ứng
+        return apiClient.get<ApiResponse<DiagnosticReviewData>>(
+            `/api/users/diagnostic/review/${attemptId}`
+        );
     },
 };

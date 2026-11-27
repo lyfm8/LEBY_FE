@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import type { ChangeEvent } from 'react';
 import { Play, Pause, Volume2, VolumeX, Lock, SkipForward } from 'lucide-react';
 
 interface AudioPlayerProps {
@@ -8,6 +9,8 @@ interface AudioPlayerProps {
     src?: string | null;
     // Khóa phát lại nếu audio này đã chạy xong 1 lần (BR13)
     isLocked: boolean;
+    // Bật chế độ Xem lại: bỏ khóa phát lại vô hạn và cho phép tua thanh tiến trình
+    isReviewMode?: boolean;
     // Đang tạm dừng phòng thi hoặc đang nộp bài
     isPaused?: boolean;
     // Cho phép tự động phát nối tiếp khi chuyển sang câu Nghe tiếp theo trong phiên
@@ -20,19 +23,21 @@ interface AudioPlayerProps {
 
 /**
  * Trình phát âm thanh tuân thủ BR08 / BR13:
- * - Phát đúng 1 lần duy nhất cho mỗi câu / chùm câu Nghe.
- * - Tự động nạp lại và phát nối tiếp khi chuyển câu Nghe tiếp theo.
- * - Tự tạm dừng khi học viên bấm Tạm dừng phòng thi và tự phát tiếp đoạn đang nghe dở khi Tiếp tục.
+ * - Khi thi thật: phát đúng 1 lần duy nhất cho mỗi câu / chùm câu Nghe, không cho tua lại.
+ * - Khi xem lại (isReviewMode): nạp lại audio tương ứng từng câu, phát lại không giới hạn và cho phép tua.
  */
 export function AudioPlayer({
     stepKey,
     src,
     isLocked,
+    isReviewMode = false,
     isPaused = false,
     shouldAutoPlay = false,
     onUserStartedAudio,
     onAudioEnded,
 }: AudioPlayerProps) {
+    // Ở chế độ xem lại luôn mở khóa để học viên nghe lại bao nhiêu lần tùy thích
+    const effectiveLocked = isReviewMode ? false : isLocked;
     // Trạng thái đang phát âm thanh hay không
     const [isPlaying, setIsPlaying] = useState(false);
     // Thời gian đã chạy tính theo giây
@@ -48,16 +53,16 @@ export function AudioPlayer({
     // Ghi nhớ audio có đang phát ngay trước lúc bấm Tạm dừng hay không để tự resume lại
     const wasPlayingBeforePauseRef = useRef(false);
     // Các ref lưu trạng thái mới nhất để effect đổi câu không phải reset nhầm khi user bấm Play hoặc Pause
-    const isLockedRef = useRef(isLocked);
+    const isLockedRef = useRef(effectiveLocked);
     const isPausedRef = useRef(isPaused);
     const shouldAutoPlayRef = useRef(shouldAutoPlay);
 
     // Đồng bộ props mới nhất vào ref sau mỗi lần render
     useEffect(() => {
-        isLockedRef.current = isLocked;
+        isLockedRef.current = effectiveLocked;
         isPausedRef.current = isPaused;
         shouldAutoPlayRef.current = shouldAutoPlay;
-    }, [isLocked, isPaused, shouldAutoPlay]);
+    }, [effectiveLocked, isPaused, shouldAutoPlay]);
 
     // Chỉ reset và nạp lại file audio khi chuyển sang câu/chùm Listening khác (stepKey hoặc src thay đổi)
     useEffect(() => {
@@ -115,7 +120,7 @@ export function AudioPlayer({
         }
 
         // Khi người dùng bấm Tiếp tục làm bài và trước đó audio đang chạy dở (chưa bị khóa)
-        if (!isPaused && wasPlayingBeforePauseRef.current && !isLocked && src) {
+        if (!isPaused && wasPlayingBeforePauseRef.current && !effectiveLocked && src) {
             // Xóa cờ để không lặp lại nhiều lần
             wasPlayingBeforePauseRef.current = false;
             // Phát tiếp ngay từ vị trí currentTime đang dở
@@ -130,12 +135,12 @@ export function AudioPlayer({
                     setIsPlaying(false);
                 });
         }
-    }, [isPaused, isLocked, src]);
+    }, [isPaused, effectiveLocked, src]);
 
     // Xử lý bấm nút Phát / Tạm dừng trên thanh điều khiển audio
     function togglePlay() {
         // Không làm gì nếu audio đã hết lượt nghe, thiếu src hoặc phòng đang tạm dừng
-        if (isLocked || !audioRef.current || !src || isPaused) return;
+        if (effectiveLocked || !audioRef.current || !src || isPaused) return;
 
         // Nếu đang phát -> tạm dừng; nếu đang dừng -> bắt đầu phát và đánh dấu đã tương tác nghe
         if (isPlaying) {
@@ -148,6 +153,10 @@ export function AudioPlayer({
         } else {
             // Đánh dấu học viên đã chủ động bấm nghe để mở khóa autoplay cho các câu sau
             onUserStartedAudio?.();
+            // Nếu trước đó phát hết bài trong chế độ xem lại thì đưa về đầu để phát lại mượt mà
+            if (isReviewMode && audioRef.current.ended) {
+                audioRef.current.currentTime = 0;
+            }
             // Bắt đầu phát bản ghi âm
             audioRef.current
                 .play()
@@ -161,6 +170,19 @@ export function AudioPlayer({
                     // Giữ trạng thái dừng nếu trình duyệt từ chối phát
                     setIsPlaying(false);
                 });
+        }
+    }
+
+    // Xử lý tua nhanh/chậm trên thanh tiến trình (chỉ bật trong chế độ Xem lại)
+    function handleSeek(event: ChangeEvent<HTMLInputElement>) {
+        // Chỉ cho phép tua khi đang ở chế độ xem lại và thẻ audio đã sẵn sàng
+        if (!isReviewMode || !audioRef.current) return;
+        // Đọc vị trí giây mới từ thanh trượt range
+        const nextTime = Number(event.target.value);
+        // Cập nhật vị trí phát trực tiếp trên phần tử audio và state hiển thị
+        if (isFinite(nextTime) && nextTime >= 0) {
+            audioRef.current.currentTime = nextTime;
+            setCurrentTime(nextTime);
         }
     }
 
@@ -185,11 +207,21 @@ export function AudioPlayer({
 
     // Xử lý sự kiện audio chạy đến giây cuối cùng
     function handleEnded() {
-        // Đưa trạng thái về dừng và thanh tiến trình đầy 100%
+        // Tắt trạng thái đang phát và xóa cờ tạm dừng
         setIsPlaying(false);
-        setCurrentTime(duration);
         wasPlayingBeforePauseRef.current = false;
-        // Thông báo cho Hook để khóa audio hiện tại và tự nhảy sang câu tiếp theo
+
+        // Ở chế độ xem lại: đưa thanh tiến trình về 0 để sẵn sàng nghe lại không giới hạn, không tự chuyển câu
+        if (isReviewMode) {
+            setCurrentTime(0);
+            if (audioRef.current) {
+                audioRef.current.currentTime = 0;
+            }
+            return;
+        }
+
+        // Ở chế độ thi thật: giữ thanh tiến trình đầy 100% và báo cho Hook khóa audio + sang câu tiếp
+        setCurrentTime(duration);
         onAudioEnded();
     }
 
@@ -227,7 +259,7 @@ export function AudioPlayer({
     return (
         <div className="audio-player-wrap">
             {/* Thanh phát âm thanh chính */}
-            <div className={`audio-player ${isLocked ? 'is-locked' : ''}`}>
+            <div className={`audio-player ${effectiveLocked ? 'is-locked' : ''}`}>
                 {/* Thẻ audio gốc của trình duyệt, gắn event metadata, tiến trình, kết thúc và lỗi */}
                 {src && (
                     <audio
@@ -244,19 +276,27 @@ export function AudioPlayer({
                 {/* Nút Phát / Tạm dừng hoặc biểu tượng Khóa khi đã nghe đủ 1 lượt */}
                 <button
                     type="button"
-                    className={`audio-player__play-btn ${isLocked ? 'is-locked' : ''}`}
+                    className={`audio-player__play-btn ${effectiveLocked ? 'is-locked' : ''}`}
                     onClick={togglePlay}
-                    aria-disabled={isLocked}
+                    aria-disabled={effectiveLocked}
                     aria-label={
-                        isLocked
+                        effectiveLocked
                             ? 'Audio đã phát 1 lần'
                             : isPlaying
                               ? 'Tạm dừng audio'
                               : 'Phát audio'
                     }
-                    title={isLocked ? 'Đã hết lượt phát (BR13)' : isPlaying ? 'Tạm dừng' : 'Phát audio'}
+                    title={
+                        effectiveLocked
+                            ? 'Đã hết lượt phát (BR13)'
+                            : isPlaying
+                              ? 'Tạm dừng'
+                              : isReviewMode
+                                ? 'Phát lại audio không giới hạn'
+                                : 'Phát audio'
+                    }
                 >
-                    {isLocked ? (
+                    {effectiveLocked ? (
                         <Lock size={16} color="#ffffff" />
                     ) : isPlaying ? (
                         <Pause size={18} fill="#ffffff" />
@@ -268,16 +308,38 @@ export function AudioPlayer({
                 {/* Thời gian đã phát */}
                 <span className="audio-player__time-current">{formatTime(currentTime)}</span>
 
-                {/* Thanh tiến trình bị khóa tua lại theo quy chế khảo thí TOEIC */}
-                <div
-                    className="audio-player__track-wrapper"
-                    title="Không được phép tua lại bản ghi âm trong bài thi chẩn đoán"
-                >
+                {/* Thanh tiến trình: cho phép kéo tua khi xem lại, hoặc khóa tua lại khi đang thi */}
+                {isReviewMode ? (
+                    <div className="audio-player__seek-container" title="Kéo để tua đoạn âm thanh">
+                        <div className="audio-player__track-wrapper is-seekable">
+                            <div
+                                className="audio-player__progress-fill"
+                                style={{ width: `${progressPercent}%` }}
+                            />
+                        </div>
+                        <input
+                            type="range"
+                            min={0}
+                            max={duration > 0 ? duration : 0}
+                            step={0.1}
+                            value={Math.min(currentTime, duration || 0)}
+                            onChange={handleSeek}
+                            disabled={duration <= 0}
+                            className="audio-player__seek-input"
+                            aria-label="Tua tiến trình bản ghi âm"
+                        />
+                    </div>
+                ) : (
                     <div
-                        className="audio-player__progress-fill"
-                        style={{ width: `${isLocked ? 100 : progressPercent}%` }}
-                    />
-                </div>
+                        className="audio-player__track-wrapper"
+                        title="Không được phép tua lại bản ghi âm trong bài thi chẩn đoán"
+                    >
+                        <div
+                            className="audio-player__progress-fill"
+                            style={{ width: `${effectiveLocked ? 100 : progressPercent}%` }}
+                        />
+                    </div>
+                )}
 
                 {/* Tổng thời lượng bản ghi */}
                 <span className="audio-player__time-total">{formatTime(duration)}</span>
@@ -293,18 +355,24 @@ export function AudioPlayer({
                 </button>
             </div>
 
-            {/* Banner dự phòng nếu file audio lỗi mạng, cho phép bỏ qua để không bị treo phòng thi */}
-            {hasAudioError && !isLocked && (
+            {/* Banner dự phòng nếu file audio lỗi mạng */}
+            {hasAudioError && !effectiveLocked && (
                 <div className="audio-player__notice" role="alert">
-                    <span>Không tải được tệp âm thanh từ máy chủ. Bạn có thể chuyển sang câu tiếp theo.</span>
-                    <button
-                        type="button"
-                        className="audio-player__skip-btn"
-                        onClick={onAudioEnded}
-                    >
-                        <SkipForward size={14} />
-                        <span>Sang câu tiếp</span>
-                    </button>
+                    <span>
+                        {isReviewMode
+                            ? 'Không tải được tệp âm thanh từ máy chủ.'
+                            : 'Không tải được tệp âm thanh từ máy chủ. Bạn có thể chuyển sang câu tiếp theo.'}
+                    </span>
+                    {!isReviewMode && (
+                        <button
+                            type="button"
+                            className="audio-player__skip-btn"
+                            onClick={onAudioEnded}
+                        >
+                            <SkipForward size={14} />
+                            <span>Sang câu tiếp</span>
+                        </button>
+                    )}
                 </div>
             )}
         </div>
