@@ -292,7 +292,8 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
         </div>
       </div>
 
-      {/* 2. Tài liệu Đa phương tiện (Upload từ máy tính) */}
+      {/* 2. Tài liệu Đa phương tiện: chỉ hiển thị cho Video bài giảng (Bài thực hành dùng câu hỏi ở Tab Câu hỏi luyện tập) */}
+      {lessonType === 'VIDEO' && (
       <div className="tab-card">
         <div className="card-header-with-hint">
           <h3 className="tab-card-title">Media</h3>
@@ -413,7 +414,8 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
             />
           </div>
 
-          {/* Ô 3: Hình ảnh minh họa */}
+          {/* Ô 3: Hình ảnh minh họa (chỉ hiển thị cho Video bài giảng) */}
+          {lessonType === 'VIDEO' && (
           <div className={`media-dropzone-box ${imageUrl ? 'has-media' : ''}`}>
             <div className="dropzone-header">
               <div className="icon-tag text-green">
@@ -467,10 +469,13 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
               style={{ display: 'none' }}
             />
           </div>
+          )}
         </div>
       </div>
+      )}
 
-      {/* 3. Soạn thảo Nội dung Văn bản (Rich Text Editor) */}
+      {/* 3. Soạn thảo Nội dung Văn bản (Chỉ hiển thị cho Video bài giảng lý thuyết) */}
+      {lessonType === 'VIDEO' && (
       <div className="tab-card">
         <h3 className="tab-card-title">Nội dung bài học văn bản (Lý thuyết & Từ vựng)</h3>
 
@@ -536,6 +541,7 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
           placeholder="Nhập nội dung giảng dạy, mẹo làm bài, danh sách từ vựng trọng tâm..."
         />
       </div>
+      )}
     </div>
   );
 };

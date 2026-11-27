@@ -41,3 +41,26 @@ export const scriptItemSchema = z.object({
 });
 
 export type ScriptItemValues = z.infer<typeof scriptItemSchema>;
+
+// Schema Zod kiểm tra dữ liệu cấu hình Bài thi vượt ải mô-đun trước khi gửi Backend
+export const moduleTestConfigSchema = z.object({
+  // Thời gian làm bài (phút): phải lớn hơn 0 và không vượt quá 180 phút
+  durationMinutes: z
+    .number({ message: 'Số lượng câu hỏi và thời gian làm bài phải lớn hơn 0' })
+    .int('Thời gian làm bài phải là số nguyên')
+    .min(1, 'Số lượng câu hỏi và thời gian làm bài phải lớn hơn 0')
+    .max(180, 'Thời gian làm bài tối đa 180 phút'),
+  // Số lượng câu hỏi trong đề: phải lớn hơn 0 và không vượt quá 100 câu
+  questionCount: z
+    .number({ message: 'Số lượng câu hỏi và thời gian làm bài phải lớn hơn 0' })
+    .int('Số lượng câu hỏi phải là số nguyên')
+    .min(1, 'Số lượng câu hỏi và thời gian làm bài phải lớn hơn 0')
+    .max(100, 'Số lượng câu hỏi tối đa 100 câu'),
+  // Cờ tự động xáo trộn câu hỏi và đáp án mỗi lần thi
+  shuffleQuestions: z.boolean(),
+  // Phương thức thiết lập đề: chọn thủ công hoặc sinh ngẫu nhiên từ kho năng lực
+  selectionMode: z.enum(['MANUAL', 'RANDOM_BY_ABILITY']),
+});
+
+// Suy xuất kiểu TypeScript chuẩn từ schema cấu hình Bài thi vượt ải
+export type ModuleTestConfigFormValues = z.infer<typeof moduleTestConfigSchema>;

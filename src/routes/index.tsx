@@ -40,6 +40,7 @@ import {
     QuestionGroupEditorPage,
 } from '@/features/admin/question';
 import { AdminModulePage } from '@/features/admin/module/pages/AdminModulePage';
+import { AdminModuleTestPage } from '@/features/admin/module/pages/AdminModuleTestPage';
 import { AdminTargetPage } from '@/features/admin/target/pages/AdminTargetPage';
 import { AdminThresholdPage } from '@/features/admin/threshold/pages/AdminThresholdPage';
 import { AdminDiagnosticTestPage } from '@/features/admin/diagnostic-test/pages/AdminDiagnosticTestPage';
@@ -264,6 +265,7 @@ function AppRoutes() {
                     <Route path="question-groups/new" element={<QuestionGroupEditorPage />} />
                     <Route path="question-groups/:id/edit" element={<QuestionGroupEditorPage />} />
                     <Route path="modules" element={<AdminModulePage />} />
+                    <Route path="module-tests" element={<AdminModuleTestPage />} />
                     <Route path="targets" element={<AdminTargetPage />} />
                     <Route path="thresholds" element={<AdminThresholdPage />} />
                     <Route path="diagnostic-tests" element={<AdminDiagnosticTestPage />} />
