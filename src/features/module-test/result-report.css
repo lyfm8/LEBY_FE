@@ -487,3 +487,64 @@
 .report-review-link:hover {
     color: #ea580c;
 }
+
+
+/* Unlock Banner & Empty/Error States (UC14) */
+.modtest-unlock-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: 14px;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.modtest-unlock-banner strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+.modtest-unlock-banner p {
+    margin: 0;
+    font-size: 13.5px;
+}
+
+.modtest-unlock-banner.is-next-module {
+    background-color: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+}
+
+.modtest-unlock-banner.is-completed {
+    background-color: #fffbeb;
+    border: 1px solid #fde68a;
+    color: #92400e;
+}
+
+.report-state-box {
+    max-width: 520px;
+    margin: 60px auto;
+    padding: 36px 28px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.report-state-box h2 {
+    margin: 0;
+    font-size: 19px;
+    color: #0f172a;
+}
+
+.report-state-box p {
+    margin: 0;
+    font-size: 14px;
+    color: #64748b;
+}

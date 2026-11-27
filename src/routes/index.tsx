@@ -20,6 +20,7 @@ import ModuleDetailPage from '@/features/roadmap/pages/ModuleDetailPage';
 
 // 3. Lesson Room & Practice
 import LessonRoomPage from '@/features/lesson/pages/LessonRoomPage';
+import { PracticeRoomPage } from '@/features/practice/pages/PracticeRoomPage';
 
 // 4. Module Test & Review
 import ModuleTestRoomPage from '@/features/module-test/pages/ModuleTestRoomPage';
@@ -168,6 +169,22 @@ function AppRoutes() {
                     element={
                         <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LessonRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/modules/:moduleId/lessons/:lessonId/practice"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <PracticeRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/lessons/:lessonId/practice"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <PracticeRoomPage />
                         </AuthGuard>
                     }
                 />

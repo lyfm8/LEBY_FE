@@ -1,74 +1,113 @@
-export type TestOptionKey = 'A' | 'B' | 'C' | 'D';
+import type {
+    BaseExamQuestion,
+    ExamExplanation,
+    OptionKey,
+    SectionType,
+} from '../../../shared/exam/types/examTypes';
 
-export interface ModuleTestOption {
-    key: TestOptionKey;
-    text: string;
+export type { OptionKey, SectionType };
+
+export interface ModuleTestRoomQuestion extends BaseExamQuestion {
+    moduleTestQuestionId: number | null;
 }
 
-export interface ModuleTestQuestion {
-    questionId: number;
+export interface ModuleTestDraftAnswer {
     orderNo: number;
-    partNo: number;
-    title: string;
-    options: ModuleTestOption[];
+    questionId: number;
+    selectedOption: OptionKey | null;
+    isFlagged: boolean;
 }
 
-export interface ModuleTestData {
-    testId: number;
+export interface StartModuleTestResponse {
+    attemptId: number;
     moduleId: number;
-    moduleTitle: string;
-    topic: string;
-    currentAIM: number;
-    passScore: number;
+    startedAt: string;
     durationMinutes: number;
-    totalQuestions: number;
-    questions: ModuleTestQuestion[];
 }
 
-export interface SubmitModuleTestRequest {
-    attemptId?: number;
-    moduleId: number;
-    durationSeconds: number;
-    answers: {
-        questionId: number;
-        selectedOption: TestOptionKey | null;
-    }[];
-}
-
-export interface DetailedAnswerReview {
-    questionId: number;
-    orderNo: number;
-    questionTitle: string;
-    selectedOption: TestOptionKey | null;
-    correctOption: TestOptionKey;
-    isCorrect: boolean;
-    explanation: string;
-    options: ModuleTestOption[];
-}
-
-export interface ModuleTestResult {
+export interface ModuleTestRoomData {
     attemptId: number;
     moduleId: number;
     moduleTitle: string;
+    partName: string;
+    section: SectionType | string;
+    topic: string | null;
+    passScore: number;
+    targetScore: number | null;
+    durationMinutes: number;
+    startedAt: string;
+    remainingSeconds: number;
+    totalQuestions: number;
+    questions: ModuleTestRoomQuestion[];
+    draftAnswers: ModuleTestDraftAnswer[];
+}
+
+export interface SaveModuleTestDraftAnswerItem {
+    questionId: number;
+    selectedOption: OptionKey | null;
+    isFlagged: boolean;
+}
+
+export interface SaveModuleTestDraftRequest {
+    attemptId: number;
+    answers: SaveModuleTestDraftAnswerItem[];
+}
+
+export interface SyncModuleTestTimerRequest {
+    attemptId: number;
+    remainingSeconds: number;
+}
+
+export interface SubmitModuleTestAnswerItem {
+    questionId: number;
+    userAnswer: string | null;
+    isFlagged: boolean;
+}
+
+export interface SubmitModuleTestRequest {
+    attemptId: number;
+    durationSeconds: number;
+    isTimedOut: boolean;
+    answers: SubmitModuleTestAnswerItem[];
+}
+
+export interface SubmitModuleTestResponse {
+    attemptId: number;
+    moduleId: number;
     score: number;
     passScore: number;
     isPassed: boolean;
     correctCount: number;
     totalQuestions: number;
-    completedAt: string;
-    detailedAnswers: DetailedAnswerReview[];
-    nextModuleId?: number | null;
+    nextModuleId: number | null;
+    isRoadmapCompleted: boolean;
 }
 
-// ── Báo cáo kết quả kiểm tra học tập (Learning Performance Report) ──
-export interface AttemptHistoryItem {
-    attemptNumber: number;
-    isLatest: boolean;
-    completedAt: string;
+export interface ModuleTestReviewQuestion extends BaseExamQuestion {
+    userAnswer: OptionKey | null;
+    correctAnswer: OptionKey | null;
+    isCorrect: boolean;
+    isFlagged: boolean;
+    explanation: ExamExplanation | null;
+}
+
+export interface ModuleTestReviewData {
+    attemptId: number;
+    moduleId: number;
+    moduleTitle: string;
+    testTitle: string;
+    completedAt: string | null;
     score: number;
-    maxScore: number;
+    passScore: number;
     isPassed: boolean;
-    durationFormatted: string;
+    totalQuestions: number;
+    correctCount: number;
+    questions: ModuleTestReviewQuestion[];
+}
+
+export interface AiFeedback {
+    title: string;
+    content: string;
 }
 
 export interface MetricSummary {
@@ -81,9 +120,15 @@ export interface MetricSummary {
     gapResolvedPercent: number;
 }
 
-export interface AIFeedback {
-    title: string;
-    content: string;
+export interface AttemptHistoryItem {
+    attemptNumber: number;
+    attemptId: number;
+    isLatest: boolean;
+    completedAt: string;
+    score: number;
+    maxScore: number;
+    isPassed: boolean;
+    durationFormatted: string;
 }
 
 export interface ModuleTestPerformanceReport {
@@ -96,8 +141,24 @@ export interface ModuleTestPerformanceReport {
     passScore: number;
     isPassed: boolean;
     diffFromPass: number;
-    aiFeedback: AIFeedback;
+    aiFeedback: AiFeedback;
     metrics: MetricSummary;
     history: AttemptHistoryItem[];
-    nextModuleId?: number | null;
+    nextModuleId: number | null;
+    isRoadmapCompleted: boolean;
+}
+
+export type ModuleTestBlockedKind =
+    | 'PREREQUISITE'
+    | 'NOT_CONFIGURED'
+    | 'CONTENT_LOCKED'
+    | 'ALREADY_SUBMITTED'
+    | 'NOT_FOUND'
+    | 'GENERIC';
+
+export interface ModuleTestBlockedState {
+    kind: ModuleTestBlockedKind;
+    code?: string;
+    message: string;
+    status?: number;
 }
