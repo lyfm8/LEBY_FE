@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { AlertTriangle, Award, RefreshCw, Unlock } from 'lucide-react';
+import { AlertTriangle, RefreshCw, Unlock } from 'lucide-react';
 import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { parseExamApiError } from '@/shared/exam/utils/examErrorUtils';
 import { ResultHistoryTable } from '../components/ResultHistoryTable';
@@ -69,7 +69,7 @@ export default function ModuleTestResultPage() {
         return (
             <div className="app-layout">
                 <SidebarNav />
-                <main className="report-content-container" style={{ flex: 1 }}>
+                <main className="report-content-container">
                     <div className="report-state-box">
                         <p style={{ color: '#64748b' }}>Đang tải báo cáo kết quả kiểm tra...</p>
                     </div>
@@ -82,7 +82,7 @@ export default function ModuleTestResultPage() {
         return (
             <div className="app-layout">
                 <SidebarNav />
-                <main className="report-content-container" style={{ flex: 1 }}>
+                <main className="report-content-container">
                     <div className="report-state-box is-error">
                         <AlertTriangle size={28} color="#dc2626" />
                         <h2>Không thể tải báo cáo kết quả</h2>
@@ -113,30 +113,11 @@ export default function ModuleTestResultPage() {
         <div className="app-layout">
             <SidebarNav />
 
-            <main
-                className="report-content-container"
-                style={{ flex: 1, minWidth: 0, overflowY: 'auto' }}
-            >
-                <header>
+            <main className="report-content-container">
+                <header className="report-header">
                     <div className="report-meta-badge">BÁO CÁO KẾT QUẢ KIỂM TRA</div>
                     <h1 className="report-main-title">Kết quả kiểm tra: {report.moduleTitle}</h1>
-                    <p className="report-subtitle">
-                        Lộ trình thích ứng thông minh LEBY • Hoàn thành lúc: {report.completedAt}
-                    </p>
                 </header>
-
-                {report.isPassed && report.isRoadmapCompleted && (
-                    <div className="modtest-unlock-banner is-completed">
-                        <Award size={22} />
-                        <div>
-                            <strong>Hoàn thành toàn bộ Lộ trình học!</strong>
-                            <p>
-                                Bạn đã vượt qua mô-đun cuối cùng và chính thức mở khóa Bài thi thử
-                                TOEIC tổng hợp (Mock Test 200 câu).
-                            </p>
-                        </div>
-                    </div>
-                )}
 
                 {report.isPassed && !report.isRoadmapCompleted && report.nextModuleId !== null && (
                     <div className="modtest-unlock-banner is-next-module">
@@ -151,40 +132,41 @@ export default function ModuleTestResultPage() {
                     </div>
                 )}
 
-                <ResultScoreCard report={report} />
-
-                <ResultMetricsGrid metrics={report.metrics} />
+                <div className="report-top-grid">
+                    <ResultScoreCard report={report} />
+                    <ResultMetricsGrid metrics={report.metrics} />
+                </div>
 
                 <ResultHistoryTable history={report.history} />
 
-                <div className="report-actions-row">
-                    {report.isPassed && report.nextModuleId !== null ? (
-                        <Link to={`/modules/${report.nextModuleId}`} className="report-btn-primary">
-                            Học mô-đun tiếp theo
+                <footer className="report-actions-bar">
+                    <div className="report-actions-row">
+                        {report.isPassed && report.nextModuleId !== null ? (
+                            <Link to={`/modules/${report.nextModuleId}`} className="report-btn-primary">
+                                Học mô-đun tiếp theo
+                            </Link>
+                        ) : (
+                            <Link to="/learning-path" className="report-btn-primary">
+                                Tiếp tục lộ trình học
+                            </Link>
+                        )}
+
+                        <Link to={`/modules/${currentModId}`} className="report-btn-secondary">
+                            Quay lại mô-đun
                         </Link>
-                    ) : (
-                        <Link to="/learning-path" className="report-btn-primary">
-                            Tiếp tục lộ trình học
+
+                        <Link to={`/modules/${currentModId}/test`} className="report-btn-secondary">
+                            Làm lại bài kiểm tra
                         </Link>
-                    )}
+                    </div>
 
-                    <Link to={`/modules/${currentModId}`} className="report-btn-secondary">
-                        Quay lại mô-đun
-                    </Link>
-
-                    <Link to={`/modules/${currentModId}/test`} className="report-btn-secondary">
-                        Làm lại bài kiểm tra
-                    </Link>
-                </div>
-
-                <div style={{ textAlign: 'center', marginTop: 16 }}>
                     <Link
                         to={`/modules/${currentModId}/test/review/${currentAttId}`}
                         className="report-review-link"
                     >
-                        Xem lại đáp án chi tiết & giải thích từng câu hỏi →
+                        Xem lại đáp án chi tiết &amp; giải thích từng câu hỏi →
                     </Link>
-                </div>
+                </footer>
             </main>
         </div>
     );

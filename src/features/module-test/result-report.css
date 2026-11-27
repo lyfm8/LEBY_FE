@@ -117,33 +117,44 @@
 
 /* ── Content Area ────────────────────────────────────────────── */
 .report-content-container {
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 20px 36px 24px;
+    box-sizing: border-box;
     flex: 1;
-    padding: 36px 48px;
-    max-width: 1080px;
 }
 
 /* Header */
+.report-header {
+    margin-bottom: 16px;
+}
+
 .report-meta-badge {
     color: #ea580c;
-    font-size: 0.85rem;
+    font-size: 0.78rem;
     font-weight: 700;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.6px;
     text-transform: uppercase;
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .report-main-title {
-    font-size: 2rem;
+    font-size: 1.65rem;
     font-weight: 800;
-    letter-spacing: -0.5px;
+    letter-spacing: -0.4px;
     color: #0f172a;
-    margin: 0 0 8px 0;
+    margin: 0;
+    line-height: 1.25;
 }
 
-.report-subtitle {
-    font-size: 0.95rem;
-    color: #64748b;
-    margin: 0 0 28px 0;
+/* Top 2-Column Grid: Score Card + Metrics Summary */
+.report-top-grid {
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) minmax(0, 1.3fr);
+    gap: 20px;
+    align-items: stretch;
+    margin-bottom: 18px;
 }
 
 /* Card 1: Score Card */
@@ -151,26 +162,30 @@
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 16px;
-    padding: 28px;
-    margin-bottom: 32px;
+    padding: 22px 24px;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    box-sizing: border-box;
 }
 
 .score-card-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 20px;
+    align-items: center;
+    gap: 12px;
 }
 
 .score-card-label {
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 700;
     color: #94a3b8;
     letter-spacing: 0.5px;
     text-transform: uppercase;
     display: block;
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .score-card-main-score {
@@ -180,23 +195,24 @@
 }
 
 .score-number {
-    font-size: 3.25rem;
+    font-size: 2.9rem;
     font-weight: 800;
     color: #0f172a;
     line-height: 1;
 }
 
 .score-max {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
     font-weight: 700;
     color: #94a3b8;
 }
 
 .score-status-badge {
-    padding: 8px 16px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     font-weight: 700;
+    white-space: nowrap;
 }
 
 .score-status-badge--pass {
@@ -211,11 +227,15 @@
     border: 1px solid #fecaca;
 }
 
+.score-card-bottom {
+    margin-top: auto;
+}
+
 .score-target-row {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9rem;
-    margin-bottom: 10px;
+    font-size: 0.88rem;
+    margin-bottom: 8px;
 }
 
 .target-req-text {
@@ -238,7 +258,6 @@
     background-color: #f1f5f9;
     border-radius: 4px;
     overflow: hidden;
-    margin-bottom: 24px;
 }
 
 .score-progress-bar-fill {
@@ -255,105 +274,94 @@
     background-color: #ef4444;
 }
 
-/* AI Recommendation Callout */
-.ai-feedback-banner {
-    display: flex;
-    align-items: flex-start;
-    gap: 14px;
-    background-color: #f0fdfa;
-    border: 1px solid #ccfbf1;
-    border-radius: 12px;
-    padding: 16px 20px;
-}
-
-.ai-feedback-icon-wrapper {
-    width: 32px;
-    height: 32px;
-    border-radius: 8px;
-    background-color: #e6fffa;
-    color: #0d9488;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.ai-feedback-title {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #0f172a;
-    margin-bottom: 4px;
-}
-
-.ai-feedback-content {
-    font-size: 0.875rem;
-    color: #475569;
-    line-height: 1.5;
-}
-
 /* Section Common Titles */
 .report-section-title {
-    font-size: 1.25rem;
+    font-size: 1.1rem;
     font-weight: 700;
     color: #0f172a;
-    margin: 0 0 16px 0;
+    margin: 0 0 10px 0;
 }
 
-/* Metrics Section */
+/* Metrics Section (Card 2 paired next to Score Card) */
 .report-metrics-section {
-    margin-bottom: 32px;
-}
-
-.report-metrics-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-}
-
-.metric-card {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 24px 20px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    padding: 22px 24px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-sizing: border-box;
 }
 
-.metric-card-label {
-    font-size: 0.75rem;
+.report-metrics-eyebrow {
+    font-size: 0.78rem;
     font-weight: 700;
     color: #94a3b8;
     letter-spacing: 0.5px;
     text-transform: uppercase;
-    margin-bottom: 8px;
+    margin: 0 0 14px 0;
+}
+
+.report-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    flex: 1;
+}
+
+.metric-card {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.metric-card-label {
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: #64748b;
+    letter-spacing: 0.45px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
 }
 
 .metric-card-value {
-    font-size: 2rem;
+    font-size: 1.75rem;
     font-weight: 800;
     color: #0f172a;
-    line-height: 1.1;
-    margin-bottom: 8px;
+    line-height: 1.15;
 }
 
 .metric-card-value--green {
     color: #10b981;
 }
 
+.metric-card-value--red {
+    color: #ef4444;
+}
+
 .metric-card-sub {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     color: #64748b;
+    line-height: 1.35;
 }
 
 /* History Section */
 .report-history-section {
-    margin-bottom: 36px;
+    margin-bottom: 18px;
 }
 
 .history-table-container {
     background-color: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 14px;
-    overflow: hidden;
+    overflow: auto;
+    max-height: 230px;
 }
 
 .history-table {
@@ -364,15 +372,18 @@
 }
 
 .history-table th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
     background-color: #f8fafc;
     color: #64748b;
     font-weight: 600;
-    padding: 14px 20px;
+    padding: 11px 20px;
     border-bottom: 1px solid #e2e8f0;
 }
 
 .history-table td {
-    padding: 16px 20px;
+    padding: 12px 20px;
     border-bottom: 1px solid #f1f5f9;
     color: #334155;
 }
@@ -421,23 +432,31 @@
     color: #ef4444;
 }
 
-/* Bottom Action Buttons */
+/* Bottom Action Bar */
+.report-actions-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    padding-top: 4px;
+}
+
 .report-actions-row {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin-top: 12px;
+    gap: 12px;
+    flex-wrap: wrap;
 }
 
 .report-btn-primary {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 28px;
+    padding: 11px 24px;
     background-color: #ea580c;
     color: #ffffff;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 700;
     border-radius: 10px;
     border: none;
@@ -456,10 +475,10 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 24px;
+    padding: 11px 20px;
     background-color: #ffffff;
     color: #334155;
-    font-size: 0.95rem;
+    font-size: 0.92rem;
     font-weight: 600;
     border-radius: 10px;
     border: 1px solid #cbd5e1;
@@ -474,36 +493,40 @@
 }
 
 .report-review-link {
-    display: block;
-    text-align: center;
-    margin-top: 16px;
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 16px;
+    border-radius: 10px;
+    background-color: #fff7ed;
+    border: 1px solid #fed7aa;
     font-size: 0.9rem;
     font-weight: 600;
-    color: #64748b;
-    text-decoration: underline;
+    color: #c2410c;
+    text-decoration: none;
     cursor: pointer;
+    transition: all 0.2s ease;
 }
 
 .report-review-link:hover {
-    color: #ea580c;
+    background-color: #ffedd5;
+    border-color: #fdba74;
 }
-
 
 /* Unlock Banner & Empty/Error States (UC14) */
 .modtest-unlock-banner {
     display: flex;
     align-items: flex-start;
     gap: 14px;
-    padding: 16px 20px;
+    padding: 14px 18px;
     border-radius: 14px;
-    margin-bottom: 20px;
-    line-height: 1.5;
+    margin-bottom: 16px;
+    line-height: 1.45;
 }
 
 .modtest-unlock-banner strong {
     display: block;
-    font-size: 15px;
-    margin-bottom: 4px;
+    font-size: 14.5px;
+    margin-bottom: 2px;
 }
 
 .modtest-unlock-banner p {
@@ -521,6 +544,35 @@
     background-color: #fffbeb;
     border: 1px solid #fde68a;
     color: #92400e;
+}
+
+@media (max-width: 1080px) {
+    .report-content-container {
+        padding: 20px;
+    }
+
+    .report-top-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 720px) {
+    .report-metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .report-actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .report-actions-row {
+        justify-content: center;
+    }
+
+    .report-review-link {
+        justify-content: center;
+    }
 }
 
 .report-state-box {

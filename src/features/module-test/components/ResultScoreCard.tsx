@@ -1,4 +1,3 @@
-import { Sparkles } from 'lucide-react';
 import type { ModuleTestPerformanceReport } from '../types/moduleTestTypes';
 
 interface ResultScoreCardProps {
@@ -7,8 +6,6 @@ interface ResultScoreCardProps {
 
 export function ResultScoreCard({ report }: ResultScoreCardProps) {
     const isPassed = report.isPassed;
-    const progressPercent =
-        report.maxScore > 0 ? Math.min(100, Math.round((report.score / report.maxScore) * 100)) : 0;
 
     return (
         <section className="report-score-card" aria-label="Điểm số đạt được">
@@ -27,39 +24,6 @@ export function ResultScoreCard({ report }: ResultScoreCardProps) {
                     }`}
                 >
                     {isPassed ? 'HOÀN THÀNH (PASS)' : 'CHƯA ĐẠT (FAIL)'}
-                </div>
-            </div>
-
-            <div className="score-target-row">
-                <span className="target-req-text">
-                    Yêu cầu tối thiểu: {report.passScore} điểm
-                </span>
-                <span
-                    className={`target-actual-text ${
-                        isPassed ? 'target-actual-text--green' : 'target-actual-text--red'
-                    }`}
-                >
-                    Đạt được: {report.score} điểm (
-                    {report.diffFromPass >= 0 ? `+${report.diffFromPass}` : `${report.diffFromPass}`})
-                </span>
-            </div>
-
-            <div className="score-progress-bar-container">
-                <div
-                    className={`score-progress-bar-fill ${
-                        isPassed ? 'score-progress-bar-fill--pass' : 'score-progress-bar-fill--fail'
-                    }`}
-                    style={{ width: `${progressPercent}%` }}
-                />
-            </div>
-
-            <div className="ai-feedback-banner">
-                <div className="ai-feedback-icon-wrapper">
-                    <Sparkles size={20} className="ai-feedback-icon" />
-                </div>
-                <div className="ai-feedback-body">
-                    <div className="ai-feedback-title">{report.aiFeedback.title}</div>
-                    <div className="ai-feedback-content">{report.aiFeedback.content}</div>
                 </div>
             </div>
         </section>

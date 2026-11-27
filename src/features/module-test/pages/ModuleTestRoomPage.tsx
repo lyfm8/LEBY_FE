@@ -9,7 +9,6 @@ import {
     PauseCircle,
     Play,
     RefreshCw,
-    Volume2,
     WifiOff,
 } from 'lucide-react';
 import { ExamAudioPlayer } from '../../../shared/exam/components/ExamAudioPlayer';
@@ -206,15 +205,6 @@ export default function ModuleTestRoomPage() {
                 onTimeOut={handleTimeOut}
             />
 
-            {!isListeningCompleted && (
-                <div className="modtest-listening-notice">
-                    <Volume2 size={15} />
-                    <span>
-                        Phần Nghe chỉ phát 1 lần duy nhất (BR13). Khi audio kết thúc hệ thống sẽ tự
-                        chuyển câu và mở khóa điều hướng tự do sau khi nghe xong.
-                    </span>
-                </div>
-            )}
 
             <main
                 className={`diag-room-layout ${isPaletteCollapsed ? 'is-palette-collapsed' : ''}`}
