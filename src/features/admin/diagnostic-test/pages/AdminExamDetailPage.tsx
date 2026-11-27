@@ -68,10 +68,27 @@ export const AdminExamDetailPage: React.FC = () => {
       {/* Main Info Card Header */}
       <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '12px', border: '1px solid #E2E8F0', marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <span className={exam.testType === 'FULL_MOCK_TEST' ? 'badge-mock' : 'badge-diagnostic'}>
               {exam.testType === 'FULL_MOCK_TEST' ? 'THI THỬ' : 'ĐỀ CHẨN ĐOÁN'}
             </span>
+
+            {/* Hiển thị phân loại Đầu ra / Luyện tập trên trang chi tiết bộ đề thi thử */}
+            {exam.testType === 'FULL_MOCK_TEST' && (
+              <span
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  padding: '4px 10px',
+                  borderRadius: '999px',
+                  backgroundColor: exam.examTag === 'OUTPUT' ? '#EFF6FF' : '#F8FAFC',
+                  color: exam.examTag === 'OUTPUT' ? '#1D4ED8' : '#475569',
+                  border: exam.examTag === 'OUTPUT' ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
+                }}
+              >
+                {exam.examTag === 'OUTPUT' ? 'Đề thi đầu ra (OUTPUT)' : 'Đề luyện tập (PRACTICE)'}
+              </span>
+            )}
 
             <span className={`dot-status-badge ${exam.examStatus.toLowerCase()}`}>
               <span className="dot-indicator" />

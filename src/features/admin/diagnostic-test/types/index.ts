@@ -4,6 +4,8 @@
 
 export type ExamType = 'DIAGNOSTIC' | 'FULL_MOCK_TEST';
 export type ExamStatus = 'DRAFT' | 'ACTIVE' | 'ARCHIVE';
+// Nhãn phân loại riêng cho bộ đề thi thử ETS: luyện tập hay thi đầu ra mở khóa cuối lộ trình
+export type ExamTag = 'PRACTICE' | 'OUTPUT';
 
 /**
  * Dữ liệu từng dòng trong bảng Danh sách đề thi.
@@ -13,6 +15,8 @@ export interface ExamListItem {
   title: string;
   description?: string;
   testType: ExamType;
+  // Phân loại đề thi thử (PRACTICE hoặc OUTPUT) khi testType là FULL_MOCK_TEST
+  examTag?: ExamTag;
   examStatus: ExamStatus;
   durationMinutes: number;
   totalQuestions: number;
@@ -46,6 +50,8 @@ export interface ExamDetail {
   title: string;
   description?: string;
   testType: ExamType;
+  // Phân loại đề thi thử (PRACTICE hoặc OUTPUT) của bộ đề hiện tại
+  examTag?: ExamTag;
   examStatus: ExamStatus;
   durationMinutes: number;
   totalQuestions: number;
@@ -95,6 +101,8 @@ export interface ExamFormPayload {
   title: string;
   description?: string;
   testType: ExamType;
+  // Nhãn phân loại đề thi thử gửi lên API tạo hoặc cập nhật
+  examTag?: ExamTag;
   durationMinutes: number;
   questionIds: number[];
   isDraft?: boolean;

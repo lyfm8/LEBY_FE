@@ -244,4 +244,6 @@ export interface DiagnosticResult {
     weakAbilities: PartAbilityBreakdown[];
     passedParts: string[];
     aiRoadmapSummary: AiRoadmapSummary;
+    hasViewedReview?: boolean;
+    canRetakeDiagnostic?: boolean;
 }

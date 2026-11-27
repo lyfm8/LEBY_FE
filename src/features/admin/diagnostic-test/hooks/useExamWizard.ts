@@ -8,7 +8,7 @@ import {
   getMinRequiredDiagnosticQuestions,
 } from '../utils/matrixConstants';
 import { validateExamBeforeSave } from '../utils/checklistValidation';
-import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../types';
+import type { ExamMatrixAvailability, ExamQuestionItem, ExamTag, ExamType } from '../types';
 
 /**
  * Custom hook quản lý toàn bộ quy trình Tạo đề thi mới (Wizard 3 bước).
@@ -24,6 +24,8 @@ export function useExamWizard() {
 
   // Form State
   const [testType, setTestType] = useState<ExamType>('FULL_MOCK_TEST');
+  // Nhãn phân loại đề thi thử (PRACTICE: luyện tập, OUTPUT: thi đầu ra mở khóa sau lộ trình)
+  const [examTag, setExamTag] = useState<ExamTag>('PRACTICE');
   const [title, setTitle] = useState<string>('');
   const [description, setDescription] = useState<string>('');
   const [durationMinutes, setDurationMinutes] = useState<number>(
@@ -64,6 +66,10 @@ export function useExamWizard() {
    */
   const handleTypeChange = useCallback((newType: ExamType) => {
     setTestType(newType);
+    // Khi chuyển về đề chẩn đoán thì đặt lại examTag mặc định PRACTICE để dữ liệu luôn sạch
+    if (newType === 'DIAGNOSTIC') {
+      setExamTag('PRACTICE');
+    }
     const config = DEFAULT_EXAM_CONFIGS[newType];
     setDurationMinutes(config.durationMinutes);
     setTargetTotalQuestions(config.totalQuestions);
@@ -162,6 +168,8 @@ export function useExamWizard() {
         title: title.trim(),
         description: description.trim(),
         testType,
+        // Chỉ gửi examTag lựa chọn khi là FULL_MOCK_TEST, ngược lại mặc định PRACTICE
+        examTag: testType === 'FULL_MOCK_TEST' ? examTag : 'PRACTICE',
         durationMinutes,
         questionIds: selectedQuestions.map((q) => q.questionId),
         isDraft: true,
@@ -174,7 +182,7 @@ export function useExamWizard() {
     } finally {
       setIsSaving(false);
     }
-  }, [title, description, testType, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
+  }, [title, description, testType, examTag, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
 
   /**
    * Lưu đề thi chính thức (ARCHIVE - sẵn sàng để Active sau).
@@ -191,6 +199,8 @@ export function useExamWizard() {
         title: title.trim(),
         description: description.trim(),
         testType,
+        // Chỉ gửi examTag lựa chọn khi là FULL_MOCK_TEST, ngược lại mặc định PRACTICE
+        examTag: testType === 'FULL_MOCK_TEST' ? examTag : 'PRACTICE',
         durationMinutes,
         questionIds: selectedQuestions.map((q) => q.questionId),
         isDraft: false,
@@ -207,12 +217,14 @@ export function useExamWizard() {
     } finally {
       setIsSaving(false);
     }
-  }, [validationResult.canSaveOfficial, title, description, testType, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
+  }, [validationResult.canSaveOfficial, title, description, testType, examTag, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
 
   return {
     currentStep,
     setCurrentStep,
     testType,
+    examTag,
+    setExamTag,
     title,
     setTitle,
     description,

@@ -171,7 +171,8 @@ export default function LearningPathPage() {
                             200 câu để kiểm chứng kết quả đầu ra hoặc nâng mốc mục tiêu cao hơn.
                         </p>
                         <div className="roadmap-state-card__actions">
-                            <Link to="/diagnostic/room" className="roadmap-btn-primary">
+                            {/* Điều hướng học viên tới phòng thi thử TOEIC chuẩn ETS 200 câu thay vì chẩn đoán */}
+                            <Link to="/mock-exam" className="roadmap-btn-primary">
                                 <span>Làm bài thi thử TOEIC 200 câu</span>
                                 <ArrowRight size={16} />
                             </Link>
@@ -249,10 +250,17 @@ export default function LearningPathPage() {
                                     </p>
                                 </div>
                             </div>
-                            <Link to="/target-selection" className="roadmap-btn-secondary">
-                                <Target size={16} />
-                                <span>Đổi mục tiêu mới</span>
-                            </Link>
+                            {/* Bổ sung nút vào thẳng Phòng thi đầu ra ETS 200 câu bên cạnh nút đổi mục tiêu */}
+                            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                                <Link to="/mock-exam" className="roadmap-btn-primary">
+                                    <span>Làm bài thi đầu ra ETS</span>
+                                    <ArrowRight size={16} />
+                                </Link>
+                                <Link to="/target-selection" className="roadmap-btn-secondary">
+                                    <Target size={16} />
+                                    <span>Đổi mục tiêu mới</span>
+                                </Link>
+                            </div>
                         </section>
                     )}
 

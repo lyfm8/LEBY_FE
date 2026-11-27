@@ -16,6 +16,10 @@ export const AdminExamCreatePage: React.FC = () => {
     currentStep,
     setCurrentStep,
     testType,
+    // Nhãn phân loại đề thi thử ETS (Luyện tập hoặc Đầu ra) lấy từ hook wizard
+    examTag,
+    // Hàm cập nhật phân loại đề thi thử ETS từ bước 1
+    setExamTag,
     title,
     setTitle,
     description,
@@ -75,12 +79,16 @@ export const AdminExamCreatePage: React.FC = () => {
       {currentStep === 1 && (
         <Step1_ExamInfo
           testType={testType}
+          // Truyền nhãn phân loại đề thi thử hiện tại vào Bước 1
+          examTag={examTag}
           title={title}
           description={description}
           durationMinutes={durationMinutes}
           totalQuestions={targetTotalQuestions}
           minDiagnosticQuestions={minDiagnosticQuestions}
           onTypeChange={handleTypeChange}
+          // Truyền callback đổi nhãn PRACTICE/OUTPUT khi admin cấu hình FULL_MOCK_TEST
+          onExamTagChange={setExamTag}
           onTitleChange={setTitle}
           onDescriptionChange={setDescription}
           onDurationChange={setDurationMinutes}
@@ -111,6 +119,8 @@ export const AdminExamCreatePage: React.FC = () => {
       {currentStep === 3 && (
         <Step3_Review
           testType={testType}
+          // Hiển thị nhãn phân loại PRACTICE/OUTPUT trong bước rà soát trước khi lưu
+          examTag={examTag}
           title={title}
           description={description}
           durationMinutes={durationMinutes}
