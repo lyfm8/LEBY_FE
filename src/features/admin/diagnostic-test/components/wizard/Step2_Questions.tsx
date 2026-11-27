@@ -8,11 +8,9 @@ import { ChecklistCard } from './ChecklistCard';
 
 interface Step2Props {
   testType: ExamType;
-  isAdmin: boolean;
   targetTotalQuestions: number;
   selectedQuestions: ExamQuestionItem[];
   availability: ExamMatrixAvailability | null;
-  customMatrix: Record<number, number>;
   validationResult: ValidationResult;
   onAddQuestion: (q: ExamQuestionItem) => void;
   onRemoveQuestion: (id: number) => void;
@@ -28,11 +26,9 @@ interface Step2Props {
  */
 export const Step2_Questions: React.FC<Step2Props> = ({
   testType,
-  isAdmin,
   targetTotalQuestions,
   selectedQuestions,
   availability,
-  customMatrix,
   validationResult,
   onAddQuestion,
   onRemoveQuestion,
@@ -101,9 +97,7 @@ export const Step2_Questions: React.FC<Step2Props> = ({
           />
         ) : (
           <MatrixConfigSection
-            isAdmin={isAdmin}
             availability={availability}
-            customMatrix={customMatrix}
             onAutoSelect={onAutoSelect}
             isAutoSelecting={isAutoSelecting}
           />

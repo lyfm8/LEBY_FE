@@ -1,6 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/hooks/useAuth';
 import { useToast } from '@/core/ui';
 import { adminExamService } from '../services/adminExamService';
 import { DEFAULT_EXAM_CONFIGS } from '../utils/matrixConstants';
@@ -14,9 +13,7 @@ import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../type
  */
 export function useExamWizard() {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const toast = useToast();
-  const isAdmin = user?.role === 'ADMIN';
 
   // Quản lý bước hiện tại
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
@@ -32,17 +29,8 @@ export function useExamWizard() {
     DEFAULT_EXAM_CONFIGS.FULL_MOCK_TEST.totalQuestions
   );
 
-  // Danh sách câu hỏi đã chọn và ma trận phân bổ chuẩn
+  // Danh sách câu hỏi đã chọn
   const [selectedQuestions, setSelectedQuestions] = useState<ExamQuestionItem[]>([]);
-  const [customMatrix] = useState<Record<number, number>>({
-    1: 6,
-    2: 25,
-    3: 39,
-    4: 30,
-    5: 30,
-    6: 16,
-    7: 54,
-  });
 
   // Dữ liệu khả dụng từ Question Bank
   const [availability, setAvailability] = useState<ExamMatrixAvailability | null>(null);
@@ -100,7 +88,6 @@ export function useExamWizard() {
       const res = await adminExamService.autoSelect({
         testType,
         totalQuestions: testType === 'DIAGNOSTIC' ? targetTotalQuestions : 200,
-        customDistribution: testType === 'FULL_MOCK_TEST' ? customMatrix : undefined,
       });
 
       if (res.data && res.data.questions) {
@@ -116,7 +103,7 @@ export function useExamWizard() {
     } finally {
       setIsAutoSelecting(false);
     }
-  }, [testType, targetTotalQuestions, customMatrix, toast]);
+  }, [testType, targetTotalQuestions, toast]);
 
   /**
    * Kết quả checklist kiểm tra thời gian thực.
@@ -202,7 +189,6 @@ export function useExamWizard() {
   }, [validationResult.canSaveOfficial, title, description, testType, durationMinutes, selectedQuestions, toast, handleNavigateBack]);
 
   return {
-    isAdmin,
     currentStep,
     setCurrentStep,
     testType,
@@ -215,7 +201,6 @@ export function useExamWizard() {
     targetTotalQuestions,
     setTargetTotalQuestions,
     selectedQuestions,
-    customMatrix,
     availability,
     isAutoSelecting,
     isSaving,

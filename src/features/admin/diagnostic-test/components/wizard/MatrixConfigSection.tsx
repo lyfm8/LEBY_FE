@@ -1,26 +1,19 @@
 import React from 'react';
-import { Headphones, BookOpen, Edit2, Sparkles, AlertTriangle } from 'lucide-react';
+import { Headphones, BookOpen, Sparkles, AlertTriangle } from 'lucide-react';
 import type { ExamMatrixAvailability } from '../../types';
 import { ETS_MOCK_TEST_MATRIX, PART_7_BREAKDOWN } from '../../utils/matrixConstants';
 
 interface MatrixConfigSectionProps {
-  isAdmin: boolean;
   availability: ExamMatrixAvailability | null;
-  customMatrix: Record<number, number>;
-  onEditMatrixClick?: () => void;
   onAutoSelect: () => void;
   isAutoSelecting: boolean;
 }
 
 /**
  * Giao diện Bước 2 - Phương thức B: Tự động theo ma trận phân bổ (khớp hoàn toàn Ảnh 4).
- * Phân quyền Admin được sửa ma trận, Teacher chỉ xem Read-only.
  */
 export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
-  isAdmin,
   availability,
-  customMatrix,
-  onEditMatrixClick,
   onAutoSelect,
   isAutoSelecting,
 }) => {
@@ -32,7 +25,7 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
   // Tìm các Part bị thiếu câu hỏi trong ngân hàng
   const missingParts: { partNo: number; required: number; available: number; missing: number }[] = [];
   for (const part of ETS_MOCK_TEST_MATRIX) {
-    const req = customMatrix[part.partNumber] ?? part.standardCount;
+    const req = part.standardCount;
     const avail = partAvailableCounts[part.partNumber] || 0;
     if (avail < req) {
       missingParts.push({
@@ -47,28 +40,13 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
       {/* Header section */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', margin: 0 }}>
-            Ma trận phân bổ câu hỏi
-          </h3>
-          <span style={{ fontSize: '13px', color: '#64748B' }}>
-            Cấu trúc đề thi thử TOEIC gồm 200 câu theo chuẩn ETS.
-          </span>
-        </div>
-
-        {/* NÚT CHỈNH SỬA MA TRẬN - CHỈ HIỂN THỊ KHI ROLE LÀ ADMIN */}
-        {isAdmin && (
-          <button
-            type="button"
-            className="exam-btn-reset"
-            style={{ color: '#F45B0B', borderColor: '#FFEDD5', backgroundColor: '#FFF7ED' }}
-            onClick={onEditMatrixClick}
-          >
-            <Edit2 size={15} />
-            <span>Chỉnh sửa ma trận</span>
-          </button>
-        )}
+      <div>
+        <h3 style={{ fontSize: '16px', fontWeight: 700, color: '#0F172A', margin: 0 }}>
+          Ma trận phân bổ câu hỏi
+        </h3>
+        <span style={{ fontSize: '13px', color: '#64748B' }}>
+          Cấu trúc đề thi thử TOEIC gồm 200 câu theo chuẩn ETS.
+        </span>
       </div>
 
       {/* 2 BẢNG MA TRẬN SONG SONG (LISTENING & READING) */}
@@ -99,7 +77,7 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
             </thead>
             <tbody>
               {listeningParts.map((p) => {
-                const req = customMatrix[p.partNumber] ?? p.standardCount;
+                const req = p.standardCount;
                 const avail = partAvailableCounts[p.partNumber] || 0;
                 const isEnough = avail >= req;
 
@@ -162,7 +140,7 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
             </thead>
             <tbody>
               {readingParts.map((p) => {
-                const req = customMatrix[p.partNumber] ?? p.standardCount;
+                const req = p.standardCount;
                 const avail = partAvailableCounts[p.partNumber] || 0;
                 const isEnough = avail >= req;
 
