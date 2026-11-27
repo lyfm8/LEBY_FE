@@ -42,9 +42,7 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
   const lessonType = watch('lessonType');
   const durationSeconds = watch('durationSeconds') ?? 0;
 
-  /**
-   * Chuyển đổi durationSeconds thành chuỗi mm:ss để hiển thị trực quan.
-   */
+  // Quy đổi thời lượng video (giây) sang định dạng mm:ss để hiển thị chỉ đọc cho quản trị viên
   const durationDisplay = `${String(Math.floor(durationSeconds / 60)).padStart(2, '0')}:${String(durationSeconds % 60).padStart(2, '0')}`;
 
   // Quản lý tên file hiển thị cục bộ khi chọn từ máy tính
@@ -90,6 +88,10 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
       const saved = await uploadSingle(file);
       // Thay blob URL bằng URL Cloudinary thật
       setValue(formKey, saved.url, { shouldDirty: true });
+      // Nếu Cloudinary trả về thời lượng chính xác của video thì ưu tiên cập nhật ngay vào form
+      if (onDuration && typeof saved.duration === 'number' && saved.duration > 0) {
+        onDuration(Math.round(saved.duration));
+      }
     } catch (err: unknown) {
       let detail = err instanceof Error ? err.message : String(err);
       if (typeof err === 'object' && err !== null && 'response' in err) {
@@ -117,13 +119,11 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
     }
   };
 
-  // Xử lý chọn file Audio từ máy
+  // Xử lý chọn file Audio từ máy (không ghi đè thời lượng của video bài giảng)
   const handleAudioFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      void uploadMedia(file, 'audio', setAudioFileName, 'audioUrl', (d) =>
-        setValue('durationSeconds', d, { shouldDirty: true }),
-      );
+      void uploadMedia(file, 'audio', setAudioFileName, 'audioUrl');
     }
   };
 
@@ -135,9 +135,10 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
     }
   };
 
-  // Xóa media
+  // Xóa media video và đặt lại thời lượng bài giảng về 0
   const removeVideo = () => {
     setValue('videoUrl', '', { shouldDirty: true });
+    setValue('durationSeconds', 0, { shouldDirty: true });
     setVideoFileName('');
     if (videoInputRef.current) videoInputRef.current.value = '';
   };
@@ -272,23 +273,38 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
             {errors.lessonType && <p className="form-error">{errors.lessonType.message}</p>}
           </div>
 
-          <div className="form-group">
-            <label className="form-label">
-              Thời lượng bài học (giây)
-            </label>
-            <div className="duration-input-wrapper">
-              <Clock size={14} className="duration-icon" />
-              <input
-                {...register('durationSeconds', { valueAsNumber: true })}
-                type="number"
-                min="0"
-                max="86400"
-                className="form-input duration-input"
-                placeholder="VD: 300 (= 05:00)"
-              />
+          {/* Giữ trường ẩn durationSeconds để gửi đúng thời lượng tự động từ video về Backend */}
+          <input
+            type="hidden"
+            {...register('durationSeconds', { valueAsNumber: true })}
+          />
+
+          {/* Chỉ hiển thị thời lượng tự động (chỉ đọc) đối với Video bài giảng */}
+          {lessonType === 'VIDEO' && (
+            <div className="form-group">
+              <label className="form-label">
+                Thời lượng video (tự động từ tệp tải lên)
+              </label>
+              <div className="duration-readonly-box" aria-live="polite">
+                <Clock size={15} className="duration-readonly-icon" />
+                {uploadingField === 'video' ? (
+                  <span className="duration-readonly-placeholder">
+                    Đang đọc thời lượng từ video...
+                  </span>
+                ) : videoUrl && durationSeconds > 0 ? (
+                  <span className="duration-readonly-value">
+                    <strong>{durationDisplay}</strong>
+                    <span className="duration-readonly-seconds">({durationSeconds} giây)</span>
+                  </span>
+                ) : (
+                  <span className="duration-readonly-placeholder">
+                    Chưa có video — sẽ tự cập nhật khi tải video lên
+                  </span>
+                )}
+              </div>
+              {errors.durationSeconds && <p className="form-error">{errors.durationSeconds.message}</p>}
             </div>
-            {errors.durationSeconds && <p className="form-error">{errors.durationSeconds.message}</p>}
-          </div>
+          )}
         </div>
       </div>
 
@@ -337,7 +353,18 @@ export const LessonContentTab: React.FC<LessonContentTabProps> = ({
                   {videoFileName || 'Video đã được chọn'}
                 </p>
                 <div className="video-preview-wrapper">
-                  <video src={videoUrl} controls className="preview-video-player" />
+                  <video
+                    src={videoUrl}
+                    controls
+                    className="preview-video-player"
+                    onLoadedMetadata={(event) => {
+                      // Tự đồng bộ thời lượng thực tế từ tệp video khi xem trước (tránh trường hợp DB đang bằng 0)
+                      const resolved = Math.round(event.currentTarget.duration);
+                      if (!Number.isNaN(resolved) && resolved > 0 && resolved !== durationSeconds) {
+                        setValue('durationSeconds', resolved, { shouldDirty: true });
+                      }
+                    }}
+                  />
                 </div>
               </div>
             ) : (
