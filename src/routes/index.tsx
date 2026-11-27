@@ -1,14 +1,17 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import AuthGuard from '@/core/auth/auth.guard';
+import { useAuth } from '@/features/auth/hooks/useAuth';
 import LandingPage from '@/features/landing/LandingPage';
-import LoginPage from '@/features/auth/LoginPage';
-import RegisterPage from '@/features/auth/RegisterPage';
-import OtpVerifyPage from '@/features/auth/OtpVerifyPage';
+import LoginPage from '@/features/auth/pages/LoginPage';
+import RegisterPage from '@/features/auth/pages/RegisterPage';
+import OtpVerifyPage from '@/features/auth/pages/OtpVerifyPage';
+import ForgotPasswordPage from '@/features/auth/pages/ForgotPasswordPage';
 
 // 1. Onboarding & Diagnostic
 import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
 import DiagnosticRoomPage from '@/features/diagnostic/pages/DiagnosticRoomPage';
 import DiagnosticResultPage from '@/features/diagnostic/pages/DiagnosticResultPage';
+import DiagnosticReviewPage from '@/features/diagnostic/pages/DiagnosticReviewPage';
 
 // 2. Dashboard & Learning Path
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
@@ -26,6 +29,40 @@ import ModuleTestResultPage from '@/features/module-test/pages/ModuleTestResultP
 // 5. User Profile
 import ProfilePage from '@/features/profile/pages/ProfilePage';
 
+// 6. Admin
+import { AdminDashboardPage } from '@/features/admin/dashboard/pages/AdminDashboardPage';
+import { AdminUserPage } from '@/features/admin/user/pages/AdminUserPage';
+import { AdminUserDetailPage } from '@/features/admin/user/pages/AdminUserDetailPage';
+import { AdminPartPage } from '@/features/admin/part/pages/AdminPartPage';
+import {
+    AdminQuestionPage,
+    QuestionStandaloneEditorPage,
+    QuestionGroupEditorPage,
+} from '@/features/admin/question';
+import { AdminModulePage } from '@/features/admin/module/pages/AdminModulePage';
+import { AdminModuleTestPage } from '@/features/admin/module/pages/AdminModuleTestPage';
+import { AdminTargetPage } from '@/features/admin/target/pages/AdminTargetPage';
+import { AdminThresholdPage } from '@/features/admin/threshold/pages/AdminThresholdPage';
+import { AdminDiagnosticTestPage } from '@/features/admin/diagnostic-test/pages/AdminDiagnosticTestPage';
+import { AdminLayout } from '@/features/admin/layout/AdminLayout';
+
+/**
+ * Điều hướng trang mặc định của cổng quản trị theo vai trò:
+ * - ADMIN: vào AdminDashboardPage
+ * - TEACHER: chuyển thẳng sang trang Quản lý Mô-đun & Bài học (không có quyền xem Dashboard tổng quan)
+ */
+function AdminIndexRoute() {
+    const { user } = useAuth();
+    if (user?.role === 'TEACHER') {
+        return <Navigate to="/admin/modules" replace />;
+    }
+    return (
+        <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+            <AdminDashboardPage />
+        </AuthGuard>
+    );
+}
+
 /**
  * Cấu trúc routes của ứng dụng LEBY TOEIC Adaptive Learning.
  */
@@ -33,25 +70,69 @@ function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
-                {/* ── PUBLIC: Landing & Auth ─────────────────────────────────── */}
+                {/* ── PUBLIC: Landing & Auth (UC01, UC02, UC04) ──────────────── */}
                 <Route path="/" element={<LandingPage />} />
                 <Route path="/landing" element={<LandingPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/verify-otp" element={<OtpVerifyPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
-                {/* ── ONBOARDING & DIAGNOSTIC ────────────────────────────────── */}
-                <Route path="/target-selection" element={<TargetSelectionPage />} />
-                <Route path="/onboarding/target" element={<TargetSelectionPage />} />
-                <Route path="/diagnostic/room" element={<DiagnosticRoomPage />} />
-                <Route path="/diagnostic/results/:attemptId" element={<DiagnosticResultPage />} />
-                <Route path="/diagnostic/results" element={<DiagnosticResultPage />} />
+                {/* ── PROTECTED: Onboarding & Diagnostic (UC05 - UC07) ───────── */}
+                <Route
+                    path="/target-selection"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/onboarding/target"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <TargetSelectionPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/room"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/results"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticResultPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/diagnostic/review/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <DiagnosticReviewPage />
+                        </AuthGuard>
+                    }
+                />
 
                 {/* ── PROTECTED: Trang chủ học tập & Lộ trình ────────────────── */}
                 <Route
                     path="/dashboard"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -59,7 +140,7 @@ function AppRoutes() {
                 <Route
                     path="/home"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <DashboardPage />
                         </AuthGuard>
                     }
@@ -67,7 +148,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-path"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LearningPathPage />
                         </AuthGuard>
                     }
@@ -75,7 +156,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleDetailPage />
                         </AuthGuard>
                     }
@@ -85,7 +166,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/lessons/:lessonId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LessonRoomPage />
                         </AuthGuard>
                     }
@@ -95,7 +176,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestRoomPage />
                         </AuthGuard>
                     }
@@ -103,7 +184,7 @@ function AppRoutes() {
                                 <Route
                     path="/results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -111,7 +192,7 @@ function AppRoutes() {
                 <Route
                     path="/learning-results"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -119,7 +200,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -127,7 +208,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/result"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestResultPage />
                         </AuthGuard>
                     }
@@ -135,7 +216,7 @@ function AppRoutes() {
                 <Route
                     path="/modules/:moduleId/test/review/:attemptId"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ModuleTestReviewPage />
                         </AuthGuard>
                     }
@@ -145,11 +226,50 @@ function AppRoutes() {
                 <Route
                     path="/profile"
                     element={
-                        <AuthGuard requireAuth={true} allowedRoles={['USER', 'ADMIN', 'STAFF']}>
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <ProfilePage />
                         </AuthGuard>
                     }
                 />
+
+                {/* ── PROTECTED: Hệ thống Quản trị (Admin & Teacher) ────────────── */}
+                <Route
+                    path="/admin"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['ADMIN', 'TEACHER']}>
+                            <AdminLayout />
+                        </AuthGuard>
+                    }
+                >
+                    <Route index element={<AdminIndexRoute />} />
+                    <Route
+                        path="users"
+                        element={
+                            <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                                <AdminUserPage />
+                            </AuthGuard>
+                        }
+                    />
+                    <Route
+                        path="users/:id"
+                        element={
+                            <AuthGuard requireAuth={true} allowedRoles={['ADMIN']}>
+                                <AdminUserDetailPage />
+                            </AuthGuard>
+                        }
+                    />
+                    <Route path="parts" element={<AdminPartPage />} />
+                    <Route path="questions" element={<AdminQuestionPage />} />
+                    <Route path="questions/new" element={<QuestionStandaloneEditorPage />} />
+                    <Route path="questions/:id/edit" element={<QuestionStandaloneEditorPage />} />
+                    <Route path="question-groups/new" element={<QuestionGroupEditorPage />} />
+                    <Route path="question-groups/:id/edit" element={<QuestionGroupEditorPage />} />
+                    <Route path="modules" element={<AdminModulePage />} />
+                    <Route path="module-tests" element={<AdminModuleTestPage />} />
+                    <Route path="targets" element={<AdminTargetPage />} />
+                    <Route path="thresholds" element={<AdminThresholdPage />} />
+                    <Route path="diagnostic-tests" element={<AdminDiagnosticTestPage />} />
+                </Route>
 
                 {/* ── FALLBACK ────────────────────────────────────────────────── */}
                 <Route path="/unauthorized" element={<div id="unauthorized-page">403 Unauthorized</div>} />

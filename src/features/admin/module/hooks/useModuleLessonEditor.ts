@@ -1,0 +1,333 @@
+import { useState, useCallback, useEffect } from 'react';
+import type {
+  ModuleResponse,
+  LessonResponse,
+  EditorActiveView,
+  CreateModuleRequest,
+  CreateLessonRequest,
+  LessonScriptDto,
+  PracticeQuestionItemDto,
+} from '../types';
+import { adminModuleService } from '../services/adminModuleService';
+import { useToast, useConfirm } from '@/core/ui';
+
+/**
+ * Trích xuất message lỗi từ Axios error response (ApiResponse format).
+ * Tránh dùng `any` bằng cách kiểm tra cấu trúc an toàn.
+ */
+const extractErrorMessage = (error: unknown, fallback: string): string => {
+  if (error && typeof error === 'object' && 'response' in error) {
+    const resp = (error as { response?: { data?: { message?: string } } }).response;
+    if (resp?.data?.message) return resp.data.message;
+  }
+  return fallback;
+};
+
+/**
+ * Custom hook quản lý toàn bộ luồng điều phối trạng thái của trang AdminModulePage.
+ * Đảm bảo cơ chế Unsaved Changes Guard khi chuyển đổi giữa các view.
+ */
+export const useModuleLessonEditor = () => {
+  const toast = useToast();
+  const confirm = useConfirm();
+
+  const [modules, setModules] = useState<ModuleResponse[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
+  // View hiện tại ở khu vực bên phải 75%
+  const [activeView, setActiveView] = useState<EditorActiveView>({
+    type: 'MODULE_CONFIGS',
+  });
+
+  // Cờ đánh dấu form đang có dữ liệu chưa lưu
+  const [isFormDirty, setIsFormDirty] = useState<boolean>(false);
+
+  // Lesson chi tiết đang được chọn để edit (kèm kịch bản scripts)
+  const [currentLessonDetail, setCurrentLessonDetail] = useState<LessonResponse | null>(
+    null
+  );
+
+  /**
+   * Tải toàn bộ danh sách Module kèm Lesson con từ Backend.
+   */
+  const fetchModules = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const res = await adminModuleService.getModules();
+      if (res.success && res.data) {
+        setModules(res.data);
+      }
+    } catch (error) {
+      console.error('Lỗi tải danh sách Module:', error);
+      toast.error('Không thể tải danh sách Module từ máy chủ.');
+    } finally {
+      setIsLoading(false);
+    }
+  }, [toast]);
+
+  useEffect(() => {
+    fetchModules();
+  }, [fetchModules]);
+
+  /**
+   * Tải chi tiết Lesson kèm scripts khi activeView chuyển sang LESSON_EDIT.
+   */
+  useEffect(() => {
+    if (activeView.type === 'LESSON_EDIT') {
+      adminModuleService
+        .getLessonById(activeView.lessonId)
+        .then((res) => {
+          if (res.success && res.data) {
+            setCurrentLessonDetail(res.data);
+          }
+        })
+        .catch((err) => console.error('Lỗi tải chi tiết bài học:', err));
+    } else {
+      setCurrentLessonDetail(null);
+    }
+  }, [activeView]);
+
+  /**
+   * Điều hướng chuyển đổi view với Unsaved Changes Guard sử dụng ConfirmDialog.
+   */
+  const navigateView = useCallback(
+    async (targetView: EditorActiveView) => {
+      if (isFormDirty) {
+        const ok = await confirm({
+          title: 'Thay đổi chưa được lưu',
+          message: 'Bạn có thay đổi chưa lưu trong biểu mẫu hiện tại. Bạn có chắc chắn muốn chuyển sang mục khác mà không lưu không?',
+          confirmText: 'Rời trang',
+          cancelText: 'Ở lại',
+        });
+        if (!ok) return;
+      }
+      setIsFormDirty(false);
+      setActiveView(targetView);
+    },
+    [isFormDirty, confirm]
+  );
+
+  // =====================================
+  // MODULE ACTIONS
+  // =====================================
+
+  const handleSaveModule = async (
+    data: CreateModuleRequest,
+    isEdit: boolean,
+    id?: number
+  ) => {
+    try {
+      setIsSubmitting(true);
+      if (isEdit && id) {
+        const res = await adminModuleService.updateModule(id, data);
+        if (res.success) {
+          toast.success('Cập nhật Module thành công!');
+          setIsFormDirty(false);
+          await fetchModules();
+        }
+      } else {
+        const res = await adminModuleService.createModule(data);
+        if (res.success && res.data) {
+          toast.success('Tạo Module mới thành công!');
+          setIsFormDirty(false);
+          await fetchModules();
+          setActiveView({ type: 'MODULE_EDIT', moduleId: res.data.id });
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Lỗi lưu Module:', error);
+      toast.error(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu Module!'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteModule = async (id: number) => {
+    const ok = await confirm({
+      title: 'Xóa Mô-đun Học tập',
+      message: 'Bạn có chắc chắn muốn xóa Module này? Nếu Module đang có học viên theo học trong lộ trình, hệ thống sẽ chặn xóa để bảo vệ dữ liệu!',
+      confirmText: 'Xác nhận xóa',
+      cancelText: 'Hủy bỏ',
+    });
+    if (!ok) return;
+
+    try {
+      setIsLoading(true);
+      const res = await adminModuleService.deleteModule(id);
+      if (res.success) {
+        toast.success('Xóa Module thành công!');
+        await fetchModules();
+        setActiveView({ type: 'MODULE_CONFIGS' });
+      }
+    } catch (error: unknown) {
+      console.error('Lỗi xóa Module:', error);
+      toast.error(extractErrorMessage(error, 'Không thể xóa Module. Module có thể đang nằm trong lộ trình của học viên!'));
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // =====================================
+  // LESSON ACTIONS
+  // =====================================
+
+  const handleSaveLesson = async (
+    data: CreateLessonRequest,
+    isEdit: boolean,
+    lessonId?: number
+  ) => {
+    try {
+      setIsSubmitting(true);
+      if (isEdit && lessonId) {
+        const res = await adminModuleService.updateLesson(lessonId, data);
+        if (res.success) {
+          toast.success('Cập nhật bài học thành công!');
+          setIsFormDirty(false);
+          await fetchModules();
+          if (res.data) setCurrentLessonDetail(res.data);
+        }
+      } else if (activeView.type === 'LESSON_CREATE') {
+        const res = await adminModuleService.createLesson(activeView.moduleId, data);
+        if (res.success && res.data) {
+          toast.success('Tạo bài học mới thành công!');
+          setIsFormDirty(false);
+          await fetchModules();
+          setActiveView({
+            type: 'LESSON_EDIT',
+            lessonId: res.data.id,
+            moduleId: activeView.moduleId,
+          });
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Lỗi lưu bài học:', error);
+      toast.error(extractErrorMessage(error, 'Có lỗi xảy ra khi lưu bài học!'));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleDeleteLesson = async (lessonId: number, moduleId: number) => {
+    const ok = await confirm({
+      title: 'Xóa Bài học',
+      message: 'Bạn có chắc chắn muốn xóa bài học này khỏi Module không?',
+      confirmText: 'Xóa bài học',
+      cancelText: 'Hủy bỏ',
+    });
+    if (!ok) return;
+
+    try {
+      setIsLoading(true);
+      const res = await adminModuleService.deleteLesson(lessonId);
+      if (res.success) {
+        toast.success('Đã xóa bài học thành công!');
+        await fetchModules();
+        if (
+          activeView.type === 'LESSON_EDIT' &&
+          activeView.lessonId === lessonId
+        ) {
+          setActiveView({ type: 'MODULE_EDIT', moduleId });
+        }
+      }
+    } catch (error: unknown) {
+      console.error('Lỗi xóa bài học:', error);
+      toast.error('Không thể xóa bài học!');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSaveLessonScripts = async (
+    lessonId: number,
+    scripts: LessonScriptDto[]
+  ) => {
+    try {
+      const res = await adminModuleService.saveLessonScripts(lessonId, scripts);
+      if (res.success && res.data) {
+        toast.success('Lưu kịch bản phụ đề (Script) thành công!');
+        setCurrentLessonDetail(res.data);
+      }
+    } catch (error: unknown) {
+      console.error('Lỗi lưu kịch bản phụ đề:', error);
+      toast.error('Không thể lưu kịch bản phụ đề. Vui lòng kiểm tra lại!');
+    }
+  };
+
+  /**
+   * Lưu toàn bộ danh sách câu hỏi luyện tập (Tab 3 - UC A05) cho bài học đang mở.
+   *
+   * @param lessonId ID của bài học cần lưu bộ câu hỏi
+   * @param items    Danh sách câu hỏi kèm thứ tự hiển thị và điểm số
+   */
+  const handleSavePracticeQuestions = async (
+    lessonId: number,
+    items: PracticeQuestionItemDto[]
+  ) => {
+    try {
+      // Gọi API đồng bộ danh sách câu hỏi luyện tập lên Backend
+      const res = await adminModuleService.savePracticeQuestions(lessonId, items);
+      // Nếu lưu thành công và có dữ liệu chi tiết bài học trả về thì cập nhật state cục bộ
+      if (res.success && res.data) {
+        // Hiện thông báo lưu thành công cho giáo viên/quản trị viên
+        toast.success('Lưu bộ câu hỏi luyện tập thành công!');
+        // Cập nhật chi tiết bài học đang mở để Tab 3 và badge số lượng đồng bộ ngay
+        setCurrentLessonDetail(res.data);
+      }
+    } catch (error: unknown) {
+      // Hiển thị thông báo lỗi cụ thể từ Backend (ví dụ vượt quá 100 câu hoặc trùng lặp)
+      toast.error(extractErrorMessage(error, 'Không thể lưu bộ câu hỏi luyện tập. Vui lòng thử lại!'));
+      // Ném lại lỗi để component con biết thao tác chưa hoàn tất và giữ nguyên trạng thái dirty
+      throw error;
+    }
+  };
+
+  /**
+   * Sắp xếp lại thứ tự Module bằng cách gửi mảng ID theo thứ tự mới.
+   * Gọi API reorder rồi refresh danh sách để đồng bộ sequence từ BE.
+   */
+  const handleReorderModules = async (orderedIds: number[]) => {
+    try {
+      await adminModuleService.reorderModules(orderedIds);
+      toast.success('Đã cập nhật thứ tự Module!');
+      await fetchModules();
+    } catch (error: unknown) {
+      console.error('Lỗi sắp xếp Module:', error);
+      toast.error('Không thể sắp xếp lại Module!');
+    }
+  };
+
+  /**
+   * Sắp xếp lại thứ tự Lesson trong một Module cụ thể.
+   */
+  const handleReorderLessons = async (moduleId: number, orderedIds: number[]) => {
+    try {
+      await adminModuleService.reorderLessons(moduleId, orderedIds);
+      toast.success('Đã cập nhật thứ tự bài học!');
+      await fetchModules();
+    } catch (error: unknown) {
+      console.error('Lỗi sắp xếp Lesson:', error);
+      toast.error('Không thể sắp xếp lại bài học!');
+    }
+  };
+
+  return {
+    modules,
+    isLoading,
+    isSubmitting,
+    activeView,
+    currentLessonDetail,
+    isFormDirty,
+    setIsFormDirty,
+    fetchModules,
+    navigateView,
+    handleSaveModule,
+    handleDeleteModule,
+    handleSaveLesson,
+    handleDeleteLesson,
+    handleSaveLessonScripts,
+    handleSavePracticeQuestions,
+    handleReorderModules,
+    handleReorderLessons,
+  };
+};

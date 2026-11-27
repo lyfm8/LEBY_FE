@@ -1,0 +1,594 @@
+/* =============================================================================
+   THRESHOLD PAGE & MATRIX STYLES - LEBY PLATFORM
+   ============================================================================= */
+
+/* Tabs Navigation */
+.threshold-tabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #6b7280;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab-btn:hover {
+  color: #111827;
+}
+
+.tab-btn.tab-active {
+  color: #ea580c;
+  border-bottom-color: #ea580c;
+  font-weight: 600;
+}
+
+/* Toolbar & Filters */
+.matrix-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.matrix-filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.filter-group,
+.search-group {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.filter-group .filter-icon,
+.search-group .search-icon {
+  position: absolute;
+  left: 0.75rem;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+.filter-group select.select-input {
+  padding-left: 2.25rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  height: 2.375rem;
+}
+
+.search-group input.search-input {
+  padding-left: 2.25rem;
+  padding-right: 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  height: 2.375rem;
+  width: 14rem;
+}
+
+/* Dirty Action Bar */
+.dirty-actions-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background-color: #fffbeb;
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #fef3c7;
+}
+
+.dirty-notice {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: #92400e;
+}
+
+/* Matrix Table Layout & Sticky Columns */
+.matrix-scroll-wrapper {
+  max-height: 65vh;
+  overflow: auto;
+  position: relative;
+}
+
+.matrix-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+.matrix-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f9fafb;
+  z-index: 10;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.matrix-table thead th.sticky-col {
+  z-index: 20;
+}
+
+.sticky-col {
+  position: sticky;
+  background-color: #ffffff;
+  z-index: 5;
+}
+
+.col-seq {
+  left: 0;
+  width: 3.75rem;
+  min-width: 3.75rem;
+  max-width: 3.75rem;
+  text-align: center;
+  border-right: 1px solid #e5e7eb;
+  padding: 0.875rem 0.5rem !important;
+}
+
+.col-title {
+  left: 3.75rem;
+  min-width: 18rem;
+  max-width: 24rem;
+  border-right: 2px solid #e5e7eb;
+  padding: 0.875rem 1.25rem !important;
+}
+
+.module-title-cell {
+  display: block;
+  font-weight: 500;
+  color: #111827;
+  line-height: 1.45;
+  word-break: break-word;
+}
+
+.col-part {
+  width: 14rem;
+  min-width: 12rem;
+  padding: 0.875rem 1.25rem !important;
+}
+
+.col-default {
+  width: 7rem;
+  min-width: 6rem;
+  text-align: center;
+  padding: 0.875rem 1rem !important;
+}
+
+.col-aim {
+  width: 6.5rem;
+  min-width: 6.5rem;
+  text-align: center;
+  padding: 0.875rem 0.75rem !important;
+}
+
+/* AIM Badge đồng bộ toàn trang */
+.aim-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #ea580c;
+  background-color: #fff7ed;
+  border: 1px solid #ffedd5;
+  border-radius: 9999px;
+  white-space: nowrap;
+  letter-spacing: 0.025em;
+}
+
+.aim-header-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.aim-name {
+  font-weight: 700;
+  color: #ea580c;
+  font-size: 0.8125rem;
+  letter-spacing: 0.025em;
+  white-space: nowrap;
+}
+
+/* Matrix Cells */
+.matrix-cell {
+  padding: 0.5rem !important;
+  text-align: center;
+  transition: background-color 0.15s ease;
+}
+
+.cell-inherited {
+  background-color: #ffffff;
+}
+
+.cell-custom {
+  background-color: #f0fdf4; /* Xanh lá nhạt biểu thị tùy biến */
+}
+
+.cell-dirty {
+  background-color: #fffbeb !important; /* Vàng nhạt biểu thị đang sửa đổi */
+}
+
+.cell-input-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.matrix-cell-input {
+  width: 3.75rem;
+  height: 2.125rem;
+  text-align: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  border-radius: 0.375rem;
+  border: 1px solid #d1d5db;
+  outline: none;
+  background-color: transparent;
+  transition: all 0.15s ease;
+}
+
+.matrix-cell-input:focus {
+  border-color: #ea580c;
+  box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.2);
+  background-color: #ffffff;
+}
+
+.cell-dirty .matrix-cell-input {
+  border-color: #f59e0b;
+  background-color: #fffbeb;
+  color: #b45309;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+.btn-cell-reset {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 0.25rem;
+  background-color: #ffffff;
+  border: 1px solid #cbd5e1;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  opacity: 0;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  z-index: 10;
+}
+
+.cell-input-wrapper:hover .btn-cell-reset {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.btn-cell-reset:hover {
+  background-color: #fff7ed;
+  border-color: #ea580c;
+  color: #ea580c;
+  transform: scale(1.08);
+}
+
+/* Matrix Legend */
+.matrix-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.75rem 1.5rem;
+  background-color: #f9fafb;
+  border-top: 1px solid #f3f4f6;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.legend-color-box {
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 0.25rem;
+  border: 1px solid #d1d5db;
+}
+
+/* Visual Diagram for Modal */
+.threshold-visual-diagram {
+  background-color: #f9fafb;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid #e5e7eb;
+  margin-bottom: 1.25rem;
+}
+
+.visual-diagram-header {
+  margin-bottom: 0.5rem;
+}
+
+.visual-range-bar {
+  display: flex;
+  height: 1.75rem;
+  border-radius: 0.375rem;
+  overflow: hidden;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.range-segment {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding: 0 0.25rem;
+  transition: width 0.2s ease;
+}
+
+.segment-weak {
+  background-color: #f59e0b;
+}
+
+.segment-developing {
+  background-color: #3b82f6;
+}
+
+.segment-stable {
+  background-color: #10b981;
+}
+
+.segment-fullpart {
+  background-color: #ef4444;
+}
+
+.segment-confirm {
+  background-color: #06b6d4;
+}
+
+.segment-pass {
+  background-color: #10b981;
+}
+
+.visual-markers {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.375rem;
+  font-size: 0.6875rem;
+  color: #9ca3af;
+  height: 1.25rem;
+}
+
+.marker-pin {
+  position: absolute;
+  transform: translateX(-50%);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  white-space: nowrap;
+}
+
+.marker-weak {
+  color: #d97706;
+}
+
+.marker-stable {
+  color: #059669;
+}
+
+.marker-fullpart {
+  color: #dc2626;
+}
+
+.marker-confirm {
+  color: #0284c7;
+}
+
+.marker-pass {
+  color: #059669;
+}
+
+/* Form Layout Grids */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .form-grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .form-grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.field-hint {
+  display: block;
+  font-size: 0.6875rem;
+  color: #6b7280;
+  margin-top: 0.25rem;
+}
+
+/* Section Header đồng bộ giữa các Tab */
+.threshold-table-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+  background-color: #ffffff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.table-section-title {
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: #1f2937;
+}
+
+.table-section-desc {
+  font-size: 0.8125rem;
+  color: #6b7280;
+  margin: 0.25rem 0 0 0;
+  line-height: 1.4;
+}
+
+/* Đảm bảo bảng trong các Tab có padding đồng bộ và không bị dính viền */
+.threshold-table-wrapper {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.threshold-tab-content .admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.threshold-tab-content .admin-table th {
+  padding: 0.875rem 1.25rem;
+  background-color: #f9fafb;
+  color: #4b5563;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.threshold-tab-content .admin-table td {
+  padding: 0.875rem 1.25rem;
+  font-size: 0.875rem;
+  color: #374151;
+  border-bottom: 1px solid #f3f4f6;
+  vertical-align: middle;
+}
+
+.threshold-tab-content .admin-table tbody tr:hover td {
+  background-color: #f9fafb;
+}
+
+.action-col {
+  width: 6rem;
+}
+
+.matrix-loading-state,
+.matrix-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 3rem 1rem;
+  color: #6b7280;
+}
+
+.badge-default {
+  background-color: #f3f4f6;
+  color: #374151;
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+/* Toast Notification Banner */
+.threshold-toast-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.threshold-toast-banner.toast-success {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.threshold-toast-banner.toast-error {
+  background-color: #fef2f2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+.toast-close-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.7;
+  display: flex;
+  align-items: center;
+  padding: 0.25rem;
+}
+
+.toast-close-btn:hover {
+  opacity: 1;
+}
