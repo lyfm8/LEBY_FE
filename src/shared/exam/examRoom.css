@@ -1035,6 +1035,47 @@
     letter-spacing: 0.03em;
 }
 
+.diag-palette-parts {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.diag-palette-part-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.diag-palette-part-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.diag-palette-part-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #334155;
+    line-height: 1.3;
+}
+
+.diag-palette-part-count {
+    font-size: 11px;
+    font-weight: 700;
+    color: #ea580c;
+    background-color: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 1px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
 .diag-palette-grid {
     display: grid;
     grid-template-columns: repeat(5, minmax(0, 1fr));

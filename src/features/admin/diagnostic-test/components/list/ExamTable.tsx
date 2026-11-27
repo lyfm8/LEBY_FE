@@ -91,7 +91,23 @@ export const ExamTable: React.FC<ExamTableProps> = ({
                     {exam.testType === 'DIAGNOSTIC' ? (
                       <span className="badge-diagnostic">Chẩn đoán</span>
                     ) : (
-                      <span className="badge-mock">Thi thử</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                        <span className="badge-mock">Thi thử</span>
+                        {/* Gắn nhãn phụ phân biệt đề đầu ra OUTPUT với đề luyện tập PRACTICE */}
+                        <span
+                          style={{
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            padding: '2px 8px',
+                            borderRadius: '999px',
+                            backgroundColor: exam.examTag === 'OUTPUT' ? '#EFF6FF' : '#F1F5F9',
+                            color: exam.examTag === 'OUTPUT' ? '#1D4ED8' : '#475569',
+                            border: exam.examTag === 'OUTPUT' ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
+                          }}
+                        >
+                          {exam.examTag === 'OUTPUT' ? 'Đầu ra' : 'Luyện tập'}
+                        </span>
+                      </div>
                     )}
                   </td>
 

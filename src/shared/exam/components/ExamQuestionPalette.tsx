@@ -13,6 +13,8 @@ interface ExamQuestionPaletteProps<TQuestion extends BaseExamQuestion = BaseExam
     isListeningCompleted: boolean;
     mode?: ExamRoomMode;
     isReviewMode?: boolean;
+    /** Bật nhóm câu hỏi theo từng Part (Part 1-7) cho đề thi ETS 200 câu */
+    groupByPart?: boolean;
     reviewStatusMap?: Record<number, boolean>;
     revealedOrderNos?: Set<number>;
     onToggleCollapse: () => void;
@@ -34,6 +36,7 @@ export function ExamQuestionPalette<TQuestion extends BaseExamQuestion = BaseExa
     isListeningCompleted,
     mode,
     isReviewMode = false,
+    groupByPart = false,
     reviewStatusMap,
     revealedOrderNos,
     onToggleCollapse,
@@ -93,6 +96,29 @@ export function ExamQuestionPalette<TQuestion extends BaseExamQuestion = BaseExa
         const reading = sorted.filter((q) => q.section === 'READING' && matchesFilter(q));
         return { listeningQuestions: listening, readingQuestions: reading };
     }, [questions, answers, flagged, activeFilter, reviewStatusMap, isReviewLike, revealedOrderNos]);
+
+    // Tính tổng số câu và số câu đã làm/đúng theo từng Part phục vụ hiển thị tiêu đề nhóm Part 1-7
+    const partProgressMap = useMemo(() => {
+        // Khởi tạo bản đồ thống kê tiến độ cho từng mã Part
+        const stats = new Map<number, { done: number; total: number }>();
+        // Duyệt toàn bộ danh sách câu hỏi gốc để đếm số lượng theo Part bất kể bộ lọc hiện tại
+        for (const q of questions) {
+            // Lấy thống kê hiện có hoặc tạo mới cho partNo hiện tại
+            const entry = stats.get(q.partNo) ?? { done: 0, total: 0 };
+            // Tăng tổng số câu thuộc Part này thêm 1
+            entry.total += 1;
+            // Kiểm tra câu đã có đáp án (khi làm bài) hoặc trả lời đúng (khi xem lại)
+            const isItemDone = isReviewLike
+                ? Boolean(reviewStatusMap?.[q.orderNo])
+                : answers[q.orderNo] !== null && answers[q.orderNo] !== undefined;
+            // Cộng dồn số câu đạt yêu cầu vào bộ đếm
+            if (isItemDone) entry.done += 1;
+            // Cập nhật lại giá trị thống kê cho Part vào Map
+            stats.set(q.partNo, entry);
+        }
+        // Trả về Map thống kê hoàn chỉnh
+        return stats;
+    }, [questions, answers, reviewStatusMap, isReviewLike]);
 
     if (isCollapsed) {
         return (
@@ -174,6 +200,66 @@ export function ExamQuestionPalette<TQuestion extends BaseExamQuestion = BaseExa
             })}
         </div>
     );
+
+    // Hiển thị lưới câu hỏi theo từng Part 1-7 nếu bật groupByPart, ngược lại giữ bố cục phẳng theo Section
+    const renderSectionContent = (sectionQuestions: TQuestion[], isSectionLocked: boolean) => {
+        // Khi không bật chế độ phân nhóm theo Part, render thẳng một lưới phẳng như Diagnostic
+        if (!groupByPart) {
+            // Trả về lưới câu hỏi liền mạch của khu vực hiện tại
+            return renderSectionGrid(sectionQuestions, isSectionLocked);
+        }
+
+        // Gom các câu hỏi cùng Part vào danh sách có thứ tự tăng dần theo partNo
+        const partGroups: { partNo: number; partName: string; items: TQuestion[] }[] = [];
+        // Dùng Map phụ để tra cứu nhanh nhóm Part đã khởi tạo
+        const groupMap = new Map<number, { partNo: number; partName: string; items: TQuestion[] }>();
+        // Duyệt từng câu hỏi đã lọc để phân bổ vào đúng nhóm Part
+        for (const q of sectionQuestions) {
+            // Tìm nhóm Part tương ứng theo partNo
+            let group = groupMap.get(q.partNo);
+            // Nếu chưa tồn tại nhóm thì khởi tạo nhóm mới kèm tên Part chuẩn
+            if (!group) {
+                // Tạo tên hiển thị ưu tiên partName từ API hoặc fallback Part {n}
+                const label = q.partName?.trim() || `Part ${q.partNo}`;
+                // Khởi tạo đối tượng nhóm Part mới
+                group = { partNo: q.partNo, partName: label, items: [] };
+                // Lưu nhóm vào Map tra cứu nhanh
+                groupMap.set(q.partNo, group);
+                // Đưa nhóm vào danh sách kết quả theo thứ tự xuất hiện
+                partGroups.push(group);
+            }
+            // Thêm câu hỏi hiện tại vào danh sách của nhóm Part
+            group.items.push(q);
+        }
+
+        // Render danh sách các khối Part kèm tiêu đề số lượng hoàn thành
+        return (
+            <div className="diag-palette-parts">
+                {partGroups.map((group) => {
+                    // Lấy thống kê tiến độ tổng thể của Part từ partProgressMap
+                    const progress = partProgressMap.get(group.partNo);
+                    // Xác định nhãn ngắn cho Part để tránh trùng lặp chữ Part nếu tên đã chứa sẵn
+                    const heading = group.partName.toLowerCase().startsWith('part')
+                        ? group.partName
+                        : `Part ${group.partNo}: ${group.partName}`;
+                    // Render từng khối Part cùng lưới nút số câu bên trong
+                    return (
+                        <div key={group.partNo} className="diag-palette-part-group">
+                            <div className="diag-palette-part-header">
+                                <span className="diag-palette-part-title">{heading}</span>
+                                {progress && (
+                                    <span className="diag-palette-part-count">
+                                        {progress.done}/{progress.total}
+                                    </span>
+                                )}
+                            </div>
+                            {renderSectionGrid(group.items, isSectionLocked)}
+                        </div>
+                    );
+                })}
+            </div>
+        );
+    };
 
     const hasVisibleItems = listeningQuestions.length > 0 || readingQuestions.length > 0;
     const isNavigationLocked = !isReviewLike && !isPractice && !isListeningCompleted;
@@ -333,7 +419,7 @@ export function ExamQuestionPalette<TQuestion extends BaseExamQuestion = BaseExa
                             <div className="diag-palette-section__header">
                                 <span className="diag-palette-section__title">Phần Nghe (Listening)</span>
                             </div>
-                            {renderSectionGrid(listeningQuestions, isNavigationLocked)}
+                            {renderSectionContent(listeningQuestions, isNavigationLocked)}
                         </div>
                     )}
 
@@ -342,7 +428,7 @@ export function ExamQuestionPalette<TQuestion extends BaseExamQuestion = BaseExa
                             <div className="diag-palette-section__header">
                                 <span className="diag-palette-section__title">Phần Đọc (Reading)</span>
                             </div>
-                            {renderSectionGrid(readingQuestions, isNavigationLocked)}
+                            {renderSectionContent(readingQuestions, isNavigationLocked)}
                         </div>
                     )}
                 </div>

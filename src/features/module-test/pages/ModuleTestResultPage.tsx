@@ -132,6 +132,20 @@ export default function ModuleTestResultPage() {
                     </div>
                 )}
 
+                {/* Hiển thị thông báo mở khóa Đề thi thử đầu ra ETS 200 câu khi học viên hoàn tất mô-đun cuối cùng */}
+                {report.isPassed && report.isRoadmapCompleted && (
+                    <div className="modtest-unlock-banner is-next-module">
+                        <Unlock size={20} />
+                        <div>
+                            <strong>Chúc mừng! Bạn đã hoàn thành toàn bộ lộ trình học tập!</strong>
+                            <p>
+                                Đề thi thử đầu ra ETS 200 câu (UC17 &amp; UC18) đã được mở khóa để
+                                bạn kiểm chứng kết quả và so sánh năng lực Trước &amp; Sau lộ trình.
+                            </p>
+                        </div>
+                    </div>
+                )}
+
                 <div className="report-top-grid">
                     <ResultScoreCard report={report} />
                     <ResultMetricsGrid metrics={report.metrics} />
@@ -141,7 +155,12 @@ export default function ModuleTestResultPage() {
 
                 <footer className="report-actions-bar">
                     <div className="report-actions-row">
-                        {report.isPassed && report.nextModuleId !== null ? (
+                        {report.isPassed && report.isRoadmapCompleted ? (
+                            // Đưa học viên thẳng tới Phòng thi thử đầu ra ETS khi đã xong toàn bộ lộ trình
+                            <Link to="/mock-exam" className="report-btn-primary">
+                                Làm bài thi thử đầu ra ETS 200 câu
+                            </Link>
+                        ) : report.isPassed && report.nextModuleId !== null ? (
                             <Link to={`/modules/${report.nextModuleId}`} className="report-btn-primary">
                                 Học mô-đun tiếp theo
                             </Link>
