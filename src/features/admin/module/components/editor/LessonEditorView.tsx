@@ -1,15 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useForm, type Resolver } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { lessonFormSchema, type LessonFormValues } from '../../utils/schema';
-import type { LessonResponse, CreateLessonRequest, LessonScriptDto } from '../../types';
-import type { AbilityResponse } from '@/features/admin/part/types';
+import type { LessonResponse, CreateLessonRequest, PracticeQuestionItemDto } from '../../types';
+import type { AbilityResponse, PartResponse } from '@/features/admin/part/types';
 import { LessonContentTab } from './LessonContentTab';
-import { LessonScriptTab } from './LessonScriptTab';
 import { LessonReviewQuestionsTab } from './LessonReviewQuestionsTab';
 import {
   BookOpen,
-  FileText,
   FileQuestion,
   Save,
   RotateCcw,
@@ -21,31 +19,38 @@ interface LessonEditorViewProps {
   lessonId?: number;
   moduleId: number;
   moduleTitle?: string;
+  modulePartId?: number | null;
+  moduleAbilityIds?: number[];
   existingLesson?: LessonResponse | null;
+  parts: PartResponse[];
   abilities: AbilityResponse[];
   onSaveLesson: (data: CreateLessonRequest, isEdit: boolean, id?: number) => Promise<void>;
-  onSaveScripts: (lessonId: number, scripts: LessonScriptDto[]) => Promise<void>;
+  onSavePracticeQuestions: (lessonId: number, items: PracticeQuestionItemDto[]) => Promise<void>;
   onCancel: () => void;
   onDeleteLesson?: (id: number) => void;
   isSubmitting: boolean;
 }
 
-type TabType = 'CONTENT' | 'SCRIPT' | 'QUESTIONS';
+type TabType = 'CONTENT' | 'QUESTIONS';
 
 export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
   lessonId,
   moduleTitle,
+  modulePartId,
+  moduleAbilityIds = [],
   existingLesson,
+  parts,
   abilities,
   onSaveLesson,
-  onSaveScripts,
+  onSavePracticeQuestions,
   onCancel,
   onDeleteLesson,
   isSubmitting,
 }) => {
   const isEdit = !!lessonId && !!existingLesson;
   const [activeTab, setActiveTab] = useState<TabType>('CONTENT');
-  const [isSavingScripts, setIsSavingScripts] = useState<boolean>(false);
+  // Cờ trạng thái đang lưu bộ câu hỏi luyện tập
+  const [isSavingQuestions, setIsSavingQuestions] = useState<boolean>(false);
   const toast = useToast();
 
   const form = useForm<LessonFormValues>({
@@ -118,20 +123,45 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
     await onSaveLesson(payload, isEdit, lessonId);
   };
 
-  const handleSaveScriptsLocal = async (scripts: LessonScriptDto[]) => {
+  /**
+   * Wrapper lưu bộ câu hỏi luyện tập kèm quản lý trạng thái loading cục bộ.
+   */
+  const handleSavePracticeQuestionsLocal = async (items: PracticeQuestionItemDto[]) => {
+    // Chặn lưu nếu bài học chưa được khởi tạo trên DB
     if (!lessonId) {
-      toast.error('Vui lòng lưu bài học trước khi lưu kịch bản phụ đề.');
+      toast.error('Vui lòng lưu bài học trước khi gắn câu hỏi luyện tập.');
       return;
     }
-    setIsSavingScripts(true);
+    // Bật trạng thái loading cho nút Lưu
+    setIsSavingQuestions(true);
     try {
-      await onSaveScripts(lessonId, scripts);
+      // Gọi callback lưu lên useModuleLessonEditor
+      await onSavePracticeQuestions(lessonId, items);
     } finally {
-      setIsSavingScripts(false);
+      // Tắt trạng thái loading sau khi hoàn tất
+      setIsSavingQuestions(false);
     }
   };
 
   const currentStatus = watch('status');
+  // Theo dõi loại bài học hiện tại (VIDEO hoặc PRACTICE)
+  const currentLessonType = watch('lessonType');
+  // Lấy thông tin Part hiện tại để suy ra section (LISTENING/READING) dự phòng nếu existingLesson chưa có
+  const resolvedPartId = existingLesson?.partId ?? modulePartId ?? null;
+  const resolvedPart = parts.find((p) => p.id === resolvedPartId);
+  const resolvedSection = existingLesson?.section ?? (resolvedPart?.sections as 'LISTENING' | 'READING' | undefined) ?? null;
+  const practiceQuestionsList = existingLesson?.practiceQuestions ?? [];
+
+  // Siết phân cấp Ability: chỉ hiển thị các Ability thuộc mô-đun hiện tại (fallback theo Part nếu mô-đun chưa chọn Ability)
+  const scopedAbilities = useMemo(() => {
+    if (moduleAbilityIds.length > 0) {
+      return abilities.filter((ab) => moduleAbilityIds.includes(ab.id));
+    }
+    if (resolvedPartId) {
+      return abilities.filter((ab) => ab.partId === resolvedPartId);
+    }
+    return abilities;
+  }, [abilities, moduleAbilityIds, resolvedPartId]);
 
   return (
     <div className="editor-pane-container">
@@ -198,7 +228,7 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
         </div>
       </div>
 
-      {/* 2. Navigation Horizontal Tabs */}
+      {/* 2. Navigation Horizontal Tabs (Thống nhất 2 Tab cho cả Video bài giảng và Bài thực hành) */}
       <div className="lesson-editor-tabs-bar">
         <button
           type="button"
@@ -206,19 +236,7 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
           onClick={() => setActiveTab('CONTENT')}
         >
           <BookOpen size={16} />
-          <span>Nội dung bài giảng</span>
-        </button>
-
-        <button
-          type="button"
-          className={`tab-item-btn ${activeTab === 'SCRIPT' ? 'active' : ''}`}
-          onClick={() => setActiveTab('SCRIPT')}
-        >
-          <FileText size={16} />
-          <span>Script (Phụ đề nghe)</span>
-          {existingLesson?.scripts && existingLesson.scripts.length > 0 && (
-            <span className="tab-count-badge">{existingLesson.scripts.length}</span>
-          )}
+          <span>{currentLessonType === 'VIDEO' ? 'Nội dung bài giảng' : 'Thông tin chung'}</span>
         </button>
 
         <button
@@ -227,29 +245,34 @@ export const LessonEditorView: React.FC<LessonEditorViewProps> = ({
           onClick={() => setActiveTab('QUESTIONS')}
         >
           <FileQuestion size={16} />
-          <span>Câu hỏi ôn tập</span>
-          <span className="tab-future-tag">Mới</span>
+          <span>{currentLessonType === 'PRACTICE' ? 'Câu hỏi luyện tập' : 'Câu hỏi ôn tập'}</span>
+          {practiceQuestionsList.length > 0 && (
+            <span className="tab-count-badge">{practiceQuestionsList.length}</span>
+          )}
         </button>
       </div>
 
       {/* 3. Tab Contents */}
       <div className="editor-pane-body">
         {activeTab === 'CONTENT' && (
-          <LessonContentTab form={form} abilities={abilities} />
+          <LessonContentTab form={form} abilities={scopedAbilities} />
         )}
 
-        {activeTab === 'SCRIPT' && (
-          <LessonScriptTab
-            lessonId={lessonId || 0}
-            audioUrl={watch('audioUrl')}
-            videoUrl={watch('videoUrl')}
-            initialScripts={existingLesson?.scripts || []}
-            onSaveScripts={handleSaveScriptsLocal}
-            isSaving={isSavingScripts}
+        {activeTab === 'QUESTIONS' && (
+          <LessonReviewQuestionsTab
+            lessonId={lessonId}
+            partId={resolvedPartId}
+            partName={existingLesson?.partName ?? resolvedPart?.name ?? null}
+            section={resolvedSection}
+            defaultAbilityId={watch('abilityId') ?? null}
+            parts={parts}
+            abilities={abilities}
+            scopedAbilities={scopedAbilities}
+            initialQuestions={practiceQuestionsList}
+            onSavePracticeQuestions={handleSavePracticeQuestionsLocal}
+            isSaving={isSavingQuestions}
           />
         )}
-
-        {activeTab === 'QUESTIONS' && <LessonReviewQuestionsTab />}
       </div>
     </div>
   );
