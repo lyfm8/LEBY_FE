@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { TargetHeader } from '../components/TargetHeader';
 import { TargetCard } from '../components/TargetCard';
@@ -179,6 +179,15 @@ export default function TargetSelectionPage() {
         }
     }
 
+    // Quay lại đúng trang trước đó khi học viên bấm Hủy (fallback về /learning-path nếu mở trực tiếp link)
+    function handleCancelClick() {
+        if (window.history.length > 1) {
+            navigate(-1);
+            return;
+        }
+        navigate('/learning-path');
+    }
+
     const selectedTarget = targets.find((t) => t.id === selectedId) ?? null;
 
     return (
@@ -224,9 +233,13 @@ export default function TargetSelectionPage() {
 
                         <div className="target-actions">
                             {!isFirstTime && (
-                                <Link to="/profile" className="target-cancel-btn">
+                                <button
+                                    type="button"
+                                    className="target-cancel-btn"
+                                    onClick={handleCancelClick}
+                                >
                                     Hủy &amp; quay lại
-                                </Link>
+                                </button>
                             )}
                             <button
                                 type="button"
