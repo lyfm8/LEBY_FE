@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MousePointerClick, LayoutGrid, UploadCloud } from 'lucide-react';
+import { MousePointerClick, LayoutGrid } from 'lucide-react';
 import type { ExamMatrixAvailability, ExamQuestionItem, ExamType } from '../../types';
 import type { ValidationResult } from '../../utils/checklistValidation';
 import { ManualPickerSection } from './ManualPickerSection';
@@ -75,13 +75,6 @@ export const Step2_Questions: React.FC<Step2Props> = ({
               <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <LayoutGrid size={15} />
                 <span>Tự động theo ma trận</span>
-              </span>
-            </button>
-
-            <button type="button" className="segmented-btn" disabled title="Tính năng sắp ra mắt">
-              <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <UploadCloud size={15} />
-                <span>Nhập từ file (Sắp ra mắt)</span>
               </span>
             </button>
           </div>
