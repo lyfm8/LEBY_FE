@@ -24,7 +24,7 @@ import {
 
 /** Trạng thái màn hình chặn khi chưa đủ điều kiện vào phòng thi. */
 export type RoomBlockState =
-    | { type: 'ALREADY_COMPLETED'; message: string }
+    | { type: 'ALREADY_COMPLETED'; message: string; canRetake: boolean }
     | { type: 'NO_ACTIVE_EXAM'; message: string }
     | { type: 'NO_TARGET'; message: string }
     | { type: 'ERROR'; message: string };
@@ -204,7 +204,7 @@ export function useDiagnosticRoom() {
     );
 
     // Chuyển đổi mã lỗi từ Backend sang màn hình thông báo chặn thân thiện
-    const applyErrorBlockState = useCallback((err: unknown) => {
+    const applyErrorBlockState = useCallback(async (err: unknown) => {
         // Kiểm tra lỗi trả về từ Axios
         if (axios.isAxiosError(err)) {
             // Trích xuất code và message chuẩn hóa từ ApiResponse của BE
@@ -212,13 +212,32 @@ export function useDiagnosticRoom() {
             const errCode = data?.code;
             const errMsg = data?.message;
 
-            // Trường hợp học viên đã hoàn thành bài chẩn đoán ở mục tiêu AIM này (BR02)
-            if (errCode === 'DIAGNOSTIC_ALREADY_COMPLETED') {
+            if (errCode === 'DIAGNOSTIC_RETAKE_LOCKED_AFTER_REVIEW') {
                 setBlockState({
                     type: 'ALREADY_COMPLETED',
+                    canRetake: false,
                     message:
                         errMsg ||
-                        'Bạn đã hoàn thành bài thi chẩn đoán cho mục tiêu này. Vui lòng xem lại báo cáo, vào lộ trình học hoặc chọn làm lại bài thi mới.',
+                        'Bạn đã xem đáp án chi tiết của bài thi chẩn đoán nên không thể làm lại bài thi.',
+                });
+                return;
+            }
+
+            // Trường hợp học viên đã hoàn thành bài chẩn đoán (không cho thi lại khi đổi AIM hay đổi đề)
+            if (errCode === 'DIAGNOSTIC_ALREADY_COMPLETED') {
+                let canRetake = false;
+                try {
+                    const latestRes = await diagnosticService.getLatestResults();
+                    canRetake = Boolean(latestRes.success && latestRes.data?.canRetakeDiagnostic);
+                } catch {
+                    canRetake = false;
+                }
+                setBlockState({
+                    type: 'ALREADY_COMPLETED',
+                    canRetake,
+                    message:
+                        errMsg ||
+                        'Bạn đã hoàn thành bài thi chẩn đoán. Hệ thống tự động cập nhật lộ trình từ kết quả hiện có.',
                 });
                 return;
             }
@@ -350,7 +369,7 @@ export function useDiagnosticRoom() {
                 // Bỏ qua nếu component đã unmount
                 if (!isMounted) return;
                 // Hiển thị màn hình trạng thái tương ứng mã lỗi
-                applyErrorBlockState(err);
+                await applyErrorBlockState(err);
             } finally {
                 // Giải phóng lock khởi tạo phòng thi
                 inFlightRoomInit = null;
@@ -669,10 +688,19 @@ export function useDiagnosticRoom() {
         } catch (err: unknown) {
             // Đóng modal xác nhận và hiển thị lỗi nếu không khởi tạo được
             setIsRetakeConfirmOpen(false);
-            const serverMsg = axios.isAxiosError(err)
-                ? (err.response?.data as { message?: string } | undefined)?.message
+            const data = axios.isAxiosError(err)
+                ? (err.response?.data as { code?: string; message?: string } | undefined)
                 : undefined;
-            setSubmitError(serverMsg || 'Không thể bắt đầu lại bài thi chẩn đoán. Vui lòng thử lại.');
+            if (data?.code === 'DIAGNOSTIC_RETAKE_LOCKED_AFTER_REVIEW') {
+                setBlockState((prev) =>
+                    prev?.type === 'ALREADY_COMPLETED'
+                        ? { ...prev, canRetake: false }
+                        : prev
+                );
+            }
+            setSubmitError(
+                data?.message || 'Không thể bắt đầu lại bài thi chẩn đoán. Vui lòng thử lại.'
+            );
         } finally {
             // Tắt trạng thái loading làm lại
             setIsRetaking(false);
