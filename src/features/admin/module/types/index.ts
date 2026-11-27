@@ -5,6 +5,135 @@
 export type ModuleType = 'THEORY' | 'PRACTICE' | 'EXAM';
 export type LessonType = 'VIDEO' | 'PRACTICE';
 export type StatusType = 'PUBLISHED' | 'DRAFT' | 'ARCHIVED';
+export type SectionType = 'LISTENING' | 'READING';
+export type QuestionStructureFilter = 'ALL' | 'STANDALONE' | 'GROUP';
+
+export interface PracticeQuestionResponse {
+  id?: number;
+  questionId: number;
+  orderNo: number;
+  points: number;
+  questionName: string;
+  questionSummary: string;
+  questionType: string;
+  partId: number | null;
+  partName: string | null;
+  section: SectionType | null;
+  difficulty: number | null;
+  parentId: number | null;
+  parentName: string | null;
+  abilityNames: string[];
+}
+
+export interface PracticeQuestionItemDto {
+  questionId: number;
+  orderNo: number;
+  points: number;
+}
+
+export interface SavePracticeQuestionsRequest {
+  items: PracticeQuestionItemDto[];
+}
+
+export interface QuestionBankItem {
+  id: number;
+  name: string;
+  summary: string;
+  type: string;
+  partId: number | null;
+  partName: string | null;
+  section: SectionType | null;
+  difficulty: number | null;
+  isGroup: boolean;
+  itemCount: number;
+  abilityNames: string[];
+  mediaKinds: string[];
+  updatedAt?: string;
+}
+
+export interface QuestionBankFilterParams {
+  page?: number;
+  size?: number;
+  keyword?: string;
+  section?: SectionType;
+  partId?: number;
+  abilityId?: number;
+  difficulty?: number;
+  structureType?: QuestionStructureFilter;
+}
+
+export interface QuestionDetailSubItem {
+  id: number;
+  name: string;
+  orderNo: number | null;
+  text: string;
+  difficulty: number | null;
+  abilities?: Array<{ id: number; name: string }>;
+}
+
+export interface QuestionDetailDto {
+  id: number;
+  name: string;
+  type: string;
+  partId: number | null;
+  partName: string | null;
+  section: SectionType | null;
+  difficulty: number | null;
+  text?: string | null;
+  isGroup?: boolean;
+  abilities?: Array<{ id: number; name: string }>;
+  subQuestions?: QuestionDetailSubItem[];
+}
+
+export interface QuestionMediaAttachItem {
+  mediaId: number;
+  orderNo: number;
+}
+
+export interface QuickCreateQuestionPayload {
+  name: string;
+  partId: number;
+  abilityIds: number[];
+  difficulty: number;
+  text: string;
+  options: Array<{ key: 'A' | 'B' | 'C' | 'D'; text: string }>;
+  correctKey: 'A' | 'B' | 'C' | 'D';
+  explanation?: {
+    transcript?: string;
+    analysis?: string;
+    translation?: string;
+    clue?: string;
+  };
+  medias?: QuestionMediaAttachItem[];
+  descriptions?: string;
+}
+
+export interface QuickCreateGroupSubItemPayload {
+  name: string;
+  orderNo: number;
+  text: string;
+  options: Array<{ key: 'A' | 'B' | 'C' | 'D'; text: string }>;
+  correctKey: 'A' | 'B' | 'C' | 'D';
+  abilityIds: number[];
+  difficulty: number;
+  explanation?: {
+    analysis?: string;
+    translation?: string;
+    clue?: string;
+  };
+}
+
+export interface QuickCreateQuestionGroupPayload {
+  name: string;
+  partId: number;
+  instruction?: string;
+  passage?: string;
+  transcript?: string;
+  translation?: string;
+  medias?: QuestionMediaAttachItem[];
+  items: QuickCreateGroupSubItemPayload[];
+  descriptions?: string;
+}
 
 export interface ModuleFilterParams {
   page?: number;
@@ -40,7 +169,12 @@ export interface LessonResponse {
   isFree?: boolean;
   moduleId?: number;
   moduleTitle?: string;
+  partId?: number | null;
+  partName?: string | null;
+  section?: SectionType | null;
   scripts?: LessonScriptDto[];
+  practiceQuestions?: PracticeQuestionResponse[];
+  practiceQuestionCount?: number;
 }
 
 export interface ModuleResponse {

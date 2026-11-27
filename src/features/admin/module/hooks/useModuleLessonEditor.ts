@@ -6,6 +6,7 @@ import type {
   CreateModuleRequest,
   CreateLessonRequest,
   LessonScriptDto,
+  PracticeQuestionItemDto,
 } from '../types';
 import { adminModuleService } from '../services/adminModuleService';
 import { useToast, useConfirm } from '@/core/ui';
@@ -254,6 +255,34 @@ export const useModuleLessonEditor = () => {
   };
 
   /**
+   * Lưu toàn bộ danh sách câu hỏi luyện tập (Tab 3 - UC A05) cho bài học đang mở.
+   *
+   * @param lessonId ID của bài học cần lưu bộ câu hỏi
+   * @param items    Danh sách câu hỏi kèm thứ tự hiển thị và điểm số
+   */
+  const handleSavePracticeQuestions = async (
+    lessonId: number,
+    items: PracticeQuestionItemDto[]
+  ) => {
+    try {
+      // Gọi API đồng bộ danh sách câu hỏi luyện tập lên Backend
+      const res = await adminModuleService.savePracticeQuestions(lessonId, items);
+      // Nếu lưu thành công và có dữ liệu chi tiết bài học trả về thì cập nhật state cục bộ
+      if (res.success && res.data) {
+        // Hiện thông báo lưu thành công cho giáo viên/quản trị viên
+        toast.success('Lưu bộ câu hỏi luyện tập thành công!');
+        // Cập nhật chi tiết bài học đang mở để Tab 3 và badge số lượng đồng bộ ngay
+        setCurrentLessonDetail(res.data);
+      }
+    } catch (error: unknown) {
+      // Hiển thị thông báo lỗi cụ thể từ Backend (ví dụ vượt quá 100 câu hoặc trùng lặp)
+      toast.error(extractErrorMessage(error, 'Không thể lưu bộ câu hỏi luyện tập. Vui lòng thử lại!'));
+      // Ném lại lỗi để component con biết thao tác chưa hoàn tất và giữ nguyên trạng thái dirty
+      throw error;
+    }
+  };
+
+  /**
    * Sắp xếp lại thứ tự Module bằng cách gửi mảng ID theo thứ tự mới.
    * Gọi API reorder rồi refresh danh sách để đồng bộ sequence từ BE.
    */
@@ -297,6 +326,7 @@ export const useModuleLessonEditor = () => {
     handleSaveLesson,
     handleDeleteLesson,
     handleSaveLessonScripts,
+    handleSavePracticeQuestions,
     handleReorderModules,
     handleReorderLessons,
   };

@@ -28,7 +28,7 @@ export const AdminModulePage: React.FC = () => {
     handleDeleteModule,
     handleSaveLesson,
     handleDeleteLesson,
-    handleSaveLessonScripts,
+    handleSavePracticeQuestions,
     handleReorderModules,
     handleReorderLessons,
   } = useModuleLessonEditor();
@@ -167,10 +167,13 @@ export const AdminModulePage: React.FC = () => {
               lessonId={activeView.type === 'LESSON_EDIT' ? activeView.lessonId : undefined}
               moduleId={activeView.moduleId}
               moduleTitle={activeModule?.title || 'Mô-đun'}
+              modulePartId={activeModule?.partId ?? null}
+              moduleAbilityIds={activeModule?.abilityIds ?? []}
               existingLesson={activeView.type === 'LESSON_EDIT' ? currentLessonDetail : null}
+              parts={parts}
               abilities={abilities}
               onSaveLesson={handleSaveLesson}
-              onSaveScripts={handleSaveLessonScripts}
+              onSavePracticeQuestions={handleSavePracticeQuestions}
               onCancel={() =>
                 navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
               }
