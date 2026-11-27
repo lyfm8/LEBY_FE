@@ -186,17 +186,20 @@ export const AdminModulePage: React.FC = () => {
             />
           )}
 
-          {/* VIEW 5: MODULE TEST PLACEHOLDER */}
+          {/* VIEW 5: CẤU HÌNH BÀI THI VƯỢT ẢI MODULE */}
           {activeView.type === 'MODULE_TEST' && (
             <ModuleTestView
               moduleId={activeView.moduleId}
               moduleTitle={activeModule?.title || 'Mô-đun'}
               passScore={activeModule?.defaultPassScore ?? 65}
               requiredCompletionRate={activeModule?.requiredCompletionRate ?? 80}
+              parts={parts}
+              abilities={abilities}
               onBack={() =>
                 navigateView({ type: 'MODULE_EDIT', moduleId: activeView.moduleId })
               }
               onOpenThresholds={() => navigateView({ type: 'MODULE_CONFIGS' })}
+              onSaved={() => void fetchModules()}
             />
           )}
         </section>
