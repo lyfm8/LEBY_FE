@@ -70,7 +70,7 @@ export default function ModuleTestReviewPage() {
                     <div className="diag-state-card__actions">
                         <button
                             type="button"
-                            className="diag-nav-btn is-prev"
+                            className="diag-action-btn is-outline"
                             onClick={handleBackToReport}
                         >
                             <ArrowLeft size={16} />
@@ -78,7 +78,7 @@ export default function ModuleTestReviewPage() {
                         </button>
                         <button
                             type="button"
-                            className="diag-nav-btn is-next"
+                            className="diag-action-btn is-submit"
                             onClick={() => void retryLoad()}
                         >
                             <RefreshCw size={16} />
@@ -106,59 +106,69 @@ export default function ModuleTestReviewPage() {
                 onBackToReport={handleBackToReport}
             />
 
-            <div
+            <main
                 className={`diag-room-layout ${isPaletteCollapsed ? 'is-palette-collapsed' : ''}`}
             >
-                <main className="diag-room-main">
-                    <div className="diag-question-area">
-                        {currentStep.audioUrl && (
-                            <ExamAudioPlayer
-                                stepKey={`review_${currentStep.audioKey ?? currentStep.stepIndex}`}
-                                src={currentStep.audioUrl}
-                                policy="UNLIMITED"
-                                allowSpeedControl={true}
-                                isLocked={false}
-                                isReviewMode={true}
-                                onAudioEnded={() => undefined}
-                            />
-                        )}
-
-                        <ExamQuestionCard
-                            step={currentStep}
-                            answers={answers}
-                            flagged={flagged}
-                            focusedOrderNo={focusedOrderNo}
-                            mode="REVIEW"
+                <section className="diag-main-column">
+                    {currentStep.audioUrl && (
+                        <ExamAudioPlayer
+                            stepKey={`review_${currentStep.audioKey ?? currentStep.stepIndex}`}
+                            src={currentStep.audioUrl}
+                            policy="UNLIMITED"
+                            allowSpeedControl={true}
+                            isLocked={false}
                             isReviewMode={true}
-                            reviewQuestionMap={reviewQuestionMap}
-                            onToggleFlag={handleToggleFlag}
+                            onAudioEnded={() => undefined}
                         />
+                    )}
 
-                        <footer className="diag-bottom-nav">
+                    <ExamQuestionCard
+                        step={currentStep}
+                        answers={answers}
+                        flagged={flagged}
+                        focusedOrderNo={focusedOrderNo}
+                        mode="REVIEW"
+                        isReviewMode={true}
+                        reviewQuestionMap={reviewQuestionMap}
+                        onToggleFlag={handleToggleFlag}
+                    />
+
+                    <footer className="diag-action-bar">
+                        <div className="diag-action-bar__left">
                             <button
                                 type="button"
-                                className="diag-nav-btn is-prev"
+                                className="diag-action-btn is-outline"
                                 onClick={handlePrevStep}
                                 disabled={isPrevDisabled}
                             >
-                                <ChevronLeft size={18} />
+                                <ChevronLeft size={16} />
                                 <span>Câu trước</span>
                             </button>
 
                             <button
                                 type="button"
-                                className="diag-nav-btn is-next"
+                                className="diag-action-btn is-outline"
                                 onClick={handleNextStep}
                                 disabled={isNextDisabled}
                             >
-                                <span>Câu tiếp theo</span>
-                                <ChevronRight size={18} />
+                                <span>Câu tiếp</span>
+                                <ChevronRight size={16} />
                             </button>
-                        </footer>
-                    </div>
-                </main>
+                        </div>
 
-                <aside className="diag-room-sidebar">
+                        <div className="diag-action-bar__right">
+                            <button
+                                type="button"
+                                className="diag-action-btn is-outline"
+                                onClick={handleBackToReport}
+                            >
+                                Quay lại báo cáo
+                            </button>
+                        </div>
+                    </footer>
+                </section>
+
+                <section className="diag-sidebar-column">
                     <ExamQuestionPalette
                         questions={reviewData.questions}
                         activeOrderNos={activeOrderNos}
@@ -172,8 +182,8 @@ export default function ModuleTestReviewPage() {
                         onToggleCollapse={togglePaletteCollapse}
                         onSelectQuestion={handleSelectQuestion}
                     />
-                </aside>
-            </div>
+                </section>
+            </main>
         </div>
     );
 }

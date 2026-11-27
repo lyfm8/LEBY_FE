@@ -82,14 +82,14 @@ export function PracticeRoomPage() {
                     </h2>
                     <p className="diag-state-card__desc">{errorState.message}</p>
                     <div className="diag-state-card__actions">
-                        <Link to={backToModuleUrl} className="diag-nav-btn is-prev">
+                        <Link to={backToModuleUrl} className="diag-action-btn is-outline">
                             <ArrowLeft size={16} />
                             <span>Quay lại mô-đun</span>
                         </Link>
                         {!isLocked && (
                             <button
                                 type="button"
-                                className="diag-nav-btn is-next"
+                                className="diag-action-btn is-submit"
                                 onClick={() => void retryLoad()}
                             >
                                 <RefreshCw size={16} />
@@ -117,7 +117,7 @@ export function PracticeRoomPage() {
                         Bài tập này đang được cập nhật câu hỏi. Vui lòng quay lại sau.
                     </p>
                     <div className="diag-state-card__actions">
-                        <Link to={backToModuleUrl} className="diag-nav-btn is-next">
+                        <Link to={backToModuleUrl} className="diag-action-btn is-submit">
                             <ArrowLeft size={16} />
                             <span>Quay lại mô-đun</span>
                         </Link>
@@ -142,63 +142,65 @@ export function PracticeRoomPage() {
                 backLabel="Quay lại mô-đun"
             />
 
-            <div
+            <main
                 className={`diag-room-layout ${
                     isPaletteCollapsed ? 'is-palette-collapsed' : ''
                 }`}
             >
-                <main className="diag-room-main">
-                    <div className="diag-question-area">
-                        {currentStep.audioUrl && (
-                            <ExamAudioPlayer
-                                stepKey={currentStep.audioKey ?? `practice_${currentStep.stepIndex}`}
-                                src={currentStep.audioUrl}
-                                policy="UNLIMITED"
-                                allowSpeedControl={true}
-                                isLocked={false}
-                                shouldAutoPlay={false}
-                                onAudioEnded={() => undefined}
-                            />
-                        )}
-
-                        <ExamQuestionCard
-                            step={currentStep}
-                            answers={answers}
-                            flagged={flagged}
-                            focusedOrderNo={focusedOrderNo}
-                            mode="PRACTICE"
-                            revealedOrderNos={revealedOrderNos}
-                            reviewQuestionMap={reviewQuestionMap}
-                            onSelectOption={handleSelectOption}
-                            onCheckAnswer={handleCheckAnswer}
-                            onToggleFlag={handleToggleFlag}
+                <section className="diag-main-column">
+                    {currentStep.audioUrl && (
+                        <ExamAudioPlayer
+                            stepKey={currentStep.audioKey ?? `practice_${currentStep.stepIndex}`}
+                            src={currentStep.audioUrl}
+                            policy="UNLIMITED"
+                            allowSpeedControl={true}
+                            isLocked={false}
+                            shouldAutoPlay={false}
+                            onAudioEnded={() => undefined}
                         />
+                    )}
 
-                        <footer className="diag-bottom-nav">
+                    <ExamQuestionCard
+                        step={currentStep}
+                        answers={answers}
+                        flagged={flagged}
+                        focusedOrderNo={focusedOrderNo}
+                        mode="PRACTICE"
+                        revealedOrderNos={revealedOrderNos}
+                        reviewQuestionMap={reviewQuestionMap}
+                        onSelectOption={handleSelectOption}
+                        onCheckAnswer={handleCheckAnswer}
+                        onToggleFlag={handleToggleFlag}
+                    />
+
+                    <footer className="diag-action-bar">
+                        <div className="diag-action-bar__left">
                             <button
                                 type="button"
-                                className="diag-nav-btn is-prev"
+                                className="diag-action-btn is-outline"
                                 onClick={handlePrevStep}
                                 disabled={isPrevDisabled}
+                                title="Quay lại câu trước"
                             >
-                                <ChevronLeft size={18} />
+                                <ChevronLeft size={16} />
                                 <span>Câu trước</span>
                             </button>
 
                             <button
                                 type="button"
-                                className="diag-nav-btn is-next"
+                                className="diag-action-btn is-outline"
                                 onClick={handleNextStep}
                                 disabled={isLastStep}
+                                title="Chuyển sang câu tiếp theo"
                             >
-                                <span>Câu tiếp theo</span>
-                                <ChevronRight size={18} />
+                                <span>Câu tiếp</span>
+                                <ChevronRight size={16} />
                             </button>
-                        </footer>
-                    </div>
-                </main>
+                        </div>
+                    </footer>
+                </section>
 
-                <aside className="diag-room-sidebar">
+                <section className="diag-sidebar-column">
                     <ExamQuestionPalette
                         questions={data.questions}
                         activeOrderNos={activeOrderNos}
@@ -212,8 +214,8 @@ export function PracticeRoomPage() {
                         onToggleCollapse={togglePaletteCollapse}
                         onSelectQuestion={handleSelectQuestionFromPalette}
                     />
-                </aside>
-            </div>
+                </section>
+            </main>
         </div>
     );
 }

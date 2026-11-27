@@ -9,7 +9,6 @@ import {
     PauseCircle,
     Play,
     RefreshCw,
-    Send,
     Volume2,
     WifiOff,
 } from 'lucide-react';
@@ -123,7 +122,7 @@ export default function ModuleTestRoomPage() {
                                     ? '/learning-path'
                                     : backToModuleUrl
                             }
-                            className="diag-nav-btn is-next"
+                            className="diag-action-btn is-submit"
                         >
                             <ArrowLeft size={16} />
                             <span>
@@ -135,7 +134,7 @@ export default function ModuleTestRoomPage() {
                         {!isLockedOrPrereq && (
                             <button
                                 type="button"
-                                className="diag-nav-btn is-prev"
+                                className="diag-action-btn is-outline"
                                 onClick={() => void retryInit()}
                             >
                                 <RefreshCw size={16} />
@@ -157,7 +156,7 @@ export default function ModuleTestRoomPage() {
                         Đề thi vượt ải hiện chưa có câu hỏi khả dụng. Vui lòng quay lại sau.
                     </p>
                     <div className="diag-state-card__actions">
-                        <Link to={backToModuleUrl} className="diag-nav-btn is-next">
+                        <Link to={backToModuleUrl} className="diag-action-btn is-submit">
                             <ArrowLeft size={16} />
                             <span>Quay lại mô-đun</span>
                         </Link>
@@ -217,77 +216,84 @@ export default function ModuleTestRoomPage() {
                 </div>
             )}
 
-            <div
+            <main
                 className={`diag-room-layout ${isPaletteCollapsed ? 'is-palette-collapsed' : ''}`}
             >
-                <main className="diag-room-main">
-                    <div className="diag-question-area">
-                        {currentStep.audioUrl && (
-                            <ExamAudioPlayer
-                                stepKey={currentStep.audioKey ?? `mod_${currentStep.stepIndex}`}
-                                src={currentStep.audioUrl}
-                                policy="ONCE"
-                                allowSpeedControl={false}
-                                isLocked={isCurrentAudioLocked}
-                                isPaused={isInteractionLocked}
-                                shouldAutoPlay={hasInteractedAudio}
-                                onUserStartedAudio={handleUserStartedAudio}
-                                onAudioEnded={() => handleAudioEnded(currentStep.audioKey)}
-                            />
-                        )}
-
-                        <ExamQuestionCard
-                            step={currentStep}
-                            answers={answers}
-                            flagged={flagged}
-                            focusedOrderNo={focusedOrderNo}
-                            disabled={isInteractionLocked}
-                            mode="EXAM"
-                            onSelectOption={handleSelectOption}
-                            onToggleFlag={handleToggleFlag}
+                <section className="diag-main-column">
+                    {currentStep.audioUrl && (
+                        <ExamAudioPlayer
+                            stepKey={currentStep.audioKey ?? `mod_${currentStep.stepIndex}`}
+                            src={currentStep.audioUrl}
+                            policy="ONCE"
+                            allowSpeedControl={false}
+                            isLocked={isCurrentAudioLocked}
+                            isPaused={isInteractionLocked}
+                            shouldAutoPlay={hasInteractedAudio}
+                            onUserStartedAudio={handleUserStartedAudio}
+                            onAudioEnded={() => handleAudioEnded(currentStep.audioKey)}
                         />
+                    )}
 
-                        <footer className="diag-bottom-nav">
+                    <ExamQuestionCard
+                        step={currentStep}
+                        answers={answers}
+                        flagged={flagged}
+                        focusedOrderNo={focusedOrderNo}
+                        disabled={isInteractionLocked}
+                        mode="EXAM"
+                        onSelectOption={handleSelectOption}
+                        onToggleFlag={handleToggleFlag}
+                    />
+
+                    <footer className="diag-action-bar">
+                        <div className="diag-action-bar__left">
                             <button
                                 type="button"
-                                className="diag-nav-btn is-prev"
+                                className="diag-action-btn is-outline"
                                 onClick={handlePrevStep}
                                 disabled={
                                     !isListeningCompleted || isPrevDisabled || isInteractionLocked
                                 }
+                                title={
+                                    !isListeningCompleted
+                                        ? 'Không thể chuyển câu khi phần Nghe chưa hoàn tất'
+                                        : 'Quay lại câu trước'
+                                }
                             >
-                                <ChevronLeft size={18} />
+                                <ChevronLeft size={16} />
                                 <span>Câu trước</span>
                             </button>
 
-                            <div className="modtest-footer-actions">
-                                {!isLastStep && (
-                                    <button
-                                        type="button"
-                                        className="diag-nav-btn is-next"
-                                        onClick={handleNextStep}
-                                        disabled={!isListeningCompleted || isInteractionLocked}
-                                    >
-                                        <span>Câu tiếp theo</span>
-                                        <ChevronRight size={18} />
-                                    </button>
-                                )}
+                            <button
+                                type="button"
+                                className="diag-action-btn is-outline"
+                                onClick={handleNextStep}
+                                disabled={!isListeningCompleted || isLastStep || isInteractionLocked}
+                                title={
+                                    !isListeningCompleted
+                                        ? 'Vui lòng nghe hết bản ghi âm để tự động chuyển câu'
+                                        : 'Chuyển sang câu tiếp theo'
+                                }
+                            >
+                                <span>Câu tiếp</span>
+                                <ChevronRight size={16} />
+                            </button>
+                        </div>
 
-                                <button
-                                    type="button"
-                                    className="diag-nav-btn is-submit"
-                                    onClick={openSubmitModal}
-                                    disabled={isSubmitting || isAutoSubmitting || isTimedOut}
-                                >
-                                    <Send size={16} />
-                                    <span>Nộp bài</span>
-                                </button>
-                            </div>
-                        </footer>
-                    </div>
-                </main>
+                        <div className="diag-action-bar__right">
+                            <button
+                                type="button"
+                                className="diag-action-btn is-submit"
+                                onClick={openSubmitModal}
+                                disabled={isSubmitting || isAutoSubmitting || isTimedOut}
+                            >
+                                Nộp bài thi
+                            </button>
+                        </div>
+                    </footer>
+                </section>
 
-                <aside className="diag-room-sidebar">
+                <section className="diag-sidebar-column">
                     <ExamQuestionPalette
                         questions={roomData.questions}
                         activeOrderNos={activeOrderNos}
@@ -299,8 +305,8 @@ export default function ModuleTestRoomPage() {
                         onToggleCollapse={togglePaletteCollapse}
                         onSelectQuestion={handleSelectQuestion}
                     />
-                </aside>
-            </div>
+                </section>
+            </main>
 
             {isPaused && (
                 <div className="diag-modal-backdrop" role="dialog" aria-modal="true">

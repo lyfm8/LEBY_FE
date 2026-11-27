@@ -16,10 +16,3 @@
     font-size: 13px;
     font-weight: 600;
 }
-
-.modtest-footer-actions {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    flex-wrap: wrap;
-}
