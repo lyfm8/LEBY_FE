@@ -67,15 +67,6 @@ function writePracticeDraft(
     }
 }
 
-function clearPracticeDraft(userId: number, lessonId: number): void {
-    removeLegacyPracticeDraft(lessonId);
-    try {
-        localStorage.removeItem(buildPracticeDraftKey(userId, lessonId));
-    } catch {
-        // Không xử lý thêm
-    }
-}
-
 function mapPracticeError(error: unknown): PracticeErrorState {
     const parsed = parseExamApiError(
         error,
@@ -148,7 +139,6 @@ export function usePracticeRoom(lessonIdParam?: string) {
     const [revealedOrderNos, setRevealedOrderNos] = useState<Set<number>>(new Set());
     const [flagged, setFlagged] = useState<Set<number>>(new Set());
     const [isPaletteCollapsed, setIsPaletteCollapsed] = useState<boolean>(false);
-    const [showSummary, setShowSummary] = useState<boolean>(false);
 
     const fetchPracticeRoom = useCallback(async () => {
         if (!lessonIdParam || !Number.isFinite(numericLessonId) || numericLessonId <= 0) {
@@ -164,7 +154,6 @@ export function usePracticeRoom(lessonIdParam?: string) {
         }
 
         setData(null);
-        setShowSummary(false);
         setFocusedOrderNo(null);
         setIsLoading(true);
         setErrorState(null);
@@ -301,24 +290,11 @@ export function usePracticeRoom(lessonIdParam?: string) {
         (orderNo: number) => {
             const targetStep = questionToStepMap.get(orderNo);
             if (targetStep === undefined) return;
-            setShowSummary(false);
             setFocusedOrderNo(orderNo);
             setCurrentStepIndex(targetStep);
         },
         [questionToStepMap]
     );
-
-    const handleResetPractice = useCallback(() => {
-        if (isValidUserId(userId) && Number.isFinite(numericLessonId)) {
-            clearPracticeDraft(userId, numericLessonId);
-        }
-        setAnswers({});
-        setRevealedOrderNos(new Set());
-        setFlagged(new Set());
-        setCurrentStepIndex(0);
-        setFocusedOrderNo(null);
-        setShowSummary(false);
-    }, [userId, numericLessonId]);
 
     const firstOrderNo = currentStep?.questions[0]?.orderNo ?? 1;
     const lastOrderNo = currentStep?.questions[currentStep.questions.length - 1]?.orderNo ?? firstOrderNo;
@@ -340,7 +316,6 @@ export function usePracticeRoom(lessonIdParam?: string) {
         reviewQuestionMap,
         reviewStatusMap,
         isPaletteCollapsed,
-        showSummary,
         isLoading,
         errorState,
         questionLabel,
@@ -348,8 +323,6 @@ export function usePracticeRoom(lessonIdParam?: string) {
         isPrevDisabled: currentStepIndex <= 0,
         isLastStep: steps.length > 0 && currentStepIndex === steps.length - 1,
         togglePaletteCollapse: () => setIsPaletteCollapsed((prev) => !prev),
-        openSummary: () => setShowSummary(true),
-        closeSummary: () => setShowSummary(false),
         retryLoad: fetchPracticeRoom,
         handleSelectOption,
         handleCheckAnswer,
@@ -357,6 +330,5 @@ export function usePracticeRoom(lessonIdParam?: string) {
         handlePrevStep,
         handleNextStep,
         handleSelectQuestionFromPalette,
-        handleResetPractice,
     };
 }

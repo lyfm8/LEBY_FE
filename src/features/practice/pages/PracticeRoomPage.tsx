@@ -2,7 +2,6 @@ import { Link, useParams } from 'react-router-dom';
 import {
     AlertTriangle,
     ArrowLeft,
-    BarChart3,
     BookOpen,
     ChevronLeft,
     ChevronRight,
@@ -13,7 +12,6 @@ import { ExamAudioPlayer } from '../../../shared/exam/components/ExamAudioPlayer
 import { ExamHeader } from '../../../shared/exam/components/ExamHeader';
 import { ExamQuestionCard } from '../../../shared/exam/components/ExamQuestionCard';
 import { ExamQuestionPalette } from '../../../shared/exam/components/ExamQuestionPalette';
-import { PracticeSummaryView } from '../components/PracticeSummaryView';
 import { usePracticeRoom } from '../hooks/usePracticeRoom';
 import '../practice.css';
 
@@ -21,7 +19,7 @@ import '../practice.css';
  * Phòng luyện tập bài thực hành theo mô-đun (UC12):
  * - Nghe không giới hạn số lần, hỗ trợ tua và tốc độ 0.8x / 1.0x / 1.2x (BR08).
  * - Di chuyển tự do giữa các câu, bấm "Kiểm tra đáp án" để xem đúng/sai và giải thích tức thì.
- * - Hỗ trợ đánh dấu câu hỏi cần ôn lại và tổng kết phiên luyện tập (Luồng 7 & 8a).
+ * - Hỗ trợ đánh dấu câu hỏi cần ôn lại (Flag).
  */
 export function PracticeRoomPage() {
     const { moduleId, lessonId } = useParams<{ moduleId?: string; lessonId: string }>();
@@ -37,7 +35,6 @@ export function PracticeRoomPage() {
         reviewQuestionMap,
         reviewStatusMap,
         isPaletteCollapsed,
-        showSummary,
         isLoading,
         errorState,
         questionLabel,
@@ -45,8 +42,6 @@ export function PracticeRoomPage() {
         isPrevDisabled,
         isLastStep,
         togglePaletteCollapse,
-        openSummary,
-        closeSummary,
         retryLoad,
         handleSelectOption,
         handleCheckAnswer,
@@ -54,7 +49,6 @@ export function PracticeRoomPage() {
         handlePrevStep,
         handleNextStep,
         handleSelectQuestionFromPalette,
-        handleResetPractice,
     } = usePracticeRoom(lessonId);
 
     const resolvedModuleId = moduleId ?? (data?.moduleId ? String(data.moduleId) : undefined);
@@ -148,106 +142,78 @@ export function PracticeRoomPage() {
                 backLabel="Quay lại mô-đun"
             />
 
-            {showSummary ? (
-                <PracticeSummaryView
-                    data={data}
-                    answers={answers}
-                    revealedOrderNos={revealedOrderNos}
-                    flagged={flagged}
-                    backToModuleUrl={backToModuleUrl}
-                    onBackToQuestions={closeSummary}
-                    onJumpToQuestion={handleSelectQuestionFromPalette}
-                    onToggleFlag={handleToggleFlag}
-                    onResetPractice={handleResetPractice}
-                />
-            ) : (
-                <div
-                    className={`diag-room-layout ${
-                        isPaletteCollapsed ? 'is-palette-collapsed' : ''
-                    }`}
-                >
-                    <main className="diag-room-main">
-                        <div className="diag-question-area">
-                            {currentStep.audioUrl && (
-                                <ExamAudioPlayer
-                                    stepKey={currentStep.audioKey ?? `practice_${currentStep.stepIndex}`}
-                                    src={currentStep.audioUrl}
-                                    policy="UNLIMITED"
-                                    allowSpeedControl={true}
-                                    isLocked={false}
-                                    shouldAutoPlay={false}
-                                    onAudioEnded={() => undefined}
-                                />
-                            )}
-
-                            <ExamQuestionCard
-                                step={currentStep}
-                                answers={answers}
-                                flagged={flagged}
-                                focusedOrderNo={focusedOrderNo}
-                                mode="PRACTICE"
-                                revealedOrderNos={revealedOrderNos}
-                                reviewQuestionMap={reviewQuestionMap}
-                                onSelectOption={handleSelectOption}
-                                onCheckAnswer={handleCheckAnswer}
-                                onToggleFlag={handleToggleFlag}
+            <div
+                className={`diag-room-layout ${
+                    isPaletteCollapsed ? 'is-palette-collapsed' : ''
+                }`}
+            >
+                <main className="diag-room-main">
+                    <div className="diag-question-area">
+                        {currentStep.audioUrl && (
+                            <ExamAudioPlayer
+                                stepKey={currentStep.audioKey ?? `practice_${currentStep.stepIndex}`}
+                                src={currentStep.audioUrl}
+                                policy="UNLIMITED"
+                                allowSpeedControl={true}
+                                isLocked={false}
+                                shouldAutoPlay={false}
+                                onAudioEnded={() => undefined}
                             />
+                        )}
 
-                            <footer className="diag-bottom-nav">
-                                <button
-                                    type="button"
-                                    className="diag-nav-btn is-prev"
-                                    onClick={handlePrevStep}
-                                    disabled={isPrevDisabled}
-                                >
-                                    <ChevronLeft size={18} />
-                                    <span>Câu trước</span>
-                                </button>
-
-                                <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-                                    <button
-                                        type="button"
-                                        className="practice-footer-summary-btn"
-                                        onClick={openSummary}
-                                    >
-                                        <BarChart3 size={16} />
-                                        <span>
-                                            Tổng kết ({revealedOrderNos.size}/{data.totalQuestions})
-                                        </span>
-                                    </button>
-
-                                    {!isLastStep && (
-                                        <button
-                                            type="button"
-                                            className="diag-nav-btn is-next"
-                                            onClick={handleNextStep}
-                                        >
-                                            <span>Câu tiếp theo</span>
-                                            <ChevronRight size={18} />
-                                        </button>
-                                    )}
-                                </div>
-                            </footer>
-                        </div>
-                    </main>
-
-                    <aside className="diag-room-sidebar">
-                        <ExamQuestionPalette
-                            questions={data.questions}
-                            activeOrderNos={activeOrderNos}
+                        <ExamQuestionCard
+                            step={currentStep}
                             answers={answers}
                             flagged={flagged}
-                            isCollapsed={isPaletteCollapsed}
-                            isListeningCompleted={true}
+                            focusedOrderNo={focusedOrderNo}
                             mode="PRACTICE"
                             revealedOrderNos={revealedOrderNos}
-                            reviewStatusMap={reviewStatusMap}
-                            onToggleCollapse={togglePaletteCollapse}
-                            onSelectQuestion={handleSelectQuestionFromPalette}
+                            reviewQuestionMap={reviewQuestionMap}
+                            onSelectOption={handleSelectOption}
+                            onCheckAnswer={handleCheckAnswer}
+                            onToggleFlag={handleToggleFlag}
                         />
-                    </aside>
-                </div>
-            )}
+
+                        <footer className="diag-bottom-nav">
+                            <button
+                                type="button"
+                                className="diag-nav-btn is-prev"
+                                onClick={handlePrevStep}
+                                disabled={isPrevDisabled}
+                            >
+                                <ChevronLeft size={18} />
+                                <span>Câu trước</span>
+                            </button>
+
+                            <button
+                                type="button"
+                                className="diag-nav-btn is-next"
+                                onClick={handleNextStep}
+                                disabled={isLastStep}
+                            >
+                                <span>Câu tiếp theo</span>
+                                <ChevronRight size={18} />
+                            </button>
+                        </footer>
+                    </div>
+                </main>
+
+                <aside className="diag-room-sidebar">
+                    <ExamQuestionPalette
+                        questions={data.questions}
+                        activeOrderNos={activeOrderNos}
+                        answers={answers}
+                        flagged={flagged}
+                        isCollapsed={isPaletteCollapsed}
+                        isListeningCompleted={true}
+                        mode="PRACTICE"
+                        revealedOrderNos={revealedOrderNos}
+                        reviewStatusMap={reviewStatusMap}
+                        onToggleCollapse={togglePaletteCollapse}
+                        onSelectQuestion={handleSelectQuestionFromPalette}
+                    />
+                </aside>
+            </div>
         </div>
     );
 }
