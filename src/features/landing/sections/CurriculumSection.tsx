@@ -193,8 +193,8 @@ function CurriculumSection() {
                     </div>
 
                     <div className="lby-curriculum__cta-wrap">
-                        <Link to="/target-selection" className="lby-hero__btn-primary">
-                            Bắt đầu đánh giá đầu vào
+                        <Link to="/register" className="lby-hero__btn-primary">
+                            Bắt đầu miễn phí
                             <ArrowRight size={18} aria-hidden="true" />
                         </Link>
                     </div>
