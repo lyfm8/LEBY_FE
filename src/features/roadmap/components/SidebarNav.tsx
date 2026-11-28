@@ -5,7 +5,6 @@ import {
     Compass,
     BookOpen,
     ClipboardCheck,
-    Award,
     Settings,
     Target,
     Shield,
@@ -120,10 +119,6 @@ export function SidebarNav() {
     const isMockExamActive = location.pathname.startsWith('/mock-exam');
     // Highlight mục Phòng thi khi học viên truy cập một trong hai nhánh thi
     const isDiagnosticActive = isDiagnosticRoomActive || isMockExamActive;
-    const isResultsActive =
-        location.pathname.startsWith('/results') ||
-        location.pathname.startsWith('/learning-results') ||
-        location.pathname.includes('/test/result');
     const isProfileActive = location.pathname === '/profile';
 
     /**
@@ -239,14 +234,6 @@ export function SidebarNav() {
                                 </div>
                             )}
                         </div>
-
-                        <Link
-                            to="/results"
-                            className={`app-topbar__nav-item ${isResultsActive ? 'is-active' : ''}`}
-                        >
-                            <Award size={18} />
-                            <span>Kết quả</span>
-                        </Link>
                     </nav>
 
                     {/* 3. Khối Phải: Phím tắt Quản trị (nếu có quyền) & Menu tài khoản + Đăng xuất */}
@@ -375,13 +362,6 @@ export function SidebarNav() {
                 >
                     <BookOpen size={20} />
                     <span>Thư viện</span>
-                </Link>
-                <Link
-                    to="/results"
-                    className={`app-mobile-nav__item ${isResultsActive ? 'is-active' : ''}`}
-                >
-                    <Award size={20} />
-                    <span>Kết quả</span>
                 </Link>
                 <Link
                     to="/profile"

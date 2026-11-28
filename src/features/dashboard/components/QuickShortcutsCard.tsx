@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import {
-    Award,
     BookOpen,
     ChevronRight,
     Compass,
@@ -86,19 +85,7 @@ export function QuickShortcutsCard({
                     </Link>
                 )}
 
-                {/* 5. Lối tắt xem kết quả thi vượt ải */}
-                <Link to="/results" className="db-shortcut-item">
-                    <span className="db-shortcut-item__icon is-results">
-                        <Award size={17} />
-                    </span>
-                    <div className="db-shortcut-item__text">
-                        <strong>Kết quả bài thi vượt ải</strong>
-                        <span>Tra cứu điểm số và lịch sử các lần thi</span>
-                    </div>
-                    <ChevronRight size={16} className="db-shortcut-item__arrow" />
-                </Link>
-
-                {/* 6. Lối tắt sang bài thi thử TOEIC 200 câu đầu ra (mở sáng khi hoàn thành 100% lộ trình) */}
+                {/* 5. Lối tắt sang bài thi thử TOEIC 200 câu đầu ra (mở sáng khi hoàn thành 100% lộ trình) */}
                 {canTakeFullMockTest ? (
                     <Link to="/mock-exam" className="db-shortcut-item is-mock-unlocked">
                         <span className="db-shortcut-item__icon is-mock">
