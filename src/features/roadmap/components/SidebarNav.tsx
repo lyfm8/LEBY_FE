@@ -113,7 +113,6 @@ export function SidebarNav() {
         !location.pathname.includes('/result');
     // Kiểm tra người dùng có đang ở màn hình Thư viện khóa học 7 Part hay không
     const isCatalogActive = location.pathname.startsWith('/catalog');
-    const isDiagnosticActive =
     // Kiểm tra người dùng đang ở nhánh thi chẩn đoán đầu vào hay chọn mục tiêu
     const isDiagnosticRoomActive =
         location.pathname.startsWith('/diagnostic') || location.pathname.startsWith('/target-selection');
@@ -183,14 +182,6 @@ export function SidebarNav() {
                             <span>Thư viện</span>
                         </Link>
 
-                        <Link
-                            to="/diagnostic/room"
-                            className={`app-topbar__nav-item ${isDiagnosticActive ? 'is-active' : ''}`}
-                        >
-                            <ClipboardCheck size={18} />
-                            <span>Phòng thi</span>
-                            <span className="app-topbar__nav-pill">Chẩn đoán</span>
-                        </Link>
                         {/* Mục Phòng thi xổ xuống chọn giữa Thi chẩn đoán và Đề thi thật ETS */}
                         <div className="app-topbar__nav-dropdown-wrap" ref={examMenuRef}>
                             <button
