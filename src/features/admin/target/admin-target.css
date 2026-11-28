@@ -193,13 +193,13 @@
   border-bottom: 1px solid #e5e7eb;
 }
 .matrix-table th.col-module {
-  color: #374151;
+  color: #111827;
   border-right: 1px solid #e5e7eb;
   width: 25%;
 }
 .matrix-table th.col-profile {
   text-align: center;
-  color: #ea580c;
+  color: #111827;
   min-width: 100px;
 }
 
@@ -233,27 +233,17 @@
   height: 100%;
   padding: 0.5rem;
   border-radius: 0.25rem;
+  color: #111827;
+  font-weight: 500;
   transition: background-color 0.2s;
   box-sizing: border-box;
 }
 .threshold-val:not(.disabled):hover {
-  background-color: #ffedd5;
+  background-color: #f3f4f6;
 }
 .threshold-val.disabled {
   opacity: 0.5;
   cursor: not-allowed;
-}
-
-.threshold-val.high {
-  color: #15803d;
-  font-weight: 600;
-}
-.threshold-val.mid {
-  color: #ea580c;
-  font-weight: 500;
-}
-.threshold-val.low {
-  color: #4b5563;
 }
 
 .threshold-edit {

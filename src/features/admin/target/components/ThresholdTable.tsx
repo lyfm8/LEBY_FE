@@ -97,10 +97,11 @@ export const ThresholdTable: React.FC<ThresholdTableProps> = ({ matrix, onUpdate
                           </div>
                         ) : (
                           <div 
-                            className={`threshold-val ${isUpdating ? 'disabled' : ''} ${thresholdVal >= 80 ? 'high' : thresholdVal >= 50 ? 'mid' : 'low'}`}
+                            className={`threshold-val ${isUpdating ? 'disabled' : ''}`}
                             onClick={() => !isUpdating && startEdit(row.moduleId, profileId, thresholdVal)}
                             title="Click để sửa"
                           >
+                            {/* Hiển thị ngưỡng % bằng màu đen đồng nhất */}
                             {thresholdVal}%
                           </div>
                         )}
