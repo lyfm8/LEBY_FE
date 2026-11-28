@@ -1,14 +1,14 @@
 /**
- * Khung xương tải (Skeleton Loader) mô phỏng chính xác bố cục màn hình Dashboard thật:
- * Sub-header, lưới 4 thẻ chỉ số KPI và bố cục 2 cột nội dung chính.
+ * Khung xương tải (Skeleton Loader) mô phỏng chính xác bố cục Dashboard tinh gọn:
+ * Sub-header, lưới 4 thẻ chỉ số KPI và 2 cột nội dung cân đối.
  */
 export function DashboardSkeleton() {
     // Khởi tạo sẵn 4 vị trí cho lưới thẻ thống kê KPI
     const kpiPlaceholders = [1, 2, 3, 4];
-    // Khởi tạo sẵn 4 vị trí cho danh sách bài học mô phỏng trong khối mô-đun hiện tại
-    const lessonPlaceholders = [1, 2, 3, 4];
-    // Khởi tạo sẵn 3 vị trí cho các thẻ chặng học ở cột bên phải
-    const roadmapPlaceholders = [1, 2, 3];
+    // Khởi tạo sẵn 3 vị trí cho danh sách bài học mô phỏng trong khối mô-đun hiện tại
+    const lessonPlaceholders = [1, 2, 3];
+    // Khởi tạo sẵn 4 vị trí cho danh sách hoạt động gần đây ở cột phải
+    const activityPlaceholders = [1, 2, 3, 4];
 
     return (
         <div className="db-skeleton" aria-busy="true" aria-label="Đang tải bảng điều khiển học tập">
@@ -59,11 +59,11 @@ export function DashboardSkeleton() {
                     </div>
 
                     <div className="db-content-right">
-                        {/* Mô phỏng khối Lộ trình tiếp theo ở cột bên phải */}
-                        <div className="db-roadmap-card db-skeleton__sidebar">
+                        {/* Mô phỏng khối Hoạt động gần đây & Truy cập nhanh */}
+                        <div className="db-card db-skeleton__sidebar">
                             <div className="db-skel db-skel--sm" />
-                            {roadmapPlaceholders.map((card) => (
-                                <div key={card} className="db-skel db-skel--sidebar-item" />
+                            {activityPlaceholders.map((row) => (
+                                <div key={row} className="db-skel db-skel--row" />
                             ))}
                         </div>
                     </div>

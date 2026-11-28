@@ -17,8 +17,6 @@ import { DashboardOnboardingCard } from '../components/DashboardOnboardingCard';
 import { StatCard } from '../components/StatCard';
 import { CurrentModuleFocusCard } from '../components/CurrentModuleFocusCard';
 import { WeeklyProgressChart } from '../components/WeeklyProgressChart';
-import { PartEvaluationCard } from '../components/PartEvaluationCard';
-import { NextRoadmapCard } from '../components/NextRoadmapCard';
 import { QuickShortcutsCard } from '../components/QuickShortcutsCard';
 import { RecentActivityCard } from '../components/RecentActivityCard';
 import type { DashboardCurrentModule } from '../types/dashboardTypes';
@@ -295,7 +293,7 @@ export default function DashboardPage() {
                         />
                     </section>
 
-                    {/* Lưới nội dung chính 2 cột: Trái (Mô-đun hiện tại, Biểu đồ tuần, Đánh giá 7 Part) - Phải (Lộ trình, Lối tắt, Hoạt động) */}
+                    {/* Lưới nội dung chính 2 cột tinh gọn: Trái (Học tiếp ngay + Biểu đồ tuần) - Phải (Hoạt động gần đây + Truy cập nhanh) */}
                     <div className="db-content-grid">
                         <div className="db-content-left">
                             {data.currentModule && (
@@ -307,27 +305,15 @@ export default function DashboardPage() {
                                 weeklyStudyMinutes={data.stats.weeklyStudyMinutes}
                                 weeklyActiveDays={data.stats.weeklyActiveDays}
                             />
-
-                            <PartEvaluationCard
-                                parts={data.partEvaluations}
-                                latestDiagnosticAttemptId={data.diagnostic.latestAttemptId}
-                            />
                         </div>
 
                         <div className="db-content-right">
-                            <NextRoadmapCard
-                                modules={data.upcomingModules}
-                                completedModules={data.stats.completedModules}
-                                totalModules={data.stats.totalModules}
-                                isPassedAllParts={data.stats.isPassedAllParts}
-                            />
+                            <RecentActivityCard activities={data.recentActivities.slice(0, 5)} />
 
                             <QuickShortcutsCard
                                 canTakeFullMockTest={data.stats.canTakeFullMockTest}
                                 latestDiagnosticAttemptId={data.diagnostic.latestAttemptId}
                             />
-
-                            <RecentActivityCard activities={data.recentActivities} />
                         </div>
                     </div>
                 </main>

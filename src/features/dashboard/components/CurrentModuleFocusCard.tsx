@@ -84,6 +84,9 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
               ? 'Tiếp tục bài học'
               : 'Mở mô-đun học ngay';
 
+    // Giữ tối đa 3 bài học gần nhất ngay trên Dashboard để bố cục gọn gàng, không lặp lại toàn bộ trang chi tiết
+    const visibleLessons = module.upcomingLessons.slice(0, 3);
+
     return (
         <section className={`db-card db-focus-card ${isMaintenance ? 'is-maintenance' : ''}`}>
             {/* Hàng đầu: Nhãn chặng học, phần thi và tiến độ hoàn thành mô-đun */}
@@ -151,14 +154,14 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                             )}
                         </div>
 
-                        {module.upcomingLessons.length === 0 ? (
+                        {visibleLessons.length === 0 ? (
                             <div className="db-empty-inline">
                                 Học liệu của mô-đun đang được hoàn thiện. Bạn có thể xem chi tiết mô-đun hoặc khám phá
                                 thư viện khóa học.
                             </div>
                         ) : (
                             <div className="db-focus-lessons__list">
-                                {module.upcomingLessons.map((lesson) => {
+                                {visibleLessons.map((lesson) => {
                                     // Phân biệt loại bài tập thực hành và bài giảng lý thuyết để hiển thị đúng biểu tượng
                                     const isPractice = lesson.type === 'PRACTICE';
                                     // Tính đường dẫn nhảy thẳng vào đúng phòng học của bài đó
