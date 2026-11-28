@@ -83,9 +83,6 @@ export const ManualPickerSection: React.FC<ManualPickerSectionProps> = ({
     }
   };
 
-  const isLack = selectedQuestions.length < targetTotal;
-  const remainingCount = targetTotal - selectedQuestions.length;
-
   return (
     <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: '20px' }}>
       {/* CỘT TRÁI: NGÂN HÀNG CÂU HỎI */}
@@ -176,7 +173,7 @@ export const ManualPickerSection: React.FC<ManualPickerSectionProps> = ({
 
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: '12px', fontWeight: 700, color: '#F45B0B', marginBottom: '2px' }}>
-                      || {code}
+                      {code}
                     </div>
                     <div style={{ fontSize: '13px', color: '#1E293B', fontWeight: 500, lineHeight: 1.4, marginBottom: '6px' }}>
                       {q.name}
@@ -281,28 +278,6 @@ export const ManualPickerSection: React.FC<ManualPickerSectionProps> = ({
           )}
         </div>
 
-        {/* Alert cảnh báo thiếu câu hỏi */}
-        {isLack && (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '10px 14px',
-              backgroundColor: '#FEFCE8',
-              border: '1px solid #FEF08A',
-              borderRadius: '8px',
-              color: '#854D0E',
-              fontSize: '12px',
-              marginTop: '14px',
-            }}
-          >
-            <AlertTriangle size={16} className="text-amber-500 flex-shrink-0" />
-            <div>
-              <strong>Chưa đủ số lượng yêu cầu</strong>: Cần chọn thêm {remainingCount} câu theo đúng ma trận.
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );

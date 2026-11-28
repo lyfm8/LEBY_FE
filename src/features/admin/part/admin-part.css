@@ -122,7 +122,7 @@
    -------------------------------------------------------------------------- */
 .part-layout-grid {
   display: grid;
-  grid-template-columns: 370px 1fr;
+  grid-template-columns: 500px 1fr;
   gap: 1.15rem;
   flex: 1 1 0%;
   min-height: 0;
@@ -169,27 +169,14 @@
   gap: 0.75rem;
 }
 
+.ability-panel-header {
+  justify-content: flex-end;
+}
+
 .panel-title-group {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-}
-
-.panel-icon-badge {
-  width: 30px;
-  height: 30px;
-  border-radius: 6px;
-  background-color: #ffedd5;
-  color: #ea580c;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.panel-icon-badge.ability {
-  background-color: #eff6ff;
-  color: #2563eb;
 }
 
 .panel-title {
@@ -207,37 +194,6 @@
   padding: 2px 7px;
   border-radius: 9999px;
   border: 1px solid #e2e8f0;
-}
-
-/* Title & Breadcrumb bên cột Ability */
-.title-context-block {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.title-row {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-.panel-context-crumb {
-  font-size: 0.75rem;
-  color: #64748b;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-}
-
-.context-part-name {
-  color: #ea580c;
-  font-weight: 700;
-}
-
-.crumb-badge {
-  display: inline-flex;
-  margin-left: 0.25rem;
 }
 
 /* Nút bấm hành động trong Panel */

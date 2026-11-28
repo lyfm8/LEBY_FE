@@ -107,6 +107,22 @@ export const useModuleTestOverview = () => {
     [updateParam]
   );
 
+  /**
+   * Đặt lại toàn bộ bộ lọc tìm kiếm (từ khóa, Part, trạng thái) về mặc định trong 1 lần cập nhật URL.
+   */
+  const resetFilters = useCallback(() => {
+    // Tạo bản sao URLSearchParams hiện tại để tránh mất moduleId nếu có
+    const next = new URLSearchParams(searchParams);
+    // Xóa tham số từ khóa tìm kiếm khỏi URL
+    next.delete('q');
+    // Xóa tham số lọc Part khỏi URL
+    next.delete('partId');
+    // Xóa tham số lọc trạng thái cấu hình đề khỏi URL
+    next.delete('status');
+    // Ghi lại URL đã đặt lại bộ lọc mà không thêm lịch sử trình duyệt thừa
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
   // Tối ưu: Dùng useMemo để tránh lọc lại danh sách khi component re-render không đổi bộ lọc
   const filteredItems = useMemo(() => {
     // Chuẩn hóa từ khóa về chữ thường để tìm kiếm không phân biệt hoa/thường
@@ -157,6 +173,7 @@ export const useModuleTestOverview = () => {
     setKeyword,
     setPartId,
     setStatusFilter,
+    resetFilters,
     selectModule,
     refetch: fetchOverviews,
   };

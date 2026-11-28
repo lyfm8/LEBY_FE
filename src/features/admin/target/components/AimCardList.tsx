@@ -16,10 +16,6 @@ export const AimCardList: React.FC<AimCardListProps> = ({ profiles, onAdd, onEdi
   return (
     <div style={{ marginBottom: '2rem' }}>
       <div className="aim-list-header">
-        <div>
-          <h2>Các Mốc Mục Tiêu (AIM)</h2>
-          <p>Quản lý các mốc điểm học viên hướng tới</p>
-        </div>
         <button
           onClick={onAdd}
           className="btn-primary"

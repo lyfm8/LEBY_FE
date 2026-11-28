@@ -42,9 +42,6 @@ export const PartList: React.FC<PartListProps> = ({
       {/* Header của cột Part */}
       <div className="part-panel-header">
         <div className="panel-title-group">
-          <div className="panel-icon-badge">
-            <Layers size={16} />
-          </div>
           <h2 className="panel-title">Danh sách Phần thi</h2>
           <span className="panel-count-pill">{parts.length}</span>
         </div>

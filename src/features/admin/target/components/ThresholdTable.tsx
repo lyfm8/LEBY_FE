@@ -43,7 +43,7 @@ export const ThresholdTable: React.FC<ThresholdTableProps> = ({ matrix, onUpdate
   return (
     <div className="matrix-container">
       <div className="matrix-header">
-        <h3>Ma trận Ngưỡng Đỗ Mô-đun (% đúng)</h3>
+        <h3>Ma trận Ngưỡng Đỗ Mô-đun</h3>
         <span>Nhấp vào ô để chỉnh sửa</span>
       </div>
       

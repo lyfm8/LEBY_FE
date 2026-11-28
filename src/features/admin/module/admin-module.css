@@ -1120,9 +1120,9 @@
 }
 
 /* --------------------------------------------------------------------------
-   THRESHOLD DROPDOWN INPUT (Combo Box with 4-5 Standard Presets)
+   THRESHOLD NUMBER INPUT (Plain Numeric Input with Unit)
    -------------------------------------------------------------------------- */
-.threshold-dropdown-input-wrapper {
+.threshold-number-input-wrapper {
   position: relative;
   display: inline-block;
 }
@@ -1130,10 +1130,13 @@
 .threshold-input-box {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 0.15rem;
   background-color: #ffffff;
   border: 1px solid #d1d5db;
   border-radius: 6px;
-  height: 32px;
+  height: 34px;
+  padding: 0 0.7rem 0 0.45rem;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.15s;
 }
@@ -1143,202 +1146,39 @@
   box-shadow: 0 0 0 2px rgba(234, 88, 12, 0.15);
 }
 
-.threshold-dropdown-input-wrapper.size-large .threshold-input-box {
+.threshold-number-input-wrapper.size-large .threshold-input-box {
   height: 38px;
-  min-width: 106px;
   border-radius: 7px;
+  padding: 0 0.85rem 0 0.55rem;
 }
 
 .threshold-raw-input {
-  width: 40px;
+  width: 2rem;
   border: none;
   background: transparent;
   font-size: 0.875rem;
   font-weight: 700;
   color: #111827;
-  text-align: right;
+  text-align: center;
   outline: none;
-  padding: 0 2px 0 6px;
+  padding: 0;
 }
 
-.threshold-dropdown-input-wrapper.size-large .threshold-raw-input {
-  width: 44px;
+.threshold-number-input-wrapper.size-large .threshold-raw-input {
+  width: 2.2rem;
   font-size: 0.9375rem;
-  padding: 0 3px 0 8px;
 }
 
 .threshold-unit-label {
   font-size: 0.75rem;
   font-weight: 600;
   color: #6b7280;
-  padding-left: 2px;
-  padding-right: 5px;
   user-select: none;
   white-space: nowrap;
 }
 
-.threshold-dropdown-input-wrapper.size-large .threshold-unit-label {
+.threshold-number-input-wrapper.size-large .threshold-unit-label {
   font-size: 0.8125rem;
-  padding-right: 6px;
-}
-
-.threshold-input-divider {
-  width: 1px;
-  height: 16px;
-  background-color: #e5e7eb;
-}
-
-.threshold-dropdown-input-wrapper.size-large .threshold-input-divider {
-  height: 20px;
-}
-
-.threshold-toggle-btn {
-  border: none;
-  background: transparent;
-  width: 22px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #6b7280;
-  cursor: pointer;
-  border-radius: 0 5px 5px 0;
-  transition: all 0.15s;
-  padding: 0;
-}
-
-.threshold-dropdown-input-wrapper.size-large .threshold-toggle-btn {
-  width: 24px;
-  border-radius: 0 6px 6px 0;
-}
-
-.threshold-toggle-btn:hover,
-.threshold-toggle-btn.active {
-  color: #ea580c;
-  background-color: #fff7ed;
-}
-
-.threshold-chevron {
-  transition: transform 0.15s ease;
-}
-
-.threshold-chevron.rotate {
-  transform: rotate(180deg);
-}
-
-.threshold-preset-popover {
-  position: absolute;
-  right: 0;
-  min-width: 220px;
-  background-color: #ffffff;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
-  z-index: 100;
-  padding: 5px;
-  animation: fadeIn 0.12s ease-out;
-}
-
-.threshold-preset-popover.drop-down {
-  top: calc(100% + 4px);
-}
-
-.threshold-preset-popover.drop-up {
-  bottom: calc(100% + 4px);
-}
-
-.threshold-popover-header {
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #9ca3af;
-  letter-spacing: 0.05em;
-  padding: 4px 8px 3px;
-  border-bottom: 1px solid #f3f4f6;
-  margin-bottom: 3px;
-}
-
-.threshold-preset-list {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
-
-.threshold-preset-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding: 6px 8px;
-  border: none;
-  background: transparent;
-  border-radius: 6px;
-  cursor: pointer;
-  text-align: left;
-  transition: all 0.12s;
-}
-
-.threshold-preset-item:hover {
-  background-color: #f9fafb;
-}
-
-.threshold-preset-item.selected {
-  background-color: #fff7ed;
-}
-
-.preset-item-val {
-  display: flex;
-  align-items: baseline;
-  gap: 1px;
-}
-
-.preset-num {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #111827;
-}
-
-.threshold-preset-item.selected .preset-num {
-  color: #ea580c;
-}
-
-.preset-unit {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-}
-
-.threshold-preset-item.selected .preset-unit {
-  color: #ea580c;
-}
-
-.preset-item-info {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin-left: 8px;
-  margin-right: auto;
-}
-
-.preset-label {
-  font-size: 0.75rem;
-  color: #4b5563;
-  white-space: nowrap;
-}
-
-.preset-badge-star {
-  font-size: 0.625rem;
-  font-weight: 700;
-  background-color: #fef3c7;
-  color: #b45309;
-  padding: 1px 5px;
-  border-radius: 4px;
-}
-
-.preset-check-icon {
-  color: #ea580c;
-  margin-left: 6px;
-  flex-shrink: 0;
 }
 
 .threshold-note {
@@ -2045,18 +1885,66 @@
   top: 0;
   z-index: 10;
   background-color: #f8fafc;
-  padding: 0.65rem 0.85rem;
-  color: #334155;
+  padding: 0.75rem 1rem;
+  color: #475569;
   font-weight: 700;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
 }
 
 .thresholds-table td {
-  padding: 0.65rem 0.85rem;
+  padding: 0.75rem 1rem;
   border-bottom: 1px solid #f1f5f9;
   color: #1f2937;
   vertical-align: middle;
+}
+
+.thresholds-table th.col-seq,
+.thresholds-table td.col-seq {
+  width: 84px;
+  text-align: center;
+}
+
+.thresholds-table th.col-module,
+.thresholds-table td.col-module {
+  width: auto;
+  text-align: left;
+}
+
+.thresholds-table th.col-rate,
+.thresholds-table td.col-rate {
+  width: 170px;
+  text-align: center;
+}
+
+.thresholds-table th.col-actions,
+.thresholds-table td.col-actions {
+  width: 116px;
+  text-align: center;
+}
+
+.thresholds-rate-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.thresholds-saved-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  color: #16a34a;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.thresholds-empty-cell {
+  text-align: center;
+  padding: 2rem 1rem !important;
+  color: #6b7280;
+  font-size: 0.875rem;
 }
 
 .thresholds-table tr:hover {
@@ -3311,7 +3199,7 @@
 
 .mt-filter-bar {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: center;
   gap: 10px;
   margin-bottom: 16px;
@@ -3323,6 +3211,42 @@
 
 .mt-search-grow {
   flex: 1 1 260px;
+  min-width: 220px;
+}
+
+.mt-filter-bar .pq-search-input {
+  height: 38px;
+  box-sizing: border-box;
+}
+
+.mt-filter-bar .pq-filter-select {
+  width: auto;
+  min-width: 175px;
+  flex: 0 0 auto;
+  height: 38px;
+  padding: 0 12px;
+  box-sizing: border-box;
+}
+
+.mt-filter-bar .mt-reset-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  height: 38px;
+  padding: 0 14px;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .mt-filter-bar {
+    flex-wrap: wrap;
+  }
+
+  .mt-filter-bar .pq-filter-select {
+    flex: 1 1 160px;
+  }
 }
 
 .mt-table-card {
