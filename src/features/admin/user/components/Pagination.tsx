@@ -20,8 +20,8 @@ export const Pagination: React.FC<PaginationProps> = ({
   totalItems,
   onPageChange,
 }) => {
-  // Ẩn thanh phân trang nếu không có dữ liệu hoặc chỉ có 1 trang duy nhất
-  if (totalPages <= 1) {
+// Chỉ ẩn thanh phân trang khi không có dữ liệu (0 trang hoặc 0 tài khoản)
+  if (totalPages <= 0 || totalItems <= 0) {
     return null;
   }
 
