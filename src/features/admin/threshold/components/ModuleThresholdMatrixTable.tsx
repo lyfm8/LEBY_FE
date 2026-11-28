@@ -9,7 +9,6 @@ interface ModuleThresholdMatrixTableProps {
   selectedPartId?: number;
   onSelectPartId: (partId?: number) => void;
   onSaveBatch: (items: ModuleThresholdItemDto[]) => Promise<void>;
-  onResetCell: (moduleId: number, profileId: number) => Promise<void>;
   isLoading: boolean;
   isSaving: boolean;
   onDirtyCountChange?: (count: number) => void;
@@ -31,7 +30,6 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
   selectedPartId,
   onSelectPartId,
   onSaveBatch,
-  onResetCell,
   isLoading,
   isSaving,
   onDirtyCountChange,
@@ -188,7 +186,10 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
             <p>Không tìm thấy Module nào phù hợp với bộ lọc</p>
           </div>
         ) : (
-          <table className="admin-table threshold-matrix-table">
+          <table
+            className="admin-table threshold-matrix-table"
+            style={{ minWidth: `${61.5 + data.profileIds.length * 5.75}rem` }}
+          >
             <thead>
               <tr>
                 <th className="sticky-col col-seq text-center">#</th>
@@ -250,17 +251,6 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
                             className="matrix-cell-input"
                             title={`Mặc định: ${row.defaultPassScore}% ${isCustom ? '(Đang tùy biến)' : '(Kế thừa)'}`}
                           />
-                          {isCustom && !isDirty && (
-                            <button
-                              type="button"
-                              onClick={() => onResetCell(row.moduleId, profId)}
-                              className="btn-cell-reset"
-                              title={`Khôi phục về mặc định (${row.defaultPassScore}%)`}
-                              aria-label={`Khôi phục về mặc định (${row.defaultPassScore}%)`}
-                            >
-                              <RotateCcw size={11} />
-                            </button>
-                          )}
                         </div>
                       </td>
                     );

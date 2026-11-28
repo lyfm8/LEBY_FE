@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import axios from 'axios';
 import { AuthCard } from '../components/AuthCard';
+import { AuthPasswordInput } from '../components/AuthPasswordInput';
 import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteByRole } from '../utils/authRedirect';
@@ -282,12 +283,11 @@ export const ForgotPasswordPage: React.FC = () => {
                         <label className="auth-form__label" htmlFor="reset-new-password">
                             Mật khẩu mới
                         </label>
-                        <input
+                        <AuthPasswordInput
                             id="reset-new-password"
-                            type="password"
                             autoComplete="new-password"
                             placeholder="Ít nhất 8 ký tự (chữ hoa, chữ thường, số)"
-                            className={`auth-form__input${resetForm.formState.errors.newPassword ? ' is-error' : ''}`}
+                            hasError={Boolean(resetForm.formState.errors.newPassword)}
                             {...resetForm.register('newPassword')}
                         />
                         {resetForm.formState.errors.newPassword && (
@@ -300,12 +300,11 @@ export const ForgotPasswordPage: React.FC = () => {
                         <label className="auth-form__label" htmlFor="reset-confirm-password">
                             Xác nhận mật khẩu mới
                         </label>
-                        <input
+                        <AuthPasswordInput
                             id="reset-confirm-password"
-                            type="password"
                             autoComplete="new-password"
                             placeholder="Nhập lại mật khẩu mới"
-                            className={`auth-form__input${resetForm.formState.errors.confirmPassword ? ' is-error' : ''}`}
+                            hasError={Boolean(resetForm.formState.errors.confirmPassword)}
                             {...resetForm.register('confirmPassword')}
                         />
                         {resetForm.formState.errors.confirmPassword && (

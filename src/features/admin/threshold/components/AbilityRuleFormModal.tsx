@@ -45,8 +45,12 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
     },
   });
 
-  const watchedWeakMax = watch('weakMax') || 50;
-  const watchedStableMin = watch('stableMin') || 75;
+  const rawWeakMax = watch('weakMax');
+  const rawStableMin = watch('stableMin');
+  const watchedWeakMax = Number.isFinite(rawWeakMax) ? Math.min(Math.max(rawWeakMax, 0), 100) : 50;
+  const watchedStableMin = Number.isFinite(rawStableMin)
+    ? Math.min(Math.max(rawStableMin, watchedWeakMax), 100)
+    : 75;
 
   useEffect(() => {
     if (isOpen) {
@@ -71,25 +75,41 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content modal-md">
+    <div className="modal-overlay" onClick={() => !isLoading && onClose()}>
+      <div
+        className="modal-content threshold-modal threshold-modal-md"
+        onClick={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
-          <h2 className="modal-title">
-            {data ? 'Cập nhật Quy tắc Đánh giá Năng lực' : 'Tạo mới Quy tắc Đánh giá Năng lực'}
-          </h2>
-          <button type="button" onClick={onClose} className="modal-close-btn" disabled={isLoading}>
-            <X size={18} />
+          <div>
+            <h2 className="modal-title">
+              {data ? 'Cập nhật Quy tắc Đánh giá Năng lực' : 'Tạo mới Quy tắc Đánh giá Năng lực'}
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="modal-close"
+            disabled={isLoading}
+            aria-label="Đóng hộp thoại"
+          >
+            <X size={20} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="modal-form">
+        <form onSubmit={handleSubmit(onSubmit)} className="threshold-modal-form">
           {/* Dropdown Năng lực */}
           <div className="form-group">
-            <label className="form-label required">Năng lực (Ability)</label>
+            <label className="form-label" htmlFor="ability-rule-select">
+              <span className="threshold-label-main">
+                Năng lực (Ability) <span className="threshold-required-mark">*</span>
+              </span>
+            </label>
             <select
+              id="ability-rule-select"
               {...register('abilityId', { valueAsNumber: true })}
               disabled={!!data || isLoading}
-              className={`select-input ${errors.abilityId ? 'input-error' : ''}`}
+              className={`form-select ${errors.abilityId ? 'is-invalid' : ''}`}
             >
               <option value={0}>-- Chọn Năng lực sư phạm --</option>
               {abilities.map(a => (
@@ -98,100 +118,140 @@ export const AbilityRuleFormModal: React.FC<AbilityRuleFormModalProps> = ({
                 </option>
               ))}
             </select>
-            {errors.abilityId && <span className="error-message">{errors.abilityId.message}</span>}
+            {errors.abilityId && <span className="form-error">{errors.abilityId.message}</span>}
           </div>
 
           {/* Sơ đồ Trực quan 2 Ngưỡng Cắt */}
           <div className="threshold-visual-diagram">
             <div className="visual-diagram-header">
-              <span className="text-xs font-semibold text-gray-700">Mô hình phân loại nhị phân Tầng 2:</span>
+              <span className="visual-diagram-title">Mô hình phân loại nhị phân Tầng 2</span>
             </div>
+
             <div className="visual-range-bar">
               <div
                 className="range-segment segment-weak"
-                style={{ width: `${Math.min(watchedWeakMax, 100)}%` }}
+                style={{ width: `${watchedWeakMax}%` }}
               >
-                <span>YẾU (&lt; {watchedWeakMax}%)</span>
+                {watchedWeakMax >= 15 && <span>YẾU</span>}
               </div>
               <div
                 className="range-segment segment-developing"
-                style={{
-                  width: `${Math.max(0, Math.min(watchedStableMin - watchedWeakMax, 100))}%`,
-                }}
+                style={{ width: `${Math.max(0, watchedStableMin - watchedWeakMax)}%` }}
               >
-                <span>PHÁT TRIỂN</span>
+                {watchedStableMin - watchedWeakMax >= 16 && <span>PHÁT TRIỂN</span>}
               </div>
               <div
                 className="range-segment segment-stable"
                 style={{ width: `${Math.max(0, 100 - watchedStableMin)}%` }}
               >
-                <span>VỮNG (&ge; {watchedStableMin}%)</span>
+                {100 - watchedStableMin >= 15 && <span>VỮNG</span>}
               </div>
             </div>
-            <div className="visual-markers">
-              <span>0%</span>
-              <span style={{ left: `${watchedWeakMax}%` }} className="marker-pin marker-weak">
-                {watchedWeakMax}% (CONFIRM cutoff)
-              </span>
-              <span style={{ left: `${watchedStableMin}%` }} className="marker-pin marker-stable">
-                {watchedStableMin}% (WEAK cutoff)
-              </span>
-              <span>100%</span>
+
+            <div className="visual-legend-grid cols-3">
+              <div className="visual-legend-card">
+                <div className="visual-legend-top">
+                  <span className="visual-legend-dot segment-weak" />
+                  <span>Yếu</span>
+                </div>
+                <div className="visual-legend-range">&lt; {watchedWeakMax}%</div>
+                <span className="visual-legend-note">Áp dụng cho cận chuẩn</span>
+              </div>
+
+              <div className="visual-legend-card">
+                <div className="visual-legend-top">
+                  <span className="visual-legend-dot segment-developing" />
+                  <span>Phát triển</span>
+                </div>
+                <div className="visual-legend-range">
+                  {watchedWeakMax}% – &lt; {watchedStableMin}%
+                </div>
+                <span className="visual-legend-note">Mức giữa</span>
+              </div>
+
+              <div className="visual-legend-card">
+                <div className="visual-legend-top">
+                  <span className="visual-legend-dot segment-stable" />
+                  <span>Vững</span>
+                </div>
+                <div className="visual-legend-range">&ge; {watchedStableMin}%</div>
+                <span className="visual-legend-note">Áp dụng cho dưới chuẩn</span>
+              </div>
             </div>
           </div>
 
           {/* Ngưỡng Yếu & Ngưỡng Vững vàng */}
           <div className="form-grid-2">
             <div className="form-group">
-              <label className="form-label required">
-                Ngưỡng Yếu (weakMax %)
+              <label className="form-label" htmlFor="ability-weak-max">
+                <span className="threshold-label-main">
+                  Ngưỡng Yếu <span className="threshold-required-mark">*</span>
+                </span>
               </label>
-              <input
-                type="number"
-                step="0.5"
-                min="0"
-                max="100"
-                {...register('weakMax', { valueAsNumber: true })}
-                className={`text-input ${errors.weakMax ? 'input-error' : ''}`}
-              />
-              <span className="field-hint">Cutoff nhánh CONFIRM (Mẫu 50.0%)</span>
-              {errors.weakMax && <span className="error-message">{errors.weakMax.message}</span>}
+              <div className="threshold-input-wrap">
+                <input
+                  id="ability-weak-max"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  max="100"
+                  {...register('weakMax', { valueAsNumber: true })}
+                  className={`form-input ${errors.weakMax ? 'is-invalid' : ''}`}
+                />
+                <span className="threshold-input-unit">%</span>
+              </div>
+              <span className="field-hint">Áp dụng cho nhánh cạn chuẩn</span>
+              {errors.weakMax && <span className="form-error">{errors.weakMax.message}</span>}
             </div>
 
             <div className="form-group">
-              <label className="form-label required">
-                Ngưỡng Vững vàng (stableMin %)
+              <label className="form-label" htmlFor="ability-stable-min">
+                <span className="threshold-label-main">
+                  Ngưỡng Vững <span className="threshold-required-mark">*</span>
+                </span>
               </label>
-              <input
-                type="number"
-                step="0.5"
-                min="0"
-                max="100"
-                {...register('stableMin', { valueAsNumber: true })}
-                className={`text-input ${errors.stableMin ? 'input-error' : ''}`}
-              />
-              <span className="field-hint">Cutoff nhánh WEAK (Mẫu 75.0%)</span>
-              {errors.stableMin && <span className="error-message">{errors.stableMin.message}</span>}
+              <div className="threshold-input-wrap">
+                <input
+                  id="ability-stable-min"
+                  type="number"
+                  step="0.5"
+                  min="0"
+                  max="100"
+                  {...register('stableMin', { valueAsNumber: true })}
+                  className={`form-input ${errors.stableMin ? 'is-invalid' : ''}`}
+                />
+                <span className="threshold-input-unit">%</span>
+              </div>
+              <span className="field-hint">Áp dụng cho nhánh dưới chuẩn</span>
+              {errors.stableMin && <span className="form-error">{errors.stableMin.message}</span>}
             </div>
           </div>
 
           {/* Số câu hỏi kiểm chứng */}
           <div className="form-group">
-            <label className="form-label required">Số câu kiểm chứng tối thiểu (Min Evidence)</label>
-            <input
-              type="number"
-              min="1"
-              max="50"
-              {...register('minEvidenceCount', { valueAsNumber: true })}
-              className={`text-input ${errors.minEvidenceCount ? 'input-error' : ''}`}
-            />
-            <span className="field-hint">Số câu hỏi cần thiết trong bài test để đủ độ tin cậy kết luận năng lực (mặc định 3 câu)</span>
+            <label className="form-label" htmlFor="ability-min-evidence">
+              <span className="threshold-label-main">
+                Số câu kiểm chứng tối thiểu <span className="threshold-required-mark">*</span>
+              </span>
+            </label>
+            <div className="threshold-input-wrap">
+              <input
+                id="ability-min-evidence"
+                type="number"
+                min="1"
+                max="50"
+                {...register('minEvidenceCount', { valueAsNumber: true })}
+                className={`form-input ${errors.minEvidenceCount ? 'is-invalid' : ''}`}
+              />
+              <span className="threshold-input-unit">câu</span>
+            </div>
+
             {errors.minEvidenceCount && (
-              <span className="error-message">{errors.minEvidenceCount.message}</span>
+              <span className="form-error">{errors.minEvidenceCount.message}</span>
             )}
           </div>
 
-          <div className="modal-actions">
+          <div className="modal-footer">
             <button
               type="button"
               onClick={onClose}

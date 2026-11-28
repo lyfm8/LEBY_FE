@@ -232,18 +232,6 @@ export const AdminThresholdPage: React.FC = () => {
     }
   };
 
-  const handleResetMatrixCell = async (moduleId: number, profileId: number) => {
-    if (!window.confirm('Khôi phục ô này về điểm đỗ mặc định của Module?')) return;
-    try {
-      await adminThresholdService.resetModuleThreshold(moduleId, profileId);
-      showToast('success', 'Khôi phục điểm đỗ mặc định thành công!');
-      fetchMatrixData(selectedPartIdForMatrix);
-    } catch (error: unknown) {
-      console.error(error);
-      showToast('error', getErrorMessage(error, 'Khôi phục điểm đỗ thất bại'));
-    }
-  };
-
   // =====================================
   // HANDLERS: TAB 2 - ABILITY EVALUATION RULES
   // =====================================
@@ -400,7 +388,6 @@ export const AdminThresholdPage: React.FC = () => {
                 fetchMatrixData(partId);
               }}
               onSaveBatch={handleSaveBatchMatrix}
-              onResetCell={handleResetMatrixCell}
               isLoading={isLoading}
               isSaving={isSavingBatch}
               onDirtyCountChange={setDirtyMatrixCount}

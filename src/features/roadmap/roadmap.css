@@ -233,25 +233,6 @@
     flex-shrink: 0;
 }
 
-.app-topbar__portal-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 7px 13px;
-    border-radius: 999px;
-    background-color: #0f172a;
-    color: #ffffff;
-    font-size: 12.5px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 0.15s ease;
-    white-space: nowrap;
-}
-
-.app-topbar__portal-btn:hover {
-    background-color: #1e293b;
-}
-
 .app-topbar__account {
     position: relative;
 }
@@ -431,7 +412,6 @@
     }
 
     .app-topbar__nav,
-    .app-topbar__portal-btn,
     .app-topbar__user-name {
         display: none;
     }

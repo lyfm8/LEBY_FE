@@ -2,8 +2,8 @@ import type React from 'react';
 import { Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ArrowRight, Compass } from 'lucide-react';
 import { loginSchema, type LoginFormValues } from '../schemas/authSchema';
+import { AuthPasswordInput } from './AuthPasswordInput';
 
 /**
  * Props cho component LoginForm
@@ -94,13 +94,12 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                             Quên mật khẩu?
                         </Link>
                     </div>
-                    {/* Trường nhập mật khẩu đăng nhập */}
-                    <input
+                    {/* Trường nhập mật khẩu đăng nhập kèm nút xem/ẩn mật khẩu */}
+                    <AuthPasswordInput
                         id="login-password"
-                        type="password"
                         autoComplete="current-password"
                         placeholder="••••••••••••"
-                        className={`auth-form__input${errors.password ? ' is-error' : ''}`}
+                        hasError={Boolean(errors.password)}
                         {...register('password')}
                     />
                     {/* Hiển thị thông báo lỗi validation mật khẩu ngay bên dưới input */}
@@ -118,23 +117,6 @@ export const LoginForm: React.FC<LoginFormProps> = ({
                     {isLoading ? 'Đang đăng nhập...' : 'Đăng nhập'}
                 </button>
             </form>
-
-            {/* Đường kẻ phân cách giữa form chính và luồng điều hướng phụ */}
-            <div className="auth-divider">
-                <span className="auth-divider__text">Hoặc</span>
-            </div>
-
-            {/* Điều hướng nhanh cho học viên mới muốn chọn mục tiêu & làm bài chẩn đoán */}
-            <p className="auth-card__promo">
-                <Link to="/target-selection" className="auth-card__promo-link">
-                    {/* Biểu tượng la bàn đại diện cho định hướng lộ trình học */}
-                    <Compass size={16} aria-hidden="true" />
-                    {/* Nội dung kêu gọi hành động */}
-                    <span>Học viên mới? Bắt đầu chọn mục tiêu &amp; thi chẩn đoán</span>
-                    {/* Biểu tượng mũi tên chỉ hướng tiếp theo */}
-                    <ArrowRight size={15} aria-hidden="true" />
-                </Link>
-            </p>
 
             {/* Chân thẻ chuyển sang màn hình đăng ký tài khoản mới */}
             <p className="auth-card__footer">
