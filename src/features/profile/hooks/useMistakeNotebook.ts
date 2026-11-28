@@ -3,22 +3,32 @@ import { useSearchParams } from 'react-router-dom';
 import type { OptionKey } from '@/shared/exam/types/examTypes';
 import { mistakeNotebookService } from '../services/mistakeNotebookService';
 import type {
+    MistakeGroupBy,
     MistakeNotebookData,
     MistakeRetrySetData,
     MistakeRetrySubmitData,
     MistakeSourceType,
 } from '../types/mistakeTypes';
 
-// Số câu hỏi hiển thị mặc định trên mỗi trang Sổ tay
+// Số câu hỏi hiển thị mặc định trên mỗi trang khi mở chi tiết 1 nhóm câu sai
 const DEFAULT_PAGE_SIZE = 10;
-// Số câu tối đa lấy vào 1 phiên làm lại nguyên bộ câu sai
-const DEFAULT_RETRY_LIMIT = 30;
-// Tập hợp mã nguồn hợp lệ để kiểm tra tham số đọc từ URL
+// Số câu tối đa cho 1 phiên làm lại theo nhóm (khớp giới hạn tối đa 50 của Backend)
+export const MAX_MISTAKE_RETRY_LIMIT = 50;
+// Tập hợp mã nguồn hợp lệ để kiểm tra tham số đọc từ URL (chỉ Bài thi vượt ải & Bài thi thử TOEIC)
 const VALID_SOURCE_TYPES: readonly MistakeSourceType[] = [
-    'DIAGNOSTIC',
     'MODULE_TEST',
     'FULL_MOCK_TEST',
 ];
+// Tập hợp chế độ gom nhóm hợp lệ đồng bộ qua ?groupBy=
+const VALID_GROUP_BY: readonly MistakeGroupBy[] = ['part', 'ability', 'source'];
+
+// Kiểu bộ lọc ghi đè khi bấm "Làm lại" trực tiếp từ một thẻ nhóm trên màn hình tổng quan
+export interface MistakeRetryOverrideFilters {
+    partId?: number;
+    abilityId?: number;
+    sourceType?: MistakeSourceType;
+    keyword?: string;
+}
 
 /**
  * Chuyển chuỗi query param trên URL sang số nguyên dương hợp lệ (trả undefined nếu không hợp lệ).
@@ -27,13 +37,10 @@ const VALID_SOURCE_TYPES: readonly MistakeSourceType[] = [
  * @returns Số nguyên dương hoặc undefined
  */
 function parsePositiveIntParam(raw: string | null): number | undefined {
-    // Bỏ qua nếu tham số rỗng
     if (!raw) {
         return undefined;
     }
-    // Ép kiểu sang số nguyên hệ cơ số 10
     const parsed = Number.parseInt(raw, 10);
-    // Chỉ chấp nhận số nguyên dương hợp lệ
     return Number.isFinite(parsed) && parsed > 0 ? parsed : undefined;
 }
 
@@ -44,11 +51,9 @@ function parsePositiveIntParam(raw: string | null): number | undefined {
  * @returns Chỉ số trang >= 0
  */
 function parsePageParam(raw: string | null): number {
-    // Mặc định trang đầu tiên là 0 nếu không có trên URL
     if (!raw) {
         return 0;
     }
-    // Ép kiểu và kẹp về >= 0
     const parsed = Number.parseInt(raw, 10);
     return Number.isFinite(parsed) && parsed >= 0 ? parsed : 0;
 }
@@ -60,96 +65,95 @@ function parsePageParam(raw: string | null): number {
  * @returns MistakeSourceType hợp lệ hoặc undefined
  */
 function parseSourceParam(raw: string | null): MistakeSourceType | undefined {
-    // Trả undefined nếu trống
     if (!raw) {
         return undefined;
     }
-    // Đối chiếu với danh sách hằng số nguồn hợp lệ
     return VALID_SOURCE_TYPES.includes(raw as MistakeSourceType)
         ? (raw as MistakeSourceType)
         : undefined;
 }
 
 /**
- * Custom Hook quản lý toàn bộ nghiệp vụ Sổ tay câu hỏi làm sai và phiên làm lại trực tiếp:
- * - Đồng bộ bộ lọc (part, ability, source, q, page) với URL Search Params để F5 không mất ngữ cảnh.
- * - Nạp danh sách câu sai phân trang từ Backend.
- * - Điều phối mở phiên làm lại nguyên bộ câu sai, chọn đáp án và nộp bài chấm điểm phía server.
+ * Chuẩn hóa chế độ gom nhóm đọc từ URL (?groupBy=), mặc định gom theo Phần thi ('part').
+ *
+ * @param raw Chuỗi chế độ gom nhóm trên URL
+ * @returns MistakeGroupBy hợp lệ
+ */
+function parseGroupByParam(raw: string | null): MistakeGroupBy {
+    if (raw && VALID_GROUP_BY.includes(raw as MistakeGroupBy)) {
+        return raw as MistakeGroupBy;
+    }
+    return 'part';
+}
+
+/**
+ * Custom Hook quản lý toàn bộ nghiệp vụ Sổ tay câu hỏi làm sai 2 tầng và phiên làm lại theo nhóm:
+ * - Tầng 1: Danh sách nhóm theo Phần thi / Kỹ năng / Nguồn bài thi đồng bộ ?groupBy= trên URL.
+ * - Tầng 2: Chi tiết câu sai thuộc nhóm đã chọn kèm phân trang và bộ lọc bổ trợ.
+ * - Hỗ trợ bấm "Làm lại" trực tiếp từ bất kỳ thẻ nhóm nào hoặc trong màn hình chi tiết nhóm.
  *
  * @param isActive Cờ xác nhận tab Sổ tay câu sai đang được mở (tránh gọi API thừa khi đang ở tab khác)
  */
 export function useMistakeNotebook(isActive: boolean) {
-    // Đọc và cập nhật các tham số bộ lọc trực tiếp trên URL
     const [searchParams, setSearchParams] = useSearchParams();
 
     // Lưu dữ liệu Sổ tay câu sai tải từ Backend
     const [data, setData] = useState<MistakeNotebookData | null>(null);
-    // Trạng thái đang tải danh sách câu sai
     const [isLoading, setIsLoading] = useState<boolean>(false);
-    // Thông báo lỗi nếu tải Sổ tay thất bại
     const [error, setError] = useState<string | null>(null);
 
-    // Dữ liệu bộ đề đang mở ở chế độ Làm lại ngay nguyên bộ câu sai
+    // Trạng thái phiên Làm lại theo nhóm
     const [retrySet, setRetrySet] = useState<MistakeRetrySetData | null>(null);
-    // Cờ đang gọi API khởi tạo bộ câu làm lại
     const [isLoadingRetrySet, setIsLoadingRetrySet] = useState<boolean>(false);
-    // Lỗi khi mở hoặc nộp phiên làm lại
     const [retryError, setRetryError] = useState<string | null>(null);
-    // Lưu phương án học viên chọn trong phiên làm lại theo từng questionId
     const [retryAnswers, setRetryAnswers] = useState<Record<number, OptionKey>>({});
-    // Cờ đang gửi bài làm lại lên máy chủ chấm điểm
     const [isSubmittingRetry, setIsSubmittingRetry] = useState<boolean>(false);
-    // Kết quả chấm điểm và lời giải chi tiết trả về sau khi nộp phiên làm lại
     const [retrySubmitResult, setRetrySubmitResult] = useState<MistakeRetrySubmitData | null>(null);
 
-    // Trích xuất từng tiêu chí lọc từ URL Search Params (trạng thái dẫn xuất, không lưu trùng state)
+    // Trích xuất toàn bộ trạng thái lọc và gom nhóm từ URL Search Params
+    const groupBy = parseGroupByParam(searchParams.get('groupBy'));
     const partId = parsePositiveIntParam(searchParams.get('part'));
     const abilityId = parsePositiveIntParam(searchParams.get('ability'));
     const sourceType = parseSourceParam(searchParams.get('source'));
     const keyword = searchParams.get('q') ?? '';
     const page = parsePageParam(searchParams.get('page'));
 
-    // Ô nhập tìm kiếm cục bộ đồng bộ với URL để gõ mượt rồi áp dụng
+    // Xác định đang đứng ở Tầng 2 (Chi tiết 1 nhóm / kết quả tìm kiếm) hay Tầng 1 (Danh sách nhóm)
+    const isGroupDetailView = Boolean(partId || abilityId || sourceType || keyword.trim());
+
+    // Ô nhập tìm kiếm cục bộ đồng bộ với URL
     const [searchInput, setSearchInput] = useState<string>(keyword);
 
-    // Đồng bộ lại ô nhập nếu URL thay đổi (ví dụ bấm nút xóa bộ lọc hoặc quay lại trình duyệt)
     useEffect(() => {
         setSearchInput(keyword);
     }, [keyword]);
 
-    // Hàm gọi API tải danh sách Sổ tay câu hỏi làm sai theo bộ lọc hiện tại
+    // Nạp dữ liệu Sổ tay câu sai từ Backend (khi ở Tầng 1 chỉ cần size=1 để lấy nhanh bộ đếm các nhóm)
     const fetchNotebook = useCallback(async () => {
-        // Bật trạng thái đang tải và xóa lỗi cũ
         setIsLoading(true);
         setError(null);
         try {
-            // Gọi Backend lấy danh sách câu sai theo đúng bộ lọc đang áp dụng
             const res = await mistakeNotebookService.getMistakeNotebook({
                 partId,
                 abilityId,
                 sourceType,
                 keyword,
-                page,
-                size: DEFAULT_PAGE_SIZE,
+                page: isGroupDetailView ? page : 0,
+                size: isGroupDetailView ? DEFAULT_PAGE_SIZE : 1,
             });
-            // Lưu dữ liệu nếu phản hồi thành công
             if (res.success && res.data) {
                 setData(res.data);
             } else {
                 setError(res.message || 'Không thể tải sổ tay câu hỏi làm sai.');
             }
         } catch {
-            // Hiển thị thông điệp thân thiện khi gặp lỗi kết nối
             setError('Không thể kết nối đến máy chủ để tải sổ tay câu hỏi làm sai.');
         } finally {
-            // Tắt trạng thái tải sau khi kết thúc request
             setIsLoading(false);
         }
-    }, [partId, abilityId, sourceType, keyword, page]);
+    }, [partId, abilityId, sourceType, keyword, page, isGroupDetailView]);
 
-    // Tự động nạp lại dữ liệu mỗi khi mở tab Sổ tay hoặc thay đổi bộ lọc / trang
     useEffect(() => {
-        // Không gọi API khi người dùng chưa chuyển sang tab Sổ tay
         if (!isActive) {
             return;
         }
@@ -157,12 +161,11 @@ export function useMistakeNotebook(isActive: boolean) {
     }, [isActive, fetchNotebook]);
 
     /**
-     * Cập nhật một hoặc nhiều tham số lọc trên URL và tự động đưa về trang 0 khi đổi điều kiện lọc.
-     *
-     * @param updates Tập các cặp khóa-giá trị cần cập nhật lên URL
+     * Cập nhật các tham số lọc & gom nhóm trên URL, tự reset về trang 0 khi đổi tiêu chí lọc.
      */
     const updateFilterParams = useCallback(
         (updates: {
+            groupBy?: MistakeGroupBy;
             part?: number | null;
             ability?: number | null;
             source?: MistakeSourceType | null;
@@ -170,12 +173,16 @@ export function useMistakeNotebook(isActive: boolean) {
             page?: number | null;
         }) => {
             setSearchParams((prev) => {
-                // Tạo bản sao URLSearchParams để tránh mutate trực tiếp
                 const next = new URLSearchParams(prev);
-                // Giữ cố định đang đứng ở tab Sổ tay câu sai
                 next.set('tab', 'mistakes');
 
-                // Cập nhật bộ lọc Phần thi và tự xóa bộ lọc kỹ năng nếu đổi Phần thi
+                if ('groupBy' in updates && updates.groupBy) {
+                    if (updates.groupBy === 'part') {
+                        next.delete('groupBy');
+                    } else {
+                        next.set('groupBy', updates.groupBy);
+                    }
+                }
                 if ('part' in updates) {
                     if (updates.part) {
                         next.set('part', String(updates.part));
@@ -183,7 +190,6 @@ export function useMistakeNotebook(isActive: boolean) {
                         next.delete('part');
                     }
                 }
-                // Cập nhật bộ lọc Kỹ năng
                 if ('ability' in updates) {
                     if (updates.ability) {
                         next.set('ability', String(updates.ability));
@@ -191,7 +197,6 @@ export function useMistakeNotebook(isActive: boolean) {
                         next.delete('ability');
                     }
                 }
-                // Cập nhật bộ lọc Nguồn bài thi
                 if ('source' in updates) {
                     if (updates.source) {
                         next.set('source', updates.source);
@@ -199,7 +204,6 @@ export function useMistakeNotebook(isActive: boolean) {
                         next.delete('source');
                     }
                 }
-                // Cập nhật từ khóa tìm kiếm
                 if ('q' in updates) {
                     const trimmed = updates.q?.trim() ?? '';
                     if (trimmed) {
@@ -208,7 +212,6 @@ export function useMistakeNotebook(isActive: boolean) {
                         next.delete('q');
                     }
                 }
-                // Cập nhật trang hiện tại (xóa param nếu về trang đầu 0 để URL gọn đẹp)
                 if ('page' in updates) {
                     if (updates.page && updates.page > 0) {
                         next.set('page', String(updates.page));
@@ -216,7 +219,6 @@ export function useMistakeNotebook(isActive: boolean) {
                         next.delete('page');
                     }
                 } else {
-                    // Mặc định reset về trang đầu khi người dùng thay đổi điều kiện lọc
                     next.delete('page');
                 }
                 return next;
@@ -225,78 +227,117 @@ export function useMistakeNotebook(isActive: boolean) {
         [setSearchParams]
     );
 
-    // Xóa sạch toàn bộ điều kiện lọc đang áp dụng
-    const resetFilters = useCallback(() => {
-        // Xóa trắng ô nhập tìm kiếm ngay lập tức
+    // Chuyển kiểu gom nhóm trên Tầng 1 (Theo Phần thi / Theo Kỹ năng / Theo Nguồn bài thi)
+    const setGroupBy = useCallback(
+        (nextGroupBy: MistakeGroupBy) => {
+            setSearchInput('');
+            updateFilterParams({
+                groupBy: nextGroupBy,
+                part: null,
+                ability: null,
+                source: null,
+                q: null,
+                page: 0,
+            });
+        },
+        [updateFilterParams]
+    );
+
+    // Mở Tầng 2 cho một nhóm cụ thể (Part / Kỹ năng / Nguồn)
+    const openGroup = useCallback(
+        (target: {
+            groupBy?: MistakeGroupBy;
+            part?: number | null;
+            ability?: number | null;
+            source?: MistakeSourceType | null;
+        }) => {
+            setSearchInput('');
+            updateFilterParams({
+                groupBy: target.groupBy ?? groupBy,
+                part: target.part ?? null,
+                ability: target.ability ?? null,
+                source: target.source ?? null,
+                q: null,
+                page: 0,
+            });
+        },
+        [groupBy, updateFilterParams]
+    );
+
+    // Quay từ Tầng 2 (Chi tiết nhóm) về Tầng 1 (Danh sách nhóm) nhưng giữ nguyên chế độ gom nhóm
+    const backToGroups = useCallback(() => {
         setSearchInput('');
-        // Xóa tất cả query param lọc trên URL
         updateFilterParams({
+            groupBy,
             part: null,
             ability: null,
             source: null,
             q: null,
             page: 0,
         });
-    }, [updateFilterParams]);
+    }, [groupBy, updateFilterParams]);
 
-    // Áp dụng từ khóa tìm kiếm khi người dùng nhấn Enter hoặc nút Tìm
+    // Áp dụng từ khóa tìm kiếm tức thì (tự chuyển vào màn hình kết quả Tầng 2)
     const applySearchKeyword = useCallback(() => {
         updateFilterParams({ q: searchInput });
     }, [searchInput, updateFilterParams]);
 
-    // Khởi tạo phiên làm lại ngay nguyên bộ câu sai theo đúng bộ lọc đang chọn
-    const startRetrySession = useCallback(async () => {
-        // Bật loading khởi tạo phiên làm lại và xóa trạng thái cũ
-        setIsLoadingRetrySet(true);
-        setRetryError(null);
-        setRetrySubmitResult(null);
-        setRetryAnswers({});
-        try {
-            // Lấy bộ đề làm lại đã ẩn đáp án từ Backend
-            const res = await mistakeNotebookService.getRetrySet(
-                { partId, abilityId, sourceType, keyword },
-                DEFAULT_RETRY_LIMIT
-            );
-            if (res.success && res.data && res.data.questions.length > 0) {
-                setRetrySet(res.data);
-            } else {
-                setRetryError('Không có câu hỏi phù hợp để bắt đầu phiên làm lại.');
-            }
-        } catch {
-            // Báo lỗi rõ ràng nếu gọi API thất bại
-            setRetryError('Không thể khởi tạo phiên làm lại lúc này. Vui lòng thử lại.');
-        } finally {
-            setIsLoadingRetrySet(false);
-        }
-    }, [partId, abilityId, sourceType, keyword]);
+    // Khởi tạo phiên Làm lại cho đúng nhóm được chọn (hoặc nhóm đang mở trên Tầng 2)
+    const startRetrySession = useCallback(
+        async (overrideFilters?: MistakeRetryOverrideFilters) => {
+            setIsLoadingRetrySet(true);
+            setRetryError(null);
+            setRetrySubmitResult(null);
+            setRetryAnswers({});
 
-    // Ghi nhận đáp án học viên chọn cho 1 câu trong phiên làm lại
+            const targetParams = overrideFilters
+                ? {
+                      partId: overrideFilters.partId,
+                      abilityId: overrideFilters.abilityId,
+                      sourceType: overrideFilters.sourceType,
+                      keyword: overrideFilters.keyword,
+                  }
+                : { partId, abilityId, sourceType, keyword };
+
+            try {
+                const res = await mistakeNotebookService.getRetrySet(
+                    targetParams,
+                    MAX_MISTAKE_RETRY_LIMIT
+                );
+                if (res.success && res.data && res.data.questions.length > 0) {
+                    setRetrySet(res.data);
+                } else {
+                    setRetryError('Không có câu hỏi phù hợp trong nhóm này để bắt đầu phiên làm lại.');
+                }
+            } catch {
+                setRetryError('Không thể khởi tạo phiên làm lại lúc này. Vui lòng thử lại.');
+            } finally {
+                setIsLoadingRetrySet(false);
+            }
+        },
+        [partId, abilityId, sourceType, keyword]
+    );
+
     const selectRetryOption = useCallback((questionId: number, option: OptionKey) => {
-        // Không cho sửa đáp án nếu phiên đã được nộp chấm điểm
         setRetryAnswers((prev) => ({
             ...prev,
             [questionId]: option,
         }));
     }, []);
 
-    // Nộp toàn bộ đáp án của phiên làm lại lên Backend chấm điểm tức thì
     const submitRetrySession = useCallback(async () => {
-        // Bảo vệ nếu không có bộ câu hỏi đang mở
         if (!retrySet || retrySet.questions.length === 0) {
             return;
         }
-        // Bật trạng thái đang nộp bài
         setIsSubmittingRetry(true);
         setRetryError(null);
         try {
-            // Đóng gói danh sách câu trả lời theo đúng thứ tự bộ câu hỏi trong phiên
             const payload = {
                 answers: retrySet.questions.map((q) => ({
                     questionId: q.questionId,
                     selectedAnswer: retryAnswers[q.questionId] ?? null,
                 })),
             };
-            // Gọi Backend chấm điểm và nhận lời giải chi tiết cho từng câu
             const res = await mistakeNotebookService.submitRetryAnswers(payload);
             if (res.success && res.data) {
                 setRetrySubmitResult(res.data);
@@ -310,14 +351,12 @@ export function useMistakeNotebook(isActive: boolean) {
         }
     }, [retrySet, retryAnswers]);
 
-    // Làm lại ngay 1 lượt mới trên cùng bộ câu hỏi hiện tại (xóa đáp án đã chọn & kết quả cũ)
     const restartCurrentRetrySession = useCallback(() => {
         setRetryAnswers({});
         setRetrySubmitResult(null);
         setRetryError(null);
     }, []);
 
-    // Thoát chế độ làm lại và quay về danh sách xem lại Sổ tay
     const exitRetrySession = useCallback(() => {
         setRetrySet(null);
         setRetryAnswers({});
@@ -325,7 +364,7 @@ export function useMistakeNotebook(isActive: boolean) {
         setRetryError(null);
     }, []);
 
-    // Lọc danh sách kỹ năng trong dropdown theo Part đang chọn (nếu người dùng đã chọn Part)
+    // Lọc danh sách kỹ năng khả dụng trong Part đang chọn (dùng cho thanh lọc phụ ở Tầng 2)
     const availableAbilities = useMemo(() => {
         const allAbilities = data?.filterOptions.abilities ?? [];
         if (!partId) {
@@ -334,20 +373,18 @@ export function useMistakeNotebook(isActive: boolean) {
         return allAbilities.filter((ab) => ab.partId === partId);
     }, [data, partId]);
 
-    // Kiểm tra có đang bật bất kỳ điều kiện lọc nào hay không
-    const hasActiveFilters = Boolean(partId || abilityId || sourceType || keyword.trim());
-
     return {
         data,
         isLoading,
         error,
+        groupBy,
+        isGroupDetailView,
         partId,
         abilityId,
         sourceType,
         keyword,
         searchInput,
         page,
-        hasActiveFilters,
         availableAbilities,
         retrySet,
         isLoadingRetrySet,
@@ -357,8 +394,10 @@ export function useMistakeNotebook(isActive: boolean) {
         retrySubmitResult,
         setSearchInput,
         refetch: fetchNotebook,
+        setGroupBy,
+        openGroup,
+        backToGroups,
         updateFilterParams,
-        resetFilters,
         applySearchKeyword,
         startRetrySession,
         selectRetryOption,

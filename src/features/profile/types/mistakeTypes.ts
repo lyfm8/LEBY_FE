@@ -1,11 +1,13 @@
 import type { ExamExplanation, ExamOption, OptionKey, SectionType } from '@/shared/exam/types/examTypes';
 
 // Nguồn bài thi phát sinh câu hỏi làm sai khớp 100% với enum EMistakeSourceType của Backend
-export type MistakeSourceType = 'DIAGNOSTIC' | 'MODULE_TEST' | 'FULL_MOCK_TEST';
+export type MistakeSourceType = 'MODULE_TEST' | 'FULL_MOCK_TEST';
+
+// Chế độ gom nhóm hiển thị ở tầng tổng quan Sổ tay câu sai
+export type MistakeGroupBy = 'part' | 'ability' | 'source';
 
 // Bảng quy đổi mã nguồn sang nhãn tiếng Việt chuẩn giao diện sản phẩm
 export const MISTAKE_SOURCE_LABELS: Record<MistakeSourceType, string> = {
-    DIAGNOSTIC: 'Bài thi chẩn đoán',
     MODULE_TEST: 'Bài thi vượt ải',
     FULL_MOCK_TEST: 'Bài thi thử TOEIC',
 };

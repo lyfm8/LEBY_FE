@@ -1,16 +1,12 @@
-import { AlertCircle, BookOpen } from 'lucide-react';
+import { AlertCircle } from 'lucide-react';
 import type { UserSkillStatResponse } from '../types/profileTypes';
 
 // Kiểu props cho tab Bảng hồ sơ năng lực kỹ năng TOEIC
 interface ProfileAbilityTabProps {
     skills: UserSkillStatResponse[];
-    onReviewAbilityMistakes?: (abilityId: number) => void;
 }
 
-export function ProfileAbilityTab({
-    skills,
-    onReviewAbilityMistakes,
-}: ProfileAbilityTabProps) {
+export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
     function getStatusBadge(status: UserSkillStatResponse['status']) {
         switch (status) {
             case 'STABLE':
@@ -62,7 +58,6 @@ export function ProfileAbilityTab({
                                 <th>Tỷ lệ chính xác</th>
                                 <th>Số câu đã làm</th>
                                 <th>Đánh giá hệ thống</th>
-                                {onReviewAbilityMistakes && <th>Ôn tập</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -93,19 +88,6 @@ export function ProfileAbilityTab({
                                         </td>
                                         <td>{s.evidenceCount} câu hỏi</td>
                                         <td>{getStatusBadge(s.status)}</td>
-                                        {onReviewAbilityMistakes && (
-                                            <td>
-                                                {/* Điều hướng thẳng sang tab Sổ tay câu sai đã lọc sẵn đúng kỹ năng này */}
-                                                <button
-                                                    type="button"
-                                                    className="pf-skill-review-btn"
-                                                    onClick={() => onReviewAbilityMistakes(s.abilityId)}
-                                                >
-                                                    <BookOpen size={13} />
-                                                    <span>Ôn câu sai</span>
-                                                </button>
-                                            </td>
-                                        )}
                                     </tr>
                                 );
                             })}

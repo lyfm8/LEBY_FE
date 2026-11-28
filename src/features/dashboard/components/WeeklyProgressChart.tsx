@@ -4,61 +4,67 @@ import type { DashboardWeeklyDay } from '../types/dashboardTypes';
 // Kiểu props nhận vào của biểu đồ tiến độ học tập 7 ngày gần nhất
 interface WeeklyProgressChartProps {
     days: DashboardWeeklyDay[];
-    weeklyStudyMinutes: number;
     weeklyActiveDays: number;
 }
 
 /**
- * Biểu đồ cột tiến độ học tập 7 ngày gần nhất dựng thuần CSS/SVG (không cài thêm thư viện ngoài).
- * Hiển thị số phút học từng ngày, làm nổi bật cột hôm nay và xử lý gọn trạng thái chưa có hoạt động.
+ * Biểu đồ cột hoạt động hoàn thành 7 ngày gần nhất dựng thuần CSS/SVG (không cài thêm thư viện ngoài).
+ * Hiển thị số bài học hoàn thành và bài thi đã nộp theo từng ngày cố định (không bị dịch chuyển giữa các ngày).
  */
 export function WeeklyProgressChart({
     days,
-    weeklyStudyMinutes,
     weeklyActiveDays,
 }: WeeklyProgressChartProps) {
-    // Tìm số phút cao nhất trong 7 ngày để chuẩn hóa tỷ lệ chiều cao cột (tối thiểu 15 phút để cột nhỏ vẫn cân đối)
-    const maxMinutes = days.reduce((highest, day) => Math.max(highest, day.studyMinutes), 0);
-    const scaleCeiling = Math.max(15, maxMinutes);
-    // Kiểm tra xem cả 7 ngày đều chưa ghi nhận hoạt động nào hay không
-    const hasAnyActivity = weeklyStudyMinutes > 0 || weeklyActiveDays > 0;
+    // Tổng hợp số bài học hoàn thành và bài thi đã nộp trong 7 ngày gần nhất từ mốc thời gian cố định
+    const weeklyCompletedLessons = days.reduce((sum, day) => sum + day.completedLessons, 0);
+    const weeklyTestsSubmitted = days.reduce((sum, day) => sum + day.testsSubmitted, 0);
+    const weeklyTotalActivities = weeklyCompletedLessons + weeklyTestsSubmitted;
+
+    // Tìm số hoạt động cao nhất trong 7 ngày để chuẩn hóa tỷ lệ chiều cao cột (tối thiểu 4 để cột nhỏ vẫn cân đối)
+    const maxActivities = days.reduce(
+        (highest, day) => Math.max(highest, day.completedLessons + day.testsSubmitted),
+        0
+    );
+    const scaleCeiling = Math.max(4, maxActivities);
+    const hasAnyActivity = weeklyTotalActivities > 0 || weeklyActiveDays > 0;
 
     return (
         <section className="db-card db-weekly-card">
-            {/* Tiêu đề khối biểu đồ và tóm tắt tổng thời gian tuần này */}
+            {/* Tiêu đề khối biểu đồ và tóm tắt số bài học / bài thi hoàn thành trong tuần */}
             <div className="db-card__header">
                 <div>
-                    <h3 className="db-card__title">Tiến độ học tập 7 ngày gần nhất</h3>
+                    <h3 className="db-card__title">Hoạt động học tập 7 ngày gần nhất</h3>
                     <p className="db-card__subtitle">
                         {hasAnyActivity
-                            ? `Bạn đã học ${weeklyStudyMinutes} phút trong ${weeklyActiveDays}/7 ngày vừa qua`
-                            : 'Chưa có thời gian học trong tuần này — bắt đầu 1 bài giảng ngay hôm nay để khởi động chuỗi học'}
+                            ? `Hoàn thành ${weeklyCompletedLessons} bài giảng và ${weeklyTestsSubmitted} bài thi trong ${weeklyActiveDays}/7 ngày vừa qua`
+                            : 'Chưa có bài học hoàn thành trong tuần này — bắt đầu 1 bài giảng ngay hôm nay để khởi động chuỗi học'}
                     </p>
                 </div>
                 <span className="db-weekly-card__badge">
                     <BarChart3 size={15} />
-                    <span>{weeklyStudyMinutes} phút</span>
+                    <span>{weeklyTotalActivities} hoạt động</span>
                 </span>
             </div>
 
             {/* Lưới 7 cột ngày liên tiếp từ 6 ngày trước đến hôm nay */}
-            <div className="db-weekly-chart" role="img" aria-label="Biểu đồ số phút học 7 ngày gần nhất">
+            <div className="db-weekly-chart" role="img" aria-label="Biểu đồ hoạt động học tập 7 ngày gần nhất">
                 {days.map((day) => {
-                    // Tính chiều cao phần trăm của cột (giữ mức nền tối thiểu 6% khi có phút học để dễ quan sát)
-                    const rawHeight = Math.round((day.studyMinutes / scaleCeiling) * 100);
-                    const barHeightPercent = day.studyMinutes > 0 ? Math.max(10, Math.min(100, rawHeight)) : 4;
+                    const dayActivities = day.completedLessons + day.testsSubmitted;
+                    // Tính chiều cao phần trăm của cột (giữ mức nền tối thiểu 12% khi có hoạt động để dễ quan sát)
+                    const rawHeight = Math.round((dayActivities / scaleCeiling) * 100);
+                    const barHeightPercent = dayActivities > 0 ? Math.max(12, Math.min(100, rawHeight)) : 4;
                     // Tạo nội dung giải thích chi tiết khi người dùng rê chuột vào từng ngày
-                    const tooltipText = `${day.dayLabel} (${day.date}): ${day.studyMinutes} phút học • ${day.completedLessons} bài hoàn thành • ${day.testsSubmitted} bài thi`;
+                    const tooltipText = `${day.dayLabel} (${day.date}): ${day.completedLessons} bài học hoàn thành • ${day.testsSubmitted} bài thi đã nộp`;
 
                     return (
                         <div
                             key={day.date}
-                            className={`db-weekly-col ${day.isToday ? 'is-today' : ''} ${day.studyMinutes > 0 ? 'has-data' : ''}`}
+                            className={`db-weekly-col ${day.isToday ? 'is-today' : ''} ${dayActivities > 0 ? 'has-data' : ''}`}
                             title={tooltipText}
                         >
-                            {/* Giá trị số phút hiển thị gọn phía trên đầu cột */}
+                            {/* Tổng số hoạt động hoàn thành hiển thị gọn phía trên đầu cột */}
                             <span className="db-weekly-col__value">
-                                {day.studyMinutes > 0 ? `${day.studyMinutes}p` : '0'}
+                                {dayActivities > 0 ? `${dayActivities}` : '0'}
                             </span>
 
                             {/* Khung cột chứa thanh dữ liệu chiều cao động */}

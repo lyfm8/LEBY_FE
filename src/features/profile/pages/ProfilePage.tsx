@@ -53,14 +53,6 @@ export default function ProfilePage() {
         setSearchParams({ tab: nextTab });
     }
 
-    // Chuyển thẳng sang tab Sổ tay câu sai đã lọc sẵn đúng kỹ năng đang xem từ bảng năng lực
-    function handleReviewAbilityMistakes(abilityId: number) {
-        setSearchParams({
-            tab: 'mistakes',
-            ability: String(abilityId),
-        });
-    }
-
     if (isLoading) {
         return (
             <div className="app-layout">
@@ -156,10 +148,7 @@ export default function ProfilePage() {
                     )}
 
                     {activeTab === 'skills' && (
-                        <ProfileAbilityTab
-                            skills={data.skills}
-                            onReviewAbilityMistakes={handleReviewAbilityMistakes}
-                        />
+                        <ProfileAbilityTab skills={data.skills} />
                     )}
 
                     {activeTab === 'mistakes' && (

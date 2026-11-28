@@ -174,7 +174,10 @@ export default function DashboardPage() {
           : 'Bắt đầu bài học đầu tiên hôm nay';
 
     // Chuẩn bị dòng phụ chú thật cho thẻ Thời gian đã học
-    const studyTimeSubtext = `Tuần này: ${data.stats.weeklyStudyMinutes} phút (${data.stats.weeklyActiveDays}/7 ngày)`;
+    const studyTimeSubtext =
+        data.stats.weeklyActiveDays > 0
+            ? `Duy trì học ${data.stats.weeklyActiveDays}/7 ngày vừa qua`
+            : 'Tích lũy từ bài giảng Video & bài thi';
 
     return (
         <div className="app-layout">
@@ -302,7 +305,6 @@ export default function DashboardPage() {
 
                             <WeeklyProgressChart
                                 days={data.weeklyProgress}
-                                weeklyStudyMinutes={data.stats.weeklyStudyMinutes}
                                 weeklyActiveDays={data.stats.weeklyActiveDays}
                             />
                         </div>

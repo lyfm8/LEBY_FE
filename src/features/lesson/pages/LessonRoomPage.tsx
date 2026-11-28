@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, Navigate, useNavigate, useParams } from 'react-router-dom';
 import {
     AlertCircle,
     ArrowRight,
@@ -16,7 +16,7 @@ import {
     X,
 } from 'lucide-react';
 import { LessonRoomSkeleton } from '../components/LessonRoomSkeleton';
-import { LessonSidebarList } from '../components/LessonSidebarList';
+import { LessonSidebarList, buildLessonRoutePath } from '../components/LessonSidebarList';
 import { PracticeQuestionView } from '../components/PracticeQuestionView';
 import { VideoPlayer } from '../components/VideoPlayer';
 import { useLessonRoom } from '../hooks/useLessonRoom';
@@ -158,17 +158,29 @@ export default function LessonRoomPage() {
         );
     }
 
+    // Nếu người dùng mở trực tiếp URL của bài thực hành (PRACTICE) -> chuyển thẳng sang Phòng luyện tập UC12
+    if (lesson.lessonType === 'PRACTICE') {
+        return <Navigate to={`/modules/${lesson.moduleId}/lessons/${lesson.id}/practice`} replace />;
+    }
+
     // Xác định bài học hiện tại có phải bài giảng lý thuyết (Video) hay không
     const isTheoryVideoLesson = lesson.lessonType === 'VIDEO';
     // Đường dẫn quay lại trang chi tiết mô-đun chứa bài giảng này
     const backToModuleUrl = `/modules/${lesson.moduleId}`;
+    // Tra loại bài liền trước/liền sau trong danh sách bài học để dẫn đúng phòng Video (UC11) hay Thực hành (UC12)
+    const prevNavItem = lesson.prevLessonId
+        ? lesson.moduleLessons.find((item) => item.id === lesson.prevLessonId)
+        : undefined;
+    const nextNavItem = lesson.nextLessonId
+        ? lesson.moduleLessons.find((item) => item.id === lesson.nextLessonId)
+        : undefined;
     // Đường dẫn chuyển sang bài học liền trước (nếu có)
     const prevLessonUrl = lesson.prevLessonId
-        ? `/modules/${lesson.moduleId}/lessons/${lesson.prevLessonId}`
+        ? buildLessonRoutePath(lesson.moduleId, lesson.prevLessonId, prevNavItem?.lessonType)
         : null;
     // Đường dẫn chuyển sang bài học liền sau (nếu có)
     const nextLessonUrl = lesson.nextLessonId
-        ? `/modules/${lesson.moduleId}/lessons/${lesson.nextLessonId}`
+        ? buildLessonRoutePath(lesson.moduleId, lesson.nextLessonId, nextNavItem?.lessonType)
         : null;
 
     return (

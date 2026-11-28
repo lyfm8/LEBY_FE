@@ -625,30 +625,6 @@
     animation: spin 0.8s linear infinite;
 }
 
-/* ── Skill Review Shortcut Button ─────────────────────────── */
-.pf-skill-review-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    border-radius: 8px;
-    border: 1px solid #fed7aa;
-    background: #fff7ed;
-    color: #ea580c;
-    font-family: inherit;
-    font-size: 12.5px;
-    font-weight: 700;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.15s ease;
-}
-
-.pf-skill-review-btn:hover {
-    background: #ea580c;
-    border-color: #ea580c;
-    color: #ffffff;
-}
-
 /* ── Skeleton Loader ──────────────────────────────────────── */
 .pf-skeleton-bar {
     height: 16px;
@@ -1290,4 +1266,382 @@
     .pf-retry-topbar {
         position: static;
     }
+}
+
+
+/* ── Mistake Notebook 2-Tier Grouping & Accordion Redesign ── */
+.pf-mistake-group-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border-radius: 12px;
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    flex-wrap: wrap;
+}
+
+.pf-mistake-group-tab {
+    border: none;
+    background: transparent;
+    color: #475569;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 7px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
+    white-space: nowrap;
+}
+
+.pf-mistake-group-tab:hover {
+    color: #0f172a;
+}
+
+.pf-mistake-group-tab.is-active {
+    background: #ffffff;
+    color: #ea580c;
+    font-weight: 700;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.08);
+}
+
+.pf-mistake-search-form--full {
+    flex: 1 1 100%;
+}
+
+.pf-mistake-state-actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+}
+
+.pf-mistake-group-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+}
+
+.pf-mistake-group-card {
+    background: #ffffff;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.pf-mistake-group-card:hover {
+    border-color: #fdba74;
+    box-shadow: 0 8px 20px -6px rgba(15, 23, 42, 0.08);
+    transform: translateY(-1px);
+}
+
+.pf-mistake-group-card__top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.pf-mistake-group-card__title-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    min-width: 0;
+}
+
+.pf-mistake-group-card__icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.pf-mistake-group-card__icon.is-part {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.pf-mistake-group-card__icon.is-ability {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+.pf-mistake-group-card__icon.is-source {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.pf-mistake-group-card__title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.pf-mistake-group-card__subtitle {
+    display: block;
+    margin-top: 3px;
+    font-size: 12.5px;
+    color: #64748b;
+}
+
+.pf-mistake-group-card__count {
+    font-size: 12.5px;
+    font-weight: 800;
+    color: #dc2626;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.pf-mistake-group-card__chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.pf-mistake-group-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #334155;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background-color 0.15s ease, color 0.15s ease;
+}
+
+.pf-mistake-group-chip:hover {
+    border-color: #93c5fd;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.pf-mistake-group-chip.is-muted {
+    cursor: default;
+    color: #64748b;
+}
+
+.pf-mistake-group-chip.is-muted:hover {
+    border-color: #e2e8f0;
+    background: #f8fafc;
+    color: #64748b;
+}
+
+.pf-mistake-group-chip__num {
+    font-size: 11px;
+    font-weight: 800;
+    color: #ea580c;
+    background: #fff7ed;
+    padding: 1px 6px;
+    border-radius: 9999px;
+}
+
+.pf-mistake-group-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid #f1f5f9;
+}
+
+.pf-mistake-group-btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 9px 14px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* Tầng 2: Thanh tiêu đề nhóm & Accordion từng câu */
+.pf-mistake-detail-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.pf-mistake-detail-bar__left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+}
+
+.pf-mistake-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 13px;
+    border-radius: 10px;
+    border: 1.5px solid #e2e8f0;
+    background: #f8fafc;
+    color: #334155;
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+}
+
+.pf-mistake-back-btn:hover {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+.pf-mistake-detail-bar__actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.pf-mistake-expand-all-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 13px;
+}
+
+.pf-mistake-list--compact {
+    gap: 12px;
+}
+
+.pf-mistake-card.is-collapsed {
+    padding: 14px 18px;
+    gap: 0;
+}
+
+.pf-mistake-accordion-trigger {
+    width: 100%;
+    border: none;
+    background: transparent;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    text-align: left;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+.pf-mistake-accordion-trigger__main {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+    flex: 1;
+}
+
+.pf-mistake-accordion-preview {
+    margin: 0;
+    font-size: 13.5px;
+    color: #334155;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pf-mistake-accordion-trigger__right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+}
+
+.pf-mistake-expand-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12.5px;
+    font-weight: 700;
+    color: #ea580c;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 5px 11px;
+    border-radius: 9999px;
+    white-space: nowrap;
+}
+
+.pf-mistake-ability-more {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #475569;
+    background: #f1f5f9;
+    padding: 3px 8px;
+    border-radius: 8px;
+}
+
+.pf-mistake-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding-top: 14px;
+    margin-top: 12px;
+    border-top: 1px dashed #e2e8f0;
+}
+
+.pf-mistake-card__submeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+@media (max-width: 900px) {
+    .pf-mistake-group-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .pf-mistake-accordion-trigger {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .pf-mistake-accordion-trigger__right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}
+
+.pf-mistake-group-card__count.is-zero {
+    color: #64748b;
+    background: #f8fafc;
+    border-color: #e2e8f0;
+}
+
+.pf-mistake-source-empty-note {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    padding: 6px 0;
 }
