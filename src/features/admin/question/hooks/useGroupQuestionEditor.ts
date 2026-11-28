@@ -65,8 +65,6 @@ export function useGroupQuestionEditor(id?: string) {
   const [isLoadingInitial, setIsLoadingInitial] = useState<boolean>(false);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [formError, setFormError] = useState<string | null>(null);
-  const [showPreview, setShowPreview] = useState<boolean>(false);
-
   // Options Part & Ability
   const { parts, abilities, selectedPart, isLoadingParts, isLoadingAbilities } =
     usePartAbilityOptions(partId);
@@ -349,8 +347,6 @@ export function useGroupQuestionEditor(id?: string) {
     isSaving,
     formError,
     setFormError,
-    showPreview,
-    setShowPreview,
     parts,
     abilities,
     selectedPart,

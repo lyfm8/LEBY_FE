@@ -144,18 +144,11 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({
 
     return (
         <div className="media-uploader-component">
-            <div className="media-uploader-top">
-                <label className="form-label font-medium text-gray-700">{label}</label>
-                <span className="media-counter">
-                    {medias.length}/{maxFiles} tệp
-                </span>
-            </div>
-
             {/* Input file ẩn */}
             <input
                 ref={fileInputRef}
                 type="file"
-                className="hidden"
+                style={{ display: 'none' }}
                 accept="image/*,audio/*,video/*,.mp3,.wav,.m4a,.mp4,.webm,.png,.jpg,.jpeg,.webp"
                 onChange={handleFileSelected}
                 disabled={isUploading}

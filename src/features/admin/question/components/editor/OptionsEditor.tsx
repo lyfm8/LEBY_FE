@@ -68,7 +68,7 @@ export const OptionsEditor: React.FC<OptionsEditorProps> = ({
                             }}
                             onClick={() => handleSetOptionCount(3)}
                         >
-                            3 đáp án (A–C)
+                            3 đáp án
                         </button>
                         <button
                             type="button"
@@ -85,7 +85,7 @@ export const OptionsEditor: React.FC<OptionsEditorProps> = ({
                             }}
                             onClick={() => handleSetOptionCount(4)}
                         >
-                            4 đáp án (A–D)
+                            4 đáp án
                         </button>
                     </div>
                 )}
