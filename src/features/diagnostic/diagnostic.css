@@ -1212,43 +1212,116 @@
     font-size: 13px;
     color: #94a3b8;
     margin-bottom: 14px;
+    flex-wrap: wrap;
 }
 
-.diag-breadcrumb a {
-    color: #94a3b8;
+.diag-breadcrumb a,
+.diag-breadcrumb__link {
+    color: #cbd5e1;
     text-decoration: none;
+    padding: 3px 7px;
+    border-radius: 6px;
+    transition: background-color 0.15s ease, color 0.15s ease;
+    cursor: pointer;
 }
 
-.diag-breadcrumb a:hover {
+.diag-breadcrumb a:hover,
+.diag-breadcrumb__link:hover {
     color: #ffffff;
+    background: rgba(255, 255, 255, 0.12);
 }
 
 .diag-breadcrumb .is-active {
-    color: #e2e8f0;
-    font-weight: 600;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.diag-back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 7px 14px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    border: 1px solid rgba(148, 163, 184, 0.35);
+    background: rgba(255, 255, 255, 0.08);
+    color: #f8fafc;
+    font-size: 13.5px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.diag-back-btn:hover {
+    background: rgba(255, 255, 255, 0.16);
+    border-color: rgba(255, 255, 255, 0.5);
 }
 
 .diag-hero-banner__title {
     font-size: 32px !important;
     font-weight: 800 !important;
     color: #ffffff !important;
-    margin: 0 0 10px !important;
+    margin: 0 !important;
     letter-spacing: -0.02em;
     line-height: 1.25 !important;
 }
 
-.diag-hero-banner__desc {
-    font-size: 15px;
+.diag-hero-banner__metrics-grid {
+    display: flex;
+    align-items: stretch;
+    gap: 14px;
+    flex-wrap: wrap;
+    flex-shrink: 0;
+}
+
+.diag-hero-banner__metric-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(148, 163, 184, 0.24);
+    border-radius: 18px;
+    padding: 20px 24px;
+    min-width: 148px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.diag-hero-banner__metric-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    color: #cbd5e1;
+    margin-bottom: 6px;
+}
+
+.diag-hero-banner__metric-val {
+    font-size: 36px;
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+}
+
+.diag-hero-banner__metric-sub {
+    display: block;
+    font-size: 12px;
     color: #94a3b8;
-    margin: 0;
+    margin-top: 6px;
+    font-weight: 600;
 }
 
 .diag-hero-banner__score-card {
     background-color: #ea580c;
     border-radius: 18px;
-    padding: 20px 32px;
+    padding: 20px 28px;
+    min-width: 170px;
     text-align: center;
     flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     box-shadow: 0 12px 28px -4px rgba(234, 88, 12, 0.45);
 }
 
@@ -1772,7 +1845,8 @@
 .diag-loading-page,
 .diag-error-page,
 .diag-state-page {
-    min-height: 100vh;
+    flex: 1;
+    min-height: calc(100vh - 68px);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1783,6 +1857,15 @@
     background-color: #f8fafc;
     padding: 24px;
     box-sizing: border-box;
+}
+
+/* Đảm bảo thanh thông tin phòng thi nằm gọn ngay bên dưới thanh điều hướng chính */
+.diag-room-page.is-with-topbar {
+    min-height: calc(100vh - 68px);
+}
+
+.diag-room-page.is-with-topbar .diag-header {
+    top: 68px;
 }
 
 .diag-state-card {
