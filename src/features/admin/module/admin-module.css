@@ -315,16 +315,9 @@
   align-items: center;
 }
 
-.tree-search-wrapper .search-icon {
-  position: absolute;
-  left: 0.65rem;
-  color: #9ca3af;
-  pointer-events: none;
-}
-
 .tree-search-input {
   width: 100%;
-  padding: 0.45rem 1.8rem 0.45rem 2rem;
+  padding: 0.45rem 2.4rem 0.45rem 0.75rem;
   font-size: 0.8125rem;
   background-color: #f9fafb;
   border: 1px solid #e5e7eb;
@@ -450,24 +443,6 @@
   cursor: grabbing;
 }
 
-.drag-grip-handle-sm {
-  color: #d1d5db;
-  cursor: grab;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  padding: 1px;
-  transition: color 0.15s;
-}
-
-.drag-grip-handle-sm:hover {
-  color: #ea580c;
-}
-
-.drag-grip-handle-sm:active {
-  cursor: grabbing;
-}
-
 .tree-toggle-btn {
   background: none;
   border: none;
@@ -510,58 +485,6 @@
   flex: 1;
 }
 
-.tree-module-header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-
-.module-count-pill {
-  font-size: 0.65625rem;
-  font-weight: 600;
-  color: #6b7280;
-  background-color: #f3f4f6;
-  padding: 0.1rem 0.35rem;
-  border-radius: 9999px;
-  white-space: nowrap;
-}
-
-.tree-status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.dot-published {
-  background-color: #10b981;
-}
-
-.dot-draft {
-  background-color: #f59e0b;
-}
-
-.dot-archived {
-  background-color: #9ca3af;
-}
-
-/* Hover action buttons pattern */
-.tree-actions-hover {
-  display: flex;
-  align-items: center;
-  gap: 0.15rem;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.15s ease-in-out;
-}
-
-.tree-module-header:hover .tree-actions-hover,
-.tree-leaf-item:hover .tree-actions-hover {
-  opacity: 1;
-  pointer-events: auto;
-}
-
 .tree-icon-btn {
   background: none;
   border: none;
@@ -582,25 +505,6 @@
 .tree-icon-btn.delete-btn:hover {
   color: #ef4444;
   background-color: #fee2e2;
-}
-
-.tree-icon-btn.move-btn {
-  padding: 2px;
-}
-
-.tree-icon-btn.move-btn:hover:not(:disabled) {
-  color: #ea580c;
-  background-color: #ffedd5;
-}
-
-.tree-icon-btn.move-btn:disabled {
-  opacity: 0.25;
-  cursor: default;
-}
-
-.move-btn-group {
-  display: inline-flex;
-  align-items: center;
 }
 
 /* --------------------------------------------------------------------------
@@ -656,10 +560,6 @@
   min-width: 0;
 }
 
-.leaf-icon {
-  flex-shrink: 0;
-}
-
 .leaf-order {
   color: #9ca3af;
   font-size: 0.75rem;
@@ -672,80 +572,6 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   flex: 1;
-}
-
-.tree-leaf-right {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
-
-.leaf-meta-tags {
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  transition: opacity 0.15s;
-}
-
-.tree-leaf-item:hover .leaf-meta-tags {
-  display: none;
-}
-
-.tree-leaf-item .leaf-icon.text-blue {
-  color: #2563eb;
-}
-
-.tree-leaf-item .leaf-icon.text-orange {
-  color: #ea580c;
-}
-
-.lesson-type-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  font-size: 0.625rem;
-  font-weight: 700;
-  padding: 0.05rem 0.35rem;
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
-.lesson-type-badge.type-video {
-  background-color: #dbeafe;
-  color: #1d4ed8;
-}
-
-.lesson-type-badge.type-practice {
-  background-color: #f3e8ff;
-  color: #7e22ce;
-}
-
-.duration-tag {
-  font-size: 0.625rem;
-  font-weight: 600;
-  font-family: monospace;
-  color: #4b5563;
-  background-color: #f3f4f6;
-  padding: 0.05rem 0.35rem;
-  border-radius: 3px;
-  white-space: nowrap;
-}
-
-.test-leaf {
-  border-left: 2px solid #ea580c;
-  margin-top: 0.15rem;
-  background-color: #fffaf5;
-}
-
-.pass-score-pill {
-  font-size: 0.6875rem;
-  color: #c2410c;
-  background-color: #ffedd5;
-  border: 1px solid #fed7aa;
-  padding: 0.05rem 0.35rem;
-  border-radius: 4px;
-  font-weight: 700;
 }
 
 .tree-add-lesson-btn {
@@ -1880,15 +1706,9 @@
   align-items: center;
 }
 
-.thresholds-filter-bar .search-box .icon {
-  position: absolute;
-  left: 0.75rem;
-  color: #9ca3af;
-}
-
 .thresholds-filter-bar .search-box input {
   width: 100%;
-  padding: 0.4rem 0.75rem 0.4rem 2.1rem;
+  padding: 0.4rem 0.75rem;
   border: 1px solid #d1d5db;
   border-radius: 6px;
   font-family: var(--admin-font-family);

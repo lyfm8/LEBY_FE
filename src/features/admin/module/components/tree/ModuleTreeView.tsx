@@ -1,14 +1,12 @@
 import React, { useState, useMemo, useCallback, useRef } from 'react';
 import type { ModuleResponse, EditorActiveView } from '../../types';
 import { ModuleTreeItem } from './ModuleTreeItem';
-import { Plus, Sliders, Search, FolderTree, RefreshCw, PanelLeftClose } from 'lucide-react';
+import { RefreshCw, PanelLeftClose } from 'lucide-react';
 
 interface ModuleTreeViewProps {
   modules: ModuleResponse[];
   activeView: EditorActiveView;
   onSelectView: (view: EditorActiveView) => void;
-  onDeleteModule: (id: number) => void;
-  onDeleteLesson: (lessonId: number, moduleId: number) => void;
   onRefresh: () => void;
   onReorderModules: (orderedIds: number[]) => void;
   onReorderLessons: (moduleId: number, orderedIds: number[]) => void;
@@ -20,8 +18,6 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
   modules,
   activeView,
   onSelectView,
-  onDeleteModule,
-  onDeleteLesson,
   onRefresh,
   onReorderModules,
   onReorderLessons,
@@ -90,7 +86,6 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
       <div className="module-tree-header">
         <div className="module-tree-title-row">
           <div className="title-wrapper">
-            <FolderTree size={18} className="text-orange" />
             <h2 className="tree-title">Cấu trúc Mô-đun</h2>
             <span className="tree-total-badge">{modules.length}</span>
           </div>
@@ -124,7 +119,6 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
             className="btn-create-module"
             onClick={() => onSelectView({ type: 'MODULE_CREATE' })}
           >
-            <Plus size={15} />
             <span>Thêm Module</span>
           </button>
 
@@ -134,14 +128,12 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
             onClick={() => onSelectView({ type: 'MODULE_CONFIGS' })}
             title="Xem & điều chỉnh tỷ lệ hoàn thành bài học"
           >
-            <Sliders size={14} />
             <span>Cấu hình chuẩn</span>
           </button>
         </div>
 
         {/* 3. Search Box */}
         <div className="tree-search-wrapper">
-          <Search size={14} className="search-icon" />
           <input
             type="text"
             className="tree-search-input"
@@ -155,7 +147,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
               className="clear-search-btn"
               onClick={() => setSearchKeyword('')}
             >
-              ✕
+              Xóa
             </button>
           )}
         </div>
@@ -171,8 +163,6 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
               index={index}
               activeView={activeView}
               onSelectView={onSelectView}
-              onDeleteModule={onDeleteModule}
-              onDeleteLesson={onDeleteLesson}
               onReorderLessons={onReorderLessons}
               isDragEnabled={isDragEnabled}
               isDragOver={dragOverModuleIndex === index}

@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { ModuleResponse } from '../../types';
 import { adminModuleService } from '../../services/adminModuleService';
-import {
-  Save,
-  CheckCircle2,
-  Search,
-} from 'lucide-react';
 import { ThresholdNumberInput } from './ThresholdNumberInput';
 
 interface ModuleThresholdsViewProps {
@@ -179,7 +174,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
             onClick={handleSaveAllDirty}
             disabled={totalDirty === 0}
           >
-            <Save size={15} />
             <span>Lưu tất cả ({totalDirty})</span>
           </button>
         </div>
@@ -190,7 +184,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
         {/* Thanh tìm kiếm module */}
         <div className="thresholds-filter-bar">
           <div className="search-box">
-            <Search size={14} className="icon" />
             <input
               type="text"
               placeholder="Tìm kiếm module để chỉnh thông số..."
@@ -269,7 +262,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                     <td className="col-actions">
                       {item.isSavedSuccess ? (
                         <span className="thresholds-saved-badge">
-                          <CheckCircle2 size={15} />
                           <span>Đã lưu</span>
                         </span>
                       ) : (
@@ -281,7 +273,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                             disabled={!item.isDirty || item.isSaving}
                             title="Lưu tỷ lệ hoàn thành"
                           >
-                            <Save size={14} />
                             <span>{item.isSaving ? 'Đang lưu...' : 'Lưu'}</span>
                           </button>
                         </div>
