@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Target, Check, AlertCircle, Pencil, X } from 'lucide-react';
+import { Check, AlertCircle, Pencil, X } from 'lucide-react';
 import type {
     UserInfoResponse,
     UserTargetResponse,
@@ -80,59 +80,14 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
 
     return (
         <div className="pf-tab-content">
-            {/* Thẻ Mục tiêu điểm số TOEIC (AIM) */}
-            <div className="pf-card pf-card--target">
+            {/* Form chỉnh sửa thông tin tài khoản (UC16) & Mục tiêu điểm AIM */}
+            <div className="pf-card">
                 <div className="pf-card__header">
-                    <div className="pf-target-title-row">
-                        <Target size={24} color="#ea580c" />
-                        <div>
-                            <h3 className="pf-card__title">Mục tiêu TOEIC hiện tại</h3>
-                            <p className="pf-card__sub">
-                                {target
-                                    ? 'Được thiết lập dựa trên kế hoạch học tập thích ứng của bạn'
-                                    : 'Bạn chưa thiết lập mục tiêu điểm số TOEIC mong muốn'}
-                            </p>
-                        </div>
-                    </div>
-
+                    <h3 className="pf-card__title">Thông tin tài khoản</h3>
                     <Link to="/target-selection" className="pf-target-change-btn">
                         {target ? 'Thay đổi mục tiêu' : 'Thiết lập mục tiêu ngay'}
                     </Link>
                 </div>
-
-                {target ? (
-                    <div className="pf-target-body">
-                        <div className="pf-target-stat">
-                            <span className="pf-target-stat__label">MỤC TIÊU ĐIỂM SỐ</span>
-                            <span className="pf-target-stat__val">{target.targetTotalScore}</span>
-                        </div>
-
-                        {target.description && (
-                            <div className="pf-target-stat">
-                                <span className="pf-target-stat__label">MÔ TẢ MỤC TIÊU</span>
-                                <span className="pf-target-stat__desc">{target.description}</span>
-                            </div>
-                        )}
-
-                        <div className="pf-target-stat">
-                            <span className="pf-target-stat__label">NGÀY THIẾT LẬP</span>
-                            <span className="pf-target-stat__date">
-                                {new Date(target.assignedAt).toLocaleDateString('vi-VN')}
-                            </span>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="pf-target-empty">
-                        <p>
-                            Hãy chọn mốc mục tiêu điểm số để hệ thống phân tích lộ trình học thích ứng phù hợp nhất cho bạn.
-                        </p>
-                    </div>
-                )}
-            </div>
-
-            {/* Form chỉnh sửa thông tin tài khoản (UC16) */}
-            <div className="pf-card">
-                <h3 className="pf-card__title">Thông tin tài khoản</h3>
 
                 {successMsg && (
                     <div className="pf-alert-success" role="alert">
@@ -184,6 +139,24 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
                                 value={dob}
                                 onChange={(e) => setDob(e.target.value)}
                                 disabled={!isEditing}
+                            />
+                        </div>
+
+                        <div className="pf-form__group">
+                            <label className="pf-form__label" htmlFor="pf-aim-score">
+                                Mục tiêu điểm TOEIC (AIM)
+                            </label>
+                            <input
+                                id="pf-aim-score"
+                                type="text"
+                                className="pf-form__input is-disabled"
+                                value={target ? String(target.targetTotalScore) : 'Chưa thiết lập'}
+                                disabled
+                                title={
+                                    target?.description
+                                        ? `${target.description} — Nhấn "Thay đổi mục tiêu" để cập nhật`
+                                        : 'Nhấn "Thay đổi mục tiêu" ở góc phải để thiết lập điểm AIM'
+                                }
                             />
                         </div>
 

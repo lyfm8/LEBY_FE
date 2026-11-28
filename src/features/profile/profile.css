@@ -156,11 +156,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.pf-card--target {
-    background: #fffaf5;
-    border-color: #fed7aa;
-}
-
 .pf-card--danger {
     border-color: #fecaca;
 }
@@ -169,6 +164,8 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
     margin-bottom: 20px;
 }
 
@@ -177,12 +174,6 @@
     align-items: center;
     gap: 10px;
     margin-bottom: 18px;
-}
-
-.pf-target-title-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
 }
 
 .pf-card__title {
@@ -213,46 +204,6 @@
 .pf-target-change-btn:hover {
     background: #ea580c;
     color: #ffffff;
-}
-
-.pf-target-body {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-    background: #ffffff;
-    padding: 20px;
-    border-radius: 14px;
-    border: 1px solid #fed7aa;
-}
-
-.pf-target-stat {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.pf-target-stat__label {
-    font-size: 11px;
-    font-weight: 800;
-    color: #94a3b8;
-    letter-spacing: 0.05em;
-}
-
-.pf-target-stat__val {
-    font-size: 28px;
-    font-weight: 900;
-    color: #ea580c;
-}
-
-.pf-target-stat__badge {
-    font-size: 14px;
-    font-weight: 800;
-    color: #0f172a;
-}
-
-.pf-target-stat__date {
-    font-size: 13.5px;
-    color: #475569;
 }
 
 /* Form Styles */
@@ -531,16 +482,6 @@
 .pf-skill-badge.is-weak { background: #fee2e2; color: #dc2626; }
 .pf-skill-badge.is-uncertain { background: #f1f5f9; color: #64748b; }
 
-.pf-learner-badge {
-    background: #eff6ff;
-    color: #2563eb;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 9999px;
-    border: 1px solid #bfdbfe;
-}
-
 .pf-avatar-img.is-uploading {
     opacity: 0.6;
     filter: blur(1px);
@@ -568,15 +509,6 @@
 .pf-required {
     color: #ef4444;
     font-weight: 700;
-}
-
-.pf-target-empty {
-    padding: 16px 20px;
-    background: #fff7ed;
-    border-radius: 12px;
-    color: #c2410c;
-    font-size: 14px;
-    line-height: 1.5;
 }
 
 .pf-skills-empty {
@@ -1238,10 +1170,6 @@
     .pf-card,
     .pf-mistake-card {
         padding: 20px 18px;
-    }
-
-    .pf-target-body {
-        grid-template-columns: 1fr;
     }
 
     .pf-skeleton-grid {

@@ -43,9 +43,6 @@ export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
                 <div className="pf-card__header">
                     <div>
                         <h3 className="pf-card__title">Hồ sơ năng lực kỹ năng chi tiết</h3>
-                        <p className="pf-card__sub">
-                            Dữ liệu tổng hợp tích lũy từ kết quả bài thi chẩn đoán và bài kiểm tra mô-đun theo từng phần thi TOEIC
-                        </p>
                     </div>
                 </div>
 

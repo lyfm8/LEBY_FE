@@ -6,7 +6,6 @@ import {
     BookOpen,
     ClipboardCheck,
     Settings,
-    Target,
     Shield,
     LogOut,
     ChevronDown,
@@ -282,15 +281,6 @@ export function SidebarNav() {
                                         >
                                             <Settings size={16} />
                                             <span>Hồ sơ &amp; Cài đặt</span>
-                                        </Link>
-
-                                        <Link
-                                            to="/target-selection"
-                                            className="app-topbar__dropdown-item"
-                                            role="menuitem"
-                                        >
-                                            <Target size={16} />
-                                            <span>Mục tiêu điểm TOEIC (AIM)</span>
                                         </Link>
 
                                         {isAdminOrTeacher && (

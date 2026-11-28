@@ -1,7 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Camera, ShieldCheck, Loader2 } from 'lucide-react';
 import type { UserInfoResponse } from '../types/profileTypes';
-import { LEARNER_TYPE_LABELS } from '../types/profileTypes';
 import { mediaService } from '@/features/media/services/mediaService';
 
 interface ProfileHeroProps {
@@ -69,9 +68,8 @@ export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
         }
     };
 
-    // Lấy nhãn vai trò và đối tượng học tập đã chuẩn hóa sang tiếng Việt
+    // Lấy nhãn vai trò đã chuẩn hóa sang tiếng Việt
     const roleLabel = ROLE_LABELS[user.role] || 'Học viên';
-    const learnerLabel = user.learnerType ? LEARNER_TYPE_LABELS[user.learnerType] : null;
 
     return (
         <section className="pf-hero-card">
@@ -107,11 +105,6 @@ export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
                             <ShieldCheck size={14} />
                             {roleLabel}
                         </span>
-                        {learnerLabel && (
-                            <span className="pf-learner-badge">
-                                {learnerLabel}
-                            </span>
-                        )}
                     </div>
 
                     <p className="pf-hero-meta">
