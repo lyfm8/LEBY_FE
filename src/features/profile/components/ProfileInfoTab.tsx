@@ -103,7 +103,7 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
                 {target ? (
                     <div className="pf-target-body">
                         <div className="pf-target-stat">
-                            <span className="pf-target-stat__label">MỤC TIÊU ĐIỂM SỐ (AIM)</span>
+                            <span className="pf-target-stat__label">MỤC TIÊU ĐIỂM SỐ</span>
                             <span className="pf-target-stat__val">{target.targetTotalScore}</span>
                         </div>
 
@@ -188,14 +188,14 @@ export function ProfileInfoTab({ user, target, onSave }: ProfileInfoTabProps) {
                         </div>
 
                         <div className="pf-form__group pf-form__group--full">
-                            <label className="pf-form__label">Kiểu người học (Learner Type)</label>
+                            <label className="pf-form__label">Đối tượng học tập</label>
                             <select
                                 className={`pf-form__select ${!isEditing ? 'is-disabled' : ''}`}
                                 value={learnerType}
                                 onChange={(e) => setLearnerType(e.target.value as ELearnerType)}
                                 disabled={!isEditing}
                             >
-                                <option value="">-- Chọn kiểu người học phù hợp --</option>
+                                <option value="">-- Chọn đối tượng học tập phù hợp --</option>
                                 {(Object.keys(LEARNER_TYPE_LABELS) as ELearnerType[]).map((key) => (
                                     <option key={key} value={key}>
                                         {LEARNER_TYPE_LABELS[key]}

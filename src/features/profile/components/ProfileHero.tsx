@@ -9,8 +9,15 @@ interface ProfileHeroProps {
     onUpdateAvatar?: (avatarUrl: string) => Promise<boolean>;
 }
 
-const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024; // 5MB (Theo quy tắc UC16 6b)
+const MAX_AVATAR_SIZE_BYTES = 5 * 1024 * 1024; // Dung lượng tối đa 5MB cho ảnh đại diện
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+// Bảng quy đổi vai trò kỹ thuật sang nhãn tiếng Việt tự nhiên cho giao diện người dùng
+const ROLE_LABELS: Record<string, string> = {
+    STUDENT: 'Học viên',
+    TEACHER: 'Giảng viên',
+    ADMIN: 'Quản trị viên',
+};
 
 export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -52,8 +59,7 @@ export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
                     await onUpdateAvatar(newAvatarUrl);
                 }
             }
-        } catch (err: unknown) {
-            console.error('Lỗi khi tải ảnh đại diện:', err);
+        } catch {
             setErrorMsg('Không thể tải ảnh đại diện lên. Vui lòng thử lại sau.');
         } finally {
             setIsUploading(false);
@@ -63,6 +69,8 @@ export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
         }
     };
 
+    // Lấy nhãn vai trò và đối tượng học tập đã chuẩn hóa sang tiếng Việt
+    const roleLabel = ROLE_LABELS[user.role] || 'Học viên';
     const learnerLabel = user.learnerType ? LEARNER_TYPE_LABELS[user.learnerType] : null;
 
     return (
@@ -97,7 +105,7 @@ export function ProfileHero({ user, onUpdateAvatar }: ProfileHeroProps) {
                         <h1 className="pf-hero-name">{user.fullName}</h1>
                         <span className="pf-hero-role-tag">
                             <ShieldCheck size={14} />
-                            {user.role}
+                            {roleLabel}
                         </span>
                         {learnerLabel && (
                             <span className="pf-learner-badge">

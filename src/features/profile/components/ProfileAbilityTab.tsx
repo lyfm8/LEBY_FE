@@ -1,11 +1,16 @@
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, BookOpen } from 'lucide-react';
 import type { UserSkillStatResponse } from '../types/profileTypes';
 
+// Kiểu props cho tab Bảng hồ sơ năng lực kỹ năng TOEIC
 interface ProfileAbilityTabProps {
     skills: UserSkillStatResponse[];
+    onReviewAbilityMistakes?: (abilityId: number) => void;
 }
 
-export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
+export function ProfileAbilityTab({
+    skills,
+    onReviewAbilityMistakes,
+}: ProfileAbilityTabProps) {
     function getStatusBadge(status: UserSkillStatResponse['status']) {
         switch (status) {
             case 'STABLE':
@@ -52,16 +57,19 @@ export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
                     <table className="pf-skills-table">
                         <thead>
                             <tr>
-                                <th>Kỹ năng (Ability)</th>
+                                <th>Kỹ năng TOEIC</th>
                                 <th>Thuộc Part</th>
                                 <th>Tỷ lệ chính xác</th>
                                 <th>Số câu đã làm</th>
                                 <th>Đánh giá hệ thống</th>
+                                {onReviewAbilityMistakes && <th>Ôn tập</th>}
                             </tr>
                         </thead>
                         <tbody>
                             {skills.map((s) => {
-                                const percent = Math.min(100, Math.max(0, Math.round((s.accuracyRate || 0) * 100)));
+                                // Backend lưu accuracyRate theo thang 0–100 nên làm tròn trực tiếp và kẹp biên an toàn
+                                const percent = Math.min(100, Math.max(0, Math.round(s.accuracyRate ?? 0)));
+                                // Chuẩn hóa lớp trạng thái CSS theo mức đánh giá của kỹ năng
                                 const statusClass = s.status ? s.status.toLowerCase() : 'weak';
 
                                 return (
@@ -85,6 +93,19 @@ export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
                                         </td>
                                         <td>{s.evidenceCount} câu hỏi</td>
                                         <td>{getStatusBadge(s.status)}</td>
+                                        {onReviewAbilityMistakes && (
+                                            <td>
+                                                {/* Điều hướng thẳng sang tab Sổ tay câu sai đã lọc sẵn đúng kỹ năng này */}
+                                                <button
+                                                    type="button"
+                                                    className="pf-skill-review-btn"
+                                                    onClick={() => onReviewAbilityMistakes(s.abilityId)}
+                                                >
+                                                    <BookOpen size={13} />
+                                                    <span>Ôn câu sai</span>
+                                                </button>
+                                            </td>
+                                        )}
                                     </tr>
                                 );
                             })}
