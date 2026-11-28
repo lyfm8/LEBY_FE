@@ -646,17 +646,10 @@
     align-items: center;
 }
 
-.pf-mistake-search-icon {
-    position: absolute;
-    left: 12px;
-    color: #94a3b8;
-    pointer-events: none;
-}
-
 .pf-mistake-search-input {
     width: 100%;
     height: 40px;
-    padding: 0 32px 0 36px;
+    padding: 0 46px 0 14px;
     border: 1.5px solid #e2e8f0;
     border-radius: 10px;
     font-family: inherit;
@@ -674,12 +667,15 @@
 .pf-mistake-search-clear {
     position: absolute;
     right: 8px;
-    width: 22px;
-    height: 22px;
+    height: 24px;
+    padding: 0 8px;
     border: none;
     background: transparent;
-    color: #94a3b8;
-    border-radius: 50%;
+    color: #64748b;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 6px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -707,18 +703,6 @@
     text-align: center;
     gap: 12px;
     padding: 48px 28px;
-}
-
-.pf-mistake-empty-badge {
-    width: 68px;
-    height: 68px;
-    border-radius: 20px;
-    background: #ecfdf5;
-    color: #059669;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 4px;
 }
 
 .pf-mistake-cta-link {
@@ -1095,18 +1079,6 @@
     border: 1.5px solid #fed7aa;
 }
 
-.pf-retry-summary-card__icon {
-    width: 52px;
-    height: 52px;
-    flex-shrink: 0;
-    border-radius: 14px;
-    background: #ea580c;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .pf-retry-summary-card__body {
     display: flex;
     flex-direction: column;
@@ -1283,31 +1255,6 @@
     align-items: flex-start;
     gap: 12px;
     min-width: 0;
-}
-
-.pf-mistake-group-card__icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 11px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-}
-
-.pf-mistake-group-card__icon.is-part {
-    background: #fff7ed;
-    color: #ea580c;
-}
-
-.pf-mistake-group-card__icon.is-ability {
-    background: #eff6ff;
-    color: #2563eb;
-}
-
-.pf-mistake-group-card__icon.is-source {
-    background: #f0fdf4;
-    color: #16a34a;
 }
 
 .pf-mistake-group-card__title {

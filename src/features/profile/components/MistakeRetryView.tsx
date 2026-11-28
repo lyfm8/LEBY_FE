@@ -1,14 +1,4 @@
 import { useMemo } from 'react';
-import {
-    AlertCircle,
-    ArrowLeft,
-    BookOpen,
-    CheckCircle2,
-    RotateCcw,
-    Send,
-    Trophy,
-    XCircle,
-} from 'lucide-react';
 import { ExamAudioPlayer } from '@/shared/exam/components/ExamAudioPlayer';
 import { ExplanationPanel } from '@/shared/exam/components/ExplanationPanel';
 import type { OptionKey } from '@/shared/exam/types/examTypes';
@@ -72,7 +62,6 @@ export function MistakeRetryView({
             {/* Thanh đầu phiên làm lại: nút quay về sổ tay, tiến độ trả lời và nút nộp bài */}
             <div className="pf-retry-topbar">
                 <button type="button" className="pf-btn-edit" onClick={onExit}>
-                    <ArrowLeft size={16} />
                     <span>Quay lại Sổ tay</span>
                 </button>
 
@@ -90,7 +79,6 @@ export function MistakeRetryView({
                             onClick={onSubmit}
                             disabled={isSubmitting}
                         >
-                            <Send size={15} />
                             <span>{isSubmitting ? 'Đang chấm điểm...' : 'Nộp bài & Chấm điểm'}</span>
                         </button>
                     ) : (
@@ -99,7 +87,6 @@ export function MistakeRetryView({
                             className="pf-btn-save pf-retry-submit-btn"
                             onClick={onRestart}
                         >
-                            <RotateCcw size={15} />
                             <span>Làm lại lần nữa</span>
                         </button>
                     )}
@@ -109,7 +96,6 @@ export function MistakeRetryView({
             {/* Khung lỗi nếu gửi nộp bài gặp sự cố kết nối */}
             {submitError && (
                 <div className="pf-alert-error" role="alert">
-                    <AlertCircle size={16} />
                     <span>{submitError}</span>
                 </div>
             )}
@@ -117,9 +103,6 @@ export function MistakeRetryView({
             {/* Thẻ tổng kết điểm số hiển thị ngay sau khi nộp bài */}
             {isSubmitted && (
                 <section className="pf-retry-summary-card" aria-label="Kết quả phiên làm lại">
-                    <div className="pf-retry-summary-card__icon">
-                        <Trophy size={26} />
-                    </div>
                     <div className="pf-retry-summary-card__body">
                         <h3 className="pf-retry-summary-card__title">
                             Bạn trả lời đúng {submitResult.correctCount}/{submitResult.totalQuestions} câu ({submitResult.accuracyPercent}%)
@@ -162,17 +145,7 @@ export function MistakeRetryView({
                                             graded.isCorrect ? 'is-correct' : 'is-wrong'
                                         }`}
                                     >
-                                        {graded.isCorrect ? (
-                                            <>
-                                                <CheckCircle2 size={14} />
-                                                <span>Chính xác</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <XCircle size={14} />
-                                                <span>Chưa đúng</span>
-                                            </>
-                                        )}
+                                        <span>{graded.isCorrect ? 'Chính xác' : 'Chưa đúng'}</span>
                                     </span>
                                 )}
                             </header>
@@ -213,7 +186,6 @@ export function MistakeRetryView({
                                     {question.passage && (
                                         <div className="pf-mistake-passage">
                                             <div className="pf-mistake-passage__label">
-                                                <BookOpen size={14} />
                                                 <span>Đoạn văn ngữ cảnh</span>
                                             </div>
                                             <p className="pf-mistake-passage__text">{question.passage}</p>
@@ -281,7 +253,6 @@ export function MistakeRetryView({
                         onClick={onSubmit}
                         disabled={isSubmitting}
                     >
-                        <Send size={15} />
                         <span>
                             {isSubmitting
                                 ? 'Đang chấm điểm...'
@@ -291,7 +262,6 @@ export function MistakeRetryView({
                 ) : (
                     <div className="pf-retry-bottom-actions">
                         <button type="button" className="pf-btn-edit" onClick={onExit}>
-                            <ArrowLeft size={16} />
                             <span>Quay lại Sổ tay</span>
                         </button>
                         <button
@@ -299,7 +269,6 @@ export function MistakeRetryView({
                             className="pf-btn-save pf-retry-submit-btn"
                             onClick={onRestart}
                         >
-                            <RotateCcw size={15} />
                             <span>Làm lại lần nữa</span>
                         </button>
                     </div>

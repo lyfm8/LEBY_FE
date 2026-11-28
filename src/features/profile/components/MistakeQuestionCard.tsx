@@ -1,4 +1,3 @@
-import { BookOpen, CheckCircle2, ChevronDown, ChevronUp, Clock, XCircle } from 'lucide-react';
 import { ExamAudioPlayer } from '@/shared/exam/components/ExamAudioPlayer';
 import { ExplanationPanel } from '@/shared/exam/components/ExplanationPanel';
 import { MISTAKE_SOURCE_LABELS, type MistakeQuestionItem } from '../types/mistakeTypes';
@@ -101,13 +100,11 @@ export function MistakeQuestionCard({
                     <div className="pf-mistake-accordion-trigger__right">
                         {formattedDate && (
                             <span className="pf-mistake-time">
-                                <Clock size={13} />
                                 <span>{formattedDate}</span>
                             </span>
                         )}
                         <span className="pf-mistake-expand-pill">
                             <span>{isExpanded ? 'Thu gọn' : 'Xem chi tiết'}</span>
-                            {isExpanded ? <ChevronUp size={15} /> : <ChevronDown size={15} />}
                         </span>
                     </div>
                 </button>
@@ -124,7 +121,6 @@ export function MistakeQuestionCard({
 
                     {formattedDate && (
                         <span className="pf-mistake-time">
-                            <Clock size={13} />
                             <span>{formattedDate}</span>
                         </span>
                     )}
@@ -180,7 +176,6 @@ export function MistakeQuestionCard({
                             {item.passage && (
                                 <div className="pf-mistake-passage">
                                     <div className="pf-mistake-passage__label">
-                                        <BookOpen size={14} />
                                         <span>Đoạn văn ngữ cảnh</span>
                                     </div>
                                     <p className="pf-mistake-passage__text">{item.passage}</p>
@@ -210,13 +205,11 @@ export function MistakeQuestionCard({
                                     <span className="pf-mistake-opt__text">{opt.text}</span>
                                     {isCorrectOption && (
                                         <span className="pf-mistake-opt__tag is-correct">
-                                            <CheckCircle2 size={14} />
                                             <span>Đáp án đúng</span>
                                         </span>
                                     )}
                                     {isWrongSelected && (
                                         <span className="pf-mistake-opt__tag is-wrong">
-                                            <XCircle size={14} />
                                             <span>Bạn đã chọn</span>
                                         </span>
                                     )}

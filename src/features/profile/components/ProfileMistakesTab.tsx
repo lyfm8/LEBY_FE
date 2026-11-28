@@ -2,23 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import type React from 'react';
 import { Link } from 'react-router-dom';
 import {
-    AlertCircle,
-    ArrowLeft,
-    BookCheck,
-    BookOpen,
-    ChevronLeft,
-    ChevronRight,
-    ChevronsDownUp,
-    ChevronsUpDown,
-    FolderOpen,
-    Layers,
-    PlayCircle,
-    RotateCcw,
-    Search,
-    Target,
-    X,
-} from 'lucide-react';
-import {
     MAX_MISTAKE_RETRY_LIMIT,
     useMistakeNotebook,
 } from '../hooks/useMistakeNotebook';
@@ -237,12 +220,10 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
         return (
             <div className="pf-tab-content">
                 <div className="pf-card pf-mistake-state">
-                    <AlertCircle size={40} color="#ef4444" />
                     <h4 className="pf-empty-title">Không thể tải sổ tay câu hỏi làm sai</h4>
                     <p className="pf-empty-desc">{error}</p>
                     <button type="button" className="pf-btn-save" onClick={() => void refetch()}>
-                        <RotateCcw size={15} />
-                        <span>Tải lại sổ tay</span>
+                        Tải lại sổ tay
                     </button>
                 </div>
             </div>
@@ -255,15 +236,9 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
     function renderCleanEmptyCard() {
         return (
             <div className="pf-card pf-mistake-state">
-                <div className="pf-mistake-empty-badge">
-                    <BookCheck size={34} />
-                </div>
                 <h4 className="pf-empty-title">
                     Hiện tại bạn chưa có câu hỏi nào bị làm sai
                 </h4>
-                <p className="pf-empty-desc">
-                    Các câu làm sai trong Bài thi vượt ải mô-đun và Bài thi thử TOEIC sẽ tự động được gom nhóm tại đây để bạn xem lời giải và làm lại tập trung.
-                </p>
                 <div className="pf-mistake-state-actions">
                     <Link to="/learning-path" className="pf-btn-save pf-mistake-cta-link">
                         Học theo lộ trình
@@ -288,8 +263,8 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                             <h3 className="pf-card__title">Sổ tay câu hỏi làm sai</h3>
                             <p className="pf-card__sub">
                                 {totalWrongCount > 0
-                                    ? `Tổng cộng ${totalWrongCount} câu sai từ Bài thi vượt ải và Bài thi thử TOEIC — chọn một nhóm để xem lời giải hoặc làm lại tập trung.`
-                                    : 'Tổng hợp câu hỏi làm sai trong quá trình học vượt ải và thi thử TOEIC.'}
+                                    ? `Tổng cộng ${totalWrongCount} câu sai.`
+                                    : 'Tổng hợp câu hỏi làm sai trong quá trình học.'}
                             </p>
                         </div>
 
@@ -313,7 +288,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                     {totalWrongCount > 0 && (
                         <form className="pf-mistake-search-form pf-mistake-search-form--full" onSubmit={handleSearchSubmit}>
                             <div className="pf-mistake-search-box">
-                                <Search size={15} className="pf-mistake-search-icon" />
                                 <input
                                     type="text"
                                     className="pf-mistake-search-input"
@@ -328,7 +302,7 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                         aria-label="Xóa từ khóa"
                                         onClick={() => setSearchInput('')}
                                     >
-                                        <X size={14} />
+                                        Xóa
                                     </button>
                                 )}
                             </div>
@@ -340,7 +314,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
 
                     {retryError && (
                         <div className="pf-alert-error" role="alert">
-                            <AlertCircle size={16} />
                             <span>{retryError}</span>
                         </div>
                     )}
@@ -361,9 +334,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                     <article key={part.partId} className="pf-mistake-group-card">
                                         <div className="pf-mistake-group-card__top">
                                             <div className="pf-mistake-group-card__title-wrap">
-                                                <span className="pf-mistake-group-card__icon is-part">
-                                                    <Layers size={18} />
-                                                </span>
                                                 <div>
                                                     <h4 className="pf-mistake-group-card__title">
                                                         {formatShortPartName(part.partName, part.partId)}
@@ -414,7 +384,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                 className="pf-btn-edit pf-mistake-group-btn"
                                                 onClick={() => openGroup({ groupBy: 'part', part: part.partId })}
                                             >
-                                                <FolderOpen size={15} />
                                                 <span>Xem {part.count} câu</span>
                                             </button>
 
@@ -426,7 +395,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                     void startRetrySession({ partId: part.partId })
                                                 }
                                             >
-                                                <PlayCircle size={15} />
                                                 <span>{formatRetryButtonLabel(part.count)}</span>
                                             </button>
                                         </div>
@@ -447,9 +415,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                 <article key={ab.abilityId} className="pf-mistake-group-card">
                                     <div className="pf-mistake-group-card__top">
                                         <div className="pf-mistake-group-card__title-wrap">
-                                            <span className="pf-mistake-group-card__icon is-ability">
-                                                <Target size={18} />
-                                            </span>
                                             <div>
                                                 <h4 className="pf-mistake-group-card__title">{ab.abilityName}</h4>
                                                 <span className="pf-mistake-group-card__subtitle">
@@ -471,7 +436,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                 openGroup({ groupBy: 'ability', ability: ab.abilityId })
                                             }
                                         >
-                                            <FolderOpen size={15} />
                                             <span>Xem {ab.count} câu</span>
                                         </button>
 
@@ -483,7 +447,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                 void startRetrySession({ abilityId: ab.abilityId })
                                             }
                                         >
-                                            <PlayCircle size={15} />
                                             <span>{formatRetryButtonLabel(ab.count)}</span>
                                         </button>
                                     </div>
@@ -510,9 +473,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                 <article key={srcType} className="pf-mistake-group-card">
                                     <div className="pf-mistake-group-card__top">
                                         <div className="pf-mistake-group-card__title-wrap">
-                                            <span className="pf-mistake-group-card__icon is-source">
-                                                <BookOpen size={18} />
-                                            </span>
                                             <div>
                                                 <h4 className="pf-mistake-group-card__title">{label}</h4>
                                                 <span className="pf-mistake-group-card__subtitle">
@@ -542,7 +502,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                         openGroup({ groupBy: 'source', source: srcType })
                                                     }
                                                 >
-                                                    <FolderOpen size={15} />
                                                     <span>Xem {count} câu</span>
                                                 </button>
 
@@ -554,7 +513,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                                         void startRetrySession({ sourceType: srcType })
                                                     }
                                                 >
-                                                    <PlayCircle size={15} />
                                                     <span>{formatRetryButtonLabel(count)}</span>
                                                 </button>
                                             </>
@@ -588,7 +546,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                             className="pf-mistake-back-btn"
                             onClick={backToGroups}
                         >
-                            <ArrowLeft size={15} />
                             <span>Tất cả nhóm</span>
                         </button>
                         <div>
@@ -606,17 +563,7 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                 className="pf-btn-edit pf-mistake-expand-all-btn"
                                 onClick={handleToggleAllQuestions}
                             >
-                                {areAllExpanded ? (
-                                    <>
-                                        <ChevronsDownUp size={15} />
-                                        <span>Thu gọn tất cả</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <ChevronsUpDown size={15} />
-                                        <span>Mở tất cả</span>
-                                    </>
-                                )}
+                                <span>{areAllExpanded ? 'Thu gọn tất cả' : 'Mở tất cả'}</span>
                             </button>
                         )}
 
@@ -626,7 +573,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                             onClick={() => void startRetrySession()}
                             disabled={matchedCount === 0 || isLoadingRetrySet}
                         >
-                            <PlayCircle size={17} />
                             <span>
                                 {isLoadingRetrySet
                                     ? 'Đang chuẩn bị bài...'
@@ -638,7 +584,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
 
                 {retryError && (
                     <div className="pf-alert-error" role="alert">
-                        <AlertCircle size={16} />
                         <span>{retryError}</span>
                     </div>
                 )}
@@ -665,7 +610,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
 
                     <form className="pf-mistake-search-form" onSubmit={handleSearchSubmit}>
                         <div className="pf-mistake-search-box">
-                            <Search size={15} className="pf-mistake-search-icon" />
                             <input
                                 type="text"
                                 className="pf-mistake-search-input"
@@ -683,7 +627,7 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                         updateFilterParams({ q: null });
                                     }}
                                 >
-                                    <X size={14} />
+                                    Xóa
                                 </button>
                             )}
                         </div>
@@ -701,7 +645,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                 </div>
             ) : visibleItems.length === 0 ? (
                 <div className="pf-card pf-mistake-state">
-                    <AlertCircle size={34} color="#94a3b8" />
                     <h4 className="pf-empty-title">Không tìm thấy câu hỏi phù hợp trong nhóm này</h4>
                     <p className="pf-empty-desc">
                         Thử xóa từ khóa tìm kiếm hoặc quay lại danh sách nhóm để chọn phần thi khác.
@@ -735,7 +678,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                 disabled={!data.hasPrevious}
                                 onClick={() => updateFilterParams({ page: Math.max(0, page - 1) })}
                             >
-                                <ChevronLeft size={15} />
                                 <span>Trang trước</span>
                             </button>
                             <span className="pf-mistake-page-info">
@@ -748,7 +690,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                                 onClick={() => updateFilterParams({ page: page + 1 })}
                             >
                                 <span>Trang sau</span>
-                                <ChevronRight size={15} />
                             </button>
                         </nav>
                     )}
