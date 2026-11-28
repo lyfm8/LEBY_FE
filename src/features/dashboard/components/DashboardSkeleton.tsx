@@ -1,6 +1,6 @@
 /**
  * Khung xương tải (Skeleton Loader) mô phỏng chính xác bố cục Dashboard tinh gọn:
- * Sub-header, lưới 4 thẻ chỉ số KPI và 2 cột nội dung cân đối.
+ * Lưới 4 thẻ chỉ số KPI và 2 cột nội dung cân đối.
  */
 export function DashboardSkeleton() {
     // Khởi tạo sẵn 4 vị trí cho lưới thẻ thống kê KPI
@@ -12,18 +12,6 @@ export function DashboardSkeleton() {
 
     return (
         <div className="db-skeleton" aria-busy="true" aria-label="Đang tải bảng điều khiển học tập">
-            {/* Mô phỏng thanh tiêu đề chào mừng phía trên */}
-            <div className="db-sub-header">
-                <div className="db-skeleton__header-left">
-                    <div className="db-skel db-skel--xs" />
-                    <div className="db-skel db-skel--title" />
-                </div>
-                <div className="db-skeleton__header-right">
-                    <div className="db-skel db-skel--pill" />
-                    <div className="db-skel db-skel--pill" />
-                </div>
-            </div>
-
             <div className="db-container">
                 {/* Mô phỏng lưới 4 thẻ chỉ số KPI */}
                 <div className="db-stats-grid">

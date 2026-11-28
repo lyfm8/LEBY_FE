@@ -10,7 +10,6 @@ import {
     Play,
     RefreshCw,
     Target,
-    Unlock,
 } from 'lucide-react';
 import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { MockExamIntroModal } from '../components/MockExamIntroModal';
@@ -82,46 +81,7 @@ export default function MockExamListPage() {
             <SidebarNav />
 
             <main className="mock-page-main">
-                {/* 1. Thẻ tiêu đề & Trạng thái mục tiêu AIM / Mở khóa đề đầu ra */}
-                <section className="mock-hero-card">
-                    <div>
-                        <div className="mock-hero-card__eyebrow">
-                            <FileCheck2 size={14} />
-                            <span>PHÒNG THI THẬT CHUẨN ETS (200 CÂU · 120 PHÚT)</span>
-                        </div>
-                        <h1 className="mock-hero-card__title">
-                            Thi thử TOEIC &amp; Nghiệm thu đầu ra
-                        </h1>
-                        <p className="mock-hero-card__desc">
-                            Mô phỏng 100% quy chế phòng thi thật: 100 câu Listening phát đúng 1 lần duy
-                            nhất, 100 câu Reading, bảng câu hỏi phân theo từng Part 1–7 và tự động quy
-                            đổi thang điểm chuẩn ETS 990.
-                        </p>
-                    </div>
-
-                    <div className="mock-hero-status">
-                        {listData.userTargetScore !== null && (
-                            <div className="mock-hero-aim">
-                                <span>Mục tiêu AIM hiện tại</span>
-                                <strong>{listData.userTargetScore} điểm</strong>
-                            </div>
-                        )}
-                        <span
-                            className={`mock-unlock-pill ${
-                                listData.isOutputExamUnlocked ? 'is-unlocked' : 'is-locked'
-                            }`}
-                        >
-                            {listData.isOutputExamUnlocked ? <Unlock size={14} /> : <Lock size={14} />}
-                            <span>
-                                {listData.isOutputExamUnlocked
-                                    ? 'Đã mở khóa Đề thi đầu ra'
-                                    : 'Chưa mở khóa Đề thi đầu ra'}
-                            </span>
-                        </span>
-                    </div>
-                </section>
-
-                {/* 2. Banner khôi phục nhanh nếu đang có bài thi thử làm dở */}
+                {/* Banner khôi phục nhanh nếu đang có bài thi thử làm dở */}
                 {listData.activeAttemptId && (
                     <section className="mock-resume-banner" role="region" aria-label="Tiếp tục bài thi">
                         <div className="mock-resume-banner__info">
