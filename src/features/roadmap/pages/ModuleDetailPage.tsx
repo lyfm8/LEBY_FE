@@ -311,16 +311,16 @@ export default function ModuleDetailPage() {
                     <section className="module-hero-card">
                         <nav className="module-breadcrumb" aria-label="Đường dẫn điều hướng">
                             <Link
-                                to={isFreeStudyMode ? '/catalog' : '/learning-path'}
+                                to={isFreeStudyMode ? '/learning-path?status=COMPLETED' : '/learning-path'}
                                 className="module-breadcrumb__link"
                             >
-                                {isFreeStudyMode ? 'Thư viện khóa học' : 'Lộ trình học'}
+                                {isFreeStudyMode ? 'Mô-đun đã hoàn thành' : 'Lộ trình học'}
                             </Link>
                             <ChevronRight size={14} className="module-breadcrumb__sep" />
                             <Link
                                 to={
                                     isFreeStudyMode
-                                        ? `/catalog?section=${data.section}`
+                                        ? `/learning-path?status=COMPLETED&section=${data.section}`
                                         : `/learning-path?section=${data.section}`
                                 }
                                 className="module-breadcrumb__link"

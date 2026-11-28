@@ -549,144 +549,259 @@
 }
 
 /* ══════════════════════════════════════════════════════════
-   PRICING SECTION
+   CURRICULUM SECTION (7 PART TOEIC ALTERNATING)
    ══════════════════════════════════════════════════════════ */
-.lby-pricing__grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 24px;
-    align-items: center;
+.lby-curriculum__header {
+    max-width: 680px;
+    margin: 0 auto 72px;
 }
 
-.lby-pricing-card {
-    background: var(--lby-white);
-    border: 1.5px solid var(--lby-gray-200);
-    border-radius: var(--lby-radius);
-    padding: 40px 32px;
-    position: relative;
-    transition: transform var(--lby-transition), box-shadow var(--lby-transition);
-}
-
-.lby-pricing-card:not(.lby-pricing-card--featured):hover {
-    transform: translateY(-6px);
-    box-shadow: 0 24px 64px rgba(0, 0, 0, 0.1);
-}
-
-.lby-pricing-card--featured {
-    border-color: var(--lby-orange);
-    box-shadow:
-        0 0 0 1px var(--lby-orange),
-        0 24px 64px rgba(249, 115, 22, 0.18);
-    transform: translateY(-12px);
-}
-
-.lby-pricing-card--featured:hover {
-    transform: translateY(-18px);
-    box-shadow:
-        0 0 0 1px var(--lby-orange),
-        0 32px 80px rgba(249, 115, 22, 0.25);
-}
-
-.lby-pricing-card__badge {
-    position: absolute;
-    top: -14px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--lby-orange);
-    color: var(--lby-white);
-    font-size: 11px;
-    font-weight: 700;
-    padding: 5px 16px;
-    border-radius: 100px;
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    white-space: nowrap;
-}
-
-.lby-pricing-card__name {
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--lby-gray-900);
-    margin-bottom: 10px;
-}
-
-.lby-pricing-card__price {
-    font-size: 38px;
-    font-weight: 900;
-    color: var(--lby-orange);
-    line-height: 1.1;
-    margin-bottom: 6px;
-}
-
-.lby-pricing-card__price-unit {
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.lby-pricing-card__tagline {
-    font-size: 13px;
+.lby-curriculum__subtitle {
+    margin-top: 14px !important;
+    font-size: 16px;
     color: var(--lby-gray-500);
-    margin-bottom: 28px;
-    padding-bottom: 24px;
-    border-bottom: 1px solid var(--lby-gray-200);
-    line-height: 1.5;
+    line-height: 1.7;
 }
 
-.lby-pricing-card__features {
-    list-style: none;
-    margin: 0 0 32px 0;
-    padding: 0;
+.lby-curriculum__list {
     display: flex;
     flex-direction: column;
-    gap: 14px;
+    gap: 64px;
 }
 
-.lby-pricing-card__feature {
+.lby-curriculum-row {
+    display: grid;
+    grid-template-columns: 1.12fr 0.88fr;
+    gap: 56px;
+    align-items: center;
+    padding: 36px 40px;
+    background: var(--lby-white);
+    border: 1px solid var(--lby-gray-200);
+    border-radius: 24px;
+    box-shadow: 0 12px 36px rgba(15, 23, 42, 0.04);
+}
+
+.lby-curriculum-row.is-reversed {
+    grid-template-columns: 0.88fr 1.12fr;
+}
+
+.lby-curriculum-row__part-title {
+    font-size: clamp(22px, 2.2vw, 28px) !important;
+    font-weight: 800 !important;
+    color: var(--lby-orange) !important;
+    margin-bottom: 22px !important;
+    line-height: 1.25 !important;
+}
+
+.lby-curriculum-modules {
     display: flex;
-    align-items: flex-start;
-    gap: 10px;
-    font-size: 14px;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.lby-curriculum-module-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 15px 18px;
+    border-radius: 14px;
+    background: var(--lby-gray-50);
+    border: 1px solid var(--lby-gray-200);
+    transition: border-color 0.2s ease, transform 0.2s ease, background-color 0.2s ease;
+}
+
+.lby-curriculum-module-item:hover {
+    background: var(--lby-white);
+    border-color: rgba(249, 115, 22, 0.4);
+    transform: translateY(-2px);
+}
+
+.lby-curriculum-module-item__name {
+    font-size: 15.5px;
+    font-weight: 700;
+    color: var(--lby-gray-900);
+    line-height: 1.4;
+}
+
+.lby-curriculum-module-item__stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--lby-gray-500);
+    font-variant-numeric: tabular-nums;
+}
+
+.lby-curriculum-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
     color: var(--lby-gray-700);
-    line-height: 1.5;
 }
 
-.lby-pricing-card__feature-icon {
-    color: var(--lby-teal);
+.lby-curriculum-stat svg {
+    color: var(--lby-orange);
     flex-shrink: 0;
-    margin-top: 2px;
 }
 
-.lby-pricing-card__btn {
+.lby-curriculum-stat-sep {
+    color: var(--lby-gray-400);
+}
+
+.lby-curriculum-empty-part {
+    padding: 20px 22px;
+    border-radius: 14px;
+    border: 1px dashed var(--lby-gray-200);
+    background: var(--lby-gray-50);
+    color: var(--lby-gray-500);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Visual block replacing image slot with oversized PART typography */
+.lby-curriculum-row__visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+}
+
+.lby-part-display-frame {
+    position: relative;
     width: 100%;
-    padding: 13px;
+    max-width: 390px;
+}
+
+.lby-part-display-frame__accent {
+    position: absolute;
+    inset: -10px;
+    border: 1.5px solid rgba(249, 115, 22, 0.45);
+    border-radius: 40px 10px 40px 10px;
+    transform: skewX(-3deg);
+    pointer-events: none;
+}
+
+.lby-curriculum-row.is-reversed .lby-part-display-frame__accent {
+    border-radius: 10px 40px 10px 40px;
+    transform: skewX(3deg);
+}
+
+.lby-part-display-frame__card {
+    position: relative;
+    min-height: 240px;
+    padding: 36px 28px;
+    border-radius: 36px 8px 36px 8px;
+    border: 1px solid var(--lby-gray-200);
+    background: linear-gradient(155deg, #ffffff 0%, #fff7ed 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 10px;
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.06);
+}
+
+.lby-curriculum-row.is-reversed .lby-part-display-frame__card {
+    border-radius: 8px 36px 8px 36px;
+}
+
+.lby-part-display-frame__section {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--lby-orange);
+}
+
+.lby-part-display-frame__label {
+    font-family: var(--lby-font);
+    font-size: clamp(50px, 5.2vw, 76px);
+    font-weight: 900;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    color: var(--lby-navy);
+    font-variant-numeric: tabular-nums;
+}
+
+.lby-part-display-frame__count {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--lby-gray-500);
+}
+
+.lby-curriculum__cta-wrap {
+    margin-top: 56px;
+    display: flex;
+    justify-content: center;
+}
+
+.lby-curriculum__state {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 36px 28px;
+    text-align: center;
+    background: var(--lby-white);
+    border: 1px solid var(--lby-gray-200);
+    border-radius: 18px;
+    color: var(--lby-gray-500);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+.lby-curriculum__retry-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
     border-radius: 10px;
+    border: 1px solid var(--lby-gray-200);
+    background: var(--lby-white);
+    color: var(--lby-navy);
     font-size: 14px;
     font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
-    border: 1.5px solid var(--lby-gray-200);
-    background: var(--lby-white);
-    color: var(--lby-gray-700);
+    transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.lby-pricing-card__btn:hover {
+.lby-curriculum__retry-btn:hover {
     border-color: var(--lby-orange);
     color: var(--lby-orange);
 }
 
-.lby-pricing-card__btn--primary {
-    background: var(--lby-orange);
-    color: var(--lby-white) !important;
-    border-color: var(--lby-orange);
-    box-shadow: 0 4px 20px rgba(249, 115, 22, 0.35);
+.lby-curriculum-skeleton {
+    border-radius: 12px;
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: lby-shimmer 1.4s ease infinite;
 }
 
-.lby-pricing-card__btn--primary:hover {
-    background: var(--lby-orange-dark);
-    border-color: var(--lby-orange-dark);
-    color: var(--lby-white) !important;
-    box-shadow: 0 10px 32px rgba(249, 115, 22, 0.48);
-    transform: translateY(-2px);
+.lby-curriculum-skeleton--title {
+    width: 55%;
+    height: 28px;
+    margin-bottom: 18px;
+}
+
+.lby-curriculum-skeleton--card {
+    width: 100%;
+    height: 70px;
+    margin-bottom: 12px;
+}
+
+.lby-curriculum-skeleton--visual {
+    width: 100%;
+    max-width: 390px;
+    height: 240px;
+    border-radius: 32px 8px 32px 8px;
+}
+
+@keyframes lby-shimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
 }
 
 /* ══════════════════════════════════════════════════════════
@@ -787,8 +902,15 @@
     .lby-hero__content { max-width: 100%; }
     .lby-hero__visual { width: 100%; }
     .lby-steps__grid { grid-template-columns: repeat(2, 1fr); }
-    .lby-pricing__grid { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; }
-    .lby-pricing-card--featured { transform: none; }
+    .lby-curriculum-row,
+    .lby-curriculum-row.is-reversed {
+        grid-template-columns: 1fr;
+        gap: 28px;
+        padding: 28px 24px;
+    }
+    .lby-curriculum-row__visual { order: -1; }
+    .lby-part-display-frame { max-width: 100%; }
+    .lby-part-display-frame__card { min-height: 170px; padding: 24px 20px; }
 }
 
 @media (max-width: 600px) {
@@ -797,5 +919,18 @@
     .lby-features__grid { grid-template-columns: 1fr; }
     .lby-steps__grid { grid-template-columns: 1fr; }
     .lby-footer__main { grid-template-columns: 1fr; }
+    .lby-curriculum__list { gap: 36px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lby-hero__image,
+    .lby-curriculum-skeleton {
+        animation: none;
+    }
+    .lby-reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+    }
 }
 

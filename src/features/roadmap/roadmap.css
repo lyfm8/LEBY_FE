@@ -1921,3 +1921,43 @@
 .module-test-card__retake-banner strong {
     color: #ffffff;
 }
+
+/* ── Biến thể mô-đun đã miễn học / Ôn tập tự do trên Roadmap ── */
+.timeline-node.is-free-study {
+    background-color: #0f766e;
+    color: #ffffff;
+}
+
+.timeline-card.is-free-study {
+    border-color: #99f6e4;
+}
+
+.timeline-card__order.is-free-study {
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+.timeline-card__badge.is-free-study {
+    background: #f0fdfa;
+    color: #0f766e;
+}
+
+.timeline-card__bar-fill.is-free-study {
+    background-color: #0d9488;
+}
+
+.timeline-card__actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.timeline-card__action-btn.is-free-study {
+    background-color: #0f766e;
+    box-shadow: 0 4px 10px rgba(15, 118, 110, 0.2);
+}
+
+.timeline-card__action-btn.is-free-study:hover {
+    background-color: #115e59;
+}

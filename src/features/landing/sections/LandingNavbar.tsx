@@ -14,7 +14,7 @@ function LandingNavbar() {
                 <ul className="lby-navbar__nav">
                     <li><a href="#features">Tính năng</a></li>
                     <li><a href="#steps">Lộ trình học</a></li>
-                    <li><a href="#pricing">Học phí</a></li>
+                    <li><a href="#curriculum">Chương trình 7 Part</a></li>
                 </ul>
             </nav>
 

@@ -15,51 +15,71 @@ import { SidebarNav } from '../components/SidebarNav';
 import { ModuleTimelineItem } from '../components/ModuleTimelineItem';
 import { RoadmapSkeleton } from '../components/RoadmapSkeleton';
 import { useRoadmap } from '../hooks/useRoadmap';
-import type { ModuleStatus, SectionType } from '../types/roadmapTypes';
+import type { ModuleItem, SectionType } from '../types/roadmapTypes';
 import '../roadmap.css';
 
-// Kiểu giá trị bộ lọc kỹ năng (Tất cả / Nghe hiểu / Đọc hiểu)
 type SectionFilter = 'ALL' | SectionType;
 
-// Kiểu giá trị bộ lọc trạng thái mô-đun
-type StatusFilter = 'ALL' | ModuleStatus;
+/**
+ * 3 nhóm trạng thái chuẩn trên trang Lộ trình học:
+ * - IN_PROGRESS (Mặc định): Mô-đun đang học và chưa mở khóa trong lộ trình
+ * - COMPLETED: Mô-đun đã vượt qua module test và mô-đun được miễn học
+ * - ALL: Toàn bộ mô-đun của chương trình sắp xếp theo sequence gốc
+ */
+type StatusFilter = 'ALL' | 'IN_PROGRESS' | 'COMPLETED';
 
-// Danh sách tùy chọn lọc theo kỹ năng khai báo ngoài component để tránh tạo lại mảng mỗi lần render
+const DEFAULT_STATUS_FILTER: StatusFilter = 'IN_PROGRESS';
+
 const SECTION_FILTER_OPTIONS: ReadonlyArray<{ value: SectionFilter; label: string }> = [
     { value: 'ALL', label: 'Tất cả' },
     { value: 'LISTENING', label: 'Nghe hiểu' },
     { value: 'READING', label: 'Đọc hiểu' },
 ];
 
-// Danh sách tùy chọn lọc theo trạng thái hoàn thành mô-đun
 const STATUS_FILTER_OPTIONS: ReadonlyArray<{ value: StatusFilter; label: string }> = [
     { value: 'ALL', label: 'Tất cả' },
     { value: 'IN_PROGRESS', label: 'Đang học' },
     { value: 'COMPLETED', label: 'Đã hoàn thành' },
-    { value: 'LOCKED', label: 'Chưa mở khóa' },
 ];
+
+function parseSectionFilter(rawValue: string | null): SectionFilter {
+    if (rawValue === 'LISTENING' || rawValue === 'READING') {
+        return rawValue;
+    }
+    return 'ALL';
+}
+
+function parseStatusFilter(rawValue: string | null): StatusFilter {
+    if (rawValue === 'ALL' || rawValue === 'IN_PROGRESS' || rawValue === 'COMPLETED') {
+        return rawValue;
+    }
+    return DEFAULT_STATUS_FILTER;
+}
+
+function sortByGlobalSequence(modules: ModuleItem[]): ModuleItem[] {
+    return [...modules].sort(
+        (a, b) => (a.sequence ?? a.orderNo ?? 0) - (b.sequence ?? b.orderNo ?? 0)
+    );
+}
 
 /**
  * Trang Lộ trình học cá nhân hóa thích ứng của học viên.
- * Hiển thị toàn cảnh các chặng học theo đúng thứ tự sư phạm, xử lý đầy đủ 4 trạng thái giao diện
- * cùng kịch bản đạt chuẩn toàn bộ 7 phần thi ngay từ bài đánh giá đầu vào.
  */
 export default function LearningPathPage() {
-    // Gọi custom hook để lấy dữ liệu lộ trình, cờ đang tải, thông báo lỗi và hàm tải lại
     const { data, isLoading, error, refetch } = useRoadmap();
-    // Đọc và ghi bộ lọc lên URL Search Params để giữ nguyên trạng thái khi tải lại trang
     const [searchParams, setSearchParams] = useSearchParams();
 
-    // Đọc giá trị bộ lọc kỹ năng và trạng thái hiện tại trên URL (mặc định là ALL)
-    const sectionParam = (searchParams.get('section') as SectionFilter) || 'ALL';
-    const statusParam = (searchParams.get('status') as StatusFilter) || 'ALL';
+    const sectionParam = parseSectionFilter(searchParams.get('section'));
+    const statusParam = parseStatusFilter(searchParams.get('status'));
 
-    // Cập nhật bộ lọc trên URL và xóa tham số khi chọn lại "Tất cả" để đường dẫn gọn gàng
     const handleFilterChange = (key: 'section' | 'status', value: string) => {
         setSearchParams((prev) => {
-            // Tạo bản sao URLSearchParams trước khi chỉnh sửa để không mutate tham chiếu cũ
             const next = new URLSearchParams(prev);
-            if (value === 'ALL') {
+            const isDefaultValue =
+                (key === 'section' && value === 'ALL') ||
+                (key === 'status' && value === DEFAULT_STATUS_FILTER);
+
+            if (isDefaultValue) {
                 next.delete(key);
             } else {
                 next.set(key, value);
@@ -68,24 +88,41 @@ export default function LearningPathPage() {
         });
     };
 
-    // Xóa toàn bộ bộ lọc đang áp dụng để hiển thị lại đầy đủ lộ trình
     const handleResetFilters = () => {
         setSearchParams({});
     };
 
-    // Tối ưu: Dùng useMemo chỉ lọc lại danh sách mô-đun khi dữ liệu hoặc bộ lọc thực sự thay đổi
     const filteredModules = useMemo(() => {
-        // Nếu chưa có danh sách mô-đun -> trả về mảng rỗng an toàn
-        if (!data?.modules) return [];
-        // Lọc mô-đun khớp đồng thời kỹ năng và trạng thái đang chọn
-        return data.modules.filter((m) => {
-            const matchSection = sectionParam === 'ALL' || m.section === sectionParam;
-            const matchStatus = statusParam === 'ALL' || m.status === statusParam;
-            return matchSection && matchStatus;
-        });
+        if (!data) {
+            return [];
+        }
+
+        const roadmapModules: ModuleItem[] = (data.modules ?? []).map((m) => ({
+            ...m,
+            inRoadmap: true,
+        }));
+        const exemptedModules: ModuleItem[] = (data.exemptedModules ?? []).map((m) => ({
+            ...m,
+            inRoadmap: false,
+        }));
+
+        let statusMatched: ModuleItem[];
+        if (statusParam === 'IN_PROGRESS') {
+            statusMatched = roadmapModules.filter(
+                (m) => m.status === 'IN_PROGRESS' || m.status === 'UNLOCKED' || m.status === 'LOCKED'
+            );
+        } else if (statusParam === 'COMPLETED') {
+            const passedRoadmap = roadmapModules.filter((m) => m.status === 'COMPLETED');
+            statusMatched = sortByGlobalSequence([...passedRoadmap, ...exemptedModules]);
+        } else {
+            statusMatched = sortByGlobalSequence([...roadmapModules, ...exemptedModules]);
+        }
+
+        return statusMatched.filter(
+            (m) => sectionParam === 'ALL' || m.section === sectionParam
+        );
     }, [data, sectionParam, statusParam]);
 
-    // Trạng thái 1 (Loading): Hiển thị Skeleton khớp bố cục thật thay cho spinner quay tròn
     if (isLoading) {
         return (
             <div className="app-layout">
@@ -97,7 +134,6 @@ export default function LearningPathPage() {
         );
     }
 
-    // Trạng thái 2 (Error): Lỗi kết nối hoặc máy chủ -> hiển thị thông báo kèm nút Thử lại
     if (error) {
         return (
             <div className="app-layout">
@@ -117,7 +153,6 @@ export default function LearningPathPage() {
         );
     }
 
-    // Trạng thái 3 (Empty): Học viên chưa thiết lập mục tiêu hoặc chưa làm bài đánh giá đầu vào
     if (!data) {
         return (
             <div className="app-layout">
@@ -146,12 +181,13 @@ export default function LearningPathPage() {
         );
     }
 
-    // Kiểm tra trường hợp học viên đạt chuẩn toàn bộ 7 phần thi ngay ở bài đánh giá đầu vào
     const isPassedAllParts =
         Boolean(data.isPassedAllParts) || (data.status === 'COMPLETED' && data.modules.length === 0);
 
-    // Nếu đã đạt chuẩn mục tiêu ngay từ đầu -> hiển thị màn hình chúc mừng và mở lối sang bài thi thử đầu ra
-    if (isPassedAllParts) {
+    const isViewingExemptedAfterFullPass =
+        isPassedAllParts && (statusParam === 'ALL' || statusParam === 'COMPLETED');
+
+    if (isPassedAllParts && !isViewingExemptedAfterFullPass) {
         return (
             <div className="app-layout">
                 <SidebarNav />
@@ -169,19 +205,21 @@ export default function LearningPathPage() {
                         <p className="roadmap-celebration-card__desc">
                             Kết quả đánh giá cho thấy bạn đã vững toàn bộ các kỹ năng cho mục tiêu{' '}
                             <strong>{data.targetScore} điểm TOEIC</strong>. Bạn có thể tham gia bài thi thử TOEIC
-                            200 câu để kiểm chứng kết quả đầu ra hoặc nâng mốc mục tiêu cao hơn.
+                            200 câu để kiểm chứng kết quả đầu ra hoặc mở lại các mô-đun để ôn tập tự do.
                         </p>
                         <div className="roadmap-state-card__actions">
-                            {/* Điều hướng học viên tới phòng thi thử TOEIC chuẩn ETS 200 câu thay vì chẩn đoán */}
                             <Link to="/mock-exam" className="roadmap-btn-primary">
                                 <span>Làm bài thi thử TOEIC 200 câu</span>
                                 <ArrowRight size={16} />
                             </Link>
-                            {/* Lối vào Thư viện 7 Part để học viên đạt chuẩn vẫn có thể ôn bổ trợ tự do */}
-                            <Link to="/catalog" className="roadmap-btn-secondary">
+                            <button
+                                type="button"
+                                className="roadmap-btn-secondary"
+                                onClick={() => handleFilterChange('status', 'COMPLETED')}
+                            >
                                 <BookOpen size={16} />
-                                <span>Khám phá thư viện 7 Part</span>
-                            </Link>
+                                <span>Xem toàn bộ mô-đun (Ôn tập tự do)</span>
+                            </button>
                             <Link to="/target-selection" className="roadmap-btn-secondary">
                                 <Target size={16} />
                                 <span>Nâng mốc mục tiêu cao hơn</span>
@@ -193,9 +231,7 @@ export default function LearningPathPage() {
         );
     }
 
-    // Xác định người dùng có đang áp dụng bộ lọc hay không để hiện nút Xóa bộ lọc khi cần
-    const isFiltered = sectionParam !== 'ALL' || statusParam !== 'ALL';
-    // Kiểm tra học viên đã hoàn thành 100% toàn bộ các mô-đun trên lộ trình hay chưa
+    const isFiltered = sectionParam !== 'ALL' || statusParam !== DEFAULT_STATUS_FILTER;
     const isRoadmapCompleted = data.status === 'COMPLETED' && data.totalModules > 0;
 
     return (
@@ -204,21 +240,21 @@ export default function LearningPathPage() {
 
             <main className="roadmap-main">
                 <div className="roadmap-container">
-                    {/* Banner chúc mừng khi học viên đã hoàn thành xuất sắc 100% lộ trình học */}
-                    {isRoadmapCompleted && (
+                    {(isRoadmapCompleted || isPassedAllParts) && (
                         <section className="roadmap-completed-banner" aria-label="Hoàn thành lộ trình">
                             <div className="roadmap-completed-banner__left">
                                 <CheckCircle2 size={24} className="roadmap-completed-banner__icon" />
                                 <div>
                                     <h2 className="roadmap-completed-banner__title">
-                                        Bạn đã hoàn thành toàn bộ lộ trình học!
+                                        {isPassedAllParts
+                                            ? `Bạn đã đạt chuẩn toàn bộ mục tiêu ${data.targetScore} điểm!`
+                                            : 'Bạn đã hoàn thành toàn bộ lộ trình học!'}
                                     </h2>
                                     <p className="roadmap-completed-banner__desc">
-                                        Bài thi thử TOEIC 200 câu đã sẵn sàng để bạn kiểm chứng năng lực đầu ra.
+                                        Bài thi thử TOEIC 200 câu đã sẵn sàng hoặc bạn có thể ôn tập tự do các mô-đun bên dưới.
                                     </p>
                                 </div>
                             </div>
-                            {/* Bổ sung nút vào thẳng Phòng thi đầu ra ETS 200 câu bên cạnh nút đổi mục tiêu */}
                             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
                                 <Link to="/mock-exam" className="roadmap-btn-primary">
                                     <span>Làm bài thi đầu ra ETS</span>
@@ -232,14 +268,12 @@ export default function LearningPathPage() {
                         </section>
                     )}
 
-                    {/* Thanh bộ lọc theo kỹ năng và trạng thái đồng bộ với URL */}
                     <section className="roadmap-filter-bar" aria-label="Bộ lọc lộ trình">
                         <div className="roadmap-filter-group">
                             <span className="roadmap-filter-group__label">
                                 <Filter size={14} />
                                 <span>Kỹ năng:</span>
                             </span>
-                            {/* Lặp render các nút lọc kỹ năng */}
                             {SECTION_FILTER_OPTIONS.map((option) => (
                                 <button
                                     key={option.value}
@@ -254,7 +288,6 @@ export default function LearningPathPage() {
 
                         <div className="roadmap-filter-group">
                             <span className="roadmap-filter-group__label">Trạng thái:</span>
-                            {/* Lặp render các nút lọc trạng thái mô-đun */}
                             {STATUS_FILTER_OPTIONS.map((option) => (
                                 <button
                                     key={option.value}
@@ -268,7 +301,6 @@ export default function LearningPathPage() {
                         </div>
                     </section>
 
-                    {/* Dòng thời gian danh sách các mô-đun sau khi áp dụng bộ lọc */}
                     {filteredModules.length > 0 ? (
                         <div className="roadmap-timeline">
                             {filteredModules.map((moduleItem, index) => (
@@ -282,18 +314,30 @@ export default function LearningPathPage() {
                     ) : (
                         <div className="roadmap-state-card is-compact">
                             <p className="roadmap-state-card__desc">
-                                Không có mô-đun nào khớp với bộ lọc hiện tại.
+                                {(isRoadmapCompleted || isPassedAllParts) && statusParam === 'IN_PROGRESS'
+                                    ? 'Không còn mô-đun nào đang học dở hoặc chưa mở khóa.'
+                                    : 'Không có mô-đun nào khớp với bộ lọc hiện tại.'}
                             </p>
-                            {/* Hiện nút đặt lại bộ lọc nếu người dùng đang lọc */}
-                            {isFiltered && (
-                                <button
-                                    type="button"
-                                    className="roadmap-btn-secondary"
-                                    onClick={handleResetFilters}
-                                >
-                                    Xóa bộ lọc
-                                </button>
-                            )}
+                            <div className="roadmap-state-card__actions">
+                                {(isRoadmapCompleted || isPassedAllParts) && statusParam === 'IN_PROGRESS' && (
+                                    <button
+                                        type="button"
+                                        className="roadmap-btn-primary"
+                                        onClick={() => handleFilterChange('status', 'COMPLETED')}
+                                    >
+                                        Xem các mô-đun đã hoàn thành
+                                    </button>
+                                )}
+                                {isFiltered && (
+                                    <button
+                                        type="button"
+                                        className="roadmap-btn-secondary"
+                                        onClick={handleResetFilters}
+                                    >
+                                        Xóa bộ lọc
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
                 </div>
