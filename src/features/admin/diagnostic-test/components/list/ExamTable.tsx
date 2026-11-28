@@ -113,14 +113,12 @@ export const ExamTable: React.FC<ExamTableProps> = ({
 
                   <td>
                     <div className="exam-meta-cell">
-                      <HelpCircle size={15} className="text-slate-400" />
                       <span>{exam.totalQuestions} câu</span>
                     </div>
                   </td>
 
                   <td>
                     <div className="exam-meta-cell">
-                      <Clock size={15} className="text-slate-400" />
                       <span>{exam.durationMinutes} phút</span>
                     </div>
                   </td>

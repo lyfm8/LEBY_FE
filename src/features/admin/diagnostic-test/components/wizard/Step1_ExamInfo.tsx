@@ -126,7 +126,7 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                       style={{ accentColor: '#F45B0B', width: '17px', height: '17px' }}
                     />
                   </div>
-                  <p className="radio-card-desc">Học viên làm tự do bất cứ lúc nào để rèn kỹ năng thi thật.</p>
+                  <p className="radio-card-desc">Đề thi giống cấu trúc đề thi thật của ETS luyện tập thêm</p>
                 </div>
 
                 {/* Lựa chọn 2: Đề thi đầu ra khóa cho tới khi hoàn thành lộ trình */}
@@ -146,7 +146,8 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                       style={{ accentColor: '#F45B0B', width: '17px', height: '17px' }}
                     />
                   </div>
-                  <p className="radio-card-desc">Mở khóa khi hoàn thành lộ trình; hiển thị Radar Trước/Sau &amp; Báo cáo.</p>
+                    <p className="radio-card-desc">Cần hoàn thành lộ trình học để thực hiện đề thi này</p>
+
                 </div>
               </div>
             </div>
@@ -249,38 +250,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
                 )}
               </div>
             </div>
-
-            {/* Alert box xanh dương cho Mock Test */}
-            {testType === 'FULL_MOCK_TEST' && (
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '14px 18px',
-                  backgroundColor: '#EFF6FF',
-                  border: '1px solid #BFDBFE',
-                  borderRadius: '10px',
-                  marginTop: '8px',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', fontSize: '13px', color: '#1E40AF' }}>
-                  <HelpCircle size={18} className="text-blue-600 flex-shrink-0" />
-                  <span>
-                    <strong>Cấu trúc đề thi thử TOEIC</strong>: Số lượng câu được cố định theo chuẩn ETS và không thể nhập tùy ý.
-                  </span>
-                </div>
-
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-                  <span style={{ padding: '3px 8px', backgroundColor: '#DBEAFE', color: '#1E40AF', borderRadius: '6px', fontSize: '12px', fontWeight: 600 }}>
-                    100 Listening
-                  </span>
-                  <span style={{ padding: '3px 8px', backgroundColor: '#DBEAFE', color: '#1E40AF', borderRadius: '6px', fontSize: '12px', fontWeight: 600 }}>
-                    100 Reading
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -292,9 +261,6 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
             <Clock size={16} />
             <span>Lưu ý khi tạo đề</span>
           </div>
-          <p style={{ fontSize: '13px', color: '#64748B', margin: 0, lineHeight: 1.5 }}>
-            Bạn có thể lưu bản nháp ở bất kỳ bước nào và tiếp tục hoàn thiện sau.
-          </p>
         </div>
       </div>
 

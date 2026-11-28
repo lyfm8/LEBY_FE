@@ -51,9 +51,6 @@ export const ExplanationEditor: React.FC<ExplanationEditorProps> = ({
                     <h4 style={{ margin: 0, fontWeight: 600, color: '#111827', fontSize: '0.875rem' }}>
                         Giải thích chi tiết đáp án & Dịch nghĩa
                     </h4>
-                    <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: '#6b7280' }}>
-                        Lời giải và từ vựng học thuật sẽ hiển thị cho học viên sau khi hoàn thành bài thi
-                    </p>
                 </div>
                 <button type="button" style={{ background: 'none', border: 'none', color: '#9ca3af', cursor: 'pointer', padding: '0.25rem' }}>
                     {isExpanded ? <ChevronUp size={18} /> : <ChevronDown size={18} />}

@@ -55,9 +55,7 @@ export const Step2_Questions: React.FC<Step2Props> = ({
           <div style={{ fontSize: '13px', fontWeight: 600, color: '#0F172A', marginBottom: '6px' }}>
             Phương thức chọn câu hỏi
           </div>
-          <div style={{ fontSize: '12px', color: '#64748B', marginBottom: '12px' }}>
-            Chọn thủ công hoặc để hệ thống tự động phân bổ theo ma trận.
-          </div>
+
 
           <div className="segmented-control">
             <button

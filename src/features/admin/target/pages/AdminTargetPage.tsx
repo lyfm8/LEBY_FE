@@ -39,9 +39,6 @@ export const AdminTargetPage: React.FC = () => {
       <div className="admin-page-header">
         <div>
           <h1 className="admin-page-title">Mục tiêu & Lộ trình</h1>
-          <p className="admin-page-subtitle">
-            Quản lý các mốc AIM (450, 550, 650...) và thiết lập ngưỡng đỗ mô-đun tương ứng.
-          </p>
         </div>
       </div>
 

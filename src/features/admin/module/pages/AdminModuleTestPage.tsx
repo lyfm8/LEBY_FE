@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   AlertTriangle,
   RefreshCw,
+  RotateCcw,
   SlidersHorizontal,
   Shuffle,
   FileCheck2,
@@ -36,6 +37,7 @@ export const AdminModuleTestPage: React.FC = () => {
     setKeyword,
     setPartId,
     setStatusFilter,
+    resetFilters,
     selectModule,
     refetch,
   } = useModuleTestOverview();
@@ -178,15 +180,15 @@ export const AdminModuleTestPage: React.FC = () => {
           <option value="UNCONFIGURED">Chưa có đề thi</option>
         </select>
 
-        {/* Nút làm mới dữ liệu */}
+        {/* Nút đặt lại toàn bộ bộ lọc tìm kiếm trên cùng một hàng */}
         <button
           type="button"
-          className="btn-secondary compact"
-          onClick={() => void refetch()}
-          disabled={isLoading}
+          className="btn-secondary compact mt-reset-btn"
+          onClick={resetFilters}
+          title="Đặt lại toàn bộ bộ lọc"
         >
-          <RefreshCw size={14} className={isLoading ? 'spin' : ''} />
-          <span>Làm mới</span>
+          <RotateCcw size={14} />
+          <span>Đặt lại</span>
         </button>
       </div>
 

@@ -54,29 +54,9 @@ export const AbilityList: React.FC<AbilityListProps> = ({
 
   return (
     <div className="ability-panel-card">
-      {/* Header của cột Ability */}
+      {/* Header của cột Ability: chỉ giữ lại nút thêm năng lực căn phải */}
       <div className="ability-panel-header">
-        <div className="panel-title-group">
-          <div className="panel-icon-badge ability">
-            <Brain size={16} />
-          </div>
-          <div className="title-context-block">
-            <div className="title-row">
-              <h2 className="panel-title">Năng lực đánh giá</h2>
-              <span className="panel-count-pill">{abilities.length}</span>
-            </div>
-            <div className="panel-context-crumb">
-              <span>Đang cấu hình: </span>
-              <strong className="context-part-name">{displayName}</strong>
-              {selectedPart && (
-                <span className="crumb-badge">
-                  <SectionBadge section={selectedPart.sections} />
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
+        {/* Nút mở modal tạo năng lực đánh giá mới cho phần thi đang chọn */}
         <button
           onClick={onAdd}
           className="btn-panel-action primary"

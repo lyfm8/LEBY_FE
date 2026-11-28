@@ -14,11 +14,7 @@ import {
   CheckCircle2,
   Trash2,
 } from 'lucide-react';
-import {
-  ThresholdDropdownInput,
-  SCORE_PRESETS,
-  RATE_PRESETS,
-} from './ThresholdDropdownInput';
+import { ThresholdNumberInput } from './ThresholdNumberInput';
 
 const DEFAULT_TOEIC_PARTS: PartResponse[] = [
   { id: 1, name: 'Part 1: Photographs', sections: 'LISTENING' },
@@ -387,14 +383,15 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
             </div>
 
             <div className="form-row-2 thresholds-row">
-              {/* Điểm đỗ */}
+              {/* Điểm đỗ mặc định bài thi vượt ải */}
               <div className="threshold-box">
                 <label className="form-label font-bold">
                   1. Điểm đỗ mặc định bài thi vượt ải
                 </label>
                 <div style={{ marginTop: '0.35rem' }}>
-                  <ThresholdDropdownInput
-                    value={watch('defaultPassScore') || 65}
+                  {/* Ô nhập số trực tiếp cho điểm đỗ mặc định (50-100đ) */}
+                  <ThresholdNumberInput
+                    value={watch('defaultPassScore') ?? 65}
                     onChange={(val) =>
                       setValue('defaultPassScore', val, {
                         shouldDirty: true,
@@ -402,11 +399,10 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                       })
                     }
                     unit="đ"
-                    presets={SCORE_PRESETS}
                     min={50}
                     max={100}
                     size="large"
-                    title="Chọn nhanh mốc điểm chuẩn bài thi"
+                    ariaLabel="Điểm đỗ mặc định bài thi vượt ải"
                   />
                 </div>
                 {errors.defaultPassScore && (
@@ -414,14 +410,15 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                 )}
               </div>
 
-              {/* Tỷ lệ hoàn thành bài học */}
+              {/* Tỷ lệ hoàn thành bài học tối thiểu */}
               <div className="threshold-box">
                 <label className="form-label font-bold">
                   2. Tỷ lệ bài giảng hoàn thành tối thiểu
                 </label>
                 <div style={{ marginTop: '0.35rem' }}>
-                  <ThresholdDropdownInput
-                    value={watch('requiredCompletionRate') || 80}
+                  {/* Ô nhập số trực tiếp cho tỷ lệ hoàn thành bài giảng (50-100%) */}
+                  <ThresholdNumberInput
+                    value={watch('requiredCompletionRate') ?? 80}
                     onChange={(val) =>
                       setValue('requiredCompletionRate', val, {
                         shouldDirty: true,
@@ -429,11 +426,10 @@ export const ModuleEditorView: React.FC<ModuleEditorViewProps> = ({
                       })
                     }
                     unit="%"
-                    presets={RATE_PRESETS}
                     min={50}
                     max={100}
                     size="large"
-                    title="Chọn nhanh mốc tỷ lệ hoàn thành chuẩn"
+                    ariaLabel="Tỷ lệ bài giảng hoàn thành tối thiểu"
                   />
                 </div>
                 {errors.requiredCompletionRate && (

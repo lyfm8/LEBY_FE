@@ -1,12 +1,11 @@
 import React from 'react';
-import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, Save } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, Loader2, Save } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useStandaloneQuestionEditor } from '../hooks/useStandaloneQuestionEditor';
 import { AbilityPicker } from '../components/editor/AbilityPicker';
 import { ExplanationEditor } from '../components/editor/ExplanationEditor';
 import { OptionsEditor } from '../components/editor/OptionsEditor';
 import { MediaUploader } from '../components/media/MediaUploader';
-import { ToeicQuestionPreview } from '../components/preview/ToeicQuestionPreview';
 import '../admin-question.css';
 
 /**
@@ -42,8 +41,6 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
     isLoadingInitial,
     isSaving,
     formError,
-    showPreview,
-    setShowPreview,
     parts,
     abilities,
     selectedPart,
@@ -81,21 +78,7 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
             <h1 className="editor-heading">
               {isEditMode ? `Chỉnh sửa câu hỏi đơn (Q-${id})` : 'Tạo câu hỏi đơn mới'}
             </h1>
-            <p className="editor-subheading">
-              Biên soạn câu hỏi độc lập (Part 1, 2, 5) kèm nội dung, đáp án và media riêng.
-            </p>
           </div>
-        </div>
-
-        <div>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? <EyeOff size={16} /> : <Eye size={16} />}
-            <span>{showPreview ? 'Ẩn xem trước' : 'Xem trước bài thi'}</span>
-          </button>
         </div>
       </div>
 
@@ -103,24 +86,6 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
       {formError && (
         <div className="admin-alert-banner error">
           <span style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{formError}</span>
-        </div>
-      )}
-
-      {/* Khung xem trước TOEIC Simulation nếu được bật */}
-      {showPreview && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <ToeicQuestionPreview
-            question={{
-              name,
-              partName: selectedPart?.name,
-              section: selectedPart?.sections,
-              text,
-              options,
-              correctKey,
-              medias,
-              isGroup: false,
-            }}
-          />
         </div>
       )}
 
@@ -134,9 +99,6 @@ export const QuestionStandaloneEditorPage: React.FC = () => {
               <h3 className="editor-card-title">Nội dung câu hỏi / Đề bài</h3>
             </div>
             <div className="editor-card-body">
-              <p style={{ margin: 0, fontSize: '0.75rem', color: '#6b7280' }}>
-                Với câu hỏi Part 1 hoặc Part 2 chỉ nghe audio, bạn có thể để trống hoặc ghi hướng dẫn ngắn.
-              </p>
               <textarea
                 className="form-textarea"
                 style={{ minHeight: '90px' }}

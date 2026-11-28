@@ -5,8 +5,6 @@ import {
   ArrowUp,
   ChevronDown,
   ChevronUp,
-  Eye,
-  EyeOff,
   Loader2,
   Plus,
   Save,
@@ -18,7 +16,6 @@ import { AbilityPicker } from '../components/editor/AbilityPicker';
 import { ExplanationEditor } from '../components/editor/ExplanationEditor';
 import { OptionsEditor } from '../components/editor/OptionsEditor';
 import { MediaUploader } from '../components/media/MediaUploader';
-import { ToeicQuestionPreview } from '../components/preview/ToeicQuestionPreview';
 import '../admin-question.css';
 
 /**
@@ -53,8 +50,6 @@ export const QuestionGroupEditorPage: React.FC = () => {
     isLoadingInitial,
     isSaving,
     formError,
-    showPreview,
-    setShowPreview,
     parts,
     abilities,
     selectedPart,
@@ -98,40 +93,11 @@ export const QuestionGroupEditorPage: React.FC = () => {
             </p>
           </div>
         </div>
-
-        <div>
-          <button
-            type="button"
-            className="btn-secondary"
-            onClick={() => setShowPreview(!showPreview)}
-          >
-            {showPreview ? <EyeOff size={16} /> : <Eye size={16} />}
-            <span>{showPreview ? 'Ẩn xem trước' : 'Xem trước bài thi'}</span>
-          </button>
-        </div>
       </div>
 
       {formError && (
         <div className="admin-alert-banner error">
           <span style={{ fontSize: '0.8125rem', fontWeight: 500 }}>{formError}</span>
-        </div>
-      )}
-
-      {/* Khung xem trước TOEIC Simulation */}
-      {showPreview && (
-        <div style={{ marginBottom: '1.5rem' }}>
-          <ToeicQuestionPreview
-            question={{
-              name,
-              partName: selectedPart?.name,
-              section: selectedPart?.sections,
-              instruction,
-              passage,
-              medias: groupMedias,
-              isGroup: true,
-              items,
-            }}
-          />
         </div>
       )}
 

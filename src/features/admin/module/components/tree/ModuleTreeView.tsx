@@ -132,7 +132,7 @@ export const ModuleTreeView: React.FC<ModuleTreeViewProps> = ({
             type="button"
             className={`btn-config-thresholds ${isConfigActive ? 'active' : ''}`}
             onClick={() => onSelectView({ type: 'MODULE_CONFIGS' })}
-            title="Xem & điều chỉnh điểm chuẩn và tỷ lệ hoàn thành"
+            title="Xem & điều chỉnh tỷ lệ hoàn thành bài học"
           >
             <Sliders size={14} />
             <span>Cấu hình chuẩn</span>
