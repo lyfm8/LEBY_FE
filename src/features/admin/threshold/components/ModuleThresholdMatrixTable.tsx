@@ -271,22 +271,6 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
           </table>
         )}
       </div>
-
-      {/* Chú thích bảng (Legend) */}
-      <div className="matrix-legend">
-        <div className="legend-item">
-          <span className="legend-color-box cell-inherited" />
-          <span>Điểm kế thừa mặc định của Module</span>
-        </div>
-        <div className="legend-item">
-          <span className="legend-color-box cell-custom" />
-          <span>Điểm tùy biến theo AIM</span>
-        </div>
-        <div className="legend-item">
-          <span className="legend-color-box cell-dirty" />
-          <span>Ô đang sửa đổi (chưa lưu)</span>
-        </div>
-      </div>
     </div>
   );
 };
