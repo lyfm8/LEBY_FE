@@ -34,16 +34,8 @@ export function WeeklyProgressChart({
             <div className="db-card__header">
                 <div>
                     <h3 className="db-card__title">Hoạt động học tập 7 ngày gần nhất</h3>
-                    <p className="db-card__subtitle">
-                        {hasAnyActivity
-                            ? `Hoàn thành ${weeklyCompletedLessons} bài giảng và ${weeklyTestsSubmitted} bài thi trong ${weeklyActiveDays}/7 ngày vừa qua`
-                            : 'Chưa có bài học hoàn thành trong tuần này — bắt đầu 1 bài giảng ngay hôm nay để khởi động chuỗi học'}
-                    </p>
                 </div>
-                <span className="db-weekly-card__badge">
-                    <BarChart3 size={15} />
-                    <span>{weeklyTotalActivities} hoạt động</span>
-                </span>
+    
             </div>
 
             {/* Lưới 7 cột ngày liên tiếp từ 6 ngày trước đến hôm nay */}

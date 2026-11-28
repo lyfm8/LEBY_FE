@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { PartResponse, AbilityResponse } from '../types';
-import { Plus, Edit2, Trash2, Layers, Search } from 'lucide-react';
+import { Plus, Edit2, Trash2, Search } from 'lucide-react';
 import { SectionBadge } from './SectionBadge';
 
 interface PartListProps {

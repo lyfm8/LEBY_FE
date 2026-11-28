@@ -47,7 +47,7 @@ export function DashboardSkeleton() {
                     </div>
 
                     <div className="db-content-right">
-                        {/* Mô phỏng khối Hoạt động gần đây & Truy cập nhanh */}
+                        {/* Mô phỏng khối Hoạt động gần đây */}
                         <div className="db-card db-skeleton__sidebar">
                             <div className="db-skel db-skel--sm" />
                             {activityPlaceholders.map((row) => (

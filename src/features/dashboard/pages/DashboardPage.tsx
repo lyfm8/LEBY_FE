@@ -15,7 +15,6 @@ import { DashboardOnboardingCard } from '../components/DashboardOnboardingCard';
 import { StatCard } from '../components/StatCard';
 import { CurrentModuleFocusCard } from '../components/CurrentModuleFocusCard';
 import { WeeklyProgressChart } from '../components/WeeklyProgressChart';
-import { QuickShortcutsCard } from '../components/QuickShortcutsCard';
 import { RecentActivityCard } from '../components/RecentActivityCard';
 import '../dashboard.css';
 
@@ -43,7 +42,7 @@ function formatStudyDuration(totalMinutes: number): string {
 /**
  * Trang Dashboard học tập cá nhân (màn hình trung tâm của học viên).
  * Tổng hợp tiến độ hoàn thành lộ trình, chuỗi ngày học liên tục, thời gian học,
- * điểm TOEIC dự đoán, mô-đun đang học tiếp theo, biểu đồ tuần và các lối tắt học tập.
+ * điểm TOEIC dự đoán, mô-đun đang học tiếp theo, biểu đồ tuần và hoạt động gần đây.
  */
 export default function DashboardPage() {
     // Gọi custom hook để lấy dữ liệu tổng hợp Dashboard cùng 4 trạng thái chuẩn
@@ -228,7 +227,7 @@ export default function DashboardPage() {
                         />
                     </section>
 
-                    {/* Lưới nội dung chính 2 cột tinh gọn: Trái (Học tiếp ngay + Biểu đồ tuần) - Phải (Hoạt động gần đây + Truy cập nhanh) */}
+                    {/* Lưới nội dung chính 2 cột tinh gọn: Trái (Học tiếp ngay + Biểu đồ tuần) - Phải (Hoạt động gần đây) */}
                     <div className="db-content-grid">
                         <div className="db-content-left">
                             {data.currentModule && (
@@ -243,11 +242,6 @@ export default function DashboardPage() {
 
                         <div className="db-content-right">
                             <RecentActivityCard activities={data.recentActivities.slice(0, 5)} />
-
-                            <QuickShortcutsCard
-                                canTakeFullMockTest={data.stats.canTakeFullMockTest}
-                                latestDiagnosticAttemptId={data.diagnostic.latestAttemptId}
-                            />
                         </div>
                     </div>
                 </main>

@@ -11,7 +11,6 @@ import {
     Lock,
     LogIn,
     RefreshCw,
-    Sparkles,
     WifiOff,
     X,
 } from 'lucide-react';
@@ -347,16 +346,10 @@ export default function LessonRoomPage() {
                             />
                         )}
 
-                        {/* Thẻ thông tin lý thuyết, năng lực trọng tâm và ghi chú bài học */}
+                        {/* Thẻ thông tin lý thuyết và ghi chú bài học */}
                         <section className="lesson-notes-card" aria-label="Tóm tắt nội dung bài học">
                             <div className="lesson-notes-card__top">
                                 <h2 className="lesson-notes-card__title">Nội dung trọng tâm & Ghi chú</h2>
-                                {lesson.abilityName && (
-                                    <span className="lesson-ability-chip">
-                                        <Sparkles size={13} />
-                                        <span>{lesson.abilityName}</span>
-                                    </span>
-                                )}
                             </div>
 
                             {lesson.descriptions ? (

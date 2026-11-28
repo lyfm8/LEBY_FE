@@ -82,7 +82,6 @@ export const ExamTable: React.FC<ExamTableProps> = ({
 
                     <td className="exam-title-cell">
                       <div className="exam-title-main">{exam.title}</div>
-                      {exam.description && <div className="exam-title-sub">{exam.description}</div>}
                     </td>
 
                     <td>

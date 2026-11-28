@@ -778,14 +778,14 @@
    MODULE DETAIL PAGE
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Hero Dark Card ────────────────────────────────────────── */
+/* ── Hero Card (Thẻ thông tin Part / Mô-đun) ─────────────────── */
 .module-hero-card {
-    background-color: #0b1120;
-    color: #ffffff;
-    border-radius: 20px;
-    padding: 32px 36px;
+    background-color: #ffffff;
+    color: #0f172a;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 28px 32px;
     margin-bottom: 36px;
-    box-shadow: 0 4px 12px rgba(11, 17, 32, 0.15);
 }
 
 .module-breadcrumb {
@@ -793,17 +793,17 @@
     align-items: center;
     gap: 8px;
     font-size: 13px;
-    color: #94a3b8;
+    color: #64748b;
     margin-bottom: 14px;
 }
 
 .module-breadcrumb a {
-    color: #94a3b8;
+    color: #64748b;
     text-decoration: none;
 }
 
 .module-breadcrumb a:hover {
-    color: #ffffff;
+    color: #0f172a;
 }
 
 .module-hero-card__header {
@@ -817,7 +817,7 @@
 .module-hero-card__title {
     font-size: 24px !important;
     font-weight: 800 !important;
-    color: #ffffff !important;
+    color: #0f172a !important;
     margin: 0 !important;
 }
 
@@ -832,7 +832,7 @@
 
 .module-hero-card__desc {
     font-size: 14px;
-    color: #94a3b8;
+    color: #64748b;
     margin: 0 0 24px;
 }
 
@@ -840,12 +840,13 @@
     display: flex;
     align-items: center;
     gap: 16px;
+    margin-top: 12px;
 }
 
 .module-hero-card__progress-label {
     font-size: 13px;
     font-weight: 600;
-    color: #cbd5e1;
+    color: #475569;
     white-space: nowrap;
 }
 
@@ -853,7 +854,7 @@
     max-width: 220px;
     width: 100%;
     height: 7px;
-    background-color: #334155;
+    background-color: #e2e8f0;
     border-radius: 9999px;
     overflow: hidden;
 }
@@ -894,13 +895,12 @@
 }
 
 .module-lesson-item.is-current {
-    border-color: #ea580c;
-    box-shadow: 0 0 0 1px #ea580c;
+    border-color: #e2e8f0;
 }
 
 .module-lesson-item.is-locked {
-    opacity: 0.65;
-    background: #f8fafc;
+    background: #ffffff;
+    border-color: #e2e8f0;
 }
 
 .module-lesson-item__left {
@@ -966,6 +966,44 @@
 
 .module-lesson-item__lock {
     color: #94a3b8;
+}
+
+.module-lesson-group__icon.is-test {
+    color: #ea580c;
+}
+
+.module-test-pill {
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2.5px 8px;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+}
+
+.module-test-pill.is-passed {
+    background-color: #ecfdf5;
+    color: #059669;
+}
+
+.module-test-pill.is-ready {
+    background-color: #eff6ff;
+    color: #2563eb;
+}
+
+.module-test-pill.is-locked {
+    background-color: #f1f5f9;
+    color: #64748b;
+}
+
+.module-test-retake-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 6px;
+    font-size: 12px;
+    color: #ea580c;
 }
 
 /* ── Module Test Card ──────────────────────────────────────── */
@@ -1287,12 +1325,13 @@
     gap: 6px;
     font-size: 12.5px;
     font-weight: 700;
-    color: #fdba74;
-    background: rgba(234, 88, 12, 0.16);
-    border: 1px solid rgba(251, 146, 60, 0.35);
+    color: #c2410c;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
     padding: 4px 12px;
     border-radius: 9999px;
-    margin-bottom: 12px;
+    margin-top: 4px;
+    margin-bottom: 8px;
 }
 
 .module-lesson-item__title-row {
@@ -1800,7 +1839,7 @@
 }
 
 .module-breadcrumb__link {
-    color: #cbd5e1 !important;
+    color: #64748b !important;
     text-decoration: none;
     font-weight: 600;
     padding: 2px 6px;
@@ -1809,17 +1848,17 @@
 }
 
 .module-breadcrumb__link:hover {
-    color: #ffffff !important;
-    background: rgba(255, 255, 255, 0.1);
+    color: #0f172a !important;
+    background: #f1f5f9;
 }
 
 .module-breadcrumb__sep {
-    color: #64748b;
+    color: #94a3b8;
     flex-shrink: 0;
 }
 
 .module-breadcrumb__current {
-    color: #f8fafc;
+    color: #0f172a;
     font-weight: 600;
 }
 
