@@ -6,7 +6,6 @@ import {
     BookOpen,
     ClipboardCheck,
     Settings,
-    Target,
     Shield,
     LogOut,
     ChevronDown,
@@ -30,7 +29,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
  * Cấu trúc:
  * - Trái: Logo thương hiệu LEBY
  * - Giữa: Các mục tác vụ học tập nằm ngang (Tổng quan, Lộ trình học, Phòng thi, Kết quả)
- * - Phải: Nút chuyển nhanh Cổng Quản trị (nếu là ADMIN/TEACHER) + Dropdown tài khoản có nút Đăng xuất (UC03)
+ * - Phải: Dropdown tài khoản có lối tắt Cổng Quản trị (nếu là ADMIN/TEACHER) và nút Đăng xuất (UC03)
  * - Di động (<= 900px): Giữ Topbar gọn (Logo + Avatar/Đăng xuất) kết hợp thanh điều hướng dưới đáy
  */
 export function SidebarNav() {
@@ -236,19 +235,8 @@ export function SidebarNav() {
                         </div>
                     </nav>
 
-                    {/* 3. Khối Phải: Phím tắt Quản trị (nếu có quyền) & Menu tài khoản + Đăng xuất */}
+                    {/* 3. Khối Phải: Menu tài khoản + Đăng xuất */}
                     <div className="app-topbar__actions">
-                        {isAdminOrTeacher && (
-                            <Link
-                                to={adminPortalPath}
-                                className="app-topbar__portal-btn"
-                                title="Quay lại giao diện quản trị nội dung"
-                            >
-                                <Shield size={15} />
-                                <span>{user?.role === 'TEACHER' ? 'Cổng Giảng viên' : 'Cổng Quản trị'}</span>
-                            </Link>
-                        )}
-
                         <div className="app-topbar__account" ref={menuRef}>
                             <button
                                 type="button"
@@ -293,15 +281,6 @@ export function SidebarNav() {
                                         >
                                             <Settings size={16} />
                                             <span>Hồ sơ &amp; Cài đặt</span>
-                                        </Link>
-
-                                        <Link
-                                            to="/target-selection"
-                                            className="app-topbar__dropdown-item"
-                                            role="menuitem"
-                                        >
-                                            <Target size={16} />
-                                            <span>Mục tiêu điểm TOEIC (AIM)</span>
                                         </Link>
 
                                         {isAdminOrTeacher && (

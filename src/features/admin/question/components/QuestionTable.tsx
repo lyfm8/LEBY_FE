@@ -188,16 +188,16 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
                                         <td>{renderDifficultyBadge(q.difficulty || 3)}</td>
 
                                         {/* Ngày cập nhật */}
-                                        <td style={{ color: '#6b7280', fontSize: '0.75rem' }}>
+                                        <td className="question-date-cell">
                                             {formatDate(q.updatedAt)}
                                         </td>
 
                                         {/* Thao tác */}
                                         <td style={{ textAlign: 'right', paddingRight: '1.25rem' }}>
-                                            <div className="table-actions">
+                                            <div className="admin-actions-cell is-end">
                                                 <button
                                                     type="button"
-                                                    className="table-btn edit"
+                                                    className="admin-btn-action"
                                                     onClick={() =>
                                                         navigate(
                                                             isGroup
@@ -207,15 +207,17 @@ export const QuestionTable: React.FC<QuestionTableProps> = ({
                                                     }
                                                     title="Chỉnh sửa câu hỏi"
                                                 >
-                                                    <Edit2 size={15} />
+                                                    <Edit2 size={14} />
+                                                    <span>Sửa</span>
                                                 </button>
                                                 <button
                                                     type="button"
-                                                    className="table-btn delete"
+                                                    className="admin-btn-action delete"
                                                     onClick={() => onDelete(q.id, q.name, isGroup)}
                                                     title="Xóa câu hỏi khỏi ngân hàng"
                                                 >
-                                                    <Trash2 size={15} />
+                                                    <Trash2 size={14} />
+                                                    <span>Xóa</span>
                                                 </button>
                                             </div>
                                         </td>

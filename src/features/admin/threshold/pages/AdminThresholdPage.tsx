@@ -232,18 +232,6 @@ export const AdminThresholdPage: React.FC = () => {
     }
   };
 
-  const handleResetMatrixCell = async (moduleId: number, profileId: number) => {
-    if (!window.confirm('Khôi phục ô này về điểm đỗ mặc định của Module?')) return;
-    try {
-      await adminThresholdService.resetModuleThreshold(moduleId, profileId);
-      showToast('success', 'Khôi phục điểm đỗ mặc định thành công!');
-      fetchMatrixData(selectedPartIdForMatrix);
-    } catch (error: unknown) {
-      console.error(error);
-      showToast('error', getErrorMessage(error, 'Khôi phục điểm đỗ thất bại'));
-    }
-  };
-
   // =====================================
   // HANDLERS: TAB 2 - ABILITY EVALUATION RULES
   // =====================================
@@ -400,7 +388,6 @@ export const AdminThresholdPage: React.FC = () => {
                 fetchMatrixData(partId);
               }}
               onSaveBatch={handleSaveBatchMatrix}
-              onResetCell={handleResetMatrixCell}
               isLoading={isLoading}
               isSaving={isSavingBatch}
               onDirtyCountChange={setDirtyMatrixCount}
@@ -481,49 +468,51 @@ export const AdminThresholdPage: React.FC = () => {
                       <th className="text-center" style={{ width: '14%' }}>Ngưỡng Yếu</th>
                       <th className="text-center" style={{ width: '14%' }}>Ngưỡng Vững</th>
                       <th className="text-center" style={{ width: '12%' }}>Số câu tối thiểu</th>
-                      <th className="text-center action-col" style={{ width: '10%' }}>Thao tác</th>
+                      <th className="text-center action-col">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
                     {filteredAbilityRules.map(rule => (
                       <tr key={rule.id}>
-                        <td className="font-medium text-gray-900">{rule.abilityName}</td>
-                        <td className="text-sm text-gray-600">{rule.partName || '-'}</td>
+                        <td className="threshold-primary-cell">{rule.abilityName}</td>
+                        <td className="admin-cell-muted">{rule.partName || '-'}</td>
                         <td className="text-center">
-                          <span className="badge badge-yellow font-bold">
+                          <span className="badge badge-yellow">
                             &lt; {rule.weakMax}%
                           </span>
                         </td>
                         <td className="text-center">
-                          <span className="badge badge-green font-bold">
+                          <span className="badge badge-green">
                             &ge; {rule.stableMin}%
                           </span>
                         </td>
                         <td className="text-center">
-                          <span className="badge badge-gray font-mono">
+                          <span className="badge badge-gray">
                             {rule.minEvidenceCount} câu
                           </span>
                         </td>
                         <td>
-                          <div className="action-buttons justify-center">
+                          <div className="admin-actions-cell is-center">
                             <button
                               type="button"
-                              className="btn-icon primary"
+                              className="admin-btn-action"
                               onClick={() => {
                                 setSelectedAbilityRule(rule);
                                 setIsAbilityModalOpen(true);
                               }}
                               title="Chỉnh sửa"
                             >
-                              <Edit2 size={16} />
+                              <Edit2 size={14} />
+                              <span>Sửa</span>
                             </button>
                             <button
                               type="button"
-                              className="btn-icon danger"
+                              className="admin-btn-action delete"
                               onClick={() => handleDeleteAbilityRule(rule.id)}
                               title="Xóa"
                             >
-                              <Trash2 size={16} />
+                              <Trash2 size={14} />
+                              <span>Xóa</span>
                             </button>
                           </div>
                         </td>
@@ -614,7 +603,7 @@ export const AdminThresholdPage: React.FC = () => {
                       <th className="text-center" style={{ width: '16%' }}>Đạt chuẩn</th>
                       <th className="text-center" style={{ width: '16%' }}>Cận chuẩn</th>
                       <th className="text-center" style={{ width: '16%' }}>Mất gốc</th>
-                      <th className="text-center action-col" style={{ width: '12%' }}>Thao tác</th>
+                      <th className="text-center action-col">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -622,55 +611,57 @@ export const AdminThresholdPage: React.FC = () => {
                       const aimNum = rule.targetProfileScore || (rule.targetProfileName?.match(/\d+/)?.[0] ?? rule.targetProfileId);
                       return (
                         <tr key={rule.id}>
-                          <td className="font-medium text-gray-900">{rule.partName}</td>
+                          <td className="threshold-primary-cell">{rule.partName}</td>
                           <td className="text-center">
                             <span className="aim-badge">
                               AIM {aimNum}
                             </span>
                           </td>
                           <td className="text-center">
-                            <span className="badge badge-green font-bold">
+                            <span className="badge badge-green">
                               &ge; {rule.passScore}%
                             </span>
                           </td>
                           <td className="text-center">
                             {rule.confirmingScore != null ? (
-                              <span className="badge badge-blue font-bold">
+                              <span className="badge badge-blue">
                                 &ge; {rule.confirmingScore}%
                               </span>
                             ) : (
-                              <span className="text-gray-400">-</span>
+                              <span className="admin-cell-muted">-</span>
                             )}
                           </td>
                           <td className="text-center">
                             {rule.fullPartThreshold != null ? (
-                              <span className="badge badge-red font-bold">
+                              <span className="badge badge-red">
                                 &lt; {rule.fullPartThreshold}%
                               </span>
                             ) : (
-                              <span className="text-gray-400">-</span>
+                              <span className="admin-cell-muted">-</span>
                             )}
                           </td>
                           <td>
-                            <div className="action-buttons justify-center">
+                            <div className="admin-actions-cell is-center">
                               <button
                                 type="button"
-                                className="btn-icon primary"
+                                className="admin-btn-action"
                                 onClick={() => {
                                   setSelectedPartRule(rule);
                                   setIsPartModalOpen(true);
                                 }}
                                 title="Chỉnh sửa"
                               >
-                                <Edit2 size={16} />
+                                <Edit2 size={14} />
+                                <span>Sửa</span>
                               </button>
                               <button
                                 type="button"
-                                className="btn-icon danger"
+                                className="admin-btn-action delete"
                                 onClick={() => handleDeletePartRule(rule.id)}
                                 title="Xóa"
                               >
-                                <Trash2 size={16} />
+                                <Trash2 size={14} />
+                                <span>Xóa</span>
                               </button>
                             </div>
                           </td>

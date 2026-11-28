@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '@/features/auth/hooks/useAuth';
-import { Lock, LogOut, Check, AlertCircle, Pencil, X } from 'lucide-react';
+import { Lock, Check, AlertCircle, Pencil, X } from 'lucide-react';
 import { profileService } from '../services/profileService';
 
 /**
@@ -9,8 +7,6 @@ import { profileService } from '../services/profileService';
  * Mặc định các trường mật khẩu bị khóa cho đến khi người dùng bấm nút Chỉnh sửa.
  */
 export function ProfileSecurityTab() {
-    const { logout } = useAuth();
-    const navigate = useNavigate();
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -75,13 +71,6 @@ export function ProfileSecurityTab() {
             setError('Mật khẩu hiện tại không đúng hoặc đã xảy ra lỗi trong quá trình xử lý.');
         } finally {
             setIsSubmitting(false);
-        }
-    }
-
-    async function handleLogout() {
-        if (window.confirm('Bạn có chắc chắn muốn đăng xuất khỏi hệ thống?')) {
-            await logout();
-            navigate('/login', { replace: true });
         }
     }
 
@@ -185,23 +174,6 @@ export function ProfileSecurityTab() {
                         </button>
                     </div>
                 </form>
-            </div>
-
-            {/* Vùng nguy hiểm / Đăng xuất */}
-            <div className="pf-card pf-card--danger">
-                <div className="pf-card__header-simple">
-                    <LogOut size={20} className="pf-icon-red" />
-                    <h3 className="pf-card__title">Phiên đăng nhập & Bảo mật</h3>
-                </div>
-
-                <p className="pf-danger-desc">
-                    Đăng xuất sẽ kết thúc phiên làm việc hiện tại và hủy toàn bộ token truy cập trên thiết bị này.
-                </p>
-
-                <button type="button" className="pf-btn-logout" onClick={handleLogout}>
-                    <LogOut size={16} />
-                    <span>Đăng xuất khỏi hệ thống</span>
-                </button>
             </div>
         </div>
     );

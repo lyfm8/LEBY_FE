@@ -134,7 +134,7 @@ export default function ProfilePage() {
                             className={`pf-tab-item ${activeTab === 'security' ? 'is-active' : ''}`}
                             onClick={() => handleSelectTab('security')}
                         >
-                            Bảo mật & Tài khoản
+                            Bảo mật
                         </button>
                     </div>
 

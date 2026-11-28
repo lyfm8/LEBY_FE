@@ -191,12 +191,12 @@ export const AdminExamDetailPage: React.FC = () => {
         <table className="exam-table">
           <thead>
             <tr>
-              <th style={{ width: '60px' }}>THỨ TỰ</th>
-              <th style={{ width: '130px' }}>MÃ CÂU HỎI</th>
-              <th>NỘI DUNG / TÊN CÂU HỎI</th>
-              <th style={{ width: '100px' }}>PHẦN THI</th>
-              <th style={{ width: '180px' }}>KỸ NĂNG / NĂNG LỰC</th>
-              <th style={{ width: '80px', textAlign: 'center' }}>ĐIỂM</th>
+              <th style={{ width: '60px' }}>Thứ tự</th>
+              <th style={{ width: '130px' }}>Mã câu hỏi</th>
+              <th>Nội dung / Tên câu hỏi</th>
+              <th style={{ width: '100px' }}>Phần thi</th>
+              <th style={{ width: '180px' }}>Kỹ năng / Năng lực</th>
+              <th style={{ width: '80px', textAlign: 'center' }}>Điểm</th>
             </tr>
           </thead>
           <tbody>

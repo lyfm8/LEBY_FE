@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Calendar } from 'lucide-react';
 import { LEARNER_TYPE_LABELS, type ELearnerType } from '@/features/profile/types/profileTypes';
 import { registerSchema, type RegisterFormValues } from '../schemas/authSchema';
+import { AuthPasswordInput } from './AuthPasswordInput';
 import {
     formatDateInputMask,
     formatIsoToDdMmYy,
@@ -205,12 +206,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                         <label className="auth-form__label" htmlFor="reg-password">
                             Mật khẩu
                         </label>
-                        <input
+                        <AuthPasswordInput
                             id="reg-password"
-                            type="password"
                             autoComplete="new-password"
                             placeholder="Ít nhất 8 ký tự"
-                            className={`auth-form__input${errors.password ? ' is-error' : ''}`}
+                            hasError={Boolean(errors.password)}
                             {...register('password')}
                         />
                         {errors.password && <span className="auth-form__error">{errors.password.message}</span>}
@@ -220,12 +220,11 @@ export const RegisterForm: React.FC<RegisterFormProps> = ({
                         <label className="auth-form__label" htmlFor="reg-confirmPassword">
                             Xác nhận mật khẩu
                         </label>
-                        <input
+                        <AuthPasswordInput
                             id="reg-confirmPassword"
-                            type="password"
                             autoComplete="new-password"
                             placeholder="Nhập lại mật khẩu"
-                            className={`auth-form__input${errors.confirmPassword ? ' is-error' : ''}`}
+                            hasError={Boolean(errors.confirmPassword)}
                             {...register('confirmPassword')}
                         />
                         {errors.confirmPassword && (

@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Eye, Edit3, CheckCircle2, Archive, Trash2, MoreHorizontal } from 'lucide-react';
+import React from 'react';
+import { Eye, Edit3, CheckCircle2, Archive, Trash2 } from 'lucide-react';
 import type { ExamListItem } from '../../types';
 
 interface ExamActionMenuProps {
@@ -13,7 +13,7 @@ interface ExamActionMenuProps {
 }
 
 /**
- * Menu thao tác 3 chấm cho từng bộ đề thi.
+ * Nhóm nút thao tác phẳng (icon + chữ) cho từng bộ đề thi.
  * Phân quyền ẩn các nút kích hoạt / lưu trữ / xóa đối với Giáo viên.
  */
 export const ExamActionMenu: React.FC<ExamActionMenuProps> = ({
@@ -25,99 +25,63 @@ export const ExamActionMenu: React.FC<ExamActionMenuProps> = ({
   onArchive,
   onDelete,
 }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
   return (
-    <div className="action-menu-container" ref={menuRef}>
+    <div className="admin-actions-cell is-end">
       <button
         type="button"
-        className="action-menu-trigger"
-        onClick={() => setIsOpen((prev) => !prev)}
-        title="Thao tác"
+        className="admin-btn-action"
+        onClick={() => onView(exam.id)}
+        title="Xem chi tiết"
       >
-        <MoreHorizontal size={18} />
+        <Eye size={14} />
+        <span>Xem</span>
       </button>
 
-      {isOpen && (
-        <div className="action-menu-dropdown">
-          <button
-            type="button"
-            className="action-menu-item"
-            onClick={() => {
-              setIsOpen(false);
-              onView(exam.id);
-            }}
-          >
-            <Eye size={15} />
-            <span>Xem chi tiết</span>
-          </button>
+      <button
+        type="button"
+        className="admin-btn-action"
+        onClick={() => onEdit(exam.id)}
+        title="Chỉnh sửa đề thi"
+      >
+        <Edit3 size={14} />
+        <span>Sửa</span>
+      </button>
 
-          <button
-            type="button"
-            className="action-menu-item"
-            onClick={() => {
-              setIsOpen(false);
-              onEdit(exam.id);
-            }}
-          >
-            <Edit3 size={15} />
-            <span>Chỉnh sửa đề thi</span>
-          </button>
+      {/* CHỈ ADMIN MỚI ĐƯỢC PHÉP THAO TÁC CÁC CHỨC NĂNG DƯỚI ĐÂY */}
+      {isAdmin && exam.examStatus !== 'ACTIVE' && (
+        <button
+          type="button"
+          className="admin-btn-action"
+          onClick={() => onActivate(exam.id)}
+          title="Kích hoạt đề thi"
+        >
+          <CheckCircle2 size={14} />
+          <span>Kích hoạt</span>
+        </button>
+      )}
 
-          {/* CHỈ ADMIN MỚI ĐƯỢC PHÉP THAO TÁC CÁC CHỨC NĂNG DƯỚI ĐÂY */}
-          {isAdmin && exam.examStatus !== 'ACTIVE' && (
-            <button
-              type="button"
-              className="action-menu-item"
-              onClick={() => {
-                setIsOpen(false);
-                onActivate(exam.id);
-              }}
-            >
-              <CheckCircle2 size={15} className="text-green-600" />
-              <span>Kích hoạt đề thi</span>
-            </button>
-          )}
+      {isAdmin && exam.examStatus === 'ACTIVE' && (
+        <button
+          type="button"
+          className="admin-btn-action"
+          onClick={() => onArchive(exam.id)}
+          title="Lưu trữ đề thi"
+        >
+          <Archive size={14} />
+          <span>Lưu trữ</span>
+        </button>
+      )}
 
-          {isAdmin && exam.examStatus === 'ACTIVE' && (
-            <button
-              type="button"
-              className="action-menu-item"
-              onClick={() => {
-                setIsOpen(false);
-                onArchive(exam.id);
-              }}
-            >
-              <Archive size={15} className="text-gray-500" />
-              <span>Lưu trữ đề thi</span>
-            </button>
-          )}
-
-          {isAdmin && (
-            <button
-              type="button"
-              className="action-menu-item danger"
-              onClick={() => {
-                setIsOpen(false);
-                onDelete(exam.id);
-              }}
-            >
-              <Trash2 size={15} />
-              <span>Xóa đề thi</span>
-            </button>
-          )}
-        </div>
+      {isAdmin && (
+        <button
+          type="button"
+          className="admin-btn-action delete"
+          onClick={() => onDelete(exam.id)}
+          title="Xóa đề thi"
+        >
+          <Trash2 size={14} />
+          <span>Xóa</span>
+        </button>
       )}
     </div>
   );
