@@ -257,13 +257,17 @@ export default function ModuleDetailPage() {
         );
     };
 
+    // Xác định mô-đun đang mở theo chế độ Học tự do từ Thư viện khóa học hay thuộc lộ trình chính
+    const isFreeStudyMode = data.inRoadmap === false || data.accessMode === 'FREE_STUDY';
+    // Lấy thông tin bài kiểm tra vượt ải (có thể null khi đang ở chế độ Học tự do)
+    const moduleTest = data.moduleTest;
     // Đường dẫn xem lại kết quả bài thi vượt ải gần nhất nếu đã có lịch sử thi
-    const reviewResultPath = data.moduleTest.lastAttemptId
-        ? `/modules/${data.moduleId}/test/result/${data.moduleTest.lastAttemptId}`
+    const reviewResultPath = moduleTest?.lastAttemptId
+        ? `/modules/${data.moduleId}/test/result/${moduleTest.lastAttemptId}`
         : `/modules/${data.moduleId}/test/result`;
 
     // Kiểm tra học viên đã vượt qua bài thi của mô-đun này hay chưa
-    const hasPassedModuleTest = Boolean(data.moduleTest.hasPassed);
+    const hasPassedModuleTest = Boolean(moduleTest?.hasPassed);
 
     return (
         <div className="app-layout">
@@ -279,15 +283,36 @@ export default function ModuleDetailPage() {
                         </button>
                     </div>
 
+                    {/* Banner giải thích nhẹ khi học viên mở mô-đun ở chế độ Học tự do từ Thư viện */}
+                    {isFreeStudyMode && (
+                        <div className="module-free-study-banner" role="status">
+                            <BookOpen size={18} className="module-free-study-banner__icon" />
+                            <div>
+                                <strong>Chế độ Học tự do</strong>
+                                <p>
+                                    Mô-đun này nằm ngoài lộ trình bắt buộc. Bạn có thể tự do xem bài giảng và
+                                    ôn tập bổ trợ mà không ảnh hưởng tiến độ vượt ải chính.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Thẻ Hero tối màu tóm tắt mục tiêu và tiến độ mô-đun */}
                     <section className="module-hero-card">
                         <nav className="module-breadcrumb" aria-label="Đường dẫn điều hướng">
-                            <Link to="/learning-path" className="module-breadcrumb__link">
-                                Lộ trình học
+                            <Link
+                                to={isFreeStudyMode ? '/catalog' : '/learning-path'}
+                                className="module-breadcrumb__link"
+                            >
+                                {isFreeStudyMode ? 'Thư viện khóa học' : 'Lộ trình học'}
                             </Link>
                             <ChevronRight size={14} className="module-breadcrumb__sep" />
                             <Link
-                                to={`/learning-path?section=${data.section}`}
+                                to={
+                                    isFreeStudyMode
+                                        ? `/catalog?section=${data.section}`
+                                        : `/learning-path?section=${data.section}`
+                                }
                                 className="module-breadcrumb__link"
                                 title={`Xem các mô-đun thuộc kỹ năng ${data.section === 'LISTENING' ? 'Nghe hiểu' : 'Đọc hiểu'}`}
                             >
@@ -393,101 +418,103 @@ export default function ModuleDetailPage() {
                         )}
                     </section>
 
-                    {/* Khối Bài kiểm tra vượt ải mô-đun với thông số động theo mục tiêu */}
-                    <section className="module-test-card">
-                        <div className="module-test-card__header">
-                            <div className="module-test-card__title-row">
-                                {hasPassedModuleTest ? (
-                                    <Award size={20} className="module-test-card__award-icon" />
-                                ) : (
-                                    <Flag size={20} className="module-test-card__flag-icon" />
-                                )}
-                                <h3 className="module-test-card__title">{data.moduleTest.title}</h3>
-                            </div>
+                    {/* Khối Bài kiểm tra vượt ải mô-đun — chỉ hiển thị cho mô-đun nằm trong lộ trình chính */}
+                    {moduleTest && (
+                        <section className="module-test-card">
+                            <div className="module-test-card__header">
+                                <div className="module-test-card__title-row">
+                                    {hasPassedModuleTest ? (
+                                        <Award size={20} className="module-test-card__award-icon" />
+                                    ) : (
+                                        <Flag size={20} className="module-test-card__flag-icon" />
+                                    )}
+                                    <h3 className="module-test-card__title">{moduleTest.title}</h3>
+                                </div>
 
-                            {/* Nhãn trạng thái bài thi: Đã vượt ải / Sẵn sàng / Chưa mở khóa */}
-                            <span
-                                className={`module-test-card__badge ${
-                                    hasPassedModuleTest
-                                        ? 'is-passed'
-                                        : data.moduleTest.isUnlocked
-                                          ? 'is-ready'
-                                          : ''
-                                }`}
-                            >
-                                {hasPassedModuleTest
-                                    ? 'ĐÃ VƯỢT ẢI'
-                                    : data.moduleTest.isUnlocked
-                                      ? 'SẴN SÀNG'
-                                      : 'CHƯA MỞ KHÓA'}
-                            </span>
-                        </div>
-
-                        <p className="module-test-card__desc">{data.moduleTest.description}</p>
-
-                        {/* Hiện điểm số cao nhất nếu học viên đã từng thi vượt ải */}
-                        {typeof data.moduleTest.bestScore === 'number' && (
-                            <div className="module-test-card__score-pill">
-                                <Award size={15} />
-                                <span>
-                                    Điểm cao nhất của bạn: <strong>{data.moduleTest.bestScore}/100</strong>
+                                {/* Nhãn trạng thái bài thi: Đã vượt ải / Sẵn sàng / Chưa mở khóa */}
+                                <span
+                                    className={`module-test-card__badge ${
+                                        hasPassedModuleTest
+                                            ? 'is-passed'
+                                            : moduleTest.isUnlocked
+                                              ? 'is-ready'
+                                              : ''
+                                    }`}
+                                >
+                                    {hasPassedModuleTest
+                                        ? 'ĐÃ VƯỢT ẢI'
+                                        : moduleTest.isUnlocked
+                                          ? 'SẴN SÀNG'
+                                          : 'CHƯA MỞ KHÓA'}
                                 </span>
                             </div>
-                        )}
 
-                        <div className="module-test-card__footer">
-                            {/* Dòng điều kiện mở khóa và điểm đỗ đọc động từ cấu hình */}
-                            <div className="module-test-card__req">
-                                {data.moduleTest.isUnlocked ? (
-                                    <>
-                                        Đề gồm <strong>{data.moduleTest.totalQuestions} câu hỏi</strong> • Thời
-                                        gian <strong>{data.moduleTest.durationMinutes} phút</strong> • Cần đạt từ{' '}
-                                        <strong>{data.moduleTest.passScore}/100 điểm</strong> (mục tiêu{' '}
-                                        {data.moduleTest.targetScore})
-                                    </>
-                                ) : (
-                                    <>
-                                        Hoàn thành tối thiểu <strong>{data.requiredCompletionRate}%</strong> bài
-                                        giảng để mở khóa • Cần đạt{' '}
-                                        <strong>{data.moduleTest.passScore}/100 điểm</strong> để vượt ải
-                                    </>
-                                )}
-                            </div>
+                            <p className="module-test-card__desc">{moduleTest.description}</p>
 
-                            {/* Chỉ hiển thị nút hành động khi bài thi đã mở khóa hoặc đã vượt ải (tránh lặp nhãn Chưa mở khóa) */}
-                            {(hasPassedModuleTest || data.moduleTest.isUnlocked) && (
-                                <div className="module-test-card__actions">
-                                    {/* Nếu đã vượt qua trước đó -> hiện cả nút Xem lại kết quả và Thi cải thiện điểm */}
-                                    {hasPassedModuleTest ? (
+                            {/* Hiện điểm số cao nhất nếu học viên đã từng thi vượt ải */}
+                            {typeof moduleTest.bestScore === 'number' && (
+                                <div className="module-test-card__score-pill">
+                                    <Award size={15} />
+                                    <span>
+                                        Điểm cao nhất của bạn: <strong>{moduleTest.bestScore}/100</strong>
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="module-test-card__footer">
+                                {/* Dòng điều kiện mở khóa và điểm đỗ đọc động từ cấu hình */}
+                                <div className="module-test-card__req">
+                                    {moduleTest.isUnlocked ? (
                                         <>
-                                            {data.moduleTest.lastAttemptId && (
+                                            Đề gồm <strong>{moduleTest.totalQuestions} câu hỏi</strong> • Thời
+                                            gian <strong>{moduleTest.durationMinutes} phút</strong> • Cần đạt từ{' '}
+                                            <strong>{moduleTest.passScore}/100 điểm</strong> (mục tiêu{' '}
+                                            {moduleTest.targetScore})
+                                        </>
+                                    ) : (
+                                        <>
+                                            Hoàn thành tối thiểu <strong>{data.requiredCompletionRate}%</strong> bài
+                                            giảng để mở khóa • Cần đạt{' '}
+                                            <strong>{moduleTest.passScore}/100 điểm</strong> để vượt ải
+                                        </>
+                                    )}
+                                </div>
+
+                                {/* Chỉ hiển thị nút hành động khi bài thi đã mở khóa hoặc đã vượt ải (tránh lặp nhãn Chưa mở khóa) */}
+                                {(hasPassedModuleTest || moduleTest.isUnlocked) && (
+                                    <div className="module-test-card__actions">
+                                        {/* Nếu đã vượt qua trước đó -> hiện cả nút Xem lại kết quả và Thi cải thiện điểm */}
+                                        {hasPassedModuleTest ? (
+                                            <>
+                                                {moduleTest.lastAttemptId && (
+                                                    <Link
+                                                        to={reviewResultPath}
+                                                        className="module-test-card__btn is-secondary"
+                                                    >
+                                                        Xem lại kết quả
+                                                    </Link>
+                                                )}
                                                 <Link
-                                                    to={reviewResultPath}
-                                                    className="module-test-card__btn is-secondary"
+                                                    to={`/modules/${data.moduleId}/test`}
+                                                    className="module-test-card__btn is-active"
                                                 >
-                                                    Xem lại kết quả
+                                                    Thi cải thiện điểm
                                                 </Link>
-                                            )}
+                                            </>
+                                        ) : (
                                             <Link
                                                 to={`/modules/${data.moduleId}/test`}
                                                 className="module-test-card__btn is-active"
                                             >
-                                                Thi cải thiện điểm
+                                                Làm bài thi vượt ải ({moduleTest.totalQuestions} câu •{' '}
+                                                {moduleTest.durationMinutes} phút)
                                             </Link>
-                                        </>
-                                    ) : (
-                                        <Link
-                                            to={`/modules/${data.moduleId}/test`}
-                                            className="module-test-card__btn is-active"
-                                        >
-                                            Làm bài thi vượt ải ({data.moduleTest.totalQuestions} câu •{' '}
-                                            {data.moduleTest.durationMinutes} phút)
-                                        </Link>
-                                    )}
-                                </div>
-                            )}
-                        </div>
-                    </section>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        </section>
+                    )}
                 </div>
             </main>
         </div>

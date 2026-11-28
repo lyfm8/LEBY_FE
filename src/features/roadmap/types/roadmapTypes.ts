@@ -136,6 +136,9 @@ export interface ModuleTestInfo {
     lastAttemptId?: number | null;
 }
 
+// Chế độ quyền truy cập mô-đun trả về từ Backend (trong lộ trình hay học tự do từ Thư viện)
+export type ModuleAccessMode = 'ROADMAP_OPEN' | 'ROADMAP_LOCKED' | 'FREE_STUDY' | 'PREVIEW_ONLY';
+
 // Cấu trúc dữ liệu trả về đầy đủ cho màn hình Chi tiết Module
 export interface ModuleDetailData {
     // ID mô-đun
@@ -154,6 +157,10 @@ export interface ModuleDetailData {
     status: ModuleStatus;
     // Nhãn tiếng Việt tương ứng trạng thái
     statusLabel: string;
+    // Cờ xác định mô-đun có thuộc lộ trình cá nhân hay đang mở ở chế độ Học tự do
+    inRoadmap?: boolean;
+    // Chế độ quyền truy cập của mô-đun
+    accessMode?: ModuleAccessMode;
     // Tổng số bài học đã xuất bản trong mô-đun
     totalLessons: number;
     // Tổng số bài học học viên đã hoàn thành
@@ -168,6 +175,6 @@ export interface ModuleDetailData {
     requiredCompletionRate: number;
     // Danh sách bài học đã xuất bản sắp xếp theo thứ tự
     lessons: ModuleLessonItem[];
-    // Thông tin bài kiểm tra vượt ải cuối mô-đun
-    moduleTest: ModuleTestInfo;
+    // Thông tin bài kiểm tra vượt ải cuối mô-đun (null khi mở ở chế độ Học tự do ngoài lộ trình)
+    moduleTest: ModuleTestInfo | null;
 }

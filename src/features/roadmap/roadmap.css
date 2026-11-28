@@ -1742,3 +1742,57 @@
     color: #f8fafc;
     font-weight: 600;
 }
+
+/* ── Banner Học tự do (UC17 Catalog) ── */
+.module-free-study-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+    color: #115e59;
+    margin-bottom: 16px;
+}
+
+.module-free-study-banner__icon {
+    color: #0f766e;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.module-free-study-banner strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.module-free-study-banner p {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+/* Đảm bảo Topbar 5 mục luôn nằm gọn trên 1 hàng duy nhất ở màn hình desktop 1024px - 1220px */
+@media (max-width: 1220px) and (min-width: 901px) {
+    .app-topbar__inner {
+        padding: 0 16px;
+        gap: 12px;
+    }
+
+    .app-topbar__nav {
+        gap: 2px;
+    }
+
+    .app-topbar__nav-item {
+        padding: 8px 11px;
+        font-size: 13.5px;
+        gap: 6px;
+    }
+
+    .app-topbar__nav-pill {
+        display: none;
+    }
+}

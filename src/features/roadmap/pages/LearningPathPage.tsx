@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import {
     AlertCircle,
+    BookOpen,
     Compass,
     RotateCcw,
     Target,
@@ -175,6 +176,11 @@ export default function LearningPathPage() {
                                 <span>Làm bài thi thử TOEIC 200 câu</span>
                                 <ArrowRight size={16} />
                             </Link>
+                            {/* Lối vào Thư viện 7 Part để học viên đạt chuẩn vẫn có thể ôn bổ trợ tự do */}
+                            <Link to="/catalog" className="roadmap-btn-secondary">
+                                <BookOpen size={16} />
+                                <span>Khám phá thư viện 7 Part</span>
+                            </Link>
                             <Link to="/target-selection" className="roadmap-btn-secondary">
                                 <Target size={16} />
                                 <span>Nâng mốc mục tiêu cao hơn</span>
@@ -197,44 +203,6 @@ export default function LearningPathPage() {
 
             <main className="roadmap-main">
                 <div className="roadmap-container">
-                    {/* Header tổng quan mục tiêu và thanh tiến độ toàn lộ trình */}
-                    <header className="roadmap-header">
-                        <div className="roadmap-header__left">
-                            <div className="roadmap-header__eyebrow">
-                                <span>LỘ TRÌNH CÁ NHÂN HÓA • PHIÊN BẢN #{data.version}</span>
-                            </div>
-                            <h1 className="roadmap-header__title">Lộ trình học dành riêng cho bạn</h1>
-                            <p className="roadmap-header__desc">
-                                Gồm {data.totalModules} mô-đun trọng tâm giúp bạn chinh phục mục tiêu{' '}
-                                {data.targetScore} điểm TOEIC.
-                            </p>
-                        </div>
-
-                        <div className="roadmap-header__right">
-                            {/* Thẻ hiển thị mốc điểm mục tiêu hiện tại */}
-                            <div className="roadmap-header__aim-badge">
-                                <span className="roadmap-header__aim-label">MỤC TIÊU</span>
-                                <span className="roadmap-header__aim-val">{data.targetScore} điểm</span>
-                            </div>
-
-                            {/* Thanh tiến độ tổng thể của toàn bộ lộ trình */}
-                            <div className="roadmap-header__progress-box">
-                                <div className="roadmap-header__progress-text">
-                                    <span>
-                                        HOÀN THÀNH {data.completedModules}/{data.totalModules} MÔ-ĐUN
-                                    </span>
-                                    <strong>{data.progressPercent}%</strong>
-                                </div>
-                                <div className="roadmap-header__progress-track">
-                                    <div
-                                        className="roadmap-header__progress-fill"
-                                        style={{ width: `${data.progressPercent}%` }}
-                                    />
-                                </div>
-                            </div>
-                        </div>
-                    </header>
-
                     {/* Banner chúc mừng khi học viên đã hoàn thành xuất sắc 100% lộ trình học */}
                     {isRoadmapCompleted && (
                         <section className="roadmap-completed-banner" aria-label="Hoàn thành lộ trình">

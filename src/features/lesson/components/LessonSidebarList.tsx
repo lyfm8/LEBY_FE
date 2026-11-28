@@ -22,6 +22,8 @@ interface LessonSidebarListProps {
     requiredCompletionRate: number;
     /** Cờ xác định bài kiểm tra vượt ải đã được mở khóa hay chưa. */
     moduleTestUnlocked: boolean;
+    /** Cờ xác định mô-đun có thuộc lộ trình cá nhân hay không (ẩn khối vượt ải khi Học tự do). */
+    inRoadmap?: boolean;
 }
 
 /**
@@ -56,6 +58,7 @@ export function LessonSidebarList({
     totalVideoLessons,
     requiredCompletionRate,
     moduleTestUnlocked,
+    inRoadmap = true,
 }: LessonSidebarListProps) {
     // Giới hạn giá trị thanh tiến độ luôn nằm trong đoạn an toàn [0, 100]
     const safeProgress = Math.max(0, Math.min(100, moduleProgressPercent));
@@ -132,33 +135,35 @@ export function LessonSidebarList({
                 </ul>
             </div>
 
-            {/* Thẻ trạng thái mở khóa bài kiểm tra vượt ải của mô-đun */}
-            <div className={`lesson-test-card ${moduleTestUnlocked ? 'is-unlocked' : 'is-locked'}`}>
-                <div className="lesson-test-card__head">
-                    <span className="lesson-test-card__icon" aria-hidden="true">
-                        {moduleTestUnlocked ? <Award size={20} /> : <Lock size={18} />}
-                    </span>
-                    <div>
-                        <h3 className="lesson-test-card__title">Bài kiểm tra vượt ải</h3>
-                        <p className="lesson-test-card__desc">
-                            {moduleTestUnlocked
-                                ? 'Bạn đã hoàn thành đủ bài giảng yêu cầu và có thể làm bài kiểm tra để mở mô-đun kế tiếp.'
-                                : `Hoàn thành tối thiểu ${requiredCompletionRate}% bài giảng lý thuyết để mở khóa bài kiểm tra này.`}
-                        </p>
+            {/* Chỉ hiển thị thẻ bài kiểm tra vượt ải khi mô-đun nằm trong lộ trình chính */}
+            {inRoadmap && (
+                <div className={`lesson-test-card ${moduleTestUnlocked ? 'is-unlocked' : 'is-locked'}`}>
+                    <div className="lesson-test-card__head">
+                        <span className="lesson-test-card__icon" aria-hidden="true">
+                            {moduleTestUnlocked ? <Award size={20} /> : <Lock size={18} />}
+                        </span>
+                        <div>
+                            <h3 className="lesson-test-card__title">Bài kiểm tra vượt ải</h3>
+                            <p className="lesson-test-card__desc">
+                                {moduleTestUnlocked
+                                    ? 'Bạn đã hoàn thành đủ bài giảng yêu cầu và có thể làm bài kiểm tra để mở mô-đun kế tiếp.'
+                                    : `Hoàn thành tối thiểu ${requiredCompletionRate}% bài giảng lý thuyết để mở khóa bài kiểm tra này.`}
+                            </p>
+                        </div>
                     </div>
-                </div>
 
-                {/* Chỉ cho phép bấm vào phòng thi khi đã đạt ngưỡng hoàn thành */}
-                {moduleTestUnlocked ? (
-                    <Link to={`/modules/${moduleId}/test`} className="lesson-test-card__btn">
-                        Làm bài kiểm tra vượt ải
-                    </Link>
-                ) : (
-                    <button type="button" className="lesson-test-card__btn is-disabled" disabled>
-                        Chưa mở khóa ({safeProgress}% / {requiredCompletionRate}%)
-                    </button>
-                )}
-            </div>
+                    {/* Chỉ cho phép bấm vào phòng thi khi đã đạt ngưỡng hoàn thành */}
+                    {moduleTestUnlocked ? (
+                        <Link to={`/modules/${moduleId}/test`} className="lesson-test-card__btn">
+                            Làm bài kiểm tra vượt ải
+                        </Link>
+                    ) : (
+                        <button type="button" className="lesson-test-card__btn is-disabled" disabled>
+                            Chưa mở khóa ({safeProgress}% / {requiredCompletionRate}%)
+                        </button>
+                    )}
+                </div>
+            )}
         </aside>
     );
 }

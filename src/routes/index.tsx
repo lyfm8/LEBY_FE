@@ -17,6 +17,7 @@ import DiagnosticReviewPage from '@/features/diagnostic/pages/DiagnosticReviewPa
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
 import LearningPathPage from '@/features/roadmap/pages/LearningPathPage';
 import ModuleDetailPage from '@/features/roadmap/pages/ModuleDetailPage';
+import CourseCatalogPage from '@/features/catalog/pages/CourseCatalogPage';
 
 // 3. Lesson Room & Practice
 import LessonRoomPage from '@/features/lesson/pages/LessonRoomPage';
@@ -150,6 +151,14 @@ function AppRoutes() {
                     element={
                         <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LearningPathPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/catalog"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <CourseCatalogPage />
                         </AuthGuard>
                     }
                 />
