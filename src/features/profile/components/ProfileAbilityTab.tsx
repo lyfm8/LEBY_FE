@@ -1,6 +1,7 @@
 import { AlertCircle } from 'lucide-react';
 import type { UserSkillStatResponse } from '../types/profileTypes';
 
+// Kiểu props cho tab Bảng hồ sơ năng lực kỹ năng TOEIC
 interface ProfileAbilityTabProps {
     skills: UserSkillStatResponse[];
 }
@@ -52,7 +53,7 @@ export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
                     <table className="pf-skills-table">
                         <thead>
                             <tr>
-                                <th>Kỹ năng (Ability)</th>
+                                <th>Kỹ năng TOEIC</th>
                                 <th>Thuộc Part</th>
                                 <th>Tỷ lệ chính xác</th>
                                 <th>Số câu đã làm</th>
@@ -61,7 +62,9 @@ export function ProfileAbilityTab({ skills }: ProfileAbilityTabProps) {
                         </thead>
                         <tbody>
                             {skills.map((s) => {
-                                const percent = Math.min(100, Math.max(0, Math.round((s.accuracyRate || 0) * 100)));
+                                // Backend lưu accuracyRate theo thang 0–100 nên làm tròn trực tiếp và kẹp biên an toàn
+                                const percent = Math.min(100, Math.max(0, Math.round(s.accuracyRate ?? 0)));
+                                // Chuẩn hóa lớp trạng thái CSS theo mức đánh giá của kỹ năng
                                 const statusClass = s.status ? s.status.toLowerCase() : 'weak';
 
                                 return (

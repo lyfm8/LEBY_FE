@@ -1,212 +1,384 @@
 /* ═══════════════════════════════════════════════════════════
-   LEBY - Student Dashboard Styles
+   LEBY - Student Dashboard Styles (UC08)
+   Đồng bộ Design Tokens LEBY (#ea580c accent, #10b981 success,
+   #f8fafc/#0f172a slate neutrals), responsive đầy đủ & WCAG AA
    ═══════════════════════════════════════════════════════════ */
 
-.db-page {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    color: #0f172a;
+.db-viewport {
+    flex: 1;
+    min-width: 0;
     background-color: #f8fafc;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    color: #0f172a;
 }
 
-/* ── Top Header ────────────────────────────────────────────── */
-.db-header {
-    background: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-    position: sticky;
-    top: 0;
-    z-index: 30;
-    width: 100%;
-}
-
-.db-header__container {
-    max-width: 1440px;
-    margin: 0 auto;
-    padding: 14px 32px;
+/* ── Sub-header chào mừng cá nhân hóa ──────────────────────── */
+.db-sub-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-}
-
-.db-header__left {
-    display: flex;
     align-items: center;
-    gap: 40px;
+    gap: 16px;
+    padding: 22px 32px;
+    background-color: #ffffff;
+    border-bottom: 1px solid #e2e8f0;
 }
 
-.db-header__logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
-}
-
-.db-header__logo-badge {
-    width: 32px;
-    height: 32px;
-    background: #0b1120;
-    color: #ffffff;
-    border-radius: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 900;
-    font-size: 16px;
-}
-
-.db-header__logo-text {
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: 0.05em;
-    color: #0b1120;
-}
-
-.db-header__nav {
-    display: flex;
-    align-items: center;
-    gap: 28px;
-}
-
-.db-header__nav-item {
-    text-decoration: none;
-    font-size: 14px;
-    font-weight: 600;
-    color: #64748b;
-    transition: color 0.15s;
-    padding: 6px 0;
-}
-
-.db-header__nav-item:hover {
-    color: #0f172a;
-}
-
-.db-header__nav-item.is-active {
-    color: #0f172a;
-    font-weight: 700;
-}
-
-.db-header__right {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-}
-
-.db-header__target-badge {
-    display: inline-flex;
-    align-items: center;
+.db-sub-header__welcome {
     font-size: 13px;
-    font-weight: 700;
-    color: #ea580c;
-    border: 1.5px solid #fed7aa;
-    background: #fffaf5;
-    padding: 5px 14px;
-    border-radius: 9999px;
-    text-decoration: none;
-    transition: all 0.15s;
+    color: #64748b;
+    font-weight: 500;
+    display: block;
 }
 
-.db-header__target-badge:hover {
-    border-color: #ea580c;
-}
-
-.db-header__user-pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    text-decoration: none;
+.db-sub-header__name {
+    font-size: 24px;
+    font-weight: 800;
     color: #0f172a;
-}
-
-.db-header__avatar {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    object-fit: cover;
-}
-
-.db-header__avatar-fallback {
-    width: 34px;
-    height: 34px;
-    border-radius: 50%;
-    background: #0f172a;
-    color: #ffffff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 14px;
-}
-
-.db-header__user-name {
-    font-size: 14px;
-    font-weight: 700;
-}
-
-/* ── Container ─────────────────────────────────────────────── */
-.db-container {
-    max-width: 1440px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 36px 32px 64px;
-    box-sizing: border-box;
-}
-
-/* ── Greeting ──────────────────────────────────────────────── */
-.db-greeting {
-    margin-bottom: 28px;
-}
-
-.db-greeting__title {
-    font-size: 28px !important;
-    font-weight: 800 !important;
-    color: #0f172a !important;
-    margin: 0 0 6px !important;
+    margin: 2px 0 0;
     letter-spacing: -0.02em;
 }
 
-.db-greeting__subtitle {
-    font-size: 15px;
-    color: #64748b;
-    margin: 0;
+.db-sub-header__right {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
-/* ── 4 Stat Cards ──────────────────────────────────────────── */
+.db-sub-target-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    background-color: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.db-sub-target-btn:hover {
+    background-color: #ffedd5;
+    border-color: #fb923c;
+}
+
+.db-sub-roadmap-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 18px;
+    background-color: #0f172a;
+    color: #ffffff;
+    border-radius: 9999px;
+    font-size: 13.5px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 0.15s ease, transform 0.12s ease;
+}
+
+.db-sub-roadmap-btn:hover {
+    background-color: #1e293b;
+}
+
+.db-sub-roadmap-btn:active {
+    transform: scale(0.98);
+}
+
+.db-sub-roadmap-btn.is-accent {
+    background-color: #ea580c;
+}
+
+.db-sub-roadmap-btn.is-accent:hover {
+    background-color: #c2410c;
+}
+
+/* ── Container chính ───────────────────────────────────────── */
+.db-container {
+    max-width: 1360px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 28px 32px 64px;
+    box-sizing: border-box;
+}
+
+/* ── Nút hành động dùng chung (WCAG AA + single line) ──────── */
+.db-btn-primary,
+.db-btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+}
+
+.db-btn-primary {
+    background-color: #ea580c;
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.22);
+}
+
+.db-btn-primary:hover {
+    background-color: #c2410c;
+}
+
+.db-btn-primary:active,
+.db-btn-secondary:active {
+    transform: scale(0.98);
+}
+
+.db-btn-secondary {
+    background-color: #ffffff;
+    color: #0f172a;
+    border-color: #cbd5e1;
+}
+
+.db-btn-secondary:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.db-inline-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #c2410c;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.db-inline-link:hover {
+    color: #9a3412;
+    text-decoration: underline;
+}
+
+/* ── Trạng thái Lỗi & Onboarding (Luồng 2a, 2b, 3a, 4b, 7b) ── */
+.db-error-card,
+.db-onboarding-card {
+    max-width: 760px;
+    margin: 32px auto;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 20px;
+    padding: 40px 36px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.04);
+}
+
+.db-error-card__icon {
+    color: #dc2626;
+    margin-bottom: 14px;
+}
+
+.db-error-card__title,
+.db-onboarding-card__title {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 10px;
+    letter-spacing: -0.02em;
+}
+
+.db-error-card__desc,
+.db-onboarding-card__desc {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.6;
+    max-width: 58ch;
+    margin: 0 auto 24px;
+}
+
+.db-error-card__actions,
+.db-onboarding-card__actions {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.db-onboarding-card__icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 18px;
+    margin: 0 auto 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.db-onboarding-card__icon.is-target {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.db-onboarding-card__icon.is-diagnostic {
+    background: #eff6ff;
+    color: #0284c7;
+}
+
+.db-onboarding-card__icon.is-syncing {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.db-onboarding-card__pill {
+    display: inline-block;
+    padding: 5px 14px;
+    margin-bottom: 14px;
+    border-radius: 9999px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.db-onboarding-steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin: 0 0 28px;
+    text-align: left;
+}
+
+.db-onboarding-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border-radius: 14px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+}
+
+.db-onboarding-step.is-current {
+    background: #fff7ed;
+    border-color: #fed7aa;
+}
+
+.db-onboarding-step__num {
+    width: 24px;
+    height: 24px;
+    border-radius: 9999px;
+    background: #0f172a;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.db-onboarding-step.is-current .db-onboarding-step__num {
+    background: #ea580c;
+}
+
+.db-onboarding-step strong {
+    display: block;
+    font-size: 13.5px;
+    color: #0f172a;
+    margin-bottom: 3px;
+}
+
+.db-onboarding-step span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    line-height: 1.45;
+}
+
+/* ── Banner hoàn thành 100% lộ trình (Luồng 4a) ────────────── */
+.db-completion-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 26px 28px;
+    margin-bottom: 24px;
+    background: linear-gradient(135deg, #ecfdf5 0%, #ffffff 65%, #fff7ed 100%);
+    border: 1.5px solid #a7f3d0;
+    border-radius: 18px;
+}
+
+.db-completion-banner__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 12px;
+    border-radius: 9999px;
+    background: #059669;
+    color: #ffffff;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.db-completion-banner__title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+}
+
+.db-completion-banner__desc {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.55;
+    margin: 0;
+    max-width: 62ch;
+}
+
+.db-completion-banner__actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+/* ── Lưới 4 thẻ KPI ────────────────────────────────────────── */
 .db-stats-grid {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    gap: 20px;
-    margin-bottom: 32px;
-}
-
-@media (max-width: 1080px) {
-    .db-stats-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-}
-
-@media (max-width: 640px) {
-    .db-stats-grid {
-        grid-template-columns: 1fr;
-    }
+    gap: 18px;
+    margin-bottom: 26px;
 }
 
 .stat-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 18px;
-    padding: 22px 24px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    padding: 20px 22px;
     display: flex;
     flex-direction: column;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
+}
+
+.stat-card.is-highlighted {
+    border-color: #fed7aa;
+    background: #fffdfb;
 }
 
 .stat-card__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 12px;
+    gap: 10px;
+    margin-bottom: 10px;
 }
 
 .stat-card__title {
@@ -215,23 +387,50 @@
     color: #64748b;
 }
 
-.stat-card__icon.is-score { color: #f59e0b; }
-.stat-card__icon.is-streak { color: #ea580c; }
-.stat-card__icon.is-time { color: #0284c7; }
+.stat-card__icon-box {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-card__icon-box.is-streak {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.stat-card__icon-box.is-streak.is-active {
+    background: #ea580c;
+    color: #ffffff;
+}
+
+.stat-card__icon-box.is-time {
+    background: #f0f9ff;
+    color: #0284c7;
+}
+
+.stat-card__icon-box.is-score {
+    background: #fefce8;
+    color: #ca8a04;
+}
 
 .stat-card__value {
-    font-size: 32px;
-    font-weight: 900;
+    font-size: 28px;
+    font-weight: 800;
     color: #0f172a;
-    line-height: 1.1;
-    margin-bottom: 8px;
+    line-height: 1.15;
+    margin-bottom: 6px;
     letter-spacing: -0.02em;
 }
 
 .stat-card__subtext {
-    font-size: 12px;
-    color: #94a3b8;
+    font-size: 12.5px;
+    color: #64748b;
     font-weight: 500;
+    line-height: 1.4;
 }
 
 /* Ring Progress SVG */
@@ -239,6 +438,7 @@
     position: relative;
     width: 44px;
     height: 44px;
+    flex-shrink: 0;
 }
 
 .stat-card__ring-svg {
@@ -255,10 +455,10 @@
 
 .stat-card__ring-fill {
     fill: none;
-    stroke: #0284c7;
+    stroke: #ea580c;
     stroke-width: 3.8;
     stroke-linecap: round;
-    transition: stroke-dasharray 0.5s ease;
+    transition: stroke-dasharray 0.4s ease;
 }
 
 .stat-card__ring-text {
@@ -269,148 +469,495 @@
     justify-content: center;
     font-size: 10px;
     font-weight: 800;
-    color: #0284c7;
+    color: #0f172a;
 }
 
-/* ── Content Grid ──────────────────────────────────────────── */
+/* ── Lưới 2 cột nội dung chính ─────────────────────────────── */
 .db-content-grid {
     display: grid;
-    grid-template-columns: 1fr 380px;
-    gap: 28px;
+    grid-template-columns: minmax(0, 1fr) 370px;
+    gap: 24px;
+    align-items: start;
 }
 
-@media (max-width: 1080px) {
-    .db-content-grid {
-        grid-template-columns: 1fr;
-    }
-}
-
-.db-content-left {
+.db-content-left,
+.db-content-right {
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 22px;
+    min-width: 0;
 }
 
-/* ── Card base ─────────────────────────────────────────────── */
+/* ── Card nền dùng chung ───────────────────────────────────── */
 .db-card {
     background: #ffffff;
     border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 28px 30px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    border-radius: 16px;
+    padding: 24px 26px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.03);
 }
 
 .db-card__header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 24px;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.db-card__header--wrap {
+    flex-wrap: wrap;
 }
 
 .db-card__title {
-    font-size: 17px !important;
-    font-weight: 800 !important;
-    color: #0f172a !important;
-    margin: 0 !important;
+    font-size: 17px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0;
 }
 
-.db-card__legend {
+.db-card__subtitle {
+    font-size: 13px;
+    color: #64748b;
+    margin: 4px 0 0;
+}
+
+.db-empty-inline {
+    padding: 16px;
+    border-radius: 12px;
+    background: #f8fafc;
+    border: 1px dashed #cbd5e1;
+    color: #475569;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+/* ── Khối Mô-đun đang học tiếp theo (CurrentModuleFocusCard) ─ */
+.db-focus-card {
+    border-color: #fed7aa;
+    background: linear-gradient(180deg, #fffaf5 0%, #ffffff 34%);
+}
+
+.db-focus-card.is-maintenance {
+    border-color: #fde68a;
+    background: #ffffff;
+}
+
+.db-focus-card__top {
     display: flex;
     align-items: center;
-    gap: 14px;
-    font-size: 11px;
-    font-weight: 700;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
 }
 
-.db-card__legend-item.is-pass { color: #059669; }
-.db-card__legend-item.is-confirm { color: #d97706; }
-.db-card__legend-item.is-weak { color: #dc2626; }
+.db-focus-card__badges {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
 
-/* ── Part Evaluation Rows ──────────────────────────────────── */
-.db-part-eval-list {
+.db-focus-card__step-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #ea580c;
+    color: #ffffff;
+}
+
+.db-focus-card__part-badge {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    color: #334155;
+}
+
+.db-focus-card__ability-badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #fff7ed;
+    color: #c2410c;
+    border: 1px solid #fed7aa;
+}
+
+.db-focus-card__percent {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ea580c;
+}
+
+.db-focus-card__title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #0f172a;
+    margin: 0 0 6px;
+}
+
+.db-focus-card__desc {
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.5;
+    margin: 0 0 16px;
+}
+
+.db-focus-card__progress-wrap {
+    margin-bottom: 20px;
+}
+
+.db-focus-card__progress-track {
+    width: 100%;
+    height: 8px;
+    border-radius: 9999px;
+    background: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.db-focus-card__progress-fill {
+    height: 100%;
+    border-radius: 9999px;
+    background: #ea580c;
+    transition: width 0.4s ease;
+}
+
+.db-focus-card__progress-meta {
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 12.5px;
+    color: #475569;
+}
+
+.db-maintenance-box {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #fffbeb;
+    border: 1px solid #fcd34d;
+    color: #92400e;
+}
+
+.db-maintenance-box__icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.db-maintenance-box__title {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.db-maintenance-box__desc {
+    margin: 0;
+    font-size: 13.5px;
+    line-height: 1.5;
+}
+
+.db-focus-lessons {
+    margin-bottom: 20px;
+}
+
+.db-focus-lessons__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+}
+
+.db-focus-lessons__label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.db-focus-lessons__list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
 }
 
-.db-part-eval-row {
-    display: grid;
-    grid-template-columns: 200px 1fr 44px 76px;
+.db-focus-lesson-row {
+    display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    text-decoration: none;
+    color: #0f172a;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
-@media (max-width: 640px) {
-    .db-part-eval-row {
-        grid-template-columns: 1fr;
-        gap: 8px;
-    }
+.db-focus-lesson-row:hover {
+    border-color: #fb923c;
+    background: #fffaf5;
 }
 
-.db-part-eval-name {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #334155;
+.db-focus-lesson-row.is-recommended {
+    border-color: #fdba74;
+    background: #fff7ed;
+}
+
+.db-focus-lesson-row.is-completed {
+    background: #f8fafc;
+}
+
+.db-focus-lesson-row__icon {
+    display: inline-flex;
+    color: #ea580c;
+    flex-shrink: 0;
+}
+
+.db-focus-lesson-row.is-completed .db-focus-lesson-row__icon {
+    color: #10b981;
+}
+
+.db-focus-lesson-row__info {
+    flex: 1;
+    min-width: 0;
+}
+
+.db-focus-lesson-row__title {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.db-focus-lesson-row__meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.db-focus-lesson-row__time {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.db-focus-lesson-row__status {
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 9999px;
+    background: #f1f5f9;
+    color: #475569;
     white-space: nowrap;
 }
 
-.db-part-eval-track {
-    width: 100%;
-    height: 7px;
-    background-color: #f1f5f9;
-    border-radius: 9999px;
-    overflow: hidden;
+.db-focus-lesson-row.is-recommended .db-focus-lesson-row__status {
+    background: #ea580c;
+    color: #ffffff;
 }
 
-.db-part-eval-fill {
-    height: 100%;
-    border-radius: 9999px;
-    transition: width 0.6s ease;
+.db-focus-lesson-row.is-completed .db-focus-lesson-row__status {
+    background: #ecfdf5;
+    color: #047857;
 }
 
-.db-part-eval-fill.is-pass { background-color: #10b981; }
-.db-part-eval-fill.is-confirm { background-color: #f59e0b; }
-.db-part-eval-fill.is-weak { background-color: #ef4444; }
+.db-focus-card__actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
 
-.db-part-eval-score {
+/* ── Biểu đồ tiến độ 7 ngày gần nhất (WeeklyProgressChart) ── */
+.db-weekly-card__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 9999px;
+    background: #fff7ed;
+    color: #c2410c;
     font-size: 13px;
     font-weight: 700;
+    white-space: nowrap;
+}
+
+.db-weekly-chart {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 12px;
+    align-items: end;
+    padding-top: 12px;
+}
+
+.db-weekly-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.db-weekly-col__value {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #64748b;
+}
+
+.db-weekly-col.is-today .db-weekly-col__value {
+    color: #c2410c;
+}
+
+.db-weekly-col__track {
+    width: 100%;
+    max-width: 44px;
+    height: 124px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    display: flex;
+    align-items: flex-end;
+    padding: 4px;
+    box-sizing: border-box;
+}
+
+.db-weekly-col__bar {
+    width: 100%;
+    border-radius: 7px;
+    background: #cbd5e1;
+    transition: height 0.4s ease, background-color 0.2s ease;
+}
+
+.db-weekly-col.has-data .db-weekly-col__bar {
+    background: #fb923c;
+}
+
+.db-weekly-col.is-today .db-weekly-col__bar {
+    background: #ea580c;
+}
+
+.db-weekly-col__label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    white-space: nowrap;
+}
+
+.db-weekly-col.is-today .db-weekly-col__label {
     color: #0f172a;
-    text-align: right;
-}
-
-.db-part-eval-badge {
-    font-size: 10px;
     font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 9999px;
-    text-align: center;
-    letter-spacing: 0.04em;
 }
 
-.db-part-eval-badge.is-pass { background: #ecfdf5; color: #059669; }
-.db-part-eval-badge.is-confirm { background: #fef3c7; color: #d97706; }
-.db-part-eval-badge.is-weak { background: #fee2e2; color: #dc2626; }
+/* ── Cột phải: Truy cập nhanh (QuickShortcutsCard) ────────── */
+.db-shortcuts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 14px;
+}
 
-/* ── Recent Activity ───────────────────────────────────────── */
+.db-shortcut-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background: #ffffff;
+    text-decoration: none;
+    color: #0f172a;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.db-shortcut-item:hover:not(.is-mock-locked) {
+    border-color: #fdba74;
+    background: #fffaf5;
+}
+
+.db-shortcut-item.is-mock-unlocked {
+    border-color: #a7f3d0;
+    background: #ecfdf5;
+}
+
+.db-shortcut-item.is-mock-locked {
+    background: #f8fafc;
+    color: #64748b;
+    cursor: default;
+}
+
+.db-shortcut-item__icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 9px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.db-shortcut-item__icon.is-profile { background: #eff6ff; color: #0284c7; }
+.db-shortcut-item__icon.is-report { background: #fefce8; color: #ca8a04; }
+.db-shortcut-item__icon.is-mock { background: #059669; color: #ffffff; }
+.db-shortcut-item__icon.is-locked { background: #e2e8f0; color: #64748b; }
+
+.db-shortcut-item__text {
+    flex: 1;
+    min-width: 0;
+}
+
+.db-shortcut-item__text strong {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: inherit;
+}
+
+.db-shortcut-item__text span {
+    display: block;
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 1px;
+}
+
+.db-shortcut-item__arrow {
+    color: #94a3b8;
+    flex-shrink: 0;
+}
+
+/* ── Cột phải: Hoạt động gần đây (RecentActivityCard) ─────── */
 .act-list {
     display: flex;
     flex-direction: column;
-    gap: 16px;
-    margin-top: 18px;
+    gap: 10px;
+    margin-top: 14px;
 }
 
 .act-item {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid #f1f5f9;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid transparent;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.act-item:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+.act-item.is-clickable:hover {
+    background: #f8fafc;
+    border-color: #e2e8f0;
 }
 
 .act-item__icon {
@@ -420,236 +967,126 @@
 
 .act-item__icon.is-practice { color: #10b981; }
 .act-item__icon.is-video { color: #0284c7; }
-.act-item__icon.is-test { color: #f59e0b; }
+.act-item__icon.is-test { color: #ea580c; }
+.act-item__icon.is-mock { color: #059669; }
+.act-item__icon.is-diagnostic { color: #475569; }
 
 .act-item__content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
+    flex: 1;
+    min-width: 0;
 }
 
 .act-item__title {
-    font-size: 14px !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
-    margin: 0 !important;
+    font-size: 13.5px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 0 0 2px;
 }
 
 .act-item__subtitle {
-    font-size: 12.5px;
+    font-size: 12px;
     color: #64748b;
     margin: 0;
+    line-height: 1.4;
 }
 
-/* ── Next Roadmap Card (Right Sidebar) ─────────────────────── */
-.db-roadmap-card {
-    background: #ffffff;
-    border: 1px solid #e2e8f0;
-    border-radius: 20px;
-    padding: 28px 24px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+/* ── Skeleton Loader (DashboardSkeleton) ───────────────────── */
+@keyframes dbShimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
 }
 
-.db-roadmap-card__title {
-    font-size: 17px !important;
-    font-weight: 800 !important;
-    color: #0f172a !important;
-    margin: 0 0 6px !important;
+.db-skel {
+    border-radius: 8px;
+    background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+    background-size: 200% 100%;
+    animation: dbShimmer 1.4s ease infinite;
 }
 
-.db-roadmap-card__desc {
-    font-size: 12.5px;
-    color: #64748b;
-    margin: 0 0 20px;
-}
-
-.db-roadmap-list {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.db-roadmap-item {
-    border: 1.5px solid #f1f5f9;
-    border-radius: 14px;
-    padding: 18px 20px;
-    background: #ffffff;
+.db-skeleton__header-left {
     display: flex;
     flex-direction: column;
     gap: 8px;
-    transition: all 0.15s;
 }
 
-.db-roadmap-item.is-next {
-    border-color: #fed7aa;
-    background: #fffaf5;
-}
-
-.db-roadmap-item.is-locked {
-    opacity: 0.7;
-    background: #f8fafc;
-}
-
-.db-roadmap-item__meta {
+.db-skeleton__header-right {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    gap: 10px;
 }
 
-.db-roadmap-item__status-tag {
-    font-size: 10px;
-    font-weight: 800;
-    padding: 3px 8px;
-    border-radius: 6px;
-    letter-spacing: 0.04em;
-}
-
-.db-roadmap-item__status-tag.is-in_progress {
-    background: #ea580c;
-    color: #ffffff;
-}
-
-.db-roadmap-item__status-tag.is-unlocked {
-    background: #e0f2fe;
-    color: #0284c7;
-}
-
-.db-roadmap-item__status-tag.is-locked {
-    background: #e2e8f0;
-    color: #64748b;
-}
-
-.db-roadmap-item__section {
-    font-size: 11px;
-    color: #94a3b8;
-    font-weight: 600;
-}
-
-.db-roadmap-item__title {
-    font-size: 14.5px !important;
-    font-weight: 700 !important;
-    color: #0f172a !important;
-    margin: 0 !important;
-}
-
-.db-roadmap-item__desc {
-    font-size: 12.5px;
-    color: #64748b;
-    line-height: 1.45;
-    margin: 0;
-}
-
-.db-roadmap-item__btn {
-    margin-top: 6px;
-    display: block;
-    width: 100%;
-    text-align: center;
-    background: #ea580c;
-    color: #ffffff;
-    font-size: 13.5px;
-    font-weight: 700;
-    padding: 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
-    transition: background-color 0.15s;
-    box-sizing: border-box;
-}
-
-.db-roadmap-item__btn:hover {
-    background: #c2410c;
-}
-
-.db-roadmap-item__btn.is-unlocked {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    color: #334155;
-    box-shadow: none;
-}
-
-.db-roadmap-item__btn.is-unlocked:hover {
-    background: #f1f5f9;
-}
-
-/* ── Fallbacks ─────────────────────────────────────────────── */
-.db-loading {
-    min-height: 80vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    color: #64748b;
-    font-size: 15px;
-}
-
-.db-spinner {
-    width: 38px;
-    height: 38px;
-    border: 3px solid #e2e8f0;
-    border-top-color: #ea580c;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-}
-
-
-/* ── Top Bar inside Dashboard (Khi dùng chung SidebarNav) ── */
-.db-sub-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 24px 36px;
-    background-color: #ffffff;
-    border-bottom: 1px solid #e2e8f0;
-}
-
-.db-sub-header__welcome {
-    font-size: 0.85rem;
-    color: #64748b;
-    font-weight: 500;
-    display: block;
-}
-
-.db-sub-header__name {
-    font-size: 1.5rem;
-    font-weight: 800;
-    color: #0f172a;
-    margin: 2px 0 0 0;
-}
-
-.db-sub-header__right {
-    display: flex;
-    align-items: center;
+.db-skeleton__card {
     gap: 12px;
 }
 
-.db-sub-target-btn {
-    padding: 8px 16px;
-    background-color: #fff7ed;
-    color: #ea580c;
-    border: 1px solid #fed7aa;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 700;
-    text-decoration: none;
-    transition: all 0.15s ease;
+.db-skeleton__list,
+.db-skeleton__sidebar {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
 }
 
-.db-sub-target-btn:hover {
-    background-color: #ffedd5;
+.db-skel--xs { width: 110px; height: 14px; }
+.db-skel--sm { width: 160px; height: 16px; }
+.db-skel--title { width: 240px; height: 26px; }
+.db-skel--metric { width: 120px; height: 32px; }
+.db-skel--pill { width: 140px; height: 36px; border-radius: 9999px; }
+.db-skel--bar { width: 100%; height: 10px; margin-top: 12px; }
+.db-skel--row { width: 100%; height: 52px; border-radius: 12px; }
+.db-skel--chart-body { width: 100%; height: 148px; margin-top: 16px; border-radius: 12px; }
+.db-skel--sidebar-item { width: 100%; height: 104px; border-radius: 14px; }
+
+/* ── Responsive Breakpoints (Tablet <= 1080px, Mobile <= 640px) ─ */
+@media (max-width: 1080px) {
+    .db-stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .db-content-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .db-completion-banner {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .db-completion-banner__actions {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
 }
 
-.db-sub-roadmap-btn {
-    padding: 8px 18px;
-    background-color: #0f172a;
-    color: #ffffff;
-    border-radius: 20px;
-    font-size: 0.875rem;
-    font-weight: 600;
-    text-decoration: none;
-    transition: background-color 0.15s ease;
+@media (max-width: 768px) {
+    .db-sub-header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px 20px;
+    }
+
+    .db-container {
+        padding: 20px 16px 88px;
+    }
+
+    .db-onboarding-steps {
+        grid-template-columns: 1fr;
+    }
 }
 
-.db-sub-roadmap-btn:hover {
-    background-color: #1e293b;
+@media (max-width: 640px) {
+    .db-stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .db-card {
+        padding: 18px 16px;
+    }
+
+    .db-weekly-chart {
+        gap: 6px;
+    }
+
+    .db-weekly-col__label {
+        font-size: 11px;
+    }
 }

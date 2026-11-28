@@ -3,6 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import {
     AlertTriangle,
+    ArrowLeft,
     Award,
     CheckCircle2,
     ChevronRight,
@@ -10,6 +11,7 @@ import {
     RotateCcw,
     Target,
 } from 'lucide-react';
+import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { PartResultCard } from '../components/PartResultCard';
 import { RadarChart } from '../components/RadarChart';
 import { diagnosticService } from '../services/diagnosticService';
@@ -122,35 +124,52 @@ export default function DiagnosticResultPage() {
         URL.revokeObjectURL(url);
     };
 
+    // Xử lý bấm nút Quay lại trang trước (fallback về trang tổng quan nếu mở trực tiếp đường dẫn)
+    const handleGoBack = () => {
+        if (window.history.length > 1) {
+            navigate(-1);
+            return;
+        }
+        navigate('/dashboard');
+    };
+
     if (isLoading) {
         return (
-            <div className="diag-loading-page">
-                <div className="diag-spinner" />
-                <p>Hệ thống đang hoàn thiện phân tích dữ liệu chẩn đoán của bạn. Vui lòng đợi trong giây lát...</p>
+            <div className="app-layout">
+                {/* Giữ nguyên thanh điều hướng chính khi đang tải báo cáo */}
+                <SidebarNav />
+                <div className="diag-loading-page">
+                    <div className="diag-spinner" />
+                    <p>Hệ thống đang hoàn thiện phân tích dữ liệu chẩn đoán của bạn. Vui lòng đợi trong giây lát...</p>
+                </div>
             </div>
         );
     }
 
     if (notCompletedYet) {
         return (
-            <div className="diag-state-page">
-                <div className="diag-state-card">
-                    <div className="diag-state-card__icon">
-                        <AlertTriangle size={36} color="#ea580c" />
-                    </div>
-                    <h2 className="diag-state-card__title">Bạn chưa có dữ liệu bài thi chẩn đoán</h2>
-                    <p className="diag-state-card__desc">{error}</p>
-                    <div className="diag-state-card__actions">
-                        <button
-                            type="button"
-                            className="diag-action-btn is-submit"
-                            onClick={() => navigate('/diagnostic/room')}
-                        >
-                            Tham gia làm bài chẩn đoán ngay
-                        </button>
-                        <Link to="/dashboard" className="diag-action-btn is-outline">
-                            Quay về tổng quan
-                        </Link>
+            <div className="app-layout">
+                {/* Giữ nguyên thanh điều hướng chính khi chưa có dữ liệu báo cáo */}
+                <SidebarNav />
+                <div className="diag-state-page">
+                    <div className="diag-state-card">
+                        <div className="diag-state-card__icon">
+                            <AlertTriangle size={36} color="#ea580c" />
+                        </div>
+                        <h2 className="diag-state-card__title">Bạn chưa có dữ liệu bài thi chẩn đoán</h2>
+                        <p className="diag-state-card__desc">{error}</p>
+                        <div className="diag-state-card__actions">
+                            <button
+                                type="button"
+                                className="diag-action-btn is-submit"
+                                onClick={() => navigate('/diagnostic/room')}
+                            >
+                                Tham gia làm bài chẩn đoán ngay
+                            </button>
+                            <Link to="/dashboard" className="diag-action-btn is-outline">
+                                Quay về tổng quan
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -159,58 +178,109 @@ export default function DiagnosticResultPage() {
 
     if (!result) {
         return (
-            <div className="diag-state-page">
-                <div className="diag-state-card">
-                    <div className="diag-state-card__icon">
-                        <AlertTriangle size={36} color="#dc2626" />
-                    </div>
-                    <h2 className="diag-state-card__title">Không thể tải dữ liệu báo cáo</h2>
-                    <p className="diag-state-card__desc">{error || 'Không tìm thấy kết quả bài thi.'}</p>
-                    <div className="diag-state-card__actions">
-                        <button
-                            type="button"
-                            className="diag-action-btn is-submit"
-                            onClick={() => void fetchResult()}
-                        >
-                            <RotateCcw size={16} />
-                            <span>Tải lại dữ liệu báo cáo</span>
-                        </button>
-                        <Link to="/dashboard" className="diag-action-btn is-outline">
-                            Quay về trang chủ
-                        </Link>
+            <div className="app-layout">
+                {/* Giữ nguyên thanh điều hướng chính khi tải báo cáo gặp lỗi */}
+                <SidebarNav />
+                <div className="diag-state-page">
+                    <div className="diag-state-card">
+                        <div className="diag-state-card__icon">
+                            <AlertTriangle size={36} color="#dc2626" />
+                        </div>
+                        <h2 className="diag-state-card__title">Không thể tải dữ liệu báo cáo</h2>
+                        <p className="diag-state-card__desc">{error || 'Không tìm thấy kết quả bài thi.'}</p>
+                        <div className="diag-state-card__actions">
+                            <button
+                                type="button"
+                                className="diag-action-btn is-submit"
+                                onClick={() => void fetchResult()}
+                            >
+                                <RotateCcw size={16} />
+                                <span>Tải lại dữ liệu báo cáo</span>
+                            </button>
+                            <Link to="/dashboard" className="diag-action-btn is-outline">
+                                Quay về trang chủ
+                            </Link>
+                        </div>
                     </div>
                 </div>
             </div>
         );
     }
 
+    // Tính tỷ lệ trả lời đúng (%) hiển thị phụ bên dưới ô Số câu chính xác
+    const accuracyPercent =
+        result.totalQuestions > 0
+            ? Math.round((result.correctAnswers * 100) / result.totalQuestions)
+            : 0;
+
     return (
-        <div className="diag-result-page">
-            <section className="diag-hero-banner">
-                <div className="diag-hero-banner__container">
-                    <div className="diag-hero-banner__left">
-                        <nav className="diag-breadcrumb" aria-label="Đường dẫn trang">
-                            <Link to="/dashboard">Tổng quan</Link>
-                            <ChevronRight size={14} />
-                            <span>Diagnostic Test</span>
-                            <ChevronRight size={14} />
-                            <span className="is-active">Kết quả phân tích</span>
-                        </nav>
+        <div className="app-layout">
+            {/* Thanh điều hướng ngang cố định phía trên dùng chung toàn ứng dụng */}
+            <SidebarNav />
 
-                        <h1 className="diag-hero-banner__title">Kết quả đánh giá năng lực của bạn</h1>
-                        <p className="diag-hero-banner__desc">
-                            {result.testTitle} • Chính xác {result.correctAnswers}/{result.totalQuestions} câu
-                            {result.targetScore ? ` • Mục tiêu AIM ${result.targetScore}` : ''}
-                        </p>
-                    </div>
+            <div className="diag-result-page">
+                <section className="diag-hero-banner">
+                    <div className="diag-hero-banner__container">
+                        <div className="diag-hero-banner__left">
+                            {/* Nút quay lại trang trước nằm ngay phía trên đường dẫn breadcrumb */}
+                            <button type="button" className="diag-back-btn" onClick={handleGoBack}>
+                                <ArrowLeft size={15} />
+                                <span>Quay lại</span>
+                            </button>
 
-                    <div className="diag-hero-banner__score-card">
-                        <span className="diag-hero-banner__score-label">ĐIỂM DỰ ĐOÁN TOEIC</span>
-                        <div className="diag-hero-banner__score-val">{result.predictedScore}</div>
-                        <span className="diag-hero-banner__score-sub">/ 990 điểm quy đổi</span>
+                            {/* Đường dẫn breadcrumb cho phép bấm trực tiếp từng cấp */}
+                            <nav className="diag-breadcrumb" aria-label="Đường dẫn trang">
+                                <Link to="/dashboard" className="diag-breadcrumb__link">
+                                    Tổng quan
+                                </Link>
+                                <ChevronRight size={14} />
+                                <Link to="/diagnostic/room" className="diag-breadcrumb__link">
+                                    Diagnostic Test
+                                </Link>
+                                <ChevronRight size={14} />
+                                <Link
+                                    to={attemptId ? `/diagnostic/results/${attemptId}` : '/diagnostic/results'}
+                                    className="diag-breadcrumb__link is-active"
+                                    onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                                >
+                                    Kết quả phân tích
+                                </Link>
+                            </nav>
+
+                            <h1 className="diag-hero-banner__title">Kết quả đánh giá năng lực của bạn</h1>
+                        </div>
+
+                        {/* Cụm 3 thẻ chỉ số KPI nổi bật: Mục tiêu AIM, Số câu chính xác và Điểm dự đoán TOEIC */}
+                        <div className="diag-hero-banner__metrics-grid">
+                            {/* Ô thẻ Mục tiêu điểm AIM */}
+                            <div className="diag-hero-banner__metric-card">
+                                <span className="diag-hero-banner__metric-label">MỤC TIÊU AIM</span>
+                                <div className="diag-hero-banner__metric-val">
+                                    {result.targetScore ?? '—'}
+                                </div>
+                                <span className="diag-hero-banner__metric-sub">điểm mục tiêu</span>
+                            </div>
+
+                            {/* Ô thẻ Số câu làm chính xác */}
+                            <div className="diag-hero-banner__metric-card">
+                                <span className="diag-hero-banner__metric-label">CÂU CHÍNH XÁC</span>
+                                <div className="diag-hero-banner__metric-val">
+                                    {result.correctAnswers}/{result.totalQuestions}
+                                </div>
+                                <span className="diag-hero-banner__metric-sub">
+                                    Tỷ lệ đúng {accuracyPercent}%
+                                </span>
+                            </div>
+
+                            {/* Ô thẻ Điểm dự đoán TOEIC nổi bật màu cam */}
+                            <div className="diag-hero-banner__score-card">
+                                <span className="diag-hero-banner__score-label">ĐIỂM DỰ ĐOÁN TOEIC</span>
+                                <div className="diag-hero-banner__score-val">{result.predictedScore}</div>
+                                <span className="diag-hero-banner__score-sub">/ 990 điểm quy đổi</span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
 
             <main className="diag-result-body">
                 <div className="diag-result-container">
@@ -362,6 +432,7 @@ export default function DiagnosticResultPage() {
                     </aside>
                 </div>
             </main>
+            </div>
 
             {isReviewConfirmOpen && (
                 <div className="diag-modal-backdrop" role="dialog" aria-modal="true">

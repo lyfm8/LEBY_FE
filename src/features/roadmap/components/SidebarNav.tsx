@@ -3,8 +3,8 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import {
     LayoutDashboard,
     Compass,
+    BookOpen,
     ClipboardCheck,
-    Award,
     Settings,
     Target,
     Shield,
@@ -110,6 +110,8 @@ export function SidebarNav() {
         (location.pathname.startsWith('/learning-path') || location.pathname.startsWith('/modules')) &&
         !location.pathname.includes('/test') &&
         !location.pathname.includes('/result');
+    // Kiểm tra người dùng có đang ở màn hình Thư viện khóa học 7 Part hay không
+    const isCatalogActive = location.pathname.startsWith('/catalog');
     // Kiểm tra người dùng đang ở nhánh thi chẩn đoán đầu vào hay chọn mục tiêu
     const isDiagnosticRoomActive =
         location.pathname.startsWith('/diagnostic') || location.pathname.startsWith('/target-selection');
@@ -117,10 +119,6 @@ export function SidebarNav() {
     const isMockExamActive = location.pathname.startsWith('/mock-exam');
     // Highlight mục Phòng thi khi học viên truy cập một trong hai nhánh thi
     const isDiagnosticActive = isDiagnosticRoomActive || isMockExamActive;
-    const isResultsActive =
-        location.pathname.startsWith('/results') ||
-        location.pathname.startsWith('/learning-results') ||
-        location.pathname.includes('/test/result');
     const isProfileActive = location.pathname === '/profile';
 
     /**
@@ -168,6 +166,15 @@ export function SidebarNav() {
                         >
                             <Compass size={18} />
                             <span>Lộ trình học</span>
+                        </Link>
+
+                        {/* Liên kết sang Thư viện toàn bộ khóa học 7 Part TOEIC */}
+                        <Link
+                            to="/catalog"
+                            className={`app-topbar__nav-item ${isCatalogActive ? 'is-active' : ''}`}
+                        >
+                            <BookOpen size={18} />
+                            <span>Thư viện</span>
                         </Link>
 
                         {/* Mục Phòng thi xổ xuống chọn giữa Thi chẩn đoán và Đề thi thật ETS */}
@@ -227,14 +234,6 @@ export function SidebarNav() {
                                 </div>
                             )}
                         </div>
-
-                        <Link
-                            to="/results"
-                            className={`app-topbar__nav-item ${isResultsActive ? 'is-active' : ''}`}
-                        >
-                            <Award size={18} />
-                            <span>Kết quả</span>
-                        </Link>
                     </nav>
 
                     {/* 3. Khối Phải: Phím tắt Quản trị (nếu có quyền) & Menu tài khoản + Đăng xuất */}
@@ -356,12 +355,13 @@ export function SidebarNav() {
                     <Compass size={20} />
                     <span>Lộ trình</span>
                 </Link>
+                {/* Mục Thư viện khóa học trên thanh điều hướng nhanh di động */}
                 <Link
-                    to="/results"
-                    className={`app-mobile-nav__item ${isResultsActive ? 'is-active' : ''}`}
+                    to="/catalog"
+                    className={`app-mobile-nav__item ${isCatalogActive ? 'is-active' : ''}`}
                 >
-                    <Award size={20} />
-                    <span>Kết quả</span>
+                    <BookOpen size={20} />
+                    <span>Thư viện</span>
                 </Link>
                 <Link
                     to="/profile"

@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { ProfileHero } from '../components/ProfileHero';
 import { ProfileInfoTab } from '../components/ProfileInfoTab';
 import { ProfileAbilityTab } from '../components/ProfileAbilityTab';
+import { ProfileMistakesTab } from '../components/ProfileMistakesTab';
 import { ProfileSecurityTab } from '../components/ProfileSecurityTab';
 import { useProfile } from '../hooks/useProfile';
 import { AlertCircle, RotateCcw } from 'lucide-react';
 import '../profile.css';
 
+// Danh sách các tab hợp lệ được đồng bộ với tham số truy vấn ?tab= trên URL
+type ProfileTabKey = 'info' | 'skills' | 'mistakes' | 'security';
+
+const VALID_TABS: ReadonlySet<ProfileTabKey> = new Set([
+    'info',
+    'skills',
+    'mistakes',
+    'security',
+]);
+
 /**
- * Smart / Container Component: Trang Hồ sơ cá nhân và Ma trận năng lực LEBY (UC15 & UC16).
- * Toàn bộ logic (state, fetching API, cập nhật thông tin) được ủy quyền cho hook useProfile.
+ * Smart / Container Component: Trang Hồ sơ cá nhân, Ma trận năng lực và Sổ tay câu sai LEBY.
+ * Toàn bộ logic tải hồ sơ được ủy quyền cho hook useProfile và đồng bộ tab đang mở lên URL.
  */
 export default function ProfilePage() {
+    // Khởi tạo hook quản lý dữ liệu hồ sơ người dùng
     const {
         data,
         isLoading,
@@ -22,7 +35,23 @@ export default function ProfilePage() {
         handleUpdateAvatar,
     } = useProfile();
 
-    const [activeTab, setActiveTab] = useState<'info' | 'skills' | 'security'>('info');
+    // Đọc và ghi trạng thái tab hiện tại qua URL search params để hỗ trợ reload/chia sẻ liên kết
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Chuẩn hóa tên tab đọc từ URL, fallback về 'info' nếu không khớp danh sách hợp lệ
+    const activeTab: ProfileTabKey = useMemo(() => {
+        const rawTab = searchParams.get('tab') as ProfileTabKey | null;
+        return rawTab && VALID_TABS.has(rawTab) ? rawTab : 'info';
+    }, [searchParams]);
+
+    // Chuyển tab và dọn gọn các bộ lọc phụ thuộc tab cũ trên URL
+    function handleSelectTab(nextTab: ProfileTabKey) {
+        if (nextTab === 'info') {
+            setSearchParams({});
+            return;
+        }
+        setSearchParams({ tab: nextTab });
+    }
 
     if (isLoading) {
         return (
@@ -74,12 +103,12 @@ export default function ProfilePage() {
                         onUpdateAvatar={handleUpdateAvatar}
                     />
 
-                    {/* Navigation Tabs */}
+                    {/* Thanh điều hướng các mục hồ sơ đồng bộ với URL */}
                     <div className="pf-tabs">
                         <button
                             type="button"
                             className={`pf-tab-item ${activeTab === 'info' ? 'is-active' : ''}`}
-                            onClick={() => setActiveTab('info')}
+                            onClick={() => handleSelectTab('info')}
                         >
                             Hồ sơ & Mục tiêu
                         </button>
@@ -87,21 +116,29 @@ export default function ProfilePage() {
                         <button
                             type="button"
                             className={`pf-tab-item ${activeTab === 'skills' ? 'is-active' : ''}`}
-                            onClick={() => setActiveTab('skills')}
+                            onClick={() => handleSelectTab('skills')}
                         >
                             Hồ sơ năng lực TOEIC ({data.skills?.length || 0})
                         </button>
 
                         <button
                             type="button"
+                            className={`pf-tab-item ${activeTab === 'mistakes' ? 'is-active' : ''}`}
+                            onClick={() => handleSelectTab('mistakes')}
+                        >
+                            Sổ tay câu sai
+                        </button>
+
+                        <button
+                            type="button"
                             className={`pf-tab-item ${activeTab === 'security' ? 'is-active' : ''}`}
-                            onClick={() => setActiveTab('security')}
+                            onClick={() => handleSelectTab('security')}
                         >
                             Bảo mật & Tài khoản
                         </button>
                     </div>
 
-                    {/* Tab Views */}
+                    {/* Nội dung từng tab theo lựa chọn hiện tại */}
                     {activeTab === 'info' && (
                         <ProfileInfoTab
                             user={data.user}
@@ -112,6 +149,10 @@ export default function ProfilePage() {
 
                     {activeTab === 'skills' && (
                         <ProfileAbilityTab skills={data.skills} />
+                    )}
+
+                    {activeTab === 'mistakes' && (
+                        <ProfileMistakesTab isActive={activeTab === 'mistakes'} />
                     )}
 
                     {activeTab === 'security' && (
