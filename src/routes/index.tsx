@@ -270,22 +270,6 @@ function AppRoutes() {
                         </AuthGuard>
                     }
                 />
-                                <Route
-                    path="/results"
-                    element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
-                            <ModuleTestResultPage />
-                        </AuthGuard>
-                    }
-                />
-                <Route
-                    path="/learning-results"
-                    element={
-                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
-                            <ModuleTestResultPage />
-                        </AuthGuard>
-                    }
-                />
                 <Route
                     path="/modules/:moduleId/test/result/:attemptId"
                     element={

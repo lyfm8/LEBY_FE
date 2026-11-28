@@ -1,6 +1,21 @@
 import { Link } from 'react-router-dom';
 import { Award, BookOpen, CheckCircle2, Lock, PlayCircle } from 'lucide-react';
-import type { LessonNavItem } from '../types/lessonTypes';
+import type { LessonContentType, LessonNavItem } from '../types/lessonTypes';
+
+/**
+ * Tạo đường dẫn đúng phòng học tương ứng với loại bài học:
+ * - Bài thực hành (PRACTICE) -> Phòng luyện tập tức thì (UC12)
+ * - Bài giảng lý thuyết (VIDEO) -> Phòng học bài giảng Video (UC11)
+ */
+export function buildLessonRoutePath(
+    moduleId: number,
+    lessonId: number,
+    lessonType?: LessonContentType
+): string {
+    return lessonType === 'PRACTICE'
+        ? `/modules/${moduleId}/lessons/${lessonId}/practice`
+        : `/modules/${moduleId}/lessons/${lessonId}`;
+}
 
 /**
  * Thuộc tính đầu vào cho cột danh sách bài học trong cùng mô-đun.
@@ -102,7 +117,7 @@ export function LessonSidebarList({
                         return (
                             <li key={item.id} className="lesson-nav-list__item">
                                 <Link
-                                    to={`/modules/${moduleId}/lessons/${item.id}`}
+                                    to={buildLessonRoutePath(moduleId, item.id, item.lessonType)}
                                     className={`lesson-nav-link ${isActive ? 'is-active' : ''} ${item.isCompleted ? 'is-completed' : ''}`}
                                     aria-current={isActive ? 'page' : undefined}
                                 >

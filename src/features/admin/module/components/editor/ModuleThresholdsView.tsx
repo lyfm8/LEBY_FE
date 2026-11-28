@@ -8,7 +8,6 @@ import {
 } from 'lucide-react';
 import {
   ThresholdDropdownInput,
-  SCORE_PRESETS,
   RATE_PRESETS,
 } from './ThresholdDropdownInput';
 
@@ -54,22 +53,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
     );
   }, [modules]);
 
-  const handleScoreChange = (id: number, val: number) => {
-    const clamped = Math.max(50, Math.min(100, val));
-    setItems((prev) =>
-      prev.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              defaultPassScore: clamped,
-              isDirty: true,
-              isSavedSuccess: false,
-            }
-          : item
-      )
-    );
-  };
-
+  // Cập nhật tỷ lệ bài học cần hoàn thành của mô-đun và đánh dấu dòng đã thay đổi
   const handleRateChange = (id: number, val: number) => {
     const clamped = Math.max(50, Math.min(100, val));
     setItems((prev) =>
@@ -149,7 +133,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
       <div className="editor-pane-header compact-thresholds-header">
         <div className="editor-header-left">
           <h1 className="editor-main-title">
-            Bảng Điểm Chuẩn & Tỷ Lệ Hoàn Thành Module
+            Bảng Tỷ Lệ Hoàn Thành Module
           </h1>
         </div>
 
@@ -188,7 +172,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
               <tr>
                 <th style={{ width: '55px', textAlign: 'center' }}>Thứ tự</th>
                 <th>Tên Module & Part</th>
-                <th style={{ width: '160px' }}>Điểm đỗ bài thi</th>
                 <th style={{ width: '160px' }}>Tỷ lệ bài học</th>
                 <th style={{ width: '75px', textAlign: 'center' }}>Thao tác</th>
               </tr>
@@ -222,18 +205,6 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                         <span className="part-tag">{item.partName}</span>
                       )}
                     </div>
-                  </td>
-
-                  {/* Điểm đỗ */}
-                  <td>
-                    <ThresholdDropdownInput
-                      value={item.defaultPassScore}
-                      onChange={(val) => handleScoreChange(item.id, val)}
-                      unit="đ"
-                      presets={SCORE_PRESETS}
-                      min={50}
-                      max={100}
-                    />
                   </td>
 
                   {/* Tỷ lệ hoàn thành */}
