@@ -130,6 +130,8 @@ export interface ModuleTestInfo {
     durationMinutes: number;
     // Cờ xác nhận học viên đã từng vượt qua bài kiểm tra này hay chưa
     hasPassed: boolean;
+    // Cờ báo hiệu đã bảo lưu bài học từ lộ trình cũ nhưng cần thi lại vượt ải cho mục tiêu mới cao hơn
+    needsRetakeForNewAim?: boolean;
     // Điểm số cao nhất học viên từng đạt (thang 100)
     bestScore?: number | null;
     // ID lượt thi gần nhất để điều hướng xem lại kết quả

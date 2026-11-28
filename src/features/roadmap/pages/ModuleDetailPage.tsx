@@ -276,6 +276,8 @@ export default function ModuleDetailPage() {
 
     // Kiểm tra học viên đã vượt qua bài thi của mô-đun này hay chưa
     const hasPassedModuleTest = Boolean(moduleTest?.hasPassed);
+    // Kiểm tra học viên vừa nâng mục tiêu và cần thi lại vượt ải đạt điểm chuẩn mới dù đã bảo lưu bài học
+    const needsRetakeForNewAim = Boolean(moduleTest?.needsRetakeForNewAim);
 
     return (
         <div className="app-layout">
@@ -458,6 +460,18 @@ export default function ModuleDetailPage() {
                             </div>
 
                             <p className="module-test-card__desc">{moduleTest.description}</p>
+
+                            {/* Thanh nhắc rõ ràng khi mô-đun đã bảo lưu bài học nhưng cần thi vượt ải cho mục tiêu mới */}
+                            {needsRetakeForNewAim && (
+                                <div className="module-test-card__retake-banner" role="status">
+                                    <AlertCircle size={16} aria-hidden="true" />
+                                    <span>
+                                        Toàn bộ bài giảng đã được bảo lưu từ lộ trình trước. Hãy đạt tối thiểu{' '}
+                                        <strong>{moduleTest.passScore}/100 điểm</strong> cho mục tiêu{' '}
+                                        <strong>{moduleTest.targetScore} điểm</strong> để hoàn thành mô-đun này.
+                                    </span>
+                                </div>
+                            )}
 
                             {/* Hiện điểm số cao nhất nếu học viên đã từng thi vượt ải */}
                             {typeof moduleTest.bestScore === 'number' && (

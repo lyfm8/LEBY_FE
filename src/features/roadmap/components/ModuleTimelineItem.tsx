@@ -158,6 +158,16 @@ export function ModuleTimelineItem({ item, isLast, catalogExt }: ModuleTimelineI
     // Chuỗi tổng thời lượng hiển thị trên thẻ ở màn hình Thư viện (nếu có dữ liệu)
     const totalDurationText = catalogExt ? formatSecondsShort(catalogExt.totalDurationSeconds) : '';
 
+    // Xác định thông báo kế thừa tiến độ từ lộ trình trước để hiển thị riêng, tránh bị tên năng lực che mất
+    const inheritanceNote =
+        !catalogExt &&
+        item.reason &&
+        (item.reason.includes('kế thừa') ||
+            item.reason.includes('bảo lưu') ||
+            item.reason.includes('Đã hoàn thành toàn bộ bài giảng'))
+            ? item.reason
+            : null;
+
     // Lớp màu của badge trạng thái bên góc phải thẻ
     const badgeClassName = isFreeStudy
         ? 'is-free-study'
@@ -217,6 +227,13 @@ export function ModuleTimelineItem({ item, isLast, catalogExt }: ModuleTimelineI
                     <div className="timeline-card__titles">
                         <h3 className="timeline-card__title">{item.title}</h3>
                         <p className="timeline-card__desc">{item.description}</p>
+                        {/* Hiển thị dòng ghi chú kế thừa tiến độ hoặc yêu cầu thi vượt ải theo mục tiêu mới */}
+                        {inheritanceNote && (
+                            <p className="timeline-card__inheritance-note">
+                                <Info size={13} aria-hidden="true" />
+                                <span>{inheritanceNote}</span>
+                            </p>
+                        )}
                     </div>
 
                     <span className={`timeline-card__badge ${badgeClassName}`}>{item.statusLabel}</span>
