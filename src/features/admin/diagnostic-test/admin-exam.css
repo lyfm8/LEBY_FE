@@ -330,12 +330,6 @@
   font-weight: 600;
   font-size: var(--admin-td-size);
   color: var(--admin-title-color);
-  margin-bottom: 4px;
-}
-
-.exam-title-sub {
-  font-size: var(--admin-sub-size);
-  color: var(--admin-muted-color);
 }
 
 .exam-date-primary {

@@ -48,8 +48,8 @@ interface ClickRipple {
     strength: number;
 }
 
-// Kích thước mỗi ô vuông ô ly quyển vở (đơn vị px)
-const GRID_CELL_SIZE = 28;
+// Kích thước mỗi ô vuông ô ly quyển vở (đồng bộ 56px với lưới nền bảng thương hiệu bên trái)
+const GRID_CELL_SIZE = 56;
 // Bán kính vùng ảnh hưởng trường lực quanh con trỏ chuột (đơn vị px)
 const INTERACTION_RADIUS = 165;
 // Độ cứng lò xo kéo nút lưới quay về vị trí ô ly ban đầu

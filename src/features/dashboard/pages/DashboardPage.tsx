@@ -3,9 +3,7 @@ import {
     AlertCircle,
     ArrowRight,
     Award,
-    Compass,
     LogIn,
-    Play,
     RefreshCw,
     Target,
     Trophy,
@@ -17,9 +15,7 @@ import { DashboardOnboardingCard } from '../components/DashboardOnboardingCard';
 import { StatCard } from '../components/StatCard';
 import { CurrentModuleFocusCard } from '../components/CurrentModuleFocusCard';
 import { WeeklyProgressChart } from '../components/WeeklyProgressChart';
-import { QuickShortcutsCard } from '../components/QuickShortcutsCard';
 import { RecentActivityCard } from '../components/RecentActivityCard';
-import type { DashboardCurrentModule } from '../types/dashboardTypes';
 import '../dashboard.css';
 
 /**
@@ -44,30 +40,9 @@ function formatStudyDuration(totalMinutes: number): string {
 }
 
 /**
- * Xác định đường dẫn cho nút "Tiếp tục bài học" trên thanh tiêu đề Dashboard.
- *
- * @param currentModule Mô-đun đang học hiện tại (có thể null)
- * @returns Đường dẫn đích phù hợp nhất
- */
-function resolveHeaderContinueUrl(currentModule: DashboardCurrentModule | null): string {
-    // Nếu không có mô-đun đang mở hoặc mô-đun đang bảo trì -> dẫn sang trang Lộ trình học
-    if (!currentModule || currentModule.isUnderMaintenance || currentModule.moduleId === null) {
-        return '/learning-path';
-    }
-    // Nếu đã có bài học gợi ý tiếp tục -> nhảy thẳng vào phòng Video hoặc phòng Luyện tập
-    if (currentModule.continueLessonId !== null) {
-        return currentModule.continueLessonType === 'PRACTICE'
-            ? `/modules/${currentModule.moduleId}/lessons/${currentModule.continueLessonId}/practice`
-            : `/modules/${currentModule.moduleId}/lessons/${currentModule.continueLessonId}`;
-    }
-    // Dự phòng dẫn vào trang chi tiết mô-đun hiện tại
-    return `/modules/${currentModule.moduleId}`;
-}
-
-/**
  * Trang Dashboard học tập cá nhân (màn hình trung tâm của học viên).
  * Tổng hợp tiến độ hoàn thành lộ trình, chuỗi ngày học liên tục, thời gian học,
- * điểm TOEIC dự đoán, mô-đun đang học tiếp theo, biểu đồ tuần và các lối tắt học tập.
+ * điểm TOEIC dự đoán, mô-đun đang học tiếp theo, biểu đồ tuần và hoạt động gần đây.
  */
 export default function DashboardPage() {
     // Gọi custom hook để lấy dữ liệu tổng hợp Dashboard cùng 4 trạng thái chuẩn
@@ -150,8 +125,6 @@ export default function DashboardPage() {
 
     // Xác định trạng thái đã hoàn thành trọn vẹn lộ trình học (bao gồm cả PASS 100% 7 Part)
     const isCompletedRoadmap = data.dashboardState === 'COMPLETED';
-    // Tính đường dẫn nút Tiếp tục bài học ở thanh tiêu đề
-    const headerContinueUrl = resolveHeaderContinueUrl(data.currentModule);
 
     // Chuẩn bị dòng phụ chú thật cho thẻ Điểm TOEIC dự đoán
     const scoreSubtext =
@@ -184,48 +157,6 @@ export default function DashboardPage() {
             <SidebarNav />
 
             <div className="app-main-viewport db-viewport">
-                {/* Thanh chào mừng cá nhân hóa, mục tiêu AIM và nút hành động nhanh */}
-                <header className="db-sub-header">
-                    <div className="db-sub-header__left">
-                        <span className="db-sub-header__welcome">Chào mừng trở lại,</span>
-                        <h1 className="db-sub-header__name">{data.user.fullName}</h1>
-                    </div>
-
-                    <div className="db-sub-header__right">
-                        {data.user.targetScore !== null && (
-                            <Link
-                                to="/target-selection"
-                                className="db-sub-target-btn"
-                                title="Bấm để điều chỉnh mốc điểm mục tiêu"
-                            >
-                                <Target size={15} />
-                                <span>Mục tiêu: {data.user.targetScore} TOEIC</span>
-                            </Link>
-                        )}
-
-                        {isCompletedRoadmap ? (
-                            <Link to="/mock-exam" className="db-sub-roadmap-btn is-accent">
-                                <Trophy size={15} />
-                                <span>Thi thử 200 câu</span>
-                            </Link>
-                        ) : (
-                            <Link to={headerContinueUrl} className="db-sub-roadmap-btn">
-                                {data.currentModule && !data.currentModule.isUnderMaintenance ? (
-                                    <>
-                                        <Play size={14} />
-                                        <span>Tiếp tục bài học</span>
-                                    </>
-                                ) : (
-                                    <>
-                                        <Compass size={15} />
-                                        <span>Xem lộ trình</span>
-                                    </>
-                                )}
-                            </Link>
-                        )}
-                    </div>
-                </header>
-
                 <main className="db-container">
                     {/* Banner chúc mừng khi học viên đã hoàn thành 100% lộ trình học -> mời thi thử 200 câu */}
                     {isCompletedRoadmap && (
@@ -296,7 +227,7 @@ export default function DashboardPage() {
                         />
                     </section>
 
-                    {/* Lưới nội dung chính 2 cột tinh gọn: Trái (Học tiếp ngay + Biểu đồ tuần) - Phải (Hoạt động gần đây + Truy cập nhanh) */}
+                    {/* Lưới nội dung chính 2 cột tinh gọn: Trái (Học tiếp ngay + Biểu đồ tuần) - Phải (Hoạt động gần đây) */}
                     <div className="db-content-grid">
                         <div className="db-content-left">
                             {data.currentModule && (
@@ -311,11 +242,6 @@ export default function DashboardPage() {
 
                         <div className="db-content-right">
                             <RecentActivityCard activities={data.recentActivities.slice(0, 5)} />
-
-                            <QuickShortcutsCard
-                                canTakeFullMockTest={data.stats.canTakeFullMockTest}
-                                latestDiagnosticAttemptId={data.diagnostic.latestAttemptId}
-                            />
                         </div>
                     </div>
                 </main>

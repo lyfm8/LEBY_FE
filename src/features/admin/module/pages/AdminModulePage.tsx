@@ -105,8 +105,6 @@ export const AdminModulePage: React.FC = () => {
             modules={modules}
             activeView={activeView}
             onSelectView={navigateView}
-            onDeleteModule={handleDeleteModule}
-            onDeleteLesson={handleDeleteLesson}
             onReorderModules={handleReorderModules}
             onReorderLessons={handleReorderLessons}
             onRefresh={fetchModules}

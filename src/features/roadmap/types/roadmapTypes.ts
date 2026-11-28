@@ -23,9 +23,9 @@ export interface ModuleItem {
     // ID của mô-đun dùng để điều hướng sang trang chi tiết
     id: number;
     // ID bản ghi LearningPathItem trong cơ sở dữ liệu
-    learningPathItemId?: number;
-    // Thứ tự chặng trên lộ trình cá nhân (1, 2, 3...)
-    orderNo: number;
+    learningPathItemId?: number | null;
+    // Thứ tự chặng trên lộ trình cá nhân (1, 2, 3...) - null nếu là mô-đun miễn học
+    orderNo?: number | null;
     // Thứ tự sư phạm chuẩn hóa của mô-đun
     sequence: number;
     // Tên tiêu đề của mô-đun
@@ -54,6 +54,8 @@ export interface ModuleItem {
     status: ModuleStatus;
     // Nhãn tiếng Việt tương ứng với trạng thái để hiển thị lên badge
     statusLabel: string;
+    // True nếu mô-đun thuộc lộ trình cá nhân; false nếu đã vượt qua / miễn học
+    inRoadmap?: boolean;
 }
 
 // Cấu trúc dữ liệu tổng quan của Lộ trình học cá nhân
@@ -82,6 +84,8 @@ export interface RoadmapData {
     isPassedAllParts?: boolean;
     // Danh sách các chặng mô-đun được sắp xếp tuần tự
     modules: ModuleItem[];
+    // Danh sách mô-đun đã vượt qua (miễn học ngoài lộ trình), sắp xếp theo sequence
+    exemptedModules?: ModuleItem[];
 }
 
 // Cấu trúc dữ liệu từng bài giảng hoặc bài tập thực hành trong trang Chi tiết Module

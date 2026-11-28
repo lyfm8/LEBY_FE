@@ -4,10 +4,6 @@ import { SectionBadge } from './SectionBadge';
 import {
   ChevronDown,
   ChevronRight,
-  BookOpen,
-  Brain,
-  Headphones,
-  Layers,
   Search,
   ChevronsDown,
   ChevronsUp,
@@ -115,7 +111,6 @@ export const PartAbilityTreeView: React.FC<PartAbilityTreeViewProps> = ({
   if (parts.length === 0) {
     return (
       <div className="tree-view-state-card">
-        <Layers size={36} className="text-muted" />
         <p className="font-semibold text-dark">Chưa có phần thi nào</p>
         <p className="text-sm text-muted">Vui lòng quay lại chế độ Quản trị để thêm phần thi mới.</p>
       </div>
@@ -186,11 +181,6 @@ export const PartAbilityTreeView: React.FC<PartAbilityTreeViewProps> = ({
               {/* Tiêu đề Phân loại Section */}
               <div className={`tree-section-banner ${isListening ? 'listening' : 'reading'}`}>
                 <div className="section-banner-title">
-                  {isListening ? (
-                    <Headphones size={17} className="banner-icon" />
-                  ) : (
-                    <BookOpen size={17} className="banner-icon" />
-                  )}
                   <span className="banner-name">
                     {isListening ? 'Kỹ năng Nghe (LISTENING)' : 'Kỹ năng Đọc (READING)'}
                   </span>
@@ -239,10 +229,6 @@ export const PartAbilityTreeView: React.FC<PartAbilityTreeViewProps> = ({
                             )}
                           </button>
 
-                          <div className="part-icon-box">
-                            <Layers size={15} />
-                          </div>
-
                           <div className="part-info-group">
                             <span className="part-name-text">{part.name}</span>
                             {part.description && (
@@ -264,7 +250,6 @@ export const PartAbilityTreeView: React.FC<PartAbilityTreeViewProps> = ({
                         <div className="tree-abilities-branch">
                           {displayedAbilities.length === 0 ? (
                             <div className="tree-empty-abilities">
-                              <Brain size={16} className="text-muted" />
                               <span>Chưa có năng lực nào trong phần thi này.</span>
                             </div>
                           ) : (
@@ -273,9 +258,6 @@ export const PartAbilityTreeView: React.FC<PartAbilityTreeViewProps> = ({
                                 <div key={ab.id} className="tree-ability-card">
                                   <div className="ability-card-header">
                                     <div className="ability-card-left">
-                                      <div className="ability-icon-circle">
-                                        <Brain size={13} />
-                                      </div>
                                       <span className="ability-card-name">{ab.name}</span>
                                     </div>
                                     <SectionBadge section={ab.sections} showIcon={false} />

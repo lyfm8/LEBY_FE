@@ -627,19 +627,6 @@
     margin: 0 !important;
 }
 
-.lesson-ability-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 12px;
-    border-radius: 999px;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    color: #9a3412;
-    font-size: 12.5px;
-    font-weight: 700;
-}
-
 .lesson-notes-card__desc {
     font-size: 14.5px;
     line-height: 1.7;
@@ -752,16 +739,6 @@
     background: #fff7ed;
 }
 
-.lesson-nav-link__icon {
-    color: #64748b;
-    margin-top: 2px;
-    flex-shrink: 0;
-}
-
-.lesson-nav-link.is-active .lesson-nav-link__icon {
-    color: #ea580c;
-}
-
 .is-done-icon {
     color: #10b981;
 }
@@ -790,6 +767,11 @@
 
 .lesson-nav-link__pct {
     color: #c2410c;
+    font-weight: 600;
+}
+
+.lesson-nav-link__done {
+    color: #059669;
     font-weight: 600;
 }
 
@@ -892,10 +874,6 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-}
-
-.practice-view__icon {
-    color: #ea580c;
 }
 
 .practice-view__heading {

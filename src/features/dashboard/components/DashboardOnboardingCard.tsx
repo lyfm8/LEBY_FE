@@ -83,9 +83,9 @@ export function DashboardOnboardingCard({
                         <span>Chọn mục tiêu điểm TOEIC</span>
                         <ArrowRight size={16} />
                     </Link>
-                    <Link to="/catalog" className="db-btn-secondary">
+                    <Link to="/#curriculum" className="db-btn-secondary">
                         <BookOpen size={16} />
-                        <span>Xem trước thư viện khóa học</span>
+                        <span>Xem chương trình 7 Part</span>
                     </Link>
                 </div>
             </section>

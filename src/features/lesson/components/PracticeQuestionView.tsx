@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BookOpen, CheckCircle2, ChevronDown, HelpCircle, XCircle } from 'lucide-react';
+import { BookOpen, CheckCircle2, ChevronDown, XCircle } from 'lucide-react';
 import type { LessonReviewQuestion } from '../types/lessonTypes';
 
 /** Các mức tốc độ phát âm thanh cho câu hỏi ôn tập (hỗ trợ nghe chậm, chuẩn và nhanh). */
@@ -187,7 +187,6 @@ export function PracticeQuestionView({
             {/* Tiêu đề khối ôn tập và bộ đếm số câu đã làm đúng */}
             <div className="practice-view__header">
                 <div className="practice-view__title-wrap">
-                    <HelpCircle size={20} className="practice-view__icon" />
                     <h2 className="practice-view__heading">{heading}</h2>
                 </div>
                 <span className="practice-view__counter">

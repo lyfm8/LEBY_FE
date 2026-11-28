@@ -3,14 +3,10 @@ import {
     AlertTriangle,
     Award,
     Clock,
-    Compass,
     FileCheck2,
-    History,
     Lock,
     Play,
     RefreshCw,
-    Target,
-    Unlock,
 } from 'lucide-react';
 import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { MockExamIntroModal } from '../components/MockExamIntroModal';
@@ -82,46 +78,7 @@ export default function MockExamListPage() {
             <SidebarNav />
 
             <main className="mock-page-main">
-                {/* 1. Thẻ tiêu đề & Trạng thái mục tiêu AIM / Mở khóa đề đầu ra */}
-                <section className="mock-hero-card">
-                    <div>
-                        <div className="mock-hero-card__eyebrow">
-                            <FileCheck2 size={14} />
-                            <span>PHÒNG THI THẬT CHUẨN ETS (200 CÂU · 120 PHÚT)</span>
-                        </div>
-                        <h1 className="mock-hero-card__title">
-                            Thi thử TOEIC &amp; Nghiệm thu đầu ra
-                        </h1>
-                        <p className="mock-hero-card__desc">
-                            Mô phỏng 100% quy chế phòng thi thật: 100 câu Listening phát đúng 1 lần duy
-                            nhất, 100 câu Reading, bảng câu hỏi phân theo từng Part 1–7 và tự động quy
-                            đổi thang điểm chuẩn ETS 990.
-                        </p>
-                    </div>
-
-                    <div className="mock-hero-status">
-                        {listData.userTargetScore !== null && (
-                            <div className="mock-hero-aim">
-                                <span>Mục tiêu AIM hiện tại</span>
-                                <strong>{listData.userTargetScore} điểm</strong>
-                            </div>
-                        )}
-                        <span
-                            className={`mock-unlock-pill ${
-                                listData.isOutputExamUnlocked ? 'is-unlocked' : 'is-locked'
-                            }`}
-                        >
-                            {listData.isOutputExamUnlocked ? <Unlock size={14} /> : <Lock size={14} />}
-                            <span>
-                                {listData.isOutputExamUnlocked
-                                    ? 'Đã mở khóa Đề thi đầu ra'
-                                    : 'Chưa mở khóa Đề thi đầu ra'}
-                            </span>
-                        </span>
-                    </div>
-                </section>
-
-                {/* 2. Banner khôi phục nhanh nếu đang có bài thi thử làm dở */}
+                {/* Banner khôi phục nhanh nếu đang có bài thi thử làm dở */}
                 {listData.activeAttemptId && (
                     <section className="mock-resume-banner" role="region" aria-label="Tiếp tục bài thi">
                         <div className="mock-resume-banner__info">
@@ -147,7 +104,7 @@ export default function MockExamListPage() {
                     </section>
                 )}
 
-                {/* 3. Thanh lọc theo loại đề & cảnh báo lý do khóa đề OUTPUT nếu chưa xong lộ trình */}
+                {/* 3. Thanh lọc theo loại đề */}
                 <div className="mock-toolbar">
                     <div className="mock-filter-tabs" role="tablist" aria-label="Lọc theo loại đề thi thử">
                         <button
@@ -180,19 +137,6 @@ export default function MockExamListPage() {
                     </div>
                 </div>
 
-                {!listData.isOutputExamUnlocked && listData.outputLockReason && (
-                    <div className="mock-lock-notice" role="status">
-                        <div className="mock-lock-notice__left">
-                            <Lock size={17} />
-                            <span>{listData.outputLockReason}</span>
-                        </div>
-                        <Link to="/learning-path" className="mock-btn-secondary">
-                            <Compass size={15} />
-                            <span>Tiếp tục lộ trình học</span>
-                        </Link>
-                    </div>
-                )}
-
                 {/* 4. Danh sách các bộ đề thi thử ETS (hoặc trạng thái rỗng theo UC17 3a) */}
                 {filteredExams.length === 0 ? (
                     <section className="mock-section-card" style={{ textAlign: 'center', padding: '44px 20px' }}>
@@ -224,11 +168,10 @@ export default function MockExamListPage() {
                                             >
                                                 {isOutput ? (
                                                     <>
-                                                        <Target size={13} />
-                                                        <span>Đề thi đầu ra (OUTPUT)</span>
+                                                        <span>Đề thi đầu ra</span>
                                                     </>
                                                 ) : (
-                                                    <span>Đề luyện tập (PRACTICE)</span>
+                                                    <span>Đề luyện tập</span>
                                                 )}
                                             </span>
 
@@ -268,7 +211,6 @@ export default function MockExamListPage() {
 
                                     <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                                         <div className="mock-exam-card__stats">
-                                            <span>Đã hoàn thành: {exam.attemptCount} lần</span>
                                             {exam.bestScore !== null && (
                                                 <span className="mock-exam-card__best">
                                                     Cao nhất: {exam.bestScore}/990
@@ -306,7 +248,6 @@ export default function MockExamListPage() {
                 <section className="mock-section-card" aria-label="Lịch sử thi thử ETS">
                     <div className="mock-section-header">
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <History size={19} color="#ea580c" />
                             <h2 className="mock-section-title">Lịch sử làm bài thi thử</h2>
                         </div>
                         <span style={{ fontSize: 13, color: '#64748b' }}>

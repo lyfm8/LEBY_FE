@@ -1,19 +1,13 @@
 import { useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-    Video,
     BookOpen,
     Check,
     Lock,
-    ChevronRight,
-    Flag,
     AlertCircle,
     RotateCcw,
     ArrowLeft,
     Sparkles,
-    Award,
-    FileQuestion,
-    Clock,
 } from 'lucide-react';
 import { SidebarNav } from '../components/SidebarNav';
 import { RoadmapSkeleton } from '../components/RoadmapSkeleton';
@@ -160,14 +154,8 @@ export default function ModuleDetailPage() {
                 key={lesson.id}
                 className={`module-lesson-item ${lesson.isCompleted ? 'is-completed' : ''} ${isCurrent ? 'is-current' : ''} ${lesson.isLocked ? 'is-locked' : ''}`}
             >
-                {/* Cột trái: biểu tượng loại bài học, tiêu đề và thông tin thời lượng / số câu hỏi */}
+                {/* Cột trái: tiêu đề và thông tin thời lượng / số câu hỏi */}
                 <div className="module-lesson-item__left">
-                    <div
-                        className={`module-lesson-item__icon-box ${isTheoryLesson ? 'is-theory' : 'is-practice'}`}
-                    >
-                        {isTheoryLesson ? <Video size={20} /> : <BookOpen size={20} />}
-                    </div>
-
                     <div className="module-lesson-item__info">
                         <div className="module-lesson-item__title-row">
                             <h3 className="module-lesson-item__title">
@@ -184,20 +172,17 @@ export default function ModuleDetailPage() {
                             {isTheoryLesson ? (
                                 <>
                                     <span className="module-lesson-item__meta-chip">
-                                        <Clock size={12} />
                                         <span>{durationDisplay}</span>
                                     </span>
                                     {/* Nếu bài giảng lý thuyết có gắn thêm câu hỏi ôn tập -> hiển thị nhãn phụ */}
                                     {questionCount > 0 && (
                                         <span className="module-lesson-item__meta-chip is-accent">
-                                            <FileQuestion size={12} />
                                             <span>{questionCount} câu ôn tập</span>
                                         </span>
                                     )}
                                 </>
                             ) : (
                                 <span className="module-lesson-item__meta-chip is-accent">
-                                    <FileQuestion size={12} />
                                     <span>
                                         {questionCount > 0
                                             ? `${questionCount} câu hỏi luyện tập`
@@ -309,34 +294,10 @@ export default function ModuleDetailPage() {
 
                     {/* Thẻ Hero tối màu tóm tắt mục tiêu và tiến độ mô-đun */}
                     <section className="module-hero-card">
-                        <nav className="module-breadcrumb" aria-label="Đường dẫn điều hướng">
-                            <Link
-                                to={isFreeStudyMode ? '/catalog' : '/learning-path'}
-                                className="module-breadcrumb__link"
-                            >
-                                {isFreeStudyMode ? 'Thư viện khóa học' : 'Lộ trình học'}
-                            </Link>
-                            <ChevronRight size={14} className="module-breadcrumb__sep" />
-                            <Link
-                                to={
-                                    isFreeStudyMode
-                                        ? `/catalog?section=${data.section}`
-                                        : `/learning-path?section=${data.section}`
-                                }
-                                className="module-breadcrumb__link"
-                                title={`Xem các mô-đun thuộc kỹ năng ${data.section === 'LISTENING' ? 'Nghe hiểu' : 'Đọc hiểu'}`}
-                            >
-                                {data.partName}
-                            </Link>
-                            <ChevronRight size={14} className="module-breadcrumb__sep" />
-                            <span className="module-breadcrumb__current">{data.title}</span>
-                        </nav>
+
 
                         <div className="module-hero-card__header">
                             <h1 className="module-hero-card__title">{data.title}</h1>
-                            <span className={`module-hero-card__badge is-${data.status.toLowerCase()}`}>
-                                {data.statusLabel}
-                            </span>
                         </div>
 
                         {/* Hiển thị năng lực trọng tâm nếu có */}
@@ -347,12 +308,10 @@ export default function ModuleDetailPage() {
                             </div>
                         )}
 
-                        <p className="module-hero-card__desc">{data.description}</p>
-
                         {/* Thanh tiến độ bài học trong mô-đun */}
                         <div className="module-hero-card__progress-wrap">
                             <span className="module-hero-card__progress-label">
-                                Tiến độ mô-đun: {data.completedLessons}/{data.totalLessons} bài học (
+                                Tiến độ mô-đun:  (
                                 {data.progressPercent}%)
                             </span>
                             <div className="module-hero-card__progress-track">
@@ -379,7 +338,6 @@ export default function ModuleDetailPage() {
                                 <div className="module-lesson-group">
                                     <div className="module-lesson-group__header">
                                         <div className="module-lesson-group__title-wrap">
-                                            <Video size={18} className="module-lesson-group__icon" />
                                             <h2 className="module-lessons-section__title is-inline">
                                                 Bài giảng lý thuyết
                                             </h2>
@@ -404,7 +362,6 @@ export default function ModuleDetailPage() {
                                 <div className="module-lesson-group">
                                     <div className="module-lesson-group__header">
                                         <div className="module-lesson-group__title-wrap">
-                                            <BookOpen size={18} className="module-lesson-group__icon is-practice" />
                                             <h2 className="module-lessons-section__title is-inline">
                                                 Bài tập thực hành
                                             </h2>
@@ -424,119 +381,144 @@ export default function ModuleDetailPage() {
                                         </p>
                                     )}
                                 </div>
-                            </div>
-                        )}
-                    </section>
 
-                    {/* Khối Bài kiểm tra vượt ải mô-đun — chỉ hiển thị cho mô-đun nằm trong lộ trình chính */}
-                    {moduleTest && (
-                        <section className="module-test-card">
-                            <div className="module-test-card__header">
-                                <div className="module-test-card__title-row">
-                                    {hasPassedModuleTest ? (
-                                        <Award size={20} className="module-test-card__award-icon" />
-                                    ) : (
-                                        <Flag size={20} className="module-test-card__flag-icon" />
-                                    )}
-                                    <h3 className="module-test-card__title">{moduleTest.title}</h3>
-                                </div>
+                                {/* Phần 3: Bài kiểm tra vượt ải đưa về cùng cấp và cùng màu với bài giảng & thực hành */}
+                                {!isFreeStudyMode && moduleTest && (
+                                    <div className="module-lesson-group">
+                                        <div className="module-lesson-group__header">
+                                            <div className="module-lesson-group__title-wrap">
+                                                <h2 className="module-lessons-section__title is-inline">
+                                                    Bài kiểm tra vượt ải
+                                                </h2>
+                                            </div>
+                                            <span className="module-lesson-group__count">
+                                                1 bài kiểm tra
+                                            </span>
+                                        </div>
 
-                                {/* Nhãn trạng thái bài thi: Đã vượt ải / Sẵn sàng / Chưa mở khóa */}
-                                <span
-                                    className={`module-test-card__badge ${
-                                        hasPassedModuleTest
-                                            ? 'is-passed'
-                                            : moduleTest.isUnlocked
-                                              ? 'is-ready'
-                                              : ''
-                                    }`}
-                                >
-                                    {hasPassedModuleTest
-                                        ? 'ĐÃ VƯỢT ẢI'
-                                        : moduleTest.isUnlocked
-                                          ? 'SẴN SÀNG'
-                                          : 'CHƯA MỞ KHÓA'}
-                                </span>
-                            </div>
-
-                            <p className="module-test-card__desc">{moduleTest.description}</p>
-
-                            {/* Thanh nhắc rõ ràng khi mô-đun đã bảo lưu bài học nhưng cần thi vượt ải cho mục tiêu mới */}
-                            {needsRetakeForNewAim && (
-                                <div className="module-test-card__retake-banner" role="status">
-                                    <AlertCircle size={16} aria-hidden="true" />
-                                    <span>
-                                        Toàn bộ bài giảng đã được bảo lưu từ lộ trình trước. Hãy đạt tối thiểu{' '}
-                                        <strong>{moduleTest.passScore}/100 điểm</strong> cho mục tiêu{' '}
-                                        <strong>{moduleTest.targetScore} điểm</strong> để hoàn thành mô-đun này.
-                                    </span>
-                                </div>
-                            )}
-
-                            {/* Hiện điểm số cao nhất nếu học viên đã từng thi vượt ải */}
-                            {typeof moduleTest.bestScore === 'number' && (
-                                <div className="module-test-card__score-pill">
-                                    <Award size={15} />
-                                    <span>
-                                        Điểm cao nhất của bạn: <strong>{moduleTest.bestScore}/100</strong>
-                                    </span>
-                                </div>
-                            )}
-
-                            <div className="module-test-card__footer">
-                                {/* Dòng điều kiện mở khóa và điểm đỗ đọc động từ cấu hình */}
-                                <div className="module-test-card__req">
-                                    {moduleTest.isUnlocked ? (
-                                        <>
-                                            Đề gồm <strong>{moduleTest.totalQuestions} câu hỏi</strong> • Thời
-                                            gian <strong>{moduleTest.durationMinutes} phút</strong> • Cần đạt từ{' '}
-                                            <strong>{moduleTest.passScore}/100 điểm</strong> (mục tiêu{' '}
-                                            {moduleTest.targetScore})
-                                        </>
-                                    ) : (
-                                        <>
-                                            Hoàn thành tối thiểu <strong>{data.requiredCompletionRate}%</strong> bài
-                                            giảng để mở khóa • Cần đạt{' '}
-                                            <strong>{moduleTest.passScore}/100 điểm</strong> để vượt ải
-                                        </>
-                                    )}
-                                </div>
-
-                                {/* Chỉ hiển thị nút hành động khi bài thi đã mở khóa hoặc đã vượt ải (tránh lặp nhãn Chưa mở khóa) */}
-                                {(hasPassedModuleTest || moduleTest.isUnlocked) && (
-                                    <div className="module-test-card__actions">
-                                        {/* Nếu đã vượt qua trước đó -> hiện cả nút Xem lại kết quả và Thi cải thiện điểm */}
-                                        {hasPassedModuleTest ? (
-                                            <>
-                                                {moduleTest.lastAttemptId && (
-                                                    <Link
-                                                        to={reviewResultPath}
-                                                        className="module-test-card__btn is-secondary"
-                                                    >
-                                                        Xem lại kết quả
-                                                    </Link>
-                                                )}
-                                                <Link
-                                                    to={`/modules/${data.moduleId}/test`}
-                                                    className="module-test-card__btn is-active"
-                                                >
-                                                    Thi cải thiện điểm
-                                                </Link>
-                                            </>
-                                        ) : (
-                                            <Link
-                                                to={`/modules/${data.moduleId}/test`}
-                                                className="module-test-card__btn is-active"
+                                        <div className="module-lessons-list">
+                                            <div
+                                                className={`module-lesson-item ${
+                                                    hasPassedModuleTest
+                                                        ? 'is-completed'
+                                                        : moduleTest.isUnlocked
+                                                          ? 'is-current'
+                                                          : 'is-locked'
+                                                }`}
                                             >
-                                                Làm bài thi vượt ải ({moduleTest.totalQuestions} câu •{' '}
-                                                {moduleTest.durationMinutes} phút)
-                                            </Link>
-                                        )}
+                                                {/* Cột trái: tiêu đề bài thi và meta chi tiết */}
+                                                <div className="module-lesson-item__left">
+                                                    <div className="module-lesson-item__info">
+                                                        <div className="module-lesson-item__title-row">
+                                                            <h3 className="module-lesson-item__title">
+                                                                {moduleTest.title}
+                                                            </h3>
+                                                            <span
+                                                                className={`module-test-pill ${
+                                                                    hasPassedModuleTest
+                                                                        ? 'is-passed'
+                                                                        : moduleTest.isUnlocked
+                                                                          ? 'is-ready'
+                                                                          : 'is-locked'
+                                                                }`}
+                                                            >
+                                                                {hasPassedModuleTest
+                                                                    ? 'ĐÃ VƯỢT ẢI'
+                                                                    : moduleTest.isUnlocked
+                                                                      ? 'SẴN SÀNG'
+                                                                      : 'CHƯA MỞ KHÓA'}
+                                                            </span>
+                                                        </div>
+
+                                                        <div className="module-lesson-item__meta-row">
+                                                            {moduleTest.isUnlocked ? (
+                                                                <>
+                                                                    <span className="module-lesson-item__meta-chip">
+                                                                        <span>{moduleTest.totalQuestions} câu hỏi</span>
+                                                                    </span>
+                                                                    <span className="module-lesson-item__meta-chip">
+                                                                        <span>{moduleTest.durationMinutes} phút</span>
+                                                                    </span>
+                                                                    <span className="module-lesson-item__meta-chip is-accent">
+                                                                        <span>Cần đạt {moduleTest.passScore}/100 điểm</span>
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <span className="module-lesson-item__meta-chip">
+                                                                    <span>
+                                                                        Hoàn thành tối thiểu {data.requiredCompletionRate}% bài giảng để mở khóa • Cần đạt {moduleTest.passScore}/100 điểm
+                                                                    </span>
+                                                                </span>
+                                                            )}
+
+                                                            {typeof moduleTest.bestScore === 'number' && (
+                                                                <span className="module-lesson-item__meta-ability">
+                                                                    • Điểm cao nhất: {moduleTest.bestScore}/100
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Nhắc nhở nếu cần thi lại vì nâng mục tiêu */}
+                                                        {needsRetakeForNewAim && (
+                                                            <div className="module-test-retake-note">
+                                                                <AlertCircle size={13} />
+                                                                <span>
+                                                                    Cần đạt tối thiểu <strong>{moduleTest.passScore}/100 điểm</strong> cho mục tiêu <strong>{moduleTest.targetScore} điểm</strong>.
+                                                                </span>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Cột phải: nút hành động Vào thi / Làm lại / Khóa */}
+                                                <div className="module-lesson-item__right">
+                                                    {hasPassedModuleTest && (
+                                                        <div className="module-lesson-item__check-wrap">
+                                                            {moduleTest.lastAttemptId && (
+                                                                <Link
+                                                                    to={reviewResultPath}
+                                                                    className="module-lesson-item__review-link"
+                                                                >
+                                                                    Xem kết quả
+                                                                </Link>
+                                                            )}
+                                                            <Link
+                                                                to={`/modules/${data.moduleId}/test`}
+                                                                className="module-lesson-item__review-link"
+                                                            >
+                                                                Thi lại
+                                                            </Link>
+                                                            <div className="module-lesson-item__check" title="Đã vượt ải">
+                                                                <Check size={18} strokeWidth={3} />
+                                                            </div>
+                                                        </div>
+                                                    )}
+
+                                                    {moduleTest.isUnlocked && !hasPassedModuleTest && (
+                                                        <Link
+                                                            to={`/modules/${data.moduleId}/test`}
+                                                            className="module-lesson-item__start-btn"
+                                                        >
+                                                            Làm bài thi
+                                                        </Link>
+                                                    )}
+
+                                                    {!moduleTest.isUnlocked && !hasPassedModuleTest && (
+                                                        <div
+                                                            className="module-lesson-item__lock"
+                                                            title={`Hoàn thành tối thiểu ${data.requiredCompletionRate}% bài giảng để mở khóa`}
+                                                        >
+                                                            <Lock size={18} />
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 )}
                             </div>
-                        </section>
-                    )}
+                        )}
+                    </section>
                 </div>
             </main>
         </div>

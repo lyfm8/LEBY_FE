@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom';
 import {
     AlertTriangle,
-    ArrowRight,
-    CheckCircle2,
     Clock,
     Compass,
-    HelpCircle,
     Play,
-    PlayCircle,
     ShieldCheck,
 } from 'lucide-react';
 import type { DashboardCurrentModule, DashboardLessonItem } from '../types/dashboardTypes';
@@ -89,25 +85,9 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
 
     return (
         <section className={`db-card db-focus-card ${isMaintenance ? 'is-maintenance' : ''}`}>
-            {/* Hàng đầu: Nhãn chặng học, phần thi và tiến độ hoàn thành mô-đun */}
-            <div className="db-focus-card__top">
-                <div className="db-focus-card__badges">
-                    <span className="db-focus-card__step-badge">Chặng #{module.orderNo} • Đang học</span>
-                    {module.partName && <span className="db-focus-card__part-badge">{module.partName}</span>}
-                    {module.abilityName && (
-                        <span className="db-focus-card__ability-badge">{module.abilityName}</span>
-                    )}
-                </div>
-
-                {/* Chỉ số tiến độ % nổi bật góc phải */}
-                <span className="db-focus-card__percent">{module.progressPercent}%</span>
-            </div>
-
-            {/* Tiêu đề mô-đun và lời giải thích lý do trọng tâm */}
+            {/* Tiêu đề mô-đun đang học */}
             <h2 className="db-focus-card__title">{module.title}</h2>
-            {(module.reason || module.description) && (
-                <p className="db-focus-card__desc">{module.reason || module.description}</p>
-            )}
+ 
 
             {/* Thanh tiến độ tổng quan của riêng mô-đun hiện tại */}
             <div className="db-focus-card__progress-wrap">
@@ -147,11 +127,6 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                     <div className="db-focus-lessons">
                         <div className="db-focus-lessons__head">
                             <span className="db-focus-lessons__label">Bài học cần hoàn thành tiếp theo</span>
-                            {module.moduleId !== null && (
-                                <Link to={`/modules/${module.moduleId}`} className="db-inline-link">
-                                    Xem tất cả bài học
-                                </Link>
-                            )}
                         </div>
 
                         {visibleLessons.length === 0 ? (
@@ -174,19 +149,8 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                                         <Link
                                             key={lesson.id}
                                             to={lessonUrl}
-                                            className={`db-focus-lesson-row ${lesson.isCompleted ? 'is-completed' : ''} ${lesson.isNextRecommended ? 'is-recommended' : ''}`}
+                                            className={`db-focus-lesson-row ${lesson.isCompleted ? 'is-completed' : ''}`}
                                         >
-                                            {/* Biểu tượng trạng thái hoàn thành hoặc loại bài học */}
-                                            <span className="db-focus-lesson-row__icon">
-                                                {lesson.isCompleted ? (
-                                                    <CheckCircle2 size={18} />
-                                                ) : isPractice ? (
-                                                    <HelpCircle size={18} />
-                                                ) : (
-                                                    <PlayCircle size={18} />
-                                                )}
-                                            </span>
-
                                             {/* Tiêu đề bài học và metadata thời lượng / số câu hỏi */}
                                             <div className="db-focus-lesson-row__info">
                                                 <span className="db-focus-lesson-row__title">
@@ -209,19 +173,6 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                                                     )}
                                                 </span>
                                             </div>
-
-                                            {/* Nhãn trạng thái gọn bên phải từng dòng bài học */}
-                                            <span className="db-focus-lesson-row__status">
-                                                {lesson.isCompleted
-                                                    ? 'Đã xong'
-                                                    : lesson.isNextRecommended
-                                                      ? lesson.watchPercent > 0
-                                                          ? `Tiếp tục (${lesson.watchPercent}%)`
-                                                          : 'Học tiếp'
-                                                      : lesson.watchPercent > 0
-                                                        ? `${lesson.watchPercent}%`
-                                                        : 'Chưa học'}
-                                            </span>
                                         </Link>
                                     );
                                 })}
@@ -239,7 +190,6 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                                     <Play size={16} />
                                 )}
                                 <span>{primaryActionLabel}</span>
-                                <ArrowRight size={16} />
                             </Link>
                         )}
 

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { Award, BookOpen, CheckCircle2, Lock, PlayCircle } from 'lucide-react';
+import { Award, Lock } from 'lucide-react';
 import type { LessonContentType, LessonNavItem } from '../types/lessonTypes';
 
 /**
@@ -121,25 +121,19 @@ export function LessonSidebarList({
                                     className={`lesson-nav-link ${isActive ? 'is-active' : ''} ${item.isCompleted ? 'is-completed' : ''}`}
                                     aria-current={isActive ? 'page' : undefined}
                                 >
-                                    {/* Biểu tượng trạng thái hoàn thành hoặc loại bài học */}
-                                    <span className="lesson-nav-link__icon" aria-hidden="true">
-                                        {item.isCompleted ? (
-                                            <CheckCircle2 size={18} className="is-done-icon" />
-                                        ) : isTheory ? (
-                                            <PlayCircle size={18} />
-                                        ) : (
-                                            <BookOpen size={18} />
-                                        )}
-                                    </span>
-
-                                    {/* Tên bài học và thông tin phụ về loại/thời lượng */}
+                                    {/* Tên bài học và thông tin phụ về loại/thời lượng/trạng thái */}
                                     <span className="lesson-nav-link__content">
                                         <span className="lesson-nav-link__title">{item.title}</span>
                                         <span className="lesson-nav-link__meta">
                                             <span>{isTheory ? 'Bài giảng lý thuyết' : 'Bài tập thực hành'}</span>
                                             {isTheory && durationLabel && <span>• {durationLabel}</span>}
-                                            {!item.isCompleted && isTheory && item.watchPercent > 0 && (
-                                                <span className="lesson-nav-link__pct">• Đã xem {item.watchPercent}%</span>
+                                            {item.isCompleted ? (
+                                                <span className="lesson-nav-link__done">• Đã hoàn thành</span>
+                                            ) : (
+                                                isTheory &&
+                                                item.watchPercent > 0 && (
+                                                    <span className="lesson-nav-link__pct">• Đã xem {item.watchPercent}%</span>
+                                                )
                                             )}
                                         </span>
                                     </span>

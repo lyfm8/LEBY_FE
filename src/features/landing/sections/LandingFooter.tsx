@@ -34,9 +34,8 @@ function LandingFooter() {
                     <div className="lby-footer__col-title">Thông tin</div>
                     <ul className="lby-footer__links" aria-label="Liên kết thông tin">
                         <li><a href="#steps">Về LEBY</a></li>
-                        <li><a href="#pricing">Bảng giá</a></li>
-                        <li><a href="#pricing">Điều khoản dịch vụ</a></li>
-                        <li><a href="#pricing">Chính sách bảo mật</a></li>
+                        <li><a href="#curriculum">Chương trình 7 Part</a></li>
+                        <li><a href="#hero">Giới thiệu nền tảng</a></li>
                     </ul>
                 </div>
             </div>
