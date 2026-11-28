@@ -1,6 +1,4 @@
 import type {
-    DiagnosticExamStep,
-    DiagnosticQuestion,
     OptionKey,
     SubmitDiagnosticRequest,
 } from '../types/diagnosticTypes';
@@ -119,148 +117,17 @@ export function clearPendingSubmit(): void {
 }
 
 /**
- * Tạo khóa nhận diện audio duy nhất cho một câu đơn hoặc một chùm câu hỏi Listening.
- * Tuyệt đối không lấy raw audioUrl làm key vì dữ liệu seed có thể dùng chung 1 file URL cho nhiều câu.
+ * Kiểm tra có giao dịch nộp bài chẩn đoán chờ xử lý thuộc đúng tài khoản {@code userId} hay không.
  */
-export function resolveStepAudioKey(question: DiagnosticQuestion): string | null {
-    // Nếu không có đường dẫn audio thì không cần tạo khóa audio
-    if (!question.audioUrl) return null;
-    // Nếu là câu hỏi chùm có parentId, dùng parentId để các câu con trong chùm chia sẻ đúng 1 lượt nghe
-    if (question.parentId !== null && question.parentId !== undefined) {
-        return `parent_${question.parentId}`;
-    }
-    // Với câu đơn, gắn khóa duy nhất theo questionId của chính câu hỏi đó
-    return `q_${question.questionId}`;
+export function hasPendingDiagnosticSubmitForUser(userId: number): boolean {
+    const pending = readPendingSubmit();
+    return Boolean(pending && pending.userId === userId && pending.request?.attemptId);
 }
 
-/**
- * Gom danh sách câu hỏi thành các bước hiển thị theo từng trang:
- * các câu liên tiếp có cùng parentId (Part 3, 4, 6, 7) được hiển thị trên cùng 1 trang.
- */
-export function buildExamSteps<TQuestion extends DiagnosticQuestion = DiagnosticQuestion>(
-    questions: TQuestion[]
-): DiagnosticExamStep<TQuestion>[] {
-    // Nếu danh sách rỗng thì trả về mảng rỗng ngay
-    if (!questions || questions.length === 0) return [];
-
-    // Sao chép mảng và sắp xếp tăng dần theo orderNo để bảo đảm đúng thứ tự đề thi
-    const sorted = [...questions].sort((a, b) => a.orderNo - b.orderNo);
-    // Khởi tạo mảng chứa các bước (mỗi bước tương ứng 1 trang câu đơn hoặc 1 chùm câu)
-    const steps: DiagnosticExamStep<TQuestion>[] = [];
-
-    // Con trỏ duyệt qua từng phần tử trong danh sách đã sắp xếp
-    let cursor = 0;
-    // Vòng lặp gom nhóm câu hỏi liên tiếp có cùng câu hỏi cha
-    while (cursor < sorted.length) {
-        // Lấy câu hỏi đầu tiên làm gốc cho bước hiện tại
-        const first = sorted[cursor];
-        // Khởi tạo danh sách câu hỏi thuộc bước hiện tại
-        const groupQuestions: TQuestion[] = [first];
-        // Dịch con trỏ sang phần tử tiếp theo để kiểm tra xem có thuộc cùng chùm hay không
-        let lookahead = cursor + 1;
-
-        // Chỉ gom nhóm khi câu gốc có parentId hợp lệ (câu hỏi chùm)
-        if (first.parentId !== null && first.parentId !== undefined) {
-            // Tiếp tục gộp các câu liền kề nếu trùng parentId, section và partNo
-            while (lookahead < sorted.length) {
-                // Lấy câu kế tiếp để so sánh
-                const candidate = sorted[lookahead];
-                // Kiểm tra điều kiện cùng chùm câu hỏi cha và cùng Part
-                const isSameGroup =
-                    candidate.parentId === first.parentId &&
-                    candidate.section === first.section &&
-                    candidate.partNo === first.partNo;
-                // Dừng gom khi gặp câu thuộc chùm khác hoặc câu đơn mới
-                if (!isSameGroup) break;
-                // Thêm câu cùng chùm vào danh sách câu của trang hiện tại
-                groupQuestions.push(candidate);
-                // Tăng biến đếm để kiểm tra câu tiếp theo nữa
-                lookahead++;
-            }
-        }
-
-        // Tìm câu đầu tiên có audioUrl trong nhóm (nếu có)
-        const audioHolder = groupQuestions.find((item) => Boolean(item.audioUrl));
-        // Tìm câu đầu tiên có imageUrl trong nhóm (nếu có)
-        const imageHolder = groupQuestions.find((item) => Boolean(item.imageUrl));
-        // Tìm câu đầu tiên có passage trong nhóm (nếu có)
-        const passageHolder = groupQuestions.find((item) => Boolean(item.passage));
-        // Tìm câu đầu tiên có instruction trong nhóm (nếu có)
-        const instructionHolder = groupQuestions.find((item) => Boolean(item.instruction));
-
-        // Đóng gói thông tin trang/chùm câu hỏi vào mảng kết quả
-        steps.push({
-            stepIndex: steps.length,
-            section: first.section,
-            partNo: first.partNo,
-            partName: first.partName,
-            audioKey: audioHolder ? resolveStepAudioKey(audioHolder) : null,
-            audioUrl: audioHolder?.audioUrl ?? null,
-            imageUrl: imageHolder?.imageUrl ?? null,
-            passage: passageHolder?.passage ?? null,
-            instruction: instructionHolder?.instruction ?? null,
-            questions: groupQuestions,
-        });
-
-        // Nhảy con trỏ tới vị trí câu chưa được gom tiếp theo
-        cursor = lookahead;
-    }
-
-    // Trả về danh sách các bước hiển thị đã gom nhóm hoàn chỉnh
-    return steps;
-}
-
-/**
- * Tạo bảng ánh xạ nhanh từ số thứ tự câu hỏi (orderNo) sang chỉ số màn hình (stepIndex).
- */
-export function buildQuestionToStepMap<TQuestion extends DiagnosticQuestion = DiagnosticQuestion>(
-    steps: DiagnosticExamStep<TQuestion>[]
-): Map<number, number> {
-    // Khởi tạo Map tra cứu O(1) khi học viên bấm chọn câu trên bảng Palette
-    const map = new Map<number, number>();
-    // Duyệt từng bước hiển thị
-    for (const step of steps) {
-        // Duyệt từng câu hỏi nằm trong bước đó
-        for (const question of step.questions) {
-            // Gán ánh xạ orderNo -> stepIndex
-            map.set(question.orderNo, step.stepIndex);
-        }
-    }
-    // Trả về Map đã xây dựng xong
-    return map;
-}
-
-/**
- * Lấy danh sách tất cả audioKey thuộc phần Listening cần phát xong trước khi mở khóa lại Palette Nghe.
- */
-export function getListeningAudioKeys(steps: DiagnosticExamStep[]): string[] {
-    // Khởi tạo mảng chứa các khóa audio phần Nghe theo đúng thứ tự
-    const keys: string[] = [];
-    // Dùng Set để tránh đưa trùng khóa audio nếu có hai bước chung khóa
-    const seen = new Set<string>();
-    // Duyệt từng bước trong toàn bộ đề thi
-    for (const step of steps) {
-        // Chỉ lấy bước thuộc phần LISTENING và có audio hợp lệ
-        if (step.section === 'LISTENING' && step.audioKey && step.audioUrl && !seen.has(step.audioKey)) {
-            // Đánh dấu đã ghi nhận khóa audio này
-            seen.add(step.audioKey);
-            // Đưa vào danh sách audio bắt buộc phải chạy qua
-            keys.push(step.audioKey);
-        }
-    }
-    // Trả về danh sách khóa audio của toàn bộ phần Nghe
-    return keys;
-}
-
-/**
- * Kiểm tra xem toàn bộ các file audio của phần Listening đã phát xong hết hay chưa.
- */
-export function checkAllListeningCompleted(
-    listeningAudioKeys: string[],
-    playedAudios: Set<string>
-): boolean {
-    // Nếu đề không có câu Nghe nào thì coi như phần Nghe đã hoàn thành sẵn
-    if (listeningAudioKeys.length === 0) return true;
-    // Chỉ trả về true khi toàn bộ audioKey phần Nghe đều đã nằm trong tập playedAudios
-    return listeningAudioKeys.every((key) => playedAudios.has(key));
-}
+export {
+    resolveStepAudioKey,
+    buildExamSteps,
+    buildQuestionToStepMap,
+    getListeningAudioKeys,
+    checkAllListeningCompleted,
+} from '../../../shared/exam/utils/examStepUtils';

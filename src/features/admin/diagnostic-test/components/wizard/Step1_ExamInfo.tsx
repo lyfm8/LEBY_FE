@@ -1,16 +1,20 @@
 import React from 'react';
 import { TrendingUp, FileText, HelpCircle, Clock } from 'lucide-react';
 import { DEFAULT_EXAM_CONFIGS } from '../../utils/matrixConstants';
-import type { ExamType } from '../../types';
+import type { ExamTag, ExamType } from '../../types';
 
 interface Step1Props {
   testType: ExamType;
+  // Phân loại đề thi thử ETS (Luyện tập tự do vs Thi đầu ra)
+  examTag: ExamTag;
   title: string;
   description: string;
   durationMinutes: number;
   totalQuestions: number;
   minDiagnosticQuestions?: number;
   onTypeChange: (type: ExamType) => void;
+  // Callback cập nhật nhãn phân loại PRACTICE/OUTPUT khi admin chọn FULL_MOCK_TEST
+  onExamTagChange: (tag: ExamTag) => void;
   onTitleChange: (val: string) => void;
   onDescriptionChange: (val: string) => void;
   onDurationChange: (val: number) => void;
@@ -25,12 +29,14 @@ interface Step1Props {
  */
 export const Step1_ExamInfo: React.FC<Step1Props> = ({
   testType,
+  examTag,
   title,
   description,
   durationMinutes,
   totalQuestions,
   minDiagnosticQuestions = DEFAULT_EXAM_CONFIGS.DIAGNOSTIC.totalQuestions,
   onTypeChange,
+  onExamTagChange,
   onTitleChange,
   onDescriptionChange,
   onDurationChange,
@@ -95,6 +101,56 @@ export const Step1_ExamInfo: React.FC<Step1Props> = ({
               <p className="radio-card-desc">Bài thi TOEIC tổng hợp theo cấu trúc ETS.</p>
             </div>
           </div>
+
+          {/* Chọn mục đích sử dụng khi Admin tạo đề thi thử ETS 200 câu */}
+          {testType === 'FULL_MOCK_TEST' && (
+            <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px dashed #E2E8F0' }}>
+              <label style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#334155', marginBottom: '10px' }}>
+                Phân loại đề thi thử ETS
+              </label>
+              <div className="radio-cards-grid">
+                {/* Lựa chọn 1: Đề luyện tập mở tự do */}
+                <div
+                  className={`exam-radio-card ${examTag === 'PRACTICE' ? 'selected' : ''}`}
+                  onClick={() => onExamTagChange('PRACTICE')}
+                >
+                  <div className="radio-card-header">
+                    <div className="radio-card-title-wrap">
+                      <span>Đề luyện tập (PRACTICE)</span>
+                    </div>
+                    <input
+                      type="radio"
+                      name="examTag"
+                      checked={examTag === 'PRACTICE'}
+                      onChange={() => onExamTagChange('PRACTICE')}
+                      style={{ accentColor: '#F45B0B', width: '17px', height: '17px' }}
+                    />
+                  </div>
+                  <p className="radio-card-desc">Học viên làm tự do bất cứ lúc nào để rèn kỹ năng thi thật.</p>
+                </div>
+
+                {/* Lựa chọn 2: Đề thi đầu ra khóa cho tới khi hoàn thành lộ trình */}
+                <div
+                  className={`exam-radio-card ${examTag === 'OUTPUT' ? 'selected' : ''}`}
+                  onClick={() => onExamTagChange('OUTPUT')}
+                >
+                  <div className="radio-card-header">
+                    <div className="radio-card-title-wrap">
+                      <span>Đề thi đầu ra (OUTPUT)</span>
+                    </div>
+                    <input
+                      type="radio"
+                      name="examTag"
+                      checked={examTag === 'OUTPUT'}
+                      onChange={() => onExamTagChange('OUTPUT')}
+                      style={{ accentColor: '#F45B0B', width: '17px', height: '17px' }}
+                    />
+                  </div>
+                  <p className="radio-card-desc">Mở khóa khi hoàn thành lộ trình; hiển thị Radar Trước/Sau &amp; Báo cáo.</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 02: Thông tin cơ bản */}

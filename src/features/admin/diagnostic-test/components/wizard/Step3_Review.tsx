@@ -1,11 +1,13 @@
 import React from 'react';
 import { Clock, HelpCircle, Headphones, BookOpen, Edit2, CheckCircle2, ShieldCheck } from 'lucide-react';
-import type { ExamQuestionItem, ExamType } from '../../types';
+import type { ExamQuestionItem, ExamTag, ExamType } from '../../types';
 import type { ValidationResult } from '../../utils/checklistValidation';
 import { ChecklistCard } from './ChecklistCard';
 
 interface Step3Props {
   testType: ExamType;
+  // Nhãn phân loại PRACTICE/OUTPUT hiển thị trên trang rà soát trước khi lưu
+  examTag?: ExamTag;
   title: string;
   description: string;
   durationMinutes: number;
@@ -24,6 +26,7 @@ interface Step3Props {
  */
 export const Step3_Review: React.FC<Step3Props> = ({
   testType,
+  examTag = 'PRACTICE',
   title,
   description,
   durationMinutes,
@@ -57,9 +60,27 @@ export const Step3_Review: React.FC<Step3Props> = ({
         {/* Card Tóm tắt đề thi */}
         <div style={{ backgroundColor: '#FFFFFF', padding: '24px', borderRadius: '12px', border: '1px solid #E2E8F0' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
-            <span className={testType === 'FULL_MOCK_TEST' ? 'badge-mock' : 'badge-diagnostic'}>
-              {testType === 'FULL_MOCK_TEST' ? 'MOCK TEST' : 'DIAGNOSTIC TEST'}
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span className={testType === 'FULL_MOCK_TEST' ? 'badge-mock' : 'badge-diagnostic'}>
+                {testType === 'FULL_MOCK_TEST' ? 'MOCK TEST' : 'DIAGNOSTIC TEST'}
+              </span>
+              {/* Hiển thị nhãn phân loại Đề đầu ra hoặc Luyện tập cho bài FULL_MOCK_TEST */}
+              {testType === 'FULL_MOCK_TEST' && (
+                <span
+                  style={{
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '4px 10px',
+                    borderRadius: '999px',
+                    backgroundColor: examTag === 'OUTPUT' ? '#EFF6FF' : '#F8FAFC',
+                    color: examTag === 'OUTPUT' ? '#1D4ED8' : '#475569',
+                    border: examTag === 'OUTPUT' ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
+                  }}
+                >
+                  {examTag === 'OUTPUT' ? 'Đề thi đầu ra (OUTPUT)' : 'Đề luyện tập (PRACTICE)'}
+                </span>
+              )}
+            </div>
 
             <button
               type="button"

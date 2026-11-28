@@ -11,6 +11,7 @@ import {
     Shield,
     LogOut,
     ChevronDown,
+    FileText,
 } from 'lucide-react';
 import { useAuth } from '@/features/auth/hooks/useAuth';
 import type { UserRole } from '@/features/auth/types/authTypes';
@@ -38,9 +39,16 @@ export function SidebarNav() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
 
+    // Trạng thái mở menu thả xuống của tài khoản cá nhân
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    // Trạng thái mở menu thả xuống của mục Phòng thi (Chẩn đoán vs Đề thi thật ETS)
+    const [isExamMenuOpen, setIsExamMenuOpen] = useState(false);
+    // Trạng thái khóa nút trong lúc chờ API đăng xuất hoàn tất
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    // Ref gắn vào khối dropdown tài khoản để phát hiện click bên ngoài
     const menuRef = useRef<HTMLDivElement | null>(null);
+    // Ref gắn vào khối dropdown Phòng thi để tự đóng khi click ra ngoài
+    const examMenuRef = useRef<HTMLDivElement | null>(null);
 
     const displayName = user?.fullName?.trim() || 'Học viên LEBY';
     const displayEmail = user?.email || '';
@@ -49,33 +57,50 @@ export function SidebarNav() {
     const isAdminOrTeacher = user?.role === 'ADMIN' || user?.role === 'TEACHER';
     const adminPortalPath = user?.role === 'TEACHER' ? '/admin/modules' : '/admin';
 
-    // Tự động đóng dropdown tài khoản khi người dùng click ra ngoài hoặc nhấn phím Escape
+    // Tự động đóng dropdown tài khoản hoặc Phòng thi khi người dùng click ra ngoài hoặc nhấn Escape
     useEffect(() => {
-        if (!isMenuOpen) return;
+        // Không cần gắn listener nếu cả hai menu đều đang đóng
+        if (!isMenuOpen && !isExamMenuOpen) return;
 
+        // Xử lý click ngoài phạm vi ref của từng dropdown để đóng menu tương ứng
         const handleClickOutside = (event: MouseEvent) => {
-            if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+            // Chuyển target sang Node phục vụ hàm contains
+            const targetNode = event.target as Node;
+            // Đóng dropdown tài khoản nếu click nằm ngoài khối menuRef
+            if (isMenuOpen && menuRef.current && !menuRef.current.contains(targetNode)) {
                 setIsMenuOpen(false);
+            }
+            // Đóng dropdown Phòng thi nếu click nằm ngoài khối examMenuRef
+            if (isExamMenuOpen && examMenuRef.current && !examMenuRef.current.contains(targetNode)) {
+                setIsExamMenuOpen(false);
             }
         };
 
+        // Đóng toàn bộ dropdown đang mở khi nhấn phím Escape
         const handleKeyDown = (event: KeyboardEvent) => {
+            // Kiểm tra đúng phím Escape trước khi cập nhật state
             if (event.key === 'Escape') {
                 setIsMenuOpen(false);
+                setIsExamMenuOpen(false);
             }
         };
 
+        // Đăng ký sự kiện chuột và bàn phím lên document
         document.addEventListener('mousedown', handleClickOutside);
         document.addEventListener('keydown', handleKeyDown);
+        // Dọn dẹp listener khi effect unmount hoặc dependencies thay đổi
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
             document.removeEventListener('keydown', handleKeyDown);
         };
-    }, [isMenuOpen]);
+    }, [isMenuOpen, isExamMenuOpen]);
 
-    // Tự đóng dropdown khi điều hướng sang route mới
+    // Tự đóng tất cả dropdown khi điều hướng sang route mới
     useEffect(() => {
+        // Đặt lại state đóng cho dropdown tài khoản
         setIsMenuOpen(false);
+        // Đặt lại state đóng cho dropdown Phòng thi
+        setIsExamMenuOpen(false);
     }, [location.pathname]);
 
     // Xác định mục menu đang active theo URL hiện tại.
@@ -89,7 +114,13 @@ export function SidebarNav() {
     // Kiểm tra người dùng có đang ở màn hình Thư viện khóa học 7 Part hay không
     const isCatalogActive = location.pathname.startsWith('/catalog');
     const isDiagnosticActive =
+    // Kiểm tra người dùng đang ở nhánh thi chẩn đoán đầu vào hay chọn mục tiêu
+    const isDiagnosticRoomActive =
         location.pathname.startsWith('/diagnostic') || location.pathname.startsWith('/target-selection');
+    // Kiểm tra người dùng đang ở nhánh phòng thi thử ETS 200 câu
+    const isMockExamActive = location.pathname.startsWith('/mock-exam');
+    // Highlight mục Phòng thi khi học viên truy cập một trong hai nhánh thi
+    const isDiagnosticActive = isDiagnosticRoomActive || isMockExamActive;
     const isResultsActive =
         location.pathname.startsWith('/results') ||
         location.pathname.startsWith('/learning-results') ||
@@ -160,6 +191,63 @@ export function SidebarNav() {
                             <span>Phòng thi</span>
                             <span className="app-topbar__nav-pill">Chẩn đoán</span>
                         </Link>
+                        {/* Mục Phòng thi xổ xuống chọn giữa Thi chẩn đoán và Đề thi thật ETS */}
+                        <div className="app-topbar__nav-dropdown-wrap" ref={examMenuRef}>
+                            <button
+                                type="button"
+                                className={`app-topbar__nav-item app-topbar__nav-trigger ${isDiagnosticActive ? 'is-active' : ''}`}
+                                onClick={() => setIsExamMenuOpen((prev) => !prev)}
+                                aria-expanded={isExamMenuOpen}
+                                aria-haspopup="menu"
+                            >
+                                <ClipboardCheck size={18} />
+                                <span>Phòng thi</span>
+                                <ChevronDown
+                                    size={15}
+                                    className={`app-topbar__nav-chevron ${isExamMenuOpen ? 'is-rotated' : ''}`}
+                                />
+                            </button>
+
+                            {isExamMenuOpen && (
+                                <div
+                                    className="app-topbar__nav-dropdown"
+                                    role="menu"
+                                    aria-label="Chọn loại phòng thi"
+                                >
+                                    <Link
+                                        to="/diagnostic/room"
+                                        className={`app-topbar__nav-subitem ${isDiagnosticRoomActive ? 'is-active' : ''}`}
+                                        role="menuitem"
+                                    >
+                                        <span className="app-topbar__nav-subicon is-diagnostic">
+                                            <ClipboardCheck size={16} />
+                                        </span>
+                                        <span className="app-topbar__nav-subbody">
+                                            <span className="app-topbar__nav-subtitle">Thi chẩn đoán đầu vào</span>
+                                            <span className="app-topbar__nav-subdesc">
+                                                Đánh giá năng lực 7 Part (48 câu)
+                                            </span>
+                                        </span>
+                                    </Link>
+
+                                    <Link
+                                        to="/mock-exam"
+                                        className={`app-topbar__nav-subitem ${isMockExamActive ? 'is-active' : ''}`}
+                                        role="menuitem"
+                                    >
+                                        <span className="app-topbar__nav-subicon is-mock">
+                                            <FileText size={16} />
+                                        </span>
+                                        <span className="app-topbar__nav-subbody">
+                                            <span className="app-topbar__nav-subtitle">Đề thi thật ETS</span>
+                                            <span className="app-topbar__nav-subdesc">
+                                                Đề luyện tập &amp; Thi đầu ra (200 câu)
+                                            </span>
+                                        </span>
+                                    </Link>
+                                </div>
+                            )}
+                        </div>
 
                         <Link
                             to="/results"

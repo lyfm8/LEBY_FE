@@ -12,6 +12,11 @@ import TargetSelectionPage from '@/features/target/pages/TargetSelectionPage';
 import DiagnosticRoomPage from '@/features/diagnostic/pages/DiagnosticRoomPage';
 import DiagnosticResultPage from '@/features/diagnostic/pages/DiagnosticResultPage';
 import DiagnosticReviewPage from '@/features/diagnostic/pages/DiagnosticReviewPage';
+// Nhập các màn hình thuộc luồng Thi thử TOEIC chuẩn ETS 200 câu & Báo cáo đầu ra (UC17 & UC18)
+import MockExamListPage from '@/features/mock-exam/pages/MockExamListPage';
+import MockExamRoomPage from '@/features/mock-exam/pages/MockExamRoomPage';
+import MockExamReportPage from '@/features/mock-exam/pages/MockExamReportPage';
+import MockExamReviewPage from '@/features/mock-exam/pages/MockExamReviewPage';
 
 // 2. Dashboard & Learning Path
 import DashboardPage from '@/features/dashboard/pages/DashboardPage';
@@ -21,6 +26,7 @@ import CourseCatalogPage from '@/features/catalog/pages/CourseCatalogPage';
 
 // 3. Lesson Room & Practice
 import LessonRoomPage from '@/features/lesson/pages/LessonRoomPage';
+import { PracticeRoomPage } from '@/features/practice/pages/PracticeRoomPage';
 
 // 4. Module Test & Review
 import ModuleTestRoomPage from '@/features/module-test/pages/ModuleTestRoomPage';
@@ -129,6 +135,64 @@ function AppRoutes() {
                     }
                 />
 
+                {/* ── PROTECTED: Phòng thi thử ETS 200 câu & Báo cáo đầu ra (UC17 & UC18) ── */}
+                <Route
+                    path="/mock-exam"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamListPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/room"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/room/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/report"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamReportPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/report/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamReportPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/results/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamReportPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/mock-exam/review/:attemptId"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <MockExamReviewPage />
+                        </AuthGuard>
+                    }
+                />
+
                 {/* ── PROTECTED: Trang chủ học tập & Lộ trình ────────────────── */}
                 <Route
                     path="/dashboard"
@@ -177,6 +241,22 @@ function AppRoutes() {
                     element={
                         <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
                             <LessonRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/modules/:moduleId/lessons/:lessonId/practice"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <PracticeRoomPage />
+                        </AuthGuard>
+                    }
+                />
+                <Route
+                    path="/lessons/:lessonId/practice"
+                    element={
+                        <AuthGuard requireAuth={true} allowedRoles={['STUDENT', 'TEACHER', 'ADMIN']}>
+                            <PracticeRoomPage />
                         </AuthGuard>
                     }
                 />

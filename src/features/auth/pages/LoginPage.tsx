@@ -6,6 +6,7 @@ import { LoginForm } from '../components/LoginForm';
 import { authService } from '../services/authService';
 import { useAuth } from '../hooks/useAuth';
 import { getDefaultRouteByRole, resolvePostLoginRedirect } from '../utils/authRedirect';
+import { hasPendingDiagnosticSubmitForUser } from '@/features/diagnostic/utils/diagnosticExamUtils';
 import type { UserRole } from '../types/authTypes';
 import type { LoginFormValues } from '../schemas/authSchema';
 import '../auth.css';
@@ -67,8 +68,8 @@ export const LoginPage: React.FC = () => {
                 setUser(res.data);
 
                 // UC06 Ngoại lệ 9a: Nếu học viên bị hết phiên đúng lúc nộp bài chẩn đoán,
-                // quay lại /diagnostic/room để tự động nộp tiếp dữ liệu bài làm đã lưu tạm
-                const hasPendingDiagnosticSubmit = Boolean(localStorage.getItem('leby_diag_pending_submit'));
+                // chỉ điều hướng lại /diagnostic/room khi payload pending khớp đúng userId vừa đăng nhập
+                const hasPendingDiagnosticSubmit = hasPendingDiagnosticSubmitForUser(res.data.id);
                 if (hasPendingDiagnosticSubmit && canStudentSubmitDiagnostic(res.data.role, res.data.hasSelectedTarget)) {
                     navigate('/diagnostic/room', { replace: true });
                     return;

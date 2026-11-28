@@ -35,6 +35,7 @@ export default function DiagnosticResultPage() {
     const [error, setError] = useState('');
     const [notCompletedYet, setNotCompletedYet] = useState(false);
     const [expandedPartNo, setExpandedPartNo] = useState<number | null>(null);
+    const [isReviewConfirmOpen, setIsReviewConfirmOpen] = useState(false);
 
     const fetchResult = useCallback(async () => {
         setIsLoading(true);
@@ -406,7 +407,13 @@ export default function DiagnosticResultPage() {
                                 <button
                                     type="button"
                                     className="diag-roadmap-btn is-outline"
-                                    onClick={() => navigate(`/diagnostic/review/${result.attemptId}`)}
+                                    onClick={() => {
+                                        if (result.hasViewedReview || result.canRetakeDiagnostic === false) {
+                                            navigate(`/diagnostic/review/${result.attemptId}`);
+                                        } else {
+                                            setIsReviewConfirmOpen(true);
+                                        }
+                                    }}
                                 >
                                     Xem lại bài thi
                                 </button>
@@ -426,6 +433,43 @@ export default function DiagnosticResultPage() {
                 </div>
             </main>
             </div>
+
+            {isReviewConfirmOpen && (
+                <div className="diag-modal-backdrop" role="dialog" aria-modal="true">
+                    <div className="diag-modal-card">
+                        <div className="diag-modal-card__icon">
+                            <AlertTriangle size={30} color="#ea580c" />
+                        </div>
+
+                        <h3 className="diag-modal-card__title">Mở xem đáp án chi tiết?</h3>
+                        <p className="diag-modal-card__desc">
+                            Sau khi xem đáp án và giải thích chi tiết, quyền{' '}
+                            <strong>Làm lại bài thi chẩn đoán</strong> sẽ bị khóa vĩnh viễn để bảo đảm
+                            tính chính xác của lộ trình học cá nhân hóa.
+                        </p>
+
+                        <div className="diag-modal-actions">
+                            <button
+                                type="button"
+                                className="diag-modal-btn is-cancel"
+                                onClick={() => setIsReviewConfirmOpen(false)}
+                            >
+                                Để sau
+                            </button>
+                            <button
+                                type="button"
+                                className="diag-modal-btn is-confirm"
+                                onClick={() => {
+                                    setIsReviewConfirmOpen(false);
+                                    navigate(`/diagnostic/review/${result.attemptId}`);
+                                }}
+                            >
+                                Xem đáp án ngay
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

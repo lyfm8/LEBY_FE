@@ -218,11 +218,15 @@ export default function ModuleDetailPage() {
 
                 {/* Cột phải: nút hành động Học ngay / Luyện tập ngay / Xem lại / Khóa */}
                 <div className="module-lesson-item__right">
-                    {/* Bài đã hoàn thành -> hiển thị liên kết Xem lại kèm dấu tích xanh */}
+                    {/* Bài đã hoàn thành -> hiển thị liên kết Xem lại / Làm lại kèm dấu tích xanh */}
                     {lesson.isCompleted && (
                         <div className="module-lesson-item__check-wrap">
                             <Link
-                                to={`/modules/${data.moduleId}/lessons/${lesson.id}`}
+                                to={
+                                    isTheoryLesson
+                                        ? `/modules/${data.moduleId}/lessons/${lesson.id}`
+                                        : `/modules/${data.moduleId}/lessons/${lesson.id}/practice`
+                                }
                                 className="module-lesson-item__review-link"
                             >
                                 {isTheoryLesson ? 'Xem lại' : 'Làm lại'}
@@ -236,7 +240,11 @@ export default function ModuleDetailPage() {
                     {/* Bài đang mở sẵn sàng -> hiển thị nút CTA chính */}
                     {isCurrent && (
                         <Link
-                            to={`/modules/${data.moduleId}/lessons/${lesson.id}`}
+                            to={
+                                isTheoryLesson
+                                    ? `/modules/${data.moduleId}/lessons/${lesson.id}`
+                                    : `/modules/${data.moduleId}/lessons/${lesson.id}/practice`
+                            }
                             className="module-lesson-item__start-btn"
                         >
                             {isTheoryLesson ? 'Học ngay' : 'Luyện tập ngay'}

@@ -101,16 +101,18 @@ export function DiagnosticBlockedView({
                                 <span>Tiến hành học theo lộ trình</span>
                             </button>
 
-                            {/* Nút tùy chọn cho phép làm lại bài thi chẩn đoán */}
-                            <button
-                                type="button"
-                                className="diag-action-btn is-outline"
-                                onClick={onOpenRetakeConfirm}
-                                disabled={isRetaking}
-                            >
-                                <RotateCcw size={16} />
-                                <span>Làm lại bài thi chẩn đoán</span>
-                            </button>
+                            {/* Nút tùy chọn chỉ hiển thị khi học viên chưa từng mở xem đáp án Review */}
+                            {blockState.canRetake && (
+                                <button
+                                    type="button"
+                                    className="diag-action-btn is-outline"
+                                    onClick={onOpenRetakeConfirm}
+                                    disabled={isRetaking}
+                                >
+                                    <RotateCcw size={16} />
+                                    <span>Làm lại bài thi chẩn đoán</span>
+                                </button>
+                            )}
                         </>
                     )}
 
@@ -151,9 +153,9 @@ export function DiagnosticBlockedView({
                         <h3 className="diag-modal-card__title">Làm lại bài thi chẩn đoán?</h3>
                         {/* Cảnh báo hệ quả nghiệp vụ khi làm lại bài */}
                         <p className="diag-modal-card__desc">
-                            Hệ thống sẽ khởi tạo một lượt thi mới cho mục tiêu AIM hiện tại. Khi bạn nộp bài
-                            mới, báo cáo năng lực và lộ trình học tập sẽ được cập nhật theo kết quả mới nhất
-                            (lộ trình cũ vẫn được lưu trong lịch sử).
+                            Hệ thống sẽ khởi tạo một lượt thi chẩn đoán mới (chỉ khả dụng khi bạn chưa xem
+                            đáp án chi tiết). Khi nộp bài mới, báo cáo năng lực và lộ trình học tập sẽ được
+                            cập nhật theo kết quả mới nhất.
                         </p>
 
                         {/* Hai nút Hủy hoặc Bắt đầu làm lại */}

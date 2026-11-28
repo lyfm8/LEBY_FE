@@ -1,0 +1,10 @@
+@import '../../shared/exam/examRoom.css';
+
+/* ═══════════════════════════════════════════════════════════════
+   LEBY - Practice Room Styles (UC12)
+   ═══════════════════════════════════════════════════════════════ */
+
+.practice-empty-icon {
+    background: #eff6ff;
+    color: #2563eb;
+}
