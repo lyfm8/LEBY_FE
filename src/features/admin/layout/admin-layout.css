@@ -1,3 +1,30 @@
+/* ============================================================
+   ADMIN DESIGN TOKENS — Biến dùng chung toàn bộ khu vực Admin
+   ============================================================ */
+:root {
+  --admin-font-family: var(--sans);
+  --admin-th-size: 0.75rem;
+  --admin-td-size: 0.8125rem;
+  --admin-sub-size: 0.75rem;
+  --admin-th-color: #64748b;
+  --admin-td-color: #374151;
+  --admin-title-color: #0f172a;
+  --admin-muted-color: #64748b;
+  --admin-th-bg: #f8fafc;
+  --admin-th-weight: 600;
+  --admin-th-padding: 0.75rem 1rem;
+  --admin-td-padding: 0.75rem 1rem;
+
+  /* Nút thao tác trong bảng */
+  --admin-btn-radius: 0.375rem;
+  --admin-btn-padding: 0.35rem 0.65rem;
+  --admin-btn-size: 0.8125rem;
+  --admin-btn-delete-color: #dc2626;
+  --admin-btn-delete-border: #fca5a5;
+  --admin-btn-neutral-color: #334155;
+  --admin-btn-neutral-border: #cbd5e1;
+}
+
 .admin-layout-container {
   display: flex;
   height: 100vh;
@@ -5,6 +32,12 @@
   width: 100%;
   overflow: hidden;
   background-color: #f9fafb;
+  font-family: var(--admin-font-family);
+}
+
+/* Đảm bảo mọi control biểu mẫu và nút trong Admin kế thừa font hệ thống với specificity 0 */
+:where(.admin-layout-container, .modal-content) :where(input, select, textarea, button) {
+  font-family: var(--admin-font-family);
 }
 
 /* SIDEBAR: Dark Navy */
@@ -439,6 +472,68 @@
   border-top: 1px solid #f3f4f6;
 }
 
+/* --- Action Buttons dùng chung trong cột Thao tác --- */
+.admin-actions-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-wrap: nowrap;
+}
+
+.admin-actions-cell.is-end {
+  justify-content: flex-end;
+}
+
+.admin-actions-cell.is-center {
+  justify-content: center;
+}
+
+.admin-btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding: var(--admin-btn-padding);
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-btn-size);
+  font-weight: 500;
+  line-height: 1.25;
+  border-radius: var(--admin-btn-radius);
+  border: 1px solid var(--admin-btn-neutral-border);
+  color: var(--admin-btn-neutral-color);
+  background-color: #ffffff;
+  cursor: pointer;
+  white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.admin-btn-action:hover:not(:disabled) {
+  background-color: #f8fafc;
+  border-color: #94a3b8;
+}
+
+.admin-btn-action:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-btn-action.is-dirty:not(:disabled) {
+  border-color: #334155;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.admin-btn-action.delete {
+  color: var(--admin-btn-delete-color);
+  border-color: var(--admin-btn-delete-border);
+}
+
+.admin-btn-action.delete:hover:not(:disabled) {
+  background-color: #fef2f2;
+  border-color: var(--admin-btn-delete-color);
+}
+
 /* --- Tables & Shared Design System --- */
 .table-container,
 .exam-table-card,
@@ -454,23 +549,27 @@
 .exam-table,
 .question-table,
 .modern-ability-table,
-.thresholds-table {
+.thresholds-table,
+.mt-overview-table {
   width: 100%;
   text-align: left;
   border-collapse: collapse;
-  font-size: 0.8125rem;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
 }
 
 .admin-table th,
 .exam-table th,
 .question-table th,
 .modern-ability-table th,
-.thresholds-table th {
-  padding: 0.75rem 1rem;
-  background-color: #f8fafc;
-  color: #64748b;
-  font-size: 0.75rem;
-  font-weight: 600;
+.thresholds-table th,
+.mt-overview-table th {
+  padding: var(--admin-th-padding);
+  background-color: var(--admin-th-bg);
+  color: var(--admin-th-color);
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-th-size);
+  font-weight: var(--admin-th-weight);
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border-bottom: 1px solid #e5e7eb;
@@ -481,11 +580,13 @@
 .exam-table td,
 .question-table td,
 .modern-ability-table td,
-.thresholds-table td {
-  padding: 0.75rem 1rem;
+.thresholds-table td,
+.mt-overview-table td {
+  padding: var(--admin-td-padding);
   border-bottom: 1px solid #f1f5f9;
-  font-size: 0.8125rem;
-  color: #374151;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
+  color: var(--admin-td-color);
   vertical-align: middle;
 }
 
@@ -493,7 +594,8 @@
 .exam-table tbody tr:last-child td,
 .question-table tbody tr:last-child td,
 .modern-ability-table tbody tr:last-child td,
-.thresholds-table tbody tr:last-child td {
+.thresholds-table tbody tr:last-child td,
+.mt-overview-table tbody tr:last-child td {
   border-bottom: none;
 }
 
@@ -501,8 +603,29 @@
 .exam-table tbody tr:hover td,
 .question-table tbody tr:hover td,
 .modern-ability-table tbody tr:hover td,
-.thresholds-table tbody tr:hover td {
+.thresholds-table tbody tr:hover td,
+.mt-overview-table tbody tr:hover td {
   background-color: #f8fafc;
+}
+
+.admin-table .text-center,
+.mt-overview-table .text-center {
+  text-align: center;
+}
+
+.admin-table .text-right,
+.mt-overview-table .text-right {
+  text-align: right;
+}
+
+.admin-cell-title {
+  font-weight: 600;
+  color: var(--admin-title-color);
+}
+
+.admin-cell-muted {
+  color: var(--admin-muted-color);
+  font-size: var(--admin-sub-size);
 }
 
 /* --- Badges --- */
@@ -549,6 +672,67 @@
   color: #6b7280;
   margin: 0;
   font-size: 0.875rem;
+}
+
+/* --- Shared Admin Pagination (theo chuẩn Ngân hàng câu hỏi) --- */
+.admin-pagination-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0.25rem;
+  flex-wrap: wrap;
+  font-family: var(--admin-font-family);
+}
+
+.admin-pagination-counter {
+  font-size: var(--admin-td-size);
+  color: var(--admin-muted-color);
+}
+
+.admin-pagination-counter strong {
+  color: var(--admin-title-color);
+}
+
+.admin-pagination-btn-group {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+}
+
+.admin-pagination-nav-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding: 0 0.625rem;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  border-radius: 0.375rem;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
+  font-weight: 500;
+  color: var(--admin-td-color);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.admin-pagination-nav-btn:hover:not(:disabled) {
+  background-color: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.admin-pagination-nav-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.admin-pagination-page-info {
+  padding: 0 0.5rem;
+  font-size: var(--admin-td-size);
+  color: #4b5563;
+  font-weight: 500;
 }
 
 /* --- Pagination --- */

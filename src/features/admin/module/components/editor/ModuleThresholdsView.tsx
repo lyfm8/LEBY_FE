@@ -235,8 +235,7 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                         {onEditModule ? (
                           <button
                             type="button"
-                            className="name text-left hover:underline cursor-pointer"
-                            style={{ background: 'none', border: 'none', padding: 0, font: 'inherit', color: 'inherit' }}
+                            className="name"
                             onClick={() => onEditModule(item.id)}
                             title="Bấm để mở chỉnh sửa chi tiết Module"
                           >
@@ -274,14 +273,18 @@ export const ModuleThresholdsView: React.FC<ModuleThresholdsViewProps> = ({
                           <span>Đã lưu</span>
                         </span>
                       ) : (
-                        <button
-                          type="button"
-                          className={`btn-row-save ${item.isDirty ? 'dirty' : ''}`}
-                          onClick={() => handleSaveRow(item.id)}
-                          disabled={!item.isDirty || item.isSaving}
-                        >
-                          {item.isSaving ? 'Lưu...' : 'Lưu'}
-                        </button>
+                        <div className="admin-actions-cell is-center">
+                          <button
+                            type="button"
+                            className={`admin-btn-action ${item.isDirty ? 'is-dirty' : ''}`}
+                            onClick={() => handleSaveRow(item.id)}
+                            disabled={!item.isDirty || item.isSaving}
+                            title="Lưu tỷ lệ hoàn thành"
+                          >
+                            <Save size={14} />
+                            <span>{item.isSaving ? 'Đang lưu...' : 'Lưu'}</span>
+                          </button>
+                        </div>
                       )}
                     </td>
                   </tr>

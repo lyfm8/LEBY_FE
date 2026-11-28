@@ -122,13 +122,13 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
         </span>
       </div>
 
-      <table className="matrix-table">
+      <table className="exam-matrix-table">
         <thead>
           <tr>
-            <th>PART / DẠNG BÀI</th>
-            <th style={{ textAlign: 'center' }}>YÊU CẦU</th>
-            <th style={{ textAlign: 'center' }}>HIỆN CÓ</th>
-            <th style={{ textAlign: 'right' }}>TRẠNG THÁI</th>
+            <th>Part / Dạng bài</th>
+            <th style={{ textAlign: 'center' }}>Yêu cầu</th>
+            <th style={{ textAlign: 'center' }}>Hiện có</th>
+            <th style={{ textAlign: 'right' }}>Trạng thái</th>
           </tr>
         </thead>
         <tbody>
@@ -245,14 +245,14 @@ export const MatrixConfigSection: React.FC<MatrixConfigSectionProps> = ({
             </span>
           </div>
 
-          <table className="matrix-table">
+          <table className="exam-matrix-table">
             <thead>
               <tr>
-                <th>NĂNG LỰC (ABILITY)</th>
-                <th style={{ textAlign: 'center' }}>PHẦN THI</th>
-                <th style={{ textAlign: 'center' }}>SỐ CÂU TỐI THIỂU</th>
-                <th style={{ textAlign: 'center' }}>HIỆN CÓ</th>
-                <th style={{ textAlign: 'right' }}>TRẠNG THÁI</th>
+                <th>Năng lực (Ability)</th>
+                <th style={{ textAlign: 'center' }}>Phần thi</th>
+                <th style={{ textAlign: 'center' }}>Số câu tối thiểu</th>
+                <th style={{ textAlign: 'center' }}>Hiện có</th>
+                <th style={{ textAlign: 'right' }}>Trạng thái</th>
               </tr>
             </thead>
             <tbody>

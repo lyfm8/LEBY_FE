@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, HelpCircle, ChevronLeft, ChevronRight } from 'lucide-react';
+import { AdminPagination } from '@/features/admin/layout/components/AdminPagination';
 import type { ExamListItem } from '../../types';
 import { ExamActionMenu } from './ExamActionMenu';
 
@@ -43,169 +43,129 @@ export const ExamTable: React.FC<ExamTableProps> = ({
     return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
   };
 
-  const startItem = totalItems === 0 ? 0 : currentPage * pageSize + 1;
-  const endItem = Math.min((currentPage + 1) * pageSize, totalItems);
-
   return (
-    <div className="exam-table-card">
-      <table className="exam-table">
-        <thead>
-          <tr>
-            <th className="stt-cell">STT</th>
-            <th>TÊN ĐỀ THI</th>
-            <th>LOẠI ĐỀ</th>
-            <th>SỐ CÂU</th>
-            <th>THỜI GIAN</th>
-            <th>TRẠNG THÁI</th>
-            <th>CẬP NHẬT</th>
-            <th style={{ width: '60px', textAlign: 'center' }}>THAO TÁC</th>
-          </tr>
-        </thead>
-        <tbody>
-          {loading ? (
+    <>
+      <div className="exam-table-card">
+        <table className="exam-table">
+          <thead>
             <tr>
-              <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
-                Đang tải dữ liệu đề thi...
-              </td>
+              <th className="stt-cell">STT</th>
+              <th>Tên đề thi</th>
+              <th>Loại đề</th>
+              <th>Số câu</th>
+              <th>Thời gian</th>
+              <th>Trạng thái</th>
+              <th>Cập nhật</th>
+              <th style={{ textAlign: 'right' }}>Thao tác</th>
             </tr>
-          ) : exams.length === 0 ? (
-            <tr>
-              <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>
-                Không tìm thấy bộ đề thi nào phù hợp với bộ lọc
-              </td>
-            </tr>
-          ) : (
-            exams.map((exam, index) => {
-              const sttFormatted = String(currentPage * pageSize + index + 1).padStart(2, '0');
+          </thead>
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748B' }}>
+                  Đang tải dữ liệu đề thi...
+                </td>
+              </tr>
+            ) : exams.length === 0 ? (
+              <tr>
+                <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#94A3B8' }}>
+                  Không tìm thấy bộ đề thi nào phù hợp với bộ lọc
+                </td>
+              </tr>
+            ) : (
+              exams.map((exam, index) => {
+                const sttFormatted = String(currentPage * pageSize + index + 1).padStart(2, '0');
 
-              return (
-                <tr key={exam.id}>
-                  <td className="stt-cell">{sttFormatted}</td>
+                return (
+                  <tr key={exam.id}>
+                    <td className="stt-cell">{sttFormatted}</td>
 
-                  <td className="exam-title-cell">
-                    <div className="exam-title-main">{exam.title}</div>
-                    {exam.description && <div className="exam-title-sub">{exam.description}</div>}
-                  </td>
+                    <td className="exam-title-cell">
+                      <div className="exam-title-main">{exam.title}</div>
+                      {exam.description && <div className="exam-title-sub">{exam.description}</div>}
+                    </td>
 
-                  <td>
-                    {exam.testType === 'DIAGNOSTIC' ? (
-                      <span className="badge-diagnostic">Chẩn đoán</span>
-                    ) : (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
-                        <span className="badge-mock">Thi thử</span>
-                        {/* Gắn nhãn phụ phân biệt đề đầu ra OUTPUT với đề luyện tập PRACTICE */}
-                        <span
-                          style={{
-                            fontSize: '11px',
-                            fontWeight: 700,
-                            padding: '2px 8px',
-                            borderRadius: '999px',
-                            backgroundColor: exam.examTag === 'OUTPUT' ? '#EFF6FF' : '#F1F5F9',
-                            color: exam.examTag === 'OUTPUT' ? '#1D4ED8' : '#475569',
-                            border: exam.examTag === 'OUTPUT' ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
-                          }}
-                        >
-                          {exam.examTag === 'OUTPUT' ? 'Đầu ra' : 'Luyện tập'}
-                        </span>
+                    <td>
+                      {exam.testType === 'DIAGNOSTIC' ? (
+                        <span className="badge-diagnostic">Chẩn đoán</span>
+                      ) : (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                          <span className="badge-mock">Thi thử</span>
+                          {/* Gắn nhãn phụ phân biệt đề đầu ra OUTPUT với đề luyện tập PRACTICE */}
+                          <span
+                            style={{
+                              fontSize: '11px',
+                              fontWeight: 700,
+                              padding: '2px 8px',
+                              borderRadius: '999px',
+                              backgroundColor: exam.examTag === 'OUTPUT' ? '#EFF6FF' : '#F1F5F9',
+                              color: exam.examTag === 'OUTPUT' ? '#1D4ED8' : '#475569',
+                              border: exam.examTag === 'OUTPUT' ? '1px solid #BFDBFE' : '1px solid #E2E8F0',
+                            }}
+                          >
+                            {exam.examTag === 'OUTPUT' ? 'Đầu ra' : 'Luyện tập'}
+                          </span>
+                        </div>
+                      )}
+                    </td>
+
+                    <td>
+                      <div className="exam-meta-cell">
+                        <span>{exam.totalQuestions} câu</span>
                       </div>
-                    )}
-                  </td>
+                    </td>
 
-                  <td>
-                    <div className="exam-meta-cell">
-                      <span>{exam.totalQuestions} câu</span>
-                    </div>
-                  </td>
+                    <td>
+                      <div className="exam-meta-cell">
+                        <span>{exam.durationMinutes} phút</span>
+                      </div>
+                    </td>
 
-                  <td>
-                    <div className="exam-meta-cell">
-                      <span>{exam.durationMinutes} phút</span>
-                    </div>
-                  </td>
+                    <td>
+                      <span className={`dot-status-badge ${exam.examStatus.toLowerCase()}`}>
+                        <span className="dot-indicator" />
+                        <span>{exam.examStatus === 'ACTIVE' ? 'Đang hoạt động' : exam.examStatus === 'ARCHIVE' ? 'Đã lưu trữ' : 'Bản nháp'}</span>
+                      </span>
+                    </td>
 
-                  <td>
-                    <span className={`dot-status-badge ${exam.examStatus.toLowerCase()}`}>
-                      <span className="dot-indicator" />
-                      <span>{exam.examStatus === 'ACTIVE' ? 'Đang hoạt động' : exam.examStatus === 'ARCHIVE' ? 'Đã lưu trữ' : 'Bản nháp'}</span>
-                    </span>
-                  </td>
+                    <td>
+                      <div className="exam-date-primary">
+                        {formatDate(exam.updatedAt)}
+                      </div>
+                      <div className="exam-date-sub">
+                        bởi {exam.updatedBy || 'Admin'}
+                      </div>
+                    </td>
 
-                  <td>
-                    <div style={{ fontSize: '13px', color: '#0F172A', fontWeight: 500 }}>
-                      {formatDate(exam.updatedAt)}
-                    </div>
-                    <div style={{ fontSize: '12px', color: '#94A3B8' }}>
-                      bởi {exam.updatedBy || 'Admin'}
-                    </div>
-                  </td>
-
-                  <td style={{ textAlign: 'center' }}>
-                    <ExamActionMenu
-                      exam={exam}
-                      isAdmin={isAdmin}
-                      onView={onView}
-                      onEdit={onEdit}
-                      onActivate={onActivate}
-                      onArchive={onArchive}
-                      onDelete={onDelete}
-                    />
-                  </td>
-                </tr>
-              );
-            })
-          )}
-        </tbody>
-      </table>
-
-      <div className="exam-table-footer">
-        <div>
-          Hiển thị {startItem}-{endItem} trong tổng số {totalItems} đề thi
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-          <button
-            type="button"
-            className="exam-btn-reset"
-            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-            disabled={currentPage === 0}
-            onClick={() => onPageChange(currentPage - 1)}
-          >
-            <ChevronLeft size={16} />
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => (
-            <button
-              key={i}
-              type="button"
-              className={`exam-btn-reset ${currentPage === i ? 'active' : ''}`}
-              style={{
-                width: '32px',
-                height: '32px',
-                padding: 0,
-                justifyContent: 'center',
-                backgroundColor: currentPage === i ? '#F45B0B' : 'transparent',
-                color: currentPage === i ? '#FFFFFF' : '#64748B',
-                borderColor: currentPage === i ? '#F45B0B' : '#E2E8F0',
-                fontWeight: 600,
-              }}
-              onClick={() => onPageChange(i)}
-            >
-              {i + 1}
-            </button>
-          ))}
-
-          <button
-            type="button"
-            className="exam-btn-reset"
-            style={{ width: '32px', height: '32px', padding: 0, justifyContent: 'center' }}
-            disabled={currentPage >= totalPages - 1 || totalPages === 0}
-            onClick={() => onPageChange(currentPage + 1)}
-          >
-            <ChevronRight size={16} />
-          </button>
-        </div>
+                    <td style={{ textAlign: 'right' }}>
+                      <ExamActionMenu
+                        exam={exam}
+                        isAdmin={isAdmin}
+                        onView={onView}
+                        onEdit={onEdit}
+                        onActivate={onActivate}
+                        onArchive={onArchive}
+                        onDelete={onDelete}
+                      />
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
       </div>
-    </div>
+
+      {/* Phân trang đồng bộ chuẩn Ngân hàng câu hỏi */}
+      <AdminPagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        pageSize={pageSize}
+        itemLabel="đề thi"
+        onPageChange={onPageChange}
+      />
+    </>
   );
 };
 

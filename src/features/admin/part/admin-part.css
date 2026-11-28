@@ -23,20 +23,6 @@
   flex-shrink: 0;
 }
 
-.admin-page-title {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #0f172a;
-  letter-spacing: -0.025em;
-  margin: 0 0 0.25rem 0;
-}
-
-.admin-page-subtitle {
-  font-size: 0.875rem;
-  color: #64748b;
-  margin: 0;
-}
-
 /* --------------------------------------------------------------------------
    1. SEGMENTED CONTROL VIEW SWITCHER (Quản trị / Cây phân cấp)
    -------------------------------------------------------------------------- */
@@ -256,7 +242,8 @@
   border: none;
   background: transparent;
   outline: none;
-  font-size: 0.8125rem;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
   color: #1e293b;
   width: 100%;
 }
@@ -407,31 +394,10 @@
   width: 100%;
 }
 
-.modern-ability-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-  font-size: 0.8125rem;
-}
-
 .modern-ability-table thead th {
-  padding: 0.65rem 1rem;
-  background-color: #f8fafc;
-  font-size: 0.6875rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: #64748b;
-  letter-spacing: 0.04em;
-  border-bottom: 1px solid #e2e8f0;
   position: sticky;
   top: 0;
   z-index: 5;
-}
-
-.modern-ability-table tbody td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid #f1f5f9;
-  vertical-align: middle;
 }
 
 .ability-table-row {
@@ -463,15 +429,15 @@
 }
 
 .ability-title-text {
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: #0f172a;
+  font-size: var(--admin-td-size);
+  font-weight: 600;
+  color: var(--admin-title-color);
   margin: 0;
 }
 
 .ability-desc-text {
-  font-size: 0.78125rem;
-  color: #64748b;
+  font-size: var(--admin-sub-size);
+  color: var(--admin-muted-color);
   margin: 0.15rem 0 0 0.85rem;
   line-height: 1.4;
 }

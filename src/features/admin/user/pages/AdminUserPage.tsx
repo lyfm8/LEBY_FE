@@ -80,6 +80,7 @@ export const AdminUserPage: React.FC = () => {
             currentPage={filters.page}
             totalPages={totalPages}
             totalItems={totalItems}
+            pageSize={filters.size}
             onPageChange={(page) => handleFilterChange({ page })}
           />
         </>

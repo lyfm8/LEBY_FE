@@ -188,7 +188,7 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
             <p>Không tìm thấy Module nào phù hợp với bộ lọc</p>
           </div>
         ) : (
-          <table className="admin-table matrix-table">
+          <table className="admin-table threshold-matrix-table">
             <thead>
               <tr>
                 <th className="sticky-col col-seq text-center">#</th>
@@ -205,7 +205,7 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
             <tbody>
               {filteredRows.map(row => (
                 <tr key={row.moduleId}>
-                  <td className="sticky-col col-seq text-center font-mono text-gray-500">
+                  <td className="sticky-col col-seq text-center threshold-seq-cell">
                     {row.moduleSequence}
                   </td>
                   <td className="sticky-col col-title">
@@ -213,11 +213,11 @@ export const ModuleThresholdMatrixTable: React.FC<ModuleThresholdMatrixTableProp
                       {row.moduleTitle}
                     </span>
                   </td>
-                  <td className="col-part text-sm text-gray-600">
+                  <td className="col-part admin-cell-muted">
                     {row.partName || '-'}
                   </td>
                   <td className="col-default text-center">
-                    <span className="badge badge-gray font-semibold">
+                    <span className="badge badge-gray">
                       {row.defaultPassScore}%
                     </span>
                   </td>

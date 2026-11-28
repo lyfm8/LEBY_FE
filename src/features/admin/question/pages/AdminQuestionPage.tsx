@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { AlertCircle, ChevronLeft, ChevronRight, FileSpreadsheet, ImagePlus, Layers, Plus } from 'lucide-react';
+import { AlertCircle, FileSpreadsheet, ImagePlus, Layers, Plus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { AdminPagination } from '@/features/admin/layout/components/AdminPagination';
 import { useQuestionList } from '../hooks/useQuestionList';
 import { QuestionFilterBar } from '../components/QuestionFilterBar';
 import { QuestionTable } from '../components/QuestionTable';
@@ -120,45 +121,14 @@ export const AdminQuestionPage: React.FC = () => {
       />
 
       {/* Phân trang */}
-      {totalItems > 0 && (
-        <div className="question-pagination-bar">
-          <div className="pagination-counter">
-            Hiển thị{' '}
-            <strong>
-              {questions.length > 0 ? (filters.page || 0) * (filters.size || 10) + 1 : 0}
-            </strong>{' '}
-            –{' '}
-            <strong>
-              {Math.min(((filters.page || 0) + 1) * (filters.size || 10), totalItems)}
-            </strong>{' '}
-            trong tổng số <strong>{totalItems}</strong> câu hỏi
-          </div>
-
-          <div className="pagination-btn-group">
-            <button
-              type="button"
-              className="pagination-nav-btn"
-              disabled={(filters.page || 0) <= 0}
-              onClick={() => handleFilterChange({ page: (filters.page || 0) - 1 })}
-              title="Trang trước"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <span style={{ padding: '0 0.5rem', fontSize: '0.8125rem', color: '#4b5563', fontWeight: 500 }}>
-              Trang {(filters.page || 0) + 1} / {totalPages}
-            </span>
-            <button
-              type="button"
-              className="pagination-nav-btn"
-              disabled={(filters.page || 0) + 1 >= totalPages}
-              onClick={() => handleFilterChange({ page: (filters.page || 0) + 1 })}
-              title="Trang sau"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      )}
+      <AdminPagination
+        currentPage={filters.page || 0}
+        totalPages={totalPages}
+        totalItems={totalItems}
+        pageSize={filters.size || 10}
+        itemLabel="câu hỏi"
+        onPageChange={(page) => handleFilterChange({ page })}
+      />
 
       {/* Dialog xác nhận xóa câu hỏi */}
       <ConfirmDialog

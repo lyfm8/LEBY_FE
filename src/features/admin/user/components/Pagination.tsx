@@ -1,4 +1,5 @@
 import React from 'react';
+import { AdminPagination } from '@/features/admin/layout/components/AdminPagination';
 
 interface PaginationProps {
   // Chỉ số trang hiện tại (bắt đầu từ 0)
@@ -7,61 +8,30 @@ interface PaginationProps {
   totalPages: number;
   // Tổng số tài khoản khớp bộ lọc
   totalItems: number;
+  // Số lượng bản ghi mỗi trang
+  pageSize?: number;
   // Callback chuyển sang trang mới
   onPageChange: (page: number) => void;
 }
 
 /**
- * Thanh phân trang danh sách tài khoản người dùng.
+ * Thanh phân trang danh sách tài khoản người dùng (đồng bộ chuẩn toàn Admin).
  */
 export const Pagination: React.FC<PaginationProps> = ({
   currentPage,
   totalPages,
   totalItems,
+  pageSize = 10,
   onPageChange,
 }) => {
-// Chỉ ẩn thanh phân trang khi không có dữ liệu (0 trang hoặc 0 tài khoản)
-  if (totalPages <= 0 || totalItems <= 0) {
-    return null;
-  }
-
-  // Render dãy nút phân trang kèm thống kê tổng số bản ghi
   return (
-    <div className="user-pagination-row">
-      <span className="user-pagination-summary">
-        Trang {currentPage + 1} / {totalPages} • Tổng {totalItems} tài khoản
-      </span>
-
-      <div className="pagination-container" style={{ marginTop: 0 }}>
-        <button
-          type="button"
-          className="page-btn"
-          disabled={currentPage === 0}
-          onClick={() => onPageChange(currentPage - 1)}
-        >
-          Trước
-        </button>
-
-        {Array.from({ length: totalPages }).map((_, index) => (
-          <button
-            type="button"
-            key={index}
-            className={`page-btn ${currentPage === index ? 'active' : ''}`}
-            onClick={() => onPageChange(index)}
-          >
-            {index + 1}
-          </button>
-        ))}
-
-        <button
-          type="button"
-          className="page-btn"
-          disabled={currentPage >= totalPages - 1}
-          onClick={() => onPageChange(currentPage + 1)}
-        >
-          Sau
-        </button>
-      </div>
-    </div>
+    <AdminPagination
+      currentPage={currentPage}
+      totalPages={totalPages}
+      totalItems={totalItems}
+      pageSize={pageSize}
+      itemLabel="tài khoản"
+      onPageChange={onPageChange}
+    />
   );
 };

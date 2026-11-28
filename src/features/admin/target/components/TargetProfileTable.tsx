@@ -70,7 +70,7 @@ export const TargetProfileTable: React.FC<TargetProfileTableProps> = ({
             <th>Mục tiêu AIM</th>
             <th>Mô tả</th>
             <th>Số học viên</th>
-            {isAdmin && <th style={{ textAlign: 'right' }}>Hành động</th>}
+            {isAdmin && <th style={{ textAlign: 'right' }}>Thao tác</th>}
           </tr>
         </thead>
         <tbody>
@@ -90,10 +90,10 @@ export const TargetProfileTable: React.FC<TargetProfileTableProps> = ({
 
                 {isAdmin && (
                   <td>
-                    <div className="target-action-buttons">
+                    <div className="admin-actions-cell is-end">
                       <button
                         type="button"
-                        className="target-btn-action target-btn-neutral"
+                        className="admin-btn-action"
                         onClick={() => onEdit(profile)}
                         title="Chỉnh sửa thông tin mục tiêu điểm số"
                       >
@@ -103,7 +103,7 @@ export const TargetProfileTable: React.FC<TargetProfileTableProps> = ({
 
                       <button
                         type="button"
-                        className="target-btn-action target-btn-danger"
+                        className="admin-btn-action delete"
                         onClick={() => onDelete(profile)}
                         title="Xóa mốc mục tiêu điểm số"
                       >

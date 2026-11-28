@@ -11,37 +11,37 @@
   overflow: visible;
   padding-bottom: 2.5rem;
   box-sizing: border-box;
-  font-family: var(--sans);
+  font-family: var(--admin-font-family);
 }
 
 .target-add-btn {
   flex-shrink: 0;
-  font-family: var(--sans);
+  font-family: var(--admin-font-family);
 }
 
 /* Ô dữ liệu trong bảng mục tiêu AIM (khớp tỷ lệ chữ, màu sắc, độ đậm với UserTable) */
 .target-id-cell {
-  color: #64748b;
+  color: var(--admin-muted-color);
   font-weight: 600;
   white-space: nowrap;
 }
 
 .target-score-cell {
   font-weight: 600;
-  color: #0f172a;
+  color: var(--admin-title-color);
   white-space: nowrap;
 }
 
 .target-desc-cell {
-  color: #475569;
-  font-size: 0.8125rem;
+  color: var(--admin-td-color);
+  font-size: var(--admin-td-size);
   line-height: 1.5;
   white-space: normal;
   min-width: 240px;
 }
 
 .target-users-cell {
-  color: #334155;
+  color: var(--admin-td-color);
   font-weight: 500;
   white-space: nowrap;
 }
@@ -59,11 +59,11 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.35rem 0.6rem;
-  font-family: var(--sans);
-  font-size: 0.78rem;
+  padding: var(--admin-btn-padding);
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-btn-size);
   font-weight: 500;
-  border-radius: 0.375rem;
+  border-radius: var(--admin-btn-radius);
   border: 1px solid transparent;
   cursor: pointer;
   text-decoration: none;
@@ -78,23 +78,24 @@
 
 .target-btn-neutral {
   background-color: #ffffff;
-  border-color: #e2e8f0;
-  color: #334155;
+  border-color: var(--admin-btn-neutral-border);
+  color: var(--admin-btn-neutral-color);
 }
 
 .target-btn-neutral:hover:not(:disabled) {
   background-color: #f8fafc;
-  border-color: #cbd5e1;
+  border-color: #94a3b8;
 }
 
 .target-btn-danger {
-  background-color: #fef2f2;
-  border-color: #fecaca;
-  color: #b91c1c;
+  background-color: #ffffff;
+  border-color: var(--admin-btn-delete-border);
+  color: var(--admin-btn-delete-color);
 }
 
 .target-btn-danger:hover:not(:disabled) {
-  background-color: #fee2e2;
+  background-color: #fef2f2;
+  border-color: var(--admin-btn-delete-color);
 }
 
 /* Khung trạng thái Loading / Empty / Error đồng bộ với admin-user.css */

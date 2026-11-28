@@ -108,7 +108,7 @@ export const AbilityList: React.FC<AbilityListProps> = ({
                 <tr>
                   <th>Tên năng lực & Mô tả đánh giá</th>
                   <th style={{ width: '130px', textAlign: 'center' }}>Kỹ năng</th>
-                  <th style={{ width: '90px', textAlign: 'center' }}>Thao tác</th>
+                  <th style={{ width: '165px', textAlign: 'center' }}>Thao tác</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,22 +131,24 @@ export const AbilityList: React.FC<AbilityListProps> = ({
                     </td>
 
                     <td style={{ textAlign: 'center' }}>
-                      <div className="ability-actions-row">
+                      <div className="admin-actions-cell is-center">
                         <button
                           type="button"
                           onClick={() => onEdit(ability)}
-                          className="btn-card-action edit"
+                          className="admin-btn-action"
                           title="Chỉnh sửa năng lực"
                         >
-                          <Edit2 size={13} />
+                          <Edit2 size={14} />
+                          <span>Sửa</span>
                         </button>
                         <button
                           type="button"
                           onClick={() => onDelete(ability.id)}
-                          className="btn-card-action delete"
+                          className="admin-btn-action delete"
                           title="Xóa năng lực"
                         >
-                          <Trash2 size={13} />
+                          <Trash2 size={14} />
+                          <span>Xóa</span>
                         </button>
                       </div>
                     </td>

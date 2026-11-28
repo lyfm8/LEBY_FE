@@ -324,14 +324,16 @@ export const AdminModuleTestPage: React.FC = () => {
 
                     {/* Cột nút mở màn hình cấu hình */}
                     <td className="text-right">
-                      <button
-                        type="button"
-                        className="btn-secondary compact"
-                        onClick={() => selectModule(item.moduleId)}
-                      >
-                        <SlidersHorizontal size={14} />
-                        <span>Cấu hình đề</span>
-                      </button>
+                      <div className="admin-actions-cell is-end">
+                        <button
+                          type="button"
+                          className="admin-btn-action"
+                          onClick={() => selectModule(item.moduleId)}
+                        >
+                          <SlidersHorizontal size={14} />
+                          <span>Cấu hình đề</span>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

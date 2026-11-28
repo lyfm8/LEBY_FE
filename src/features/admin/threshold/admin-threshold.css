@@ -75,7 +75,8 @@
 .filter-group select.select-input {
   padding-left: 2.25rem;
   padding-right: 2rem;
-  font-size: 0.875rem;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
   border-radius: 0.375rem;
   border: 1px solid #d1d5db;
   height: 2.375rem;
@@ -84,7 +85,8 @@
 .search-group input.search-input {
   padding-left: 2.25rem;
   padding-right: 0.75rem;
-  font-size: 0.875rem;
+  font-family: var(--admin-font-family);
+  font-size: var(--admin-td-size);
   border-radius: 0.375rem;
   border: 1px solid #d1d5db;
   height: 2.375rem;
@@ -117,21 +119,21 @@
   position: relative;
 }
 
-.matrix-table {
+.admin-table.threshold-matrix-table {
   border-collapse: separate;
   border-spacing: 0;
   width: 100%;
 }
 
-.matrix-table thead th {
+.threshold-matrix-table thead th {
   position: sticky;
   top: 0;
-  background-color: #f9fafb;
+  background-color: var(--admin-th-bg);
   z-index: 10;
   border-bottom: 2px solid #e5e7eb;
 }
 
-.matrix-table thead th.sticky-col {
+.threshold-matrix-table thead th.sticky-col {
   z-index: 20;
 }
 
@@ -476,44 +478,25 @@
   line-height: 1.4;
 }
 
-/* Đảm bảo bảng trong các Tab có padding đồng bộ và không bị dính viền */
+/* Đảm bảo bảng trong các Tab cuộn ngang mượt mà khi thu hẹp */
 .threshold-table-wrapper {
   overflow-x: auto;
   width: 100%;
 }
 
-.threshold-tab-content .admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  text-align: left;
-}
-
-.threshold-tab-content .admin-table th {
-  padding: 0.875rem 1.25rem;
-  background-color: #f9fafb;
-  color: #4b5563;
-  font-size: 0.75rem;
+.threshold-primary-cell {
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border-bottom: 1px solid #e5e7eb;
-  white-space: nowrap;
+  color: var(--admin-title-color);
 }
 
-.threshold-tab-content .admin-table td {
-  padding: 0.875rem 1.25rem;
-  font-size: 0.875rem;
-  color: #374151;
-  border-bottom: 1px solid #f3f4f6;
-  vertical-align: middle;
-}
-
-.threshold-tab-content .admin-table tbody tr:hover td {
-  background-color: #f9fafb;
+.threshold-seq-cell {
+  color: var(--admin-muted-color);
+  font-weight: 600;
 }
 
 .action-col {
-  width: 6rem;
+  width: 11rem;
+  white-space: nowrap;
 }
 
 .matrix-loading-state,
