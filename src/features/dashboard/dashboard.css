@@ -458,60 +458,11 @@
     background: #ffffff;
 }
 
-.db-focus-card__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 12px;
-}
-
-.db-focus-card__badges {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.db-focus-card__step-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: #ea580c;
-    color: #ffffff;
-}
-
-.db-focus-card__part-badge {
-    font-size: 12px;
-    font-weight: 700;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: #f1f5f9;
-    color: #334155;
-}
-
-.db-focus-card__ability-badge {
-    font-size: 12px;
-    font-weight: 600;
-    padding: 4px 10px;
-    border-radius: 8px;
-    background: #fff7ed;
-    color: #c2410c;
-    border: 1px solid #fed7aa;
-}
-
-.db-focus-card__percent {
-    font-size: 20px;
-    font-weight: 800;
-    color: #ea580c;
-}
-
 .db-focus-card__title {
     font-size: 20px;
     font-weight: 800;
     color: #0f172a;
-    margin: 0 0 6px;
+    margin: 0 0 12px;
 }
 
 .db-focus-card__desc {
@@ -620,23 +571,8 @@
     background: #fffaf5;
 }
 
-.db-focus-lesson-row.is-recommended {
-    border-color: #fdba74;
-    background: #fff7ed;
-}
-
 .db-focus-lesson-row.is-completed {
     background: #f8fafc;
-}
-
-.db-focus-lesson-row__icon {
-    display: inline-flex;
-    color: #ea580c;
-    flex-shrink: 0;
-}
-
-.db-focus-lesson-row.is-completed .db-focus-lesson-row__icon {
-    color: #10b981;
 }
 
 .db-focus-lesson-row__info {
@@ -677,11 +613,6 @@
     background: #f1f5f9;
     color: #475569;
     white-space: nowrap;
-}
-
-.db-focus-lesson-row.is-recommended .db-focus-lesson-row__status {
-    background: #ea580c;
-    color: #ffffff;
 }
 
 .db-focus-lesson-row.is-completed .db-focus-lesson-row__status {

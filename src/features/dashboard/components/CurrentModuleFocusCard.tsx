@@ -1,13 +1,9 @@
 import { Link } from 'react-router-dom';
 import {
     AlertTriangle,
-    ArrowRight,
-    CheckCircle2,
     Clock,
     Compass,
-    HelpCircle,
     Play,
-    PlayCircle,
     ShieldCheck,
 } from 'lucide-react';
 import type { DashboardCurrentModule, DashboardLessonItem } from '../types/dashboardTypes';
@@ -89,21 +85,7 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
 
     return (
         <section className={`db-card db-focus-card ${isMaintenance ? 'is-maintenance' : ''}`}>
-            {/* Hàng đầu: Nhãn chặng học, phần thi và tiến độ hoàn thành mô-đun */}
-            <div className="db-focus-card__top">
-                <div className="db-focus-card__badges">
-                    <span className="db-focus-card__step-badge">Chặng #{module.orderNo} • Đang học</span>
-                    {module.partName && <span className="db-focus-card__part-badge">{module.partName}</span>}
-                    {module.abilityName && (
-                        <span className="db-focus-card__ability-badge">{module.abilityName}</span>
-                    )}
-                </div>
-
-                {/* Chỉ số tiến độ % nổi bật góc phải */}
-                <span className="db-focus-card__percent">{module.progressPercent}%</span>
-            </div>
-
-            {/* Tiêu đề mô-đun và lời giải thích lý do trọng tâm */}
+            {/* Tiêu đề mô-đun đang học */}
             <h2 className="db-focus-card__title">{module.title}</h2>
  
 
@@ -167,19 +149,8 @@ export function CurrentModuleFocusCard({ module }: CurrentModuleFocusCardProps) 
                                         <Link
                                             key={lesson.id}
                                             to={lessonUrl}
-                                            className={`db-focus-lesson-row ${lesson.isCompleted ? 'is-completed' : ''} ${lesson.isNextRecommended ? 'is-recommended' : ''}`}
+                                            className={`db-focus-lesson-row ${lesson.isCompleted ? 'is-completed' : ''}`}
                                         >
-                                            {/* Biểu tượng trạng thái hoàn thành hoặc loại bài học */}
-                                            <span className="db-focus-lesson-row__icon">
-                                                {lesson.isCompleted ? (
-                                                    <CheckCircle2 size={18} />
-                                                ) : isPractice ? (
-                                                    <HelpCircle size={18} />
-                                                ) : (
-                                                    <PlayCircle size={18} />
-                                                )}
-                                            </span>
-
                                             {/* Tiêu đề bài học và metadata thời lượng / số câu hỏi */}
                                             <div className="db-focus-lesson-row__info">
                                                 <span className="db-focus-lesson-row__title">

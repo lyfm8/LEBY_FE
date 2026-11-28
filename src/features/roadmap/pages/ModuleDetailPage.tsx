@@ -1,16 +1,13 @@
 import { useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import {
-    Video,
     BookOpen,
     Check,
     Lock,
-    Flag,
     AlertCircle,
     RotateCcw,
     ArrowLeft,
     Sparkles,
-    Award,
 } from 'lucide-react';
 import { SidebarNav } from '../components/SidebarNav';
 import { RoadmapSkeleton } from '../components/RoadmapSkeleton';
@@ -157,14 +154,8 @@ export default function ModuleDetailPage() {
                 key={lesson.id}
                 className={`module-lesson-item ${lesson.isCompleted ? 'is-completed' : ''} ${isCurrent ? 'is-current' : ''} ${lesson.isLocked ? 'is-locked' : ''}`}
             >
-                {/* Cột trái: biểu tượng loại bài học, tiêu đề và thông tin thời lượng / số câu hỏi */}
+                {/* Cột trái: tiêu đề và thông tin thời lượng / số câu hỏi */}
                 <div className="module-lesson-item__left">
-                    <div
-                        className={`module-lesson-item__icon-box ${isTheoryLesson ? 'is-theory' : 'is-practice'}`}
-                    >
-                        {isTheoryLesson ? <Video size={20} /> : <BookOpen size={20} />}
-                    </div>
-
                     <div className="module-lesson-item__info">
                         <div className="module-lesson-item__title-row">
                             <h3 className="module-lesson-item__title">
@@ -415,20 +406,8 @@ export default function ModuleDetailPage() {
                                                           : 'is-locked'
                                                 }`}
                                             >
-                                                {/* Cột trái: biểu tượng, tiêu đề bài thi và meta chi tiết */}
+                                                {/* Cột trái: tiêu đề bài thi và meta chi tiết */}
                                                 <div className="module-lesson-item__left">
-                                                    <div
-                                                        className={`module-lesson-item__icon-box ${
-                                                            hasPassedModuleTest
-                                                                ? 'is-completed'
-                                                                : moduleTest.isUnlocked
-                                                                  ? 'is-current'
-                                                                  : ''
-                                                        }`}
-                                                    >
-                                                        {hasPassedModuleTest ? <Award size={20} /> : <Flag size={20} />}
-                                                    </div>
-
                                                     <div className="module-lesson-item__info">
                                                         <div className="module-lesson-item__title-row">
                                                             <h3 className="module-lesson-item__title">
