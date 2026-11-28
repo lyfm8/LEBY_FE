@@ -156,10 +156,6 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 }
 
-.pf-card--danger {
-    border-color: #fecaca;
-}
-
 .pf-card__header {
     display: flex;
     align-items: center;
@@ -358,35 +354,7 @@
     opacity: 0.6;
 }
 
-.pf-btn-logout {
-    background: #ffffff;
-    border: 1.5px solid #ef4444;
-    color: #ef4444;
-    font-family: inherit;
-    font-size: 14px;
-    font-weight: 700;
-    padding: 10px 20px;
-    border-radius: 10px;
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    transition: all 0.15s;
-}
-
-.pf-btn-logout:hover {
-    background: #ef4444;
-    color: #ffffff;
-}
-
-.pf-danger-desc {
-    font-size: 13.5px;
-    color: #64748b;
-    margin: 0 0 18px;
-}
-
 .pf-icon-orange { color: #ea580c; }
-.pf-icon-red { color: #ef4444; }
 
 .pf-alert-success {
     background: #ecfdf5;

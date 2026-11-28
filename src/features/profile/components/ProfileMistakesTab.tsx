@@ -165,20 +165,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
     }
 
     const visibleItems = data?.items ?? [];
-    const areAllExpanded =
-        visibleItems.length > 0 && visibleItems.every((item) => Boolean(expandedIds[item.questionId]));
-
-    function handleToggleAllQuestions() {
-        if (areAllExpanded) {
-            setExpandedIds({});
-            return;
-        }
-        const next: Record<number, boolean> = {};
-        for (const item of visibleItems) {
-            next[item.questionId] = true;
-        }
-        setExpandedIds(next);
-    }
 
     // Nếu học viên đang mở phiên Làm lại theo nhóm -> hiển thị giao diện làm bài trực tiếp
     if (retrySet) {
@@ -546,7 +532,7 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                             className="pf-mistake-back-btn"
                             onClick={backToGroups}
                         >
-                            <span>Tất cả nhóm</span>
+                            <span> Tất cả nhóm</span>
                         </button>
                         <div>
                             <h3 className="pf-card__title">{activeGroupTitle}</h3>
@@ -557,15 +543,6 @@ export function ProfileMistakesTab({ isActive }: ProfileMistakesTabProps) {
                     </div>
 
                     <div className="pf-mistake-detail-bar__actions">
-                        {visibleItems.length > 0 && (
-                            <button
-                                type="button"
-                                className="pf-btn-edit pf-mistake-expand-all-btn"
-                                onClick={handleToggleAllQuestions}
-                            >
-                                <span>{areAllExpanded ? 'Thu gọn tất cả' : 'Mở tất cả'}</span>
-                            </button>
-                        )}
 
                         <button
                             type="button"
