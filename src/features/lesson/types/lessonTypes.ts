@@ -137,6 +137,8 @@ export interface LessonDetail {
     isFree: boolean;
     /** Tên năng lực trọng tâm mà bài học rèn luyện. */
     abilityName?: string | null;
+    /** Cờ xác định bài học thuộc mô-đun trong lộ trình cá nhân (false khi đang Học tự do từ Thư viện). */
+    inRoadmap?: boolean;
     /** Tổng thời lượng xem thực tế đã tích lũy trên server (giây). */
     watchedSeconds: number;
     /** Mốc thời gian dừng xem gần nhất để tiếp tục xem (giây). */

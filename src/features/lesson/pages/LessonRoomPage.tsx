@@ -418,6 +418,7 @@ export default function LessonRoomPage() {
                         totalVideoLessons={lesson.totalVideoLessons}
                         requiredCompletionRate={lesson.requiredCompletionRate}
                         moduleTestUnlocked={lesson.moduleTestUnlocked}
+                        inRoadmap={lesson.inRoadmap !== false}
                     />
                 </div>
             </main>

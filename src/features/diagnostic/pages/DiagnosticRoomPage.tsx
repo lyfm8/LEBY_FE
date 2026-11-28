@@ -7,6 +7,7 @@ import {
     Play,
     WifiOff,
 } from 'lucide-react';
+import { SidebarNav } from '@/features/roadmap/components/SidebarNav';
 import { DiagnosticHeader } from '../components/DiagnosticHeader';
 import { AudioPlayer } from '../components/AudioPlayer';
 import { QuestionCard } from '../components/QuestionCard';
@@ -73,9 +74,13 @@ export default function DiagnosticRoomPage() {
     // Hiển thị màn hình chờ trong lúc đang gọi API nạp hoặc khôi phục đề thi
     if (isLoading) {
         return (
-            <div className="diag-loading-page">
-                <div className="diag-spinner" />
-                <p>Đang chuẩn bị đề thi chẩn đoán toàn diện...</p>
+            <div className="app-layout">
+                {/* Giữ thanh điều hướng chính gồm menu và hồ sơ tài khoản */}
+                <SidebarNav />
+                <div className="diag-loading-page">
+                    <div className="diag-spinner" />
+                    <p>Đang chuẩn bị đề thi chẩn đoán toàn diện...</p>
+                </div>
             </div>
         );
     }
@@ -83,27 +88,35 @@ export default function DiagnosticRoomPage() {
     // Hiển thị màn hình thông báo trạng thái nếu chưa đủ điều kiện hoặc đã hoàn thành bài thi (có tùy chọn Làm lại)
     if (blockState) {
         return (
-            <DiagnosticBlockedView
-                blockState={blockState}
-                submitError={submitError}
-                isRetakeConfirmOpen={isRetakeConfirmOpen}
-                isRetaking={isRetaking}
-                onViewResults={() => navigate('/diagnostic/results')}
-                onViewLearningPath={() => navigate('/learning-path')}
-                onGoTargetSelection={() => navigate('/target-selection')}
-                onGoDashboard={() => navigate('/dashboard')}
-                onOpenRetakeConfirm={() => setIsRetakeConfirmOpen(true)}
-                onCloseRetakeConfirm={() => setIsRetakeConfirmOpen(false)}
-                onConfirmRetake={() => void handleConfirmRetake()}
-            />
+            <div className="app-layout">
+                {/* Giữ thanh điều hướng chính gồm menu và hồ sơ tài khoản */}
+                <SidebarNav />
+                <DiagnosticBlockedView
+                    blockState={blockState}
+                    submitError={submitError}
+                    isRetakeConfirmOpen={isRetakeConfirmOpen}
+                    isRetaking={isRetaking}
+                    onViewResults={() => navigate('/diagnostic/results')}
+                    onViewLearningPath={() => navigate('/learning-path')}
+                    onGoTargetSelection={() => navigate('/target-selection')}
+                    onGoDashboard={() => navigate('/dashboard')}
+                    onOpenRetakeConfirm={() => setIsRetakeConfirmOpen(true)}
+                    onCloseRetakeConfirm={() => setIsRetakeConfirmOpen(false)}
+                    onConfirmRetake={() => void handleConfirmRetake()}
+                />
+            </div>
         );
     }
 
     // Fallback an toàn nếu dữ liệu đề thi hoặc màn hình câu hỏi rỗng
     if (!test || !currentStep) {
         return (
-            <div className="diag-error-page">
-                <p>Không tìm thấy dữ liệu bài thi chẩn đoán.</p>
+            <div className="app-layout">
+                {/* Giữ thanh điều hướng chính gồm menu và hồ sơ tài khoản */}
+                <SidebarNav />
+                <div className="diag-error-page">
+                    <p>Không tìm thấy dữ liệu bài thi chẩn đoán.</p>
+                </div>
             </div>
         );
     }
@@ -125,7 +138,10 @@ export default function DiagnosticRoomPage() {
         currentStepIndex === steps.length - 1 || isInteractionLocked || isListeningTransitionLocked;
 
     return (
-        <div className="diag-room-page">
+        <div className="app-layout">
+            {/* Thanh điều hướng chính chứa menu và profile ở phía trên cùng phòng thi */}
+            <SidebarNav />
+            <div className="diag-room-page is-with-topbar">
             {/* UC06 Ngoại lệ 5b: Thông báo màu vàng khi mất kết nối internet */}
             {isOffline && (
                 <div className="diag-offline-banner" role="alert">
@@ -304,6 +320,7 @@ export default function DiagnosticRoomPage() {
                     </div>
                 </div>
             )}
+            </div>
         </div>
     );
 }
